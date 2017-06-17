@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+<pre id="api-res"></pre>
+
+</body>
+</html>
+
+<script src="/js/jquery.min.js"></script>
+
+<script>
+
+$.ajax({
+    url: '/api/',
+    type: 'GET',
+    // dataType: 'application/json',
+    data: {
+        '_API': true,
+        '_MTD': 'GET',
+        '_TKN': 1024
+    },
+    success: function(res) {
+        $('#api-res').html(res);
+        res = $.parseJSON(res);
+        $('title').html(res.data.title);
+    }
+});
+
+</script>

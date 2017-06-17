@@ -1,0 +1,19 @@
+# SYS
+.DS_Store
+
+# IDE/Editor
+.phpintel/
+.DS_Store
+.idea/
+*.swp
+
+# Front-End Repo, which will be the document root of web server
+public/
+
+# Framework
+app/cfg.php
+
+# Composer
+vendor/
+!vendor/composer/
+!vendor/autoload.php
