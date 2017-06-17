@@ -22,7 +22,7 @@ class Route implements Observable
         }
 
         foreach (self::$_observers as $observer) {
-            $observer->onRouteRegistered(strtoupper($name), $args);
+            $observer->onRegistered(strtoupper($name), $args);
         }
     }
 

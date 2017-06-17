@@ -33,7 +33,7 @@ class Application implements Observer
         ob_start('mb_output_handler');
     }
 
-    public function onRouteRegistered($name, $args)
+    public function onRegistered($name, $args)
     {
         $routeKey    = $this->formatRouteKey($args[0]);
         $routeType   = $name;
