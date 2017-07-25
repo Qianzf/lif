@@ -11,6 +11,8 @@
 
 # Framework
 app/cfg.php
+pub/
+!pub/index.php
 
 # Composer
 vendor/

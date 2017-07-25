@@ -8,6 +8,8 @@ class Route implements Observable
 {
     use \Lif\Core\Traits\Tol;
 
+    private $routePath = null;
+
     private static $_observers = [];
 
     public static function __callStatic($name, $args)
@@ -18,11 +20,11 @@ class Route implements Observable
     public function onCall($name, $args)
     {
         if (!$args || !isset($args[0]) || !isset($args[1]) || !$args[0] || !$args[1]) {
-            $this->jsonResponse(415, 'route name or handler can not be empty.');
+            $this->response(415, 'route name or handler can not be empty.');
         }
 
         foreach (self::$_observers as $observer) {
-            $observer->onRegistered(strtoupper($name), $args);
+            $observer->onRegistered('route', strtoupper($name), $args);
         }
     }
 
@@ -36,9 +38,21 @@ class Route implements Observable
         self::$_observers[] = $observer;
     }
 
-    public static function register()
+    protected static function register($routePath = null)
     {
+        $routePathAbsolute = $routePath ?? __DIR__.'/../route/';
         $app = new Route;
-        require_once __DIR__.'/../route.php';
+        foreach (scandir($routePathAbsolute) as $route) {
+            $path = $routePathAbsolute.$route;
+            if (is_file($path)) {
+                include_once $path;
+            }
+        }
+    }
+
+    public static function run($instance)
+    {
+        self::addObserver($instance);
+        self::register();
     }
 }

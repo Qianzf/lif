@@ -4,18 +4,13 @@ namespace Lif\Core\Traits;
 
 trait Tol
 {
-    public function jsonResponse($err, $msg, $data = [], $alreadyJson = false)
+    public function response($dat = [], $msg = 'ok', $err = 200, $format = 'json')
     {
-        header('Content-type:text/plain; charset=UTF-8');
+        response($dat, $msg, $err, $format);
+    }
 
-        if ($alreadyJson) {
-            exit($data);
-        }
-
-        exit(json_encode([
-            'err'  => $err,
-            'msg'  => $msg,
-            'data' => $data,
-        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    public function error($err, $msg)
+    {
+    	response([], $msg, $err, 'json');
     }
 }

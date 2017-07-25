@@ -4,5 +4,5 @@ namespace Lif\Core\Interfaces;
 
 interface Observer
 {
-    public function onRegistered($name, $args);
+    public function onRegistered($name, $key, $args);
 }
