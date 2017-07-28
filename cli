@@ -1,0 +1,10 @@
+#!/usr/bin/env php
+
+<?php
+
+require_once __DIR__.'/../vendor/autoload.php';
+
+$app = new Lif\Core\Application();
+
+print_r($argv);
+// print_r($_SERVER);

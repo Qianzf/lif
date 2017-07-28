@@ -22,7 +22,7 @@ class Application implements Observer
         $this->init();
         $this->route   = $this->getRoute();
         $this->reqType = $this->getReqType();
-        $this->params  = $this->getParamsFromRawInput();
+        $this->params  = $this->getReqParams();
         $this->config  = $config;
 
         if (isset($this->config['env']) && ('local' == $this->config['env'])) {
@@ -67,14 +67,21 @@ class Application implements Observer
         }
     }
 
-    public function getParamsFromRawInput()
+    public function getReqParams()
     {
-        if ($this->reqType === 'GET') {
-            $params = $_GET;
+        $cntType = $_SERVER['CONTENT_TYPE']
+        ? $_SERVER['CONTENT_TYPE']
+        : 'application/x-www-form-urlencoded';
+
+        $rawInput = file_get_contents('php://input');
+
+        if (false !== mb_strpos($cntType, 'application/json')) {
+            $params = json_decode($rawInput, true);
         } else {
-            parse_str(file_get_contents('php://input'), $params);
+            parse_str($rawInput, $params);
         }
-        return $params;
+
+        return array_merge($params, $_REQUEST);
     }
 
     public function formatRouteKey($route)

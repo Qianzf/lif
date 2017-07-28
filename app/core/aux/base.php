@@ -1,10 +1,33 @@
 <?php
 
 if (!function_exists('dd')) {
-	function dd($var) {
-		var_dump($var);
+	function dd() {
+        $args = func_get_args();
+        foreach ($args as $arg) {
+            $func = extension_loaded('xdebug')
+            ? 'var_dump' : 'print_r';
+
+            (is_array($arg) || is_object($arg))
+            ? call_user_func($func, $arg)
+            : var_dump($arg);
+        }
 		exit;
 	}
+}
+
+if (!function_exists('pathOf')) {
+    function pathOf($of = null) {
+        $root  = realpath(__DIR__.'/../../../');
+        $paths = [
+            'root' => $root,
+            'app'  => $root.'/app/',
+            'web'  => $root.'/pub/',
+        ];
+
+        return is_null($of) ? $paths : (
+            isset($paths[$of]) ? $paths[$of] : null
+        );
+    }
 }
 
 if (!function_exists('response')) {
@@ -37,7 +60,7 @@ if (!function_exists('array_stringify_main')) {
                 $str .= "[\n";
                 $str .= array_stringify_main($val, $level);
                 $str .= $margin."],\n";
-                $level--;
+                --$level;
             } else {
                 $str .= "'".$val."',\n";
             }
@@ -77,7 +100,7 @@ if (!function_exists('config')) {
 
 return {$cfg};\n
 CFG;
-            return file_put_contents(__DIR__.'/../cfg.php', $_cfg, LOCK_EX);
+            return file_put_contents(__DIR__.'/../../cfg.php', $_cfg, LOCK_EX);
         }
     }
 }

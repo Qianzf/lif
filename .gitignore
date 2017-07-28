@@ -3,18 +3,15 @@
 
 # IDE/Editor
 .phpintel/
-.DS_Store
 .idea/
 *.swp
 
-# Front-End Repo, which will be the document root of web server
-
 # Framework
-app/cfg.php
-pub/
-!pub/index.php
+config/*.php
+!config/full.sample.php
+web/
+!web/assets/.gitkeep
+!web/index.php
 
 # Composer
 vendor/
-!vendor/composer/
-!vendor/autoload.php

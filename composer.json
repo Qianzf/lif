@@ -12,7 +12,7 @@
             "Lif\\": "app/"
         },
         "files": [
-            "app/core/AUX.php"
+            "app/core/aux/base.php"
         ]
     }
 }

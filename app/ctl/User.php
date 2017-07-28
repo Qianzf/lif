@@ -8,7 +8,7 @@ class User extends Controller
 {
     public function get()
     {
-        $this->response([
+        response([
             'list' => [
                 [
                     'name'  => 'cjli',
@@ -24,7 +24,7 @@ class User extends Controller
 
     public function create()
     {
-        $this->response([
+        response([
             'notes' => 'You are creating an user.',
         ]);
     }
