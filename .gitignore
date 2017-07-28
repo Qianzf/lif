@@ -7,11 +7,10 @@
 *.swp
 
 # Framework
-env.ini
-config/*.php
-!config/full.sample.php
+config/
+!config/.gitkeep
 web/
-!web/assets/.gitkeep
+!web/static/.gitkeep
 !web/index.php
 
 # Composer

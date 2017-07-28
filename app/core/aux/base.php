@@ -34,7 +34,7 @@ if (!function_exists('pathOf')) {
             'log'    => $root.'/share/logs/',
             'cache'  => $root.'/share/cache/',
             'config' => $root.'/config/',
-            'assets' => $root.'/web/assets/',
+            'static' => $root.'/web/static/',
         ];
 
         return is_null($of) ? $paths : (
