@@ -1,8 +1,9 @@
 <?php
 
 $app->get('/', function () {
+    $lif = lif();
     response([
-        'title'   => 'LiF',
-        'version' => '0.0.0',
+        'Name'    => $lif->name,
+        'version' => $lif->version,
     ], 'Hello World');
 });
