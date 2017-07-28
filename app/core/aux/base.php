@@ -1,27 +1,40 @@
 <?php
 
 if (!function_exists('dd')) {
-	function dd() {
+    function dd()
+    {
         $args = func_get_args();
+        $func = extension_loaded('xdebug')
+        ? 'var_dump' : 'print_r';
         foreach ($args as $arg) {
-            $func = extension_loaded('xdebug')
-            ? 'var_dump' : 'print_r';
-
             (is_array($arg) || is_object($arg))
             ? call_user_func($func, $arg)
             : var_dump($arg);
         }
-		exit;
-	}
+        exit;
+    }
+}
+
+if (!function_exists('env')) {
+    function env()
+    {
+        dd(parse_ini_file(pathOf('root').'env.ini', true));
+    }
 }
 
 if (!function_exists('pathOf')) {
-    function pathOf($of = null) {
+    function pathOf($of = null)
+    {
         $root  = realpath(__DIR__.'/../../../');
         $paths = [
-            'root' => $root,
-            'app'  => $root.'/app/',
-            'web'  => $root.'/pub/',
+            'root'   => $root.'/',
+            'app'    => $root.'/app/',
+            'web'    => $root.'/web/',
+            'view'   => $root.'/share/views/',
+            'log'    => $root.'/share/logs/',
+            'cache'  => $root.'/share/cache/',
+            'config' => $root.'/config/',
+            'assets' => $root.'/web/assets/',
         ];
 
         return is_null($of) ? $paths : (
@@ -30,28 +43,56 @@ if (!function_exists('pathOf')) {
     }
 }
 
+if (!function_exists('jsonEncode')) {
+    function jsonEncode($arr)
+    {
+        return json_encode(
+            $arr,
+            JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+        );
+    }
+}
+
 if (!function_exists('response')) {
-	function response($dat = [], $msg = 'ok', $err = 200, $format = 'json') {
+    function response($dat = [], $msg = 'ok', $err = 200, $format = 'json')
+    {
         if ('json' === $format) {
             header('Content-type:application/json; charset=UTF-8');
-
-            exit(json_encode([
+            exit(jsonEncode([
                 'err' => $err,
                 'msg' => $msg,
                 'dat' => (array) $dat,
-            ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+            ]));
         }
     }
 }
 
+if (!function_exists('exception')) {
+    function exception(&$exObj)
+    {
+        header('Content-type:application/json; charset=UTF-8');
+        exit(jsonEncode([
+            'Exception' => [
+                'Info'  => $exObj->getMessage(),
+                'Code'  => $exObj->getCode(),
+                'File'  => $exObj->getFile(),
+                'Line'  => $exObj->getLine(),
+                'Trace' => $exObj->getTrace(),
+            ],
+        ]));
+    }
+}
+
 if (!function_exists('error')) {
-    function error($err, $msg) {
+    function error($err, $msg)
+    {
         response([], $msg, $err);
     }
 }
 
 if (!function_exists('array_stringify_main')) {
-    function array_stringify_main($arr, &$level) {
+    function array_stringify_main($arr, &$level)
+    {
         $str = '';
         $margin = str_repeat("\t", $level++);
         foreach ($arr as $key => $val) {
@@ -70,7 +111,8 @@ if (!function_exists('array_stringify_main')) {
 }
 
 if (!function_exists('array_stringify')) {
-    function array_stringify($arr, $level) {
+    function array_stringify($arr, $level)
+    {
         $str  = "[\n";
         $str .= array_stringify_main($arr, $level);
         $str .= ']';
@@ -80,7 +122,8 @@ if (!function_exists('array_stringify')) {
 }
 
 if (!function_exists('config')) {
-    function config($key = null, $val = null) {
+    function config($key = null, $val = null)
+    {
         global $_LIF_CONFIG;
         if (is_null($key)) {
             return $_LIF_CONFIG;

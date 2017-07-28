@@ -2,12 +2,10 @@
 
 namespace Lif\Core;
 
-use Lif\Core\interfaces\Observable;
+use Lif\Core\Intf\Observable;
 
 class Route implements Observable
 {
-    use \Lif\Core\Traits\Tol;
-
     private $routePath = null;
 
     private static $_observers = [];

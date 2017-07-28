@@ -2,9 +2,9 @@
 
 namespace Lif\Ctl;
 
-use Lif\Core\Controller;
+use Lif\Core\Ctl;
 
-class User extends Controller
+class User extends Ctl
 {
     public function get()
     {

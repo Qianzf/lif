@@ -1,6 +1,6 @@
 <?php
 
-namespace Lif\Core\Interfaces;
+namespace Lif\Core\Intf;
 
 interface Observer
 {

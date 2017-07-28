@@ -2,9 +2,12 @@
 
 <?php
 
-require_once __DIR__.'/../vendor/autoload.php';
+// ------------------------------------
+//     Command Line Interface Entry  
+// ------------------------------------
 
-$app = new Lif\Core\Application();
+require_once __DIR__.'/vendor/autoload.php';
+
+$app = new Lif\Core\App;
 
 print_r($argv);
-// print_r($_SERVER);
