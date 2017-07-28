@@ -21,13 +21,14 @@ if (!function_exists('dd')) {
             $args = func_get_args();
             $func = extension_loaded('xdebug')
             ? 'var_dump' : 'print_r';
+
             foreach ($args as $arg) {
                 (is_array($arg) || is_object($arg))
                 ? call_user_func($func, $arg)
                 : var_dump($arg);
             }
+            exit;
         }
-        exit;
     }
 }
 
@@ -38,14 +39,32 @@ if (!function_exists('pr')) {
             $args = func_get_args();
             $func = extension_loaded('xdebug')
             ? 'var_dump' : 'print_r';
+
             call_user_func_array($func, $args);
         }
     }
 }
 
-if (!function_exists('env')) {
-    function env()
+if (!function_exists('app_debug')) {
+    function app_debug()
     {
+        $app = config('app');
+        return (isset($app['debug']) && in_array($app['debug'], [
+            true,
+            false
+        ])) ? $app['debug'] : true;
+    }
+}
+
+if (!function_exists('app_env')) {
+    function app_env()
+    {
+        $app = config('app');
+        return (isset($app['env']) && in_array($app['env'], [
+            'local',
+            'staging',
+            'production',
+        ])) ? $app['env'] : 'local';
     }
 }
 
@@ -225,9 +244,37 @@ CFG;
     }
 }
 
-if (!function_exists('config')) {
-    function config($name)
+if (!function_exists('config_all')) {
+    function config_all($cfgPath = null)
     {
+        $cfgPath = $cfgPath ?? pathOf('config');
+
+        foreach (scandir($cfgPath) as $cfg) {
+            $path = $cfgPath.$cfg;
+            if (is_file($path)) {
+                $file = pathinfo($path);
+                if ('php' == $file['extension']) {
+                    $GLOBALS['LIF_CFG'][$file['filename']] = config(
+                        $file['filename'],
+                        $cfgPath
+                    );
+                }
+            }
+        }
+
+        return $GLOBALS['LIF_CFG'] ?? [];
+    }
+}
+
+if (!function_exists('config')) {
+    function config($name = null, $cfgPath = null)
+    {
+        $cfgPath = $cfgPath ?? pathOf('config');
+
+        if (!$name) {
+            return config_all($cfgPath);
+        }
+
         if (isset($GLOBALS['LIF_CFG']) &&
             isset($GLOBALS['LIF_CFG'][$name]) &&
             $GLOBALS['LIF_CFG'][$name]
@@ -235,7 +282,7 @@ if (!function_exists('config')) {
             return $GLOBALS['LIF_CFG'][$name];
         }
 
-        $cfgFile = pathOf('config').$name.'.php';
+        $cfgFile = $cfgPath.$name.'.php';
         if (!file_exists($cfgFile)) {
             throw new \Lif\Core\Excp\API(
                 'Configure File '.$cfgFile.' not exists'

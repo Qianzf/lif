@@ -20,10 +20,10 @@ class App implements Observer
         $this->reqType = $this->getReqType();
         $this->params  = $this->getReqParams();
 
-        // if (isset($this->config['env']) && ('local' == $this->config['env'])) {
+        if (app_env() != 'production') {
             error_reporting(E_ALL);
             ini_set('display_errors', 'On');
-        // }
+        }
 
         Route::run($this);
     }

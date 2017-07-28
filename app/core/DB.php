@@ -5,29 +5,29 @@ namespace Lif\Core;
 class DB
 {
     public $pdo   = null;
+    public $new   = null;
     public $tbPre = '';
-    public $config = [];
 
-    public function __construct($config, $forceNew = false)
+    public function __construct($new = false)
     {
-        $this->config = $config;
-
         if (!$this->pdo || !is_object($this->pdo)) {
-            $this->pdo = $this->getDBInstance($forceNew);
+            $this->new = $new;
+            $this->pdo = $this->getInstance();
         }
     }
 
-    public function getDBInstance($forceNew = false)
+    public function getInstance()
     {
-        if ($forceNew || !$this->pdo || !is_object($this->pdo)) {
+        if ($this->new || !$this->pdo || !is_object($this->pdo)) {
             try {
+                $db = config('db')['pdo'];
                 return new \PDO(
-                    $this->config['dsn'],
-                    $this->config['user'],
-                    $this->config['passwd']
+                    $db['dsn'],
+                    $db['user'],
+                    $db['passwd']
                 );
             } catch (PDOException $pdoE) {
-                exit($pdoE->getMessage());
+                exception($pdoE);
             }
         } else {
             return $this->pdo;
