@@ -2,11 +2,23 @@
 <?php
 
 // ------------------------------------
-//     Command Line Interface Entry  
+//     Command Line Interface Entry
 // ------------------------------------
 
 require_once __DIR__.'/vendor/autoload.php';
 
-$app = new Lif\Core\App;
+(
+    new Lif\Core\App
+)
 
-print_r($argv);
+// --------------------------------------------------------
+//     Pass arguments from command line to cli strategy
+// --------------------------------------------------------
+
+->setArgvs($argv)
+
+// ----------------------------
+//     Execute cli strategy
+// ----------------------------
+
+->fire();

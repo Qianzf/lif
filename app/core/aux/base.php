@@ -7,10 +7,25 @@
 if (!function_exists('lif')) {
     function lif()
     {
-        return (object)[
-            'name'     => 'LiF',
-            'version'  => '0.0.1',
-        ];
+        response([
+            'Name'    => 'LiF',
+            'version' => '0.0.1',
+        ], 'Hello World.');
+    }
+}
+
+if (!function_exists('init')) {
+    function init()
+    {
+        $timezone = config('app')['timezone'] ?? 'UTC';
+        date_default_timezone_set($timezone);
+        mb_internal_encoding('UTF-8');
+        mb_regex_encoding('UTF-8');
+        mb_language('uni');
+        if ('production' != app_env()) {
+            error_reporting(E_ALL);
+            ini_set('display_errors', 'On');
+        }
     }
 }
 
@@ -45,6 +60,14 @@ if (!function_exists('pr')) {
     }
 }
 
+if (!function_exists('format_route_key')) {
+    function format_route_key($route)
+    {
+        $routeKey = implode('_', array_filter(explode('/', $route)));
+        return $routeKey ? $routeKey : '_';
+    }
+}
+
 if (!function_exists('app_debug')) {
     function app_debug()
     {
@@ -68,6 +91,14 @@ if (!function_exists('app_env')) {
     }
 }
 
+if (!function_exists('context')) {
+    function context()
+    {
+        return ('cli' === php_sapi_name())
+        ? 'cli' : 'web';
+    }
+}
+
 if (!function_exists('pathOf')) {
     function pathOf($of = null)
     {
@@ -79,6 +110,7 @@ if (!function_exists('pathOf')) {
             'view'   => $root.'/share/views/',
             'log'    => $root.'/share/logs/',
             'cache'  => $root.'/share/cache/',
+            'route'  => $root.'/app/route/',
             'config' => $root.'/config/',
             'static' => $root.'/web/static/',
         ];
@@ -89,8 +121,8 @@ if (!function_exists('pathOf')) {
     }
 }
 
-if (!function_exists('jsonEncode')) {
-    function jsonEncode($arr)
+if (!function_exists('_json_encode')) {
+    function _json_encode($arr)
     {
         return json_encode(
             $arr,
@@ -107,8 +139,7 @@ if (!function_exists('response')) {
         $format = 'json'
     ) {
         if ('json' === $format) {
-            header('Content-type:application/json; charset=UTF-8');
-            exit(jsonEncode([
+            json_http_response(_json_encode([
                 'err' => $err,
                 'msg' => $msg,
                 'dat' => (array) $dat,
@@ -117,19 +148,36 @@ if (!function_exists('response')) {
     }
 }
 
+if (!function_exists('json_http_response')) {
+    function json_http_response($data)
+    {
+        header('Content-type:application/json; charset=UTF-8');
+        exit($data);
+    }
+}
+
 if (!function_exists('exception')) {
     function exception(&$exObj)
     {
-        header('Content-type:application/json; charset=UTF-8');
-        exit(jsonEncode([
-            'Exception' => [
-                'Info'  => $exObj->getMessage(),
-                'Code'  => $exObj->getCode(),
-                'File'  => $exObj->getFile(),
-                'Line'  => $exObj->getLine(),
-                'Trace' => $exObj->getTrace(),
-            ],
-        ]));
+        $info = [
+            'Exception' => $exObj->getMessage(),
+            'Code'      => $exObj->getCode(),
+        ];
+
+        if (('production' != app_env()) && app_debug()) {
+            $info['File']  = $exObj->getFile();
+            $info['Line']  = $exObj->getLine();
+            $info['Trace'] = $exObj->getTrace();
+        }
+
+        json_http_response(_json_encode($info));
+    }
+}
+
+if (!function_exists('api_exception')) {
+    function api_exception($msg, $err = 500)
+    {
+        throw new \Lif\Core\Excp\API($msg, $err);
     }
 }
 

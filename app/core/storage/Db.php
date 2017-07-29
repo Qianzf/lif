@@ -1,8 +1,8 @@
 <?php
 
-namespace Lif\Core;
+namespace Lif\Core\Storage;
 
-class DB
+class Db
 {
     public $pdo   = null;
     public $new   = null;
@@ -26,7 +26,7 @@ class DB
                     $db['user'],
                     $db['passwd']
                 );
-            } catch (PDOException $pdoE) {
+            } catch (\PDOException $pdoE) {
                 exception($pdoE);
             }
         } else {

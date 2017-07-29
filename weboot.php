@@ -1,10 +1,26 @@
 <?php
 
-// -----------------------
-//     Web Boot Loader
-// -----------------------
+// -----------------------------------
+//     Web Application Boot Loader
+// -----------------------------------
 
 require_once __DIR__.'/vendor/autoload.php';
 
-$app = new Lif\Core\App;
-$app->handle();
+(
+    new Lif\Core\App
+)
+
+// -------------------------------------------------------------
+//     Tell web strategy how many route files need to add in
+// -------------------------------------------------------------
+
+->withRoutes([
+    'api',
+    'user',
+])
+
+// ----------------------------
+//     Execute web strategy
+// ----------------------------
+
+->fire();

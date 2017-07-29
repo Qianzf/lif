@@ -1,4 +1,4 @@
 <?php
 
-$app->get('user', 'User@get');
-$app->post('user', 'User@create');
+$this->get('user', 'User@get');
+$this->post('user', 'User@create');
