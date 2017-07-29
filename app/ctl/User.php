@@ -6,6 +6,13 @@ use Lif\Core\Ctl;
 
 class User extends Ctl
 {
+    public function delete()
+    {
+        response([
+            'status' => 'success'
+        ]);
+    }
+
     public function get()
     {
         response([
