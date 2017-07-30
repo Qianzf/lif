@@ -2,11 +2,17 @@
 
 namespace Lif\Core\Web;
 
-class Request
+use Lif\Core\Abst\Container;
+use Lif\Core\Intf\Observable;
+
+class Request extends Container implements Observable
 {
-    protected $route  = null;
-    protected $type   = null;
-    protected $params = null;
+    use \Lif\Core\Traits\Observable;
+    
+    protected $route   = null;
+    protected $type    = null;
+    protected $params  = null;
+    protected $headers = null;
 
     public function __construct()
     {
@@ -14,6 +20,7 @@ class Request
         $this->route();
         $this->type();
         $this->params();
+        $this->headers();
         $this->updateType();
     }
 
@@ -35,7 +42,7 @@ class Request
         }
     }
 
-    public function init()
+    protected function init()
     {
         mb_http_input('UTF-8');
         mb_http_output('UTF-8');
@@ -84,5 +91,14 @@ class Request
         }
 
         return $this->params = array_merge($params, $_REQUEST);
+    }
+
+    public function headers()
+    {
+        if ($this->headers) {
+            return $this->headers;
+        }
+
+        return $this->headers = getallheaders();
     }
 }

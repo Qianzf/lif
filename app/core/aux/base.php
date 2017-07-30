@@ -1,16 +1,23 @@
 <?php
 
-// -------------------------
-//     Helpful Functions
-// -------------------------
+// -------------------------------------
+//     Basic Helper Functions for LiF
+// -------------------------------------
 
 if (!function_exists('lif')) {
     function lif()
     {
-        response([
-            'Name'    => 'LiF',
+        $msg = 'Hello World.';
+        $lif = [
+            'name'    => 'LiF',
             'version' => '0.0.1',
-        ], 'Hello World.');
+        ];
+
+        ('cli' === context())
+        ? exit(_json_encode(array_merge([
+            'msg' => $msg,
+        ], $lif)))
+        : response($lif, $msg);
     }
 }
 
@@ -60,14 +67,6 @@ if (!function_exists('pr')) {
     }
 }
 
-if (!function_exists('format_route_key')) {
-    function format_route_key($route)
-    {
-        $routeKey = implode('_', array_filter(explode('/', $route)));
-        return $routeKey ? $routeKey : '_';
-    }
-}
-
 if (!function_exists('app_debug')) {
     function app_debug()
     {
@@ -99,6 +98,45 @@ if (!function_exists('context')) {
     }
 }
 
+if (!function_exists('exists')) {
+    function exists($var, $idx = null)
+    {
+        if (is_array($var) && $idx) {
+            return (isset($var[$idx]) && $var[$idx]) ? $var[$idx] : false;
+        } elseif (!is_object($var) && $idx) {
+            return (isset($var->$idx) && $var->$idx) ? $var->$idx : false;
+        }
+
+        return (isset($var) && $var) ? $var : false;
+    }
+}
+
+if (!function_exists('nsOf')) {
+    function nsOf($of = null)
+    {
+        if (!$of) {
+            return '\\';
+        }
+
+        if (is_object($of)) {
+            $fullClassName = get_class($of);
+            $nsArr = explode('\\', $fullClassName);
+            unset($nsArr[count($nsArr)-1]);
+            $ns = implode('\\', $nsArr);
+
+            return $ns;
+        }
+
+        if (is_string($of)) {
+            $nsArr = [
+                'ctl' => '\Lif\Ctl',
+                'mdl' => '\Lif\Mdl',
+            ];
+            return $nsArr[$of] ?? '\\';
+        }
+    }
+}
+
 if (!function_exists('pathOf')) {
     function pathOf($of = null)
     {
@@ -106,6 +144,7 @@ if (!function_exists('pathOf')) {
         $paths = [
             'root'   => $root.'/',
             'app'    => $root.'/app/',
+            'aux'    => $root.'/app/core/aux/',
             'web'    => $root.'/web/',
             'view'   => $root.'/share/views/',
             'log'    => $root.'/share/logs/',
@@ -131,33 +170,25 @@ if (!function_exists('_json_encode')) {
     }
 }
 
-if (!function_exists('response')) {
-    function response(
-        $dat = [],
-        $msg = 'ok',
-        $err = 0,
-        $format = 'json'
-    ) {
-        if ('json' === $format) {
-            json_http_response(_json_encode([
-                'err' => $err,
-                'msg' => $msg,
-                'dat' => (array) $dat,
-            ]));
-        }
-    }
-}
-
 if (!function_exists('json_http_response')) {
     function json_http_response($data)
     {
-        header('Content-type:application/json; charset=UTF-8');
+        if (!headers_sent()) {
+            header('Content-type:application/json; charset=UTF-8');
+        }
         exit($data);
     }
 }
 
 if (!function_exists('exception')) {
-    function exception(&$exObj)
+    // ----------------------------------------------------------------------
+    //     Errors caused by behaviours inside framework called exceptions
+    //     eg: route bind illegal, file not exists, etc.
+    // ----------------------------------------------------------------------
+    //     Exceptions is used for developer to locate bugs
+    //     Debug model and environment will effect exception output
+    // ----------------------------------------------------------------------
+    function exception(&$exObj, $format = 'json')
     {
         $info = [
             'Exception' => $exObj->getMessage(),
@@ -170,21 +201,39 @@ if (!function_exists('exception')) {
             $info['Trace'] = $exObj->getTrace();
         }
 
-        json_http_response(_json_encode($info));
+        if ('json' === $format) {
+            $info = _json_encode($info);
+
+            ('cli' === context())
+            ? exit($info)
+            : json_http_response($info);
+        }
     }
 }
 
-if (!function_exists('api_exception')) {
-    function api_exception($msg, $err = 500)
+if (!function_exists('excp')) {
+    function excp($msg, $err = 500, $format = 'json')
     {
-        throw new \Lif\Core\Excp\API($msg, $err);
+        throw new \Lif\Core\Excp\Lif($msg, $err, $format);
     }
 }
 
-if (!function_exists('error')) {
-    function error($err, $msg)
+if (!function_exists('format_namespace')) {
+    function format_namespace($namespaceRaw)
     {
-        response([], $msg, $err);
+        if (is_array($namespaceRaw) && $namespaceRaw) {
+            return implode(
+                '\\',
+                array_filter(
+                    explode('\\', implode('\\', $namespaceRaw))
+                )
+            );
+        }
+        if (is_string($namespaceRaw) && $namespaceRaw) {
+            return implode('\\', array_filter(explode('\\', $namespaceRaw)));
+        }
+
+        return false;
     }
 }
 

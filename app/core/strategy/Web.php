@@ -10,15 +10,33 @@ use Lif\Core\Factory\Web as WebFactory;
 
 class Web extends Container implements Observer, Strategy
 {
-    public $nameAsObsesrver = 'web';
-    public $request = null;
-    public $route   = null;
-    public $routes  = [];
+    protected $nameAsObsesrver = 'web';
+    protected $request = null;
+    protected $route   = null;
+    protected $routes  = [];
+    protected $aliases = [];
+
+    public function __construct()
+    {
+        $this->app = &$this;
+        $this->loadWebHelpers();
+    }
+
+    protected function loadWebHelpers()
+    {
+        $webHelpers = pathOf('aux').'web.php';
+        
+        if (!file_exists($webHelpers)) {
+            excp('Web helper file does not exists.');
+        }
+
+        require_once $webHelpers;
+    }
 
     public function withRoutes($routeFiles)
     {
         if (!$routeFiles || !is_array($routeFiles)) {
-            api_exception('Missing Routes files.');
+            excp('Missing Routes files.');
         }
 
         $route = WebFactory::make('route');
@@ -31,11 +49,11 @@ class Web extends Container implements Observer, Strategy
     protected function routeVerify($routeKey, $reqType, $route)
     {
         if (!isset($this->routes[$routeKey])) {
-            api_exception('Route `'.$route.'` not found.', 404);
+            client_error('Route `'.$route.'` not found.', 404);
         }
 
         if (!in_array($reqType, array_keys($this->routes[$routeKey]))) {
-            api_exception(
+            client_error(
                 '`'.$reqType.'` for route `'.$route.'` not found.',
                 404
             );
@@ -44,17 +62,17 @@ class Web extends Container implements Observer, Strategy
 
     protected function handlerVerify($routeKey, $reqType, $route)
     {
-        $handler = $this->routes[$routeKey][$reqType];
+        $handler = $this->routes[$routeKey][$reqType]['handle'];
 
         if (is_callable($handler)) {
             response($handler());
         } elseif (is_string($handler)) {
             $args = explode('@', $handler);
             if (count($args) !== 2 ||
-                !($ctlName = trim($args[0])) ||
+                !($ctlName = trim(format_namespace($args[0]))) ||
                 !($act = trim($args[1]))
             ) {
-                api_exception(
+                excp(
                     'String type of route handler must be formatted with `Controller@action.`'
                     ."[{$reqType}('{$route}', '{$handler}')]",
                     415
@@ -69,7 +87,7 @@ class Web extends Container implements Observer, Strategy
                 '__NON_EXISTENT_METHOD__'
             ], [$this, $act]);
         } else {
-            api_exception(
+            excp(
                 'Route handler must be Closure or String(`Controller@action`)',
                 415
             );
@@ -79,18 +97,13 @@ class Web extends Container implements Observer, Strategy
     public function fire()
     {
         $this->request = $request = WebFactory::make('request');
-
+        $request->addObserver($this);
         $route    = $request->route();
         $reqType  = $request->type();
         $routeKey = format_route_key($route);
 
         $this->routeVerify($routeKey, $reqType, $route);
         $this->handlerVerify($routeKey, $reqType, $route);
-    }
-
-    public function getNameAsObserver()
-    {
-        return $this->nameAsObsesrver;
     }
 
     public function onRegistered($name, $type, $args)
@@ -100,18 +113,64 @@ class Web extends Container implements Observer, Strategy
         }
     }
 
-    public function onRouteRegistered($type, $args)
+    /**
+     * [onRouteRegistered description]
+     * @param  [type] $type  [description]
+     * @param  [type] $route [description]
+     * @return [type]        [description]
+     */
+    protected function onRouteRegistered($type, $route)
     {
-        $routeKey    = format_route_key($args[0]);
-        $routeType   = $type;
-        $routeHandle = $args[1];
-
-        if (isset($this->routes[$routeKey][$routeType])) {
-            api_exception(
-                'Duplicate definition on `'.$args[0].'` of `'.$routeType.'`.'
+        if (isset($this->routes[$route['name']][$type])) {
+            excp(
+                'Duplicate definition on `'.
+                get_raw_route($route['name']).
+                '` of `'.$type.'`.'
             );
         }
 
-        $this->routes[$routeKey][$routeType] = $routeHandle;
+        if (in_array($route['alias'], array_keys($this->aliases))) {
+            excp(
+                'Duplicate route alias `'.
+                $route['alias'].
+                '` for `'.
+                get_raw_route($route['name'])
+            );
+        }
+
+        $handle = $route['namespace']
+        ? $route['namespace'].'\\'.$route['bind']
+        : $route['bind'];
+        $this->aliases[$route['alias']] = $route['name'];
+        $this->routes[$route['name']][$type] = [
+            'handle' => $handle,
+            'alias'  => $route['alias'],
+            'middlewares' => $route['middlewares'],
+        ];
+    }
+
+    public function nameAsObserver()
+    {
+        return $this->nameAsObsesrver;
+    }
+
+    public function routes()
+    {
+        return $this->routes;
+    }
+
+    public function aliases()
+    {
+        return $this->aliases;
+    }
+
+    public function route()
+    {
+        return $this->route;
+    }
+
+    public function request()
+    {
+        return $this->request;
     }
 }
