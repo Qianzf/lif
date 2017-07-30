@@ -101,10 +101,23 @@ if (!function_exists('context')) {
 if (!function_exists('exists')) {
     function exists($var, $idx = null)
     {
+        // !!! be carefurl if `$var` is not an assoc array
         if (is_array($var) && $idx) {
-            return (isset($var[$idx]) && $var[$idx]) ? $var[$idx] : false;
-        } elseif (!is_object($var) && $idx) {
-            return (isset($var->$idx) && $var->$idx) ? $var->$idx : false;
+            $idxes = is_array($idx) ? $idx : [$idx];
+            foreach ($idxes as $_idx) {
+                if (!isset($var[$_idx]) || !$var[$_idx]) {
+                    return false;
+                }
+            }
+            return (1===count($idxes)) ? $var[$idx] : true;
+        } elseif (is_object($var) && $idx) {
+            $attrs = is_array($idx) ? $idx : [$idx];
+            foreach ($attrs as $attr) {
+                if (!isset($var->$attr) || !$var->$attr) {
+                    return false;
+                }
+            }
+            return (1===count($attrs)) ? $var->$idx : true;
         }
 
         return (isset($var) && $var) ? $var : false;
@@ -322,7 +335,7 @@ if (!function_exists('cfg')) {
             !$keyStr || !is_string($keyStr) ||
             !$data
         ) {
-            throw new \Lif\Core\Excp\API('Missing config params');
+            throw new \Lif\Core\Excp\Lif('Missing config params');
         }
 
         $cfgFile = pathOf('config').$name.'.php';
@@ -381,13 +394,42 @@ if (!function_exists('config')) {
 
         $cfgFile = $cfgPath.$name.'.php';
         if (!file_exists($cfgFile)) {
-            throw new \Lif\Core\Excp\API(
-                'Configure File '.$cfgFile.' not exists'
-            );
+            excp('Configure File '.$cfgFile.' not exists');
         }
 
         $cfg = include_once $cfgFile;
         $GLOBALS['LIF_CFG'][$name] = $cfg;
         return $cfg;
+    }
+}
+
+if (!function_exists('build_pdo_dsn')) {
+    function build_pdo_dsn($conn)
+    {
+        $dsn = $conn['driver']
+        .':host='
+        .$conn['host'];
+
+        $dsn .= exists($conn, 'charset')
+        ? ';charset='.$conn['charset'] : '';
+
+        $dsn .= exists($conn, 'dbname')
+        ? ';dbname='.$conn['dbname'] : '';
+
+        return $dsn;
+    }
+}
+
+if (!function_exists('db')) {
+    function db($conn = null)
+    {
+        return \Lif\Core\Factory\Storage::fetch('db', 'pdo', $conn);
+    }
+}
+
+if (!function_exists('db_conns')) {
+    function db_conns($conn = null)
+    {
+        return \Lif\Core\Factory\Storage::fetch('db', 'conns', $conn);
     }
 }

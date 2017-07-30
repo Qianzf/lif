@@ -2,10 +2,6 @@
 
 namespace Lif\Core\Abst;
 
-use Lif\Core\Factory\Storage;
-
-use Lif\Core\Intf\App;
-
 abstract class Container
 {
     protected $app = null;
@@ -16,18 +12,20 @@ abstract class Container
             return $this->$name;
         }
 
-        if ('db' === strtolower($name)) {
-            if (!$this->pdo) {
-                $this->pdo = (Storage::make('db'))->pdo;
-            }
-            
-            return $this->pdo;
-        }
-
         if (method_exists($this, $name)) {
             return $this->$name();
         } elseif (method_exists($this->app, $name)) {
             return $this->app->$name();
         }
+    }
+
+    public function db($conn = null)
+    {
+        return db($conn);
+    }
+
+    public function dbconns($conn = null)
+    {
+        return db_conns($conn);
     }
 }
