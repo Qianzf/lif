@@ -187,6 +187,7 @@ if (!function_exists('json_http_response')) {
     function json_http_response($data)
     {
         if (!headers_sent()) {
+            mb_http_output('UTF-8');
             header('Content-type:application/json; charset=UTF-8');
         }
         exit($data);
@@ -246,7 +247,7 @@ if (!function_exists('format_namespace')) {
             return implode('\\', array_filter(explode('\\', $namespaceRaw)));
         }
 
-        return false;
+        return '\\';
     }
 }
 

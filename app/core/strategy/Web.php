@@ -10,11 +10,16 @@ use Lif\Core\Factory\Web as WebFactory;
 
 class Web extends Container implements Observer, Strategy
 {
+    use \Lif\Core\Traits\WebGetter;
+
     protected $nameAsObsesrver = 'web';
-    protected $request = null;
-    protected $route   = null;
-    protected $routes  = [];
-    protected $aliases = [];
+    protected $request = null;    // request object
+    protected $route   = null;    // current route name
+    protected $headers = [];      // current request HTTP headers
+    protected $params  = [];      // current request params
+    protected $_route  = null;    // route object
+    protected $routes  = [];      // all routes and their bindings
+    protected $aliases = [];      // all routes and their aliases
 
     public function __construct()
     {
@@ -31,6 +36,8 @@ class Web extends Container implements Observer, Strategy
         }
 
         require_once $webHelpers;
+
+        return $this;
     }
 
     public function withRoutes($routeFiles)
@@ -39,44 +46,47 @@ class Web extends Container implements Observer, Strategy
             excp('Missing Routes files.');
         }
 
-        $route = WebFactory::make('route');
-        $route->run($this, $routeFiles);
+        $this->_route = WebFactory::make('route');
+        $this->_route->run($this, $routeFiles);
 
-        $this->route = $route;
         return $this;
     }
 
-    protected function routeVerify($routeKey, $reqType, $route)
+    public function findRoute($key, $type, $name)
     {
-        if (!isset($this->routes[$routeKey])) {
+        if (!isset($this->routes[$key])) {
             client_error('Route `'.$route.'` not found.', 404);
         }
 
-        if (!in_array($reqType, array_keys($this->routes[$routeKey]))) {
+        if (!in_array($type, array_keys($this->routes[$key]))) {
             client_error(
-                '`'.$reqType.'` for route `'.$route.'` not found.',
+                '`'.$type.'` for route `'.$name.'` not found.',
                 404
             );
         }
+
+        return $this;
     }
 
-    protected function handlerVerify($routeKey, $reqType, $route)
+    public function handle()
     {
+        $route    = $this->request->route();
+        $reqType  = $this->request->type();
+        $routeKey = format_route_key($route);
+
+        $this->findRoute($routeKey, $reqType, $route);
+
         $handler = $this->routes[$routeKey][$reqType]['handle'];
 
         if (is_callable($handler)) {
-            response($handler());
+            return response($handler());
         } elseif (is_string($handler)) {
             $args = explode('@', $handler);
             if (count($args) !== 2 ||
                 !($ctlName = trim(format_namespace($args[0]))) ||
                 !($act = trim($args[1]))
             ) {
-                excp(
-                    'String type of route handler must be formatted with `Controller@action.`'
-                    ."[{$reqType}('{$route}', '{$handler}')]",
-                    415
-                );
+                throw new \Lif\Core\Excp\IllegalRouteDefinition(2);
             }
 
             $ctl = Ctl::make($ctlName);
@@ -87,30 +97,36 @@ class Web extends Container implements Observer, Strategy
                 '__NON_EXISTENT_METHOD__'
             ], [$this, $act]);
         } else {
-            excp(
-                'Route handler must be Closure or String(`Controller@action`)',
-                415
-            );
+            throw new \Lif\Core\Excp\IllegalRouteDefinition(1);
         }
+
+        return $this;
     }
 
     public function fire()
     {
-        $this->request = $request = WebFactory::make('request');
-        $request->addObserver($this);
-        $route    = $request->route();
-        $reqType  = $request->type();
-        $routeKey = format_route_key($route);
+        $this->request = WebFactory::make('request');
+        $this->request->run($this);
 
-        $this->routeVerify($routeKey, $reqType, $route);
-        $this->handlerVerify($routeKey, $reqType, $route);
+        return $this;
     }
 
-    public function onRegistered($name, $type, $args)
+    public function onRegistered($name, $type = null, $args = null)
     {
-        if ('route' === $name) {
-            $this->onRouteRegistered($type, $args);
-        }
+        $onRegistered = 'on'.ucfirst($name).'Registered';
+
+        $this->$onRegistered($type, $args);
+
+        return $this;
+    }
+
+    protected function onRequestRegistered()
+    {
+        $this->route   = $this->request->route;
+        $this->params  = $this->request->params;
+        $this->headers = $this->request->headers;
+
+        return $this;
     }
 
     /**
@@ -138,39 +154,18 @@ class Web extends Container implements Observer, Strategy
             );
         }
 
-        $handle = $route['namespace']
-        ? $route['namespace'].'\\'.$route['bind']
-        : $route['bind'];
-        $this->aliases[$route['alias']] = $route['name'];
+        $this->aliases[$route['alias']]      = $route['name'];
         $this->routes[$route['name']][$type] = [
-            'handle' => $handle,
-            'alias'  => $route['alias'],
+            'handle'      => $route['handle'],
+            'alias'       => $route['alias'],
             'middlewares' => $route['middlewares'],
         ];
+
+        return $this;
     }
 
     public function nameAsObserver()
     {
         return $this->nameAsObsesrver;
-    }
-
-    public function routes()
-    {
-        return $this->routes;
-    }
-
-    public function aliases()
-    {
-        return $this->aliases;
-    }
-
-    public function route()
-    {
-        return $this->route;
-    }
-
-    public function request()
-    {
-        return $this->request;
     }
 }

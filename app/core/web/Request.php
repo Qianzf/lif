@@ -17,11 +17,6 @@ class Request extends Container implements Observable
     public function __construct()
     {
         $this->init();
-        $this->route();
-        $this->type();
-        $this->params();
-        $this->headers();
-        $this->updateType();
     }
 
     public function updateType()
@@ -45,7 +40,6 @@ class Request extends Container implements Observable
     protected function init()
     {
         mb_http_input('UTF-8');
-        mb_http_output('UTF-8');
     }
 
     public function route()
@@ -100,5 +94,18 @@ class Request extends Container implements Observable
         }
 
         return $this->headers = getallheaders();
+    }
+
+    public function run($observer)
+    {
+        $this->addObserver($observer);
+
+        foreach ($this->observers as $observer) {
+            $observer->onRegistered('request');
+        }
+
+        $this->app->handle();
+
+        return $this;
     }
 }

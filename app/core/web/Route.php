@@ -12,7 +12,7 @@ class Route extends Container implements Observable
     protected $files = [];
     protected $observers = [];
 
-    // Temporary Stacks
+    // Temporary stacks for route
     private $prefixes    = [];
     private $middlewares = [];
     private $namespaces  = [];
@@ -28,6 +28,17 @@ class Route extends Container implements Observable
     ];
 
     public function group(array $attrs, \Closure $closure)
+    {
+        $this->pushTmpRouteStacks($attrs);
+        $closure();    // equal with `call_user_func($closure, $this)`
+        $this->popAllTmpStacks();     // Magic happen here
+    }
+
+    // Push current route's 3 type of attrs into tmp stacks:
+    // - prefix
+    // - middleware
+    // - namespace
+    public function pushTmpRouteStacks($attrs)
     {
         if ($prefix = exists($attrs, 'prefix')) {
             if (!is_string($prefix)) {
@@ -61,23 +72,24 @@ class Route extends Container implements Observable
             $this->namespaces[] = $namespace;
         }
 
-        $closure();    // equal with `call_user_func($closure, $this)`
-
-        $this->popAllTmpStack();     // Magic happen here
+        return $this;
     }
 
     // This magic method is used to register web route only
+    // String $name => route type
+    // Array $args  => route attrs
     public function __call($name, $args)
     {
         $name = strtoupper($name);
         $this->denyNoneHttpMethods($name);
         $this->add($name, $args);
+
+        return $this;
     }
 
     public function add($name, $args)
     {
-        $route['name'] = $args[0];
-        $this->parseRouteBindAndAlias($args, $route['bind'], $route['alias']);
+        $this->parseRouteAttrs($args, $route);
         $this->fillRouteInfo($route);
 
         foreach ($this->observers as $observer) {
@@ -91,16 +103,19 @@ class Route extends Container implements Observable
         return $this;
     }
 
-    private function popAllTmpStack()
+    private function popAllTmpStacks()
     {
         array_pop($this->prefixes);
         array_pop($this->middlewares);
         array_pop($this->namespaces);
+
+        return $this;
     }
 
-    public function parseRouteBindAndAlias($args, &$bind, &$alias)
+    public function parseRouteAttrs($args, &$route)
     {
         $argCnt = count($args);
+
         if (2>$argCnt || 3<$argCnt) {
             excp('Wrong route definition.');
         }
@@ -109,11 +124,7 @@ class Route extends Container implements Observable
             excp('Illegal route name `'.$args[0].'`');
         }
 
-        $defaultAlias = format_route_key(
-            implode('/', $this->prefixes).
-            '/'.
-            $args[0]
-        );
+        $alias = false;
         if (2 === $argCnt) {
             if (!is_string($args[1]) &&
                 !is_callable($args[1]) &&
@@ -121,46 +132,67 @@ class Route extends Container implements Observable
             ) {
                 excp('Bad route definition.');
             }
-            $bind = (
-                is_array($args[1]) &&
-                isset($args[1]['bind']) &&
-                is_string($args[1]['bind']) &&
-                $args[1]['bind']
-            ) ? $args[1]['bind'] : $args[1];
 
-            $alias = (
-                is_array($args[1]) &&
-                isset($args[1]['alias']) &&
-                is_string($args[1]['alias']) &&
-                $args[1]['alias']
-            ) ? $args[1]['alias'] : $defaultAlias;
+            if (is_array($args[1]) && ($attrs = $args[1])) {
+                $bind = (
+                    exists($attrs, 'bind') && is_string($attrs['bind'])
+                ) ? $attrs['bind'] : $attrs;
+                $alias = (
+                    exists($attrs, 'alias') && is_string($attrs['alias'])
+                ) ? $attrs['alias'] : false;
+
+                $this->pushTmpRouteStacks($attrs);
+            } else {
+                $bind = $args[1];
+            }
         } elseif (3 === $argCnt) {
-            if (!is_array($args[1]) ||
-                (
-                    !is_string($args[2]) &&
-                    !is_callable($args[2])
+            if (!is_array($args[1]) || !$args[2] || (
+                    !is_string($args[2]) && !is_callable($args[2])
                 )
             ) {
                 excp('Bad route definition.');
             }
-            $bind  = $args[1]['bind']  ?? $args[2];
-            $alias = $args[1]['alias'] ?? $defaultAlias;
+
+            if ($attrs = $args[1]) {
+                $bind  = exists($attrs, 'bind');
+                $alias = exists($attrs, 'alias');
+                $this->pushTmpRouteStacks($attrs);
+            }
+
+            $bind = (false === $bind) ? $args[2] : $bind;
         }
 
         if (!legal_route_binding($bind)) {
             excp('Illegal route bind.');
         }
+
+        $route['name']  = $args[0];
+        $route['bind']  = $bind;
+        $route['alias'] = $alias;
+
+        return $this;
     }
 
     public function fillRouteInfo(&$route)
     {
-        $prefix     = $this->prefixes ? implode('/', $this->prefixes) : '';
-        $namespace  = $this->namespaces
-        ? format_namespace($this->namespaces)
-        : '';
+        $prefix = $this->prefixes ? implode('/', $this->prefixes) : '/';
+        
+        if (is_callable($route['bind'])) {
+            $handle = $route['bind'];
+        } elseif (is_string($route['bind'])) {
+            $handle = format_namespace($this->namespaces).$route['bind'];
+        } else {
+            throw new \Lif\Core\Excp\IllegalRouteDefinition(1);
+        }
+
         $route['middlewares'] = $this->middlewares;
-        $route['namespace']   = $namespace;
-        $route['name']        = format_route_key($prefix.'/'.$route['name']);
+        $route['handle']      = $handle;
+        $route['name']        = format_route_key($prefix.$route['name']);
+        $route['alias']       = $route['alias']
+        ? $route['alias']
+        : $route['name'];
+
+        return $this;
     }
 
     public function denyNoneHttpMethods($name)
@@ -170,6 +202,8 @@ class Route extends Container implements Observable
                 'Illegal HTTP Method `'.$name.'`.'
             );
         }
+
+        return $this;
     }
 
     protected function register($routes)
@@ -191,6 +225,8 @@ class Route extends Container implements Observable
             $this->files[] = $path;
             include_once $path;
         }
+
+        return $this;
     }
 
     public function files()
@@ -205,7 +241,8 @@ class Route extends Container implements Observable
 
     public function run($observer, $routes)
     {
-        $this->addObserver($observer);
-        $this->register($routes);
+        $this
+        ->addObserver($observer)
+        ->register($routes);
     }
 }

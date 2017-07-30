@@ -2,15 +2,14 @@
 
 // --------------------------------------------
 //     This trait is used for classes who:
-//     implements \Lif\Core\Intf\Observable
-//     and extends \Lif\Core\Abst\Container
+//     - implements \Lif\Core\Intf\Observable
+//     - extends \Lif\Core\Abst\Container
 // --------------------------------------------
 
 namespace Lif\Core\Traits;
 
 trait Observable
 {
-    // protected $app = null;
     protected $observers = [];
 
     public function addObserver($observer)
@@ -26,15 +25,19 @@ trait Observable
             );
         }
 
-        if ('web' === ($web = $observer->nameAsObserver())) {
+        if ('web' === $observer->nameAsObserver()) {
             $this->setApp($observer);
         }
 
         $this->observers[] = $observer;
+
+        return $this;
     }
 
     protected function setApp($obj)
     {
         $this->app = &$obj;
+
+        return $this;
     }
 }

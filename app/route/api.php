@@ -12,4 +12,8 @@ $this->get('/', function () {
     lif();
 });
 
-$this->get('user', 'API@user');
+$this->get('user', [
+    'middleware' => [
+        'auth',
+    ],
+], 'API@user');
