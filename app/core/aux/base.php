@@ -159,11 +159,11 @@ if (!function_exists('pathOf')) {
             'app'    => $root.'/app/',
             'aux'    => $root.'/app/core/aux/',
             'web'    => $root.'/web/',
-            'view'   => $root.'/share/views/',
-            'log'    => $root.'/share/logs/',
-            'cache'  => $root.'/share/cache/',
+            'view'   => $root.'/app/views/',
+            'log'    => $root.'/var/logs/',
+            'cache'  => $root.'/var/cache/',
             'route'  => $root.'/app/route/',
-            'config' => $root.'/config/',
+            'config' => $root.'/app/config/',
             'static' => $root.'/web/static/',
         ];
 

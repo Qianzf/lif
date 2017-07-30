@@ -7,11 +7,16 @@
 *.swp
 
 # Framework
-config/
-!config/.gitkeep
+app/config/
+var/
 web/
+!app/config/.gitkeep
+!app/config/config.sample
+!var/cache/.gitkeep
+!var/logs/.gitkeep
 !web/static/.gitkeep
 !web/index.php
 
 # Composer
 vendor/
+composer.lock
