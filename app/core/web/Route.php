@@ -218,7 +218,7 @@ class Route extends Container implements Observable
         return $this;
     }
 
-    protected function loadRoutesFiles($routes)
+    protected function load($routes)
     {
         $routePath = pathOf('route');
         foreach ($routes as $route) {
@@ -254,7 +254,7 @@ class Route extends Container implements Observable
     {
         return $this
         ->addObserver($observer)
-        ->loadRoutesFiles($routes)
+        ->load($routes)
         ->trigger();
     }
 }
