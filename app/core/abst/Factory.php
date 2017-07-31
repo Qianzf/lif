@@ -6,11 +6,15 @@ abstract class Factory
 {
     protected static $namespace = null;
 
-    public static function make($name)
+    public static function make($name, $namespace = null)
     {
-        // use `static` instead of `self`
-        // because we need the namespace of sub class
-        $class = static::$namespace.ucfirst($name);
+        if (is_null($namespace)) {
+            // use `static` instead of `self`
+            // because we need the namespace of sub class
+            $namespace = static::$namespace;
+        }
+        
+        $class = $namespace.ucfirst($name);
 
         if (!class_exists($class)) {
             excp('Class `'.$class.'` not exists.');

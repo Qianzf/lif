@@ -5,7 +5,7 @@ namespace Lif\Core\Abst;
 abstract class Container
 {
     protected $app = null;
-
+    
     public function __get($name)
     {
         if (isset($this->$name)) {

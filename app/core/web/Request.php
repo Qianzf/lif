@@ -99,7 +99,7 @@ class Request extends Container implements Observable
         return $this->headers = getallheaders();
     }
 
-    public function run($observer)
+    public function run($observer, $params = [])
     {
         return $this
         ->addObserver($observer)

@@ -12,6 +12,12 @@ class Web extends Container implements Observer, Strategy
 {
     protected $name = 'web';
 
+    private $listenHandleMap = [
+        'route'      => 'fire',
+        'request'    => 'handle',
+        'middleware' => 'execute',
+    ];
+
     public function __construct()
     {
         $this->app = &$this;
@@ -43,7 +49,7 @@ class Web extends Container implements Observer, Strategy
         return $this;
     }
 
-    public function findRoute()
+    public function handle()
     {
         $name  = $this->request->route();
         $type  = $this->request->type();
@@ -61,23 +67,43 @@ class Web extends Container implements Observer, Strategy
         }
 
         if (!isset($this->routes[$key][$type]['handle'])) {
-            client_error(
-                'Handler for route `'.$name.'` (`'.$type.'`) not found.',
-                404
+            excp(
+                'Handler for route `'.$name.'` (`'.$type.'`) not found.'
             );
         }
 
-        return $this->routes[$key][$type]['handle'];
+        $this->handler = $this->routes[$key][$type]['handle'];
+
+        if ($middlewares = exists($this->routes[$key][$type], 'middlewares')) {
+            return $this->mdwr($middlewares);
+        }
+
+        return $this->execute();
     }
 
-    public function handle()
+    protected function mdwr($middlewares)
     {
-        $handler = $this->findRoute();
+        $this->middlewares = $middlewares;
+        $this->middleware  = WebFcty::make('middleware');
+        $this->middleware->run($this, $middlewares);
 
-        if (is_callable($handler)) {
-            return response($handler());
-        } elseif (is_string($handler)) {
-            $args = explode('@', $handler);
+        return $this;
+    }
+
+    public function fire()
+    {
+        $this->request = WebFcty::make('request');
+        $this->request->run($this);
+
+        return $this;
+    }
+
+    public function execute()
+    {
+        if (is_callable($this->handler)) {
+            return response(($this->handler)());
+        } elseif (is_string($this->handler)) {
+            $args = explode('@', $this->handler);
             if (count($args) !== 2 ||
                 !($ctlName = trim(format_namespace($args[0]))) ||
                 !($act = trim($args[1]))
@@ -99,29 +125,17 @@ class Web extends Container implements Observer, Strategy
         return $this;
     }
 
-    public function fire()
-    {
-        $this->request = WebFcty::make('request');
-        $this->request->run($this);
-
-        return $this;
-    }
-
     public function listen($name)
     {
-        $listen = 'listenOn'.ucfirst($name);
+        $handle = $this->listenHandleMap[$name];
 
-        return $this->$listen();
-    }
+        if (!exists($this->listenHandleMap, $name) ||
+            !method_exists($this, $handle)
+        ) {
+            throw new \Lif\Core\Excp\MethodNotFound(__CLASS__, $handle);
+        }
 
-    protected function listenOnRequest()
-    {
-        return $this->handle();
-    }
-
-    protected function listenOnRoute()
-    {
-        return $this->fire();
+        return $this->$handle();
     }
 
     public function name()
@@ -132,6 +146,21 @@ class Web extends Container implements Observer, Strategy
     public function routes()
     {
         return $this->_route->routes;
+    }
+
+    public function middleware()
+    {
+        return $this->middleware;
+    }
+
+    public function middlewares()
+    {
+        return $this->middlewares;
+    }
+
+    public function argvs()
+    {
+        return $this->middleware->argvs;
     }
 
     public function aliases()

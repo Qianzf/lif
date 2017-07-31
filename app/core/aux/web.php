@@ -17,7 +17,6 @@ if (!function_exists('getallheaders')) {
         return $headers;
     }
 }
-
 if (!function_exists('response')) {
     function response(
         $dat = [],
@@ -39,7 +38,6 @@ if (!function_exists('response')) {
         }
     }
 }
-
 if (!function_exists('legal_route_binding')) {
     function legal_route_binding($routeBind)
     {
@@ -80,7 +78,6 @@ if (!function_exists('client_error')) {
         response([], $msg, $err);
     }
 }
-
 if (!function_exists('format_route_key')) {
     function format_route_key($route)
     {
@@ -88,10 +85,13 @@ if (!function_exists('format_route_key')) {
         return $routeKey ? $routeKey : '.';
     }
 }
-
 if (!function_exists('get_raw_route')) {
     function get_raw_route($key)
     {
+        if ('.' === $key) {
+            return '/';
+        }
+
         return '/'.str_replace('.', '/', $key);
     }
 }

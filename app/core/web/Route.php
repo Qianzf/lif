@@ -136,12 +136,12 @@ class Route extends Container implements Observable
             }
 
             if ($attrs = $args[1]) {
-                $bind  = exists($attrs, 'bind');
+                $bind  = exists($attrs, 'bind') ? $attrs['bind'] : $args[2];
                 $alias = exists($attrs, 'alias');
                 $this->pushTmpRouteStacks($attrs);
+            } else {
+                $bind = $args[2];
             }
-
-            $bind = (false === $bind) ? $args[2] : $bind;
         }
 
         if (!legal_route_binding($bind)) {
@@ -204,7 +204,9 @@ class Route extends Container implements Observable
                 'Duplicate route alias `'.
                 $route['alias'].
                 '` for `'.
-                get_raw_route($route['name'])
+                get_raw_route($route['name']).
+                '`, already set for route `'.
+                get_raw_route($this->aliases[$route['alias']]).'`.'
             );
         }
 
@@ -250,7 +252,7 @@ class Route extends Container implements Observable
         return $this->app->aliases();
     }
 
-    public function run($observer, $routes)
+    public function run($observer, $routes = [])
     {
         return $this
         ->addObserver($observer)

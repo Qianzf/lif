@@ -142,8 +142,9 @@ if (!function_exists('nsOf')) {
 
         if (is_string($of)) {
             $nsArr = [
-                'ctl' => '\Lif\Ctl',
-                'mdl' => '\Lif\Mdl',
+                'ctl'  => '\Lif\Ctl\\',
+                'mdl'  => '\Lif\Mdl\\',
+                'mdwr' => '\Lif\Mdwr\\',
             ];
             return $nsArr[$of] ?? '\\';
         }
@@ -164,6 +165,7 @@ if (!function_exists('pathOf')) {
             'cache'  => $root.'/var/cache/',
             'route'  => $root.'/app/route/',
             'conf'   => $root.'/app/conf/',
+            'mdwr'   => $root.'/app/mdwr/',
             'static' => $root.'/web/static/',
         ];
 
