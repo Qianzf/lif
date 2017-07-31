@@ -13,7 +13,6 @@ class Route extends Container implements Observable
     protected $files     = [];
     protected $routes    = [];      // all routes and their bindings
     protected $aliases   = [];      // all routes and their aliases
-    protected $observers = [];
 
     // Temporary stacks for route
     private $prefixes    = [];
@@ -249,7 +248,7 @@ class Route extends Container implements Observable
 
     public function aliases()
     {
-        return $this->app->aliases();
+        return $this->aliases;
     }
 
     public function run($observer, $routes = [])
