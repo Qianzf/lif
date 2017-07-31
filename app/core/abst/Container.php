@@ -14,24 +14,32 @@ abstract class Container
             return $this->$name();
         } elseif (method_exists($this->app, $name)) {
             return $this->app->$name();
+        } elseif (true &&
+            isset($this->app->request) &&
+            is_object($this->app->request) &&
+            method_exists($this->app->request, $name)
+        ) {
+            return $this->app->request->$name();
+        } else {
+            return $this->$name();
         }
     }
 
-    public function NONEXISTENTMETHODOFCONTROLLER($args)
+    public function NONEXISTENTMETHODOFCONTROLLER($obj, $method)
     {
-        if (!isset($args[0]) || !is_object($args[0])) {
+        if (!isset($obj) || !is_object($obj)) {
             excp(
                 'Missing strategy object in params pass to controller.'
             );
         }
-        if (!isset($args[1]) || !$args[1] || !is_string($args[1])) {
+        if (!isset($method) || !$method || !is_string($method)) {
             excp(
                 'Missing action in params pass to controller.'
             );
         }
 
-        $this->app = $args[0];
-        return $this->{$args[1]}();
+        $this->app = $obj;
+        return $this->$method();
     }
 
     public function __call($name, $args)

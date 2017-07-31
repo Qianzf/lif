@@ -53,7 +53,20 @@ if (!function_exists('legal_route_binding')) {
         return false;
     }
 }
-
+if (!function_exists('legal_http_methods')) {
+    function legal_http_methods()
+    {
+        return [
+            'GET',
+            'POST',
+            'PUT',
+            'PATCH',
+            'DELETE',
+            'OPTIONS',
+            'HEAD',
+        ];
+    }
+}
 if (!function_exists('client_error')) {
     // ----------------------------------------------------------------------
     //     PHP errors caused by client behaviours called client error

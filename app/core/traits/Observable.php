@@ -19,13 +19,13 @@ trait Observable
                 'Observer must belongs to an object.'
             );
         }
-        if (!method_exists($observer, 'nameAsObserver')) {
+        if (!method_exists($observer, 'name')) {
             excp(
-                'Observer must has a public function `nameAsObserver()`.'
+                'Observer must has a public function `name()`.'
             );
         }
 
-        if ('web' === $observer->nameAsObserver()) {
+        if ('web' === $observer->name()) {
             $this->setApp($observer);
         }
 
@@ -39,5 +39,19 @@ trait Observable
         $this->app = &$obj;
 
         return $this;
+    }
+
+    protected function trigger()
+    {
+        foreach ($this->observers as $observer) {
+            $observer->listen($this->name);
+        }
+
+        return $this;
+    }
+
+    public function name()
+    {
+        return $this->name;
     }
 }

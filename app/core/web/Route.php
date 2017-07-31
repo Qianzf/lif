@@ -9,23 +9,16 @@ class Route extends Container implements Observable
 {
     use \Lif\Core\Traits\Observable;
     
-    protected $files = [];
+    protected $name      = 'route';
+    protected $files     = [];
+    protected $routes    = [];      // all routes and their bindings
+    protected $aliases   = [];      // all routes and their aliases
     protected $observers = [];
 
     // Temporary stacks for route
     private $prefixes    = [];
     private $middlewares = [];
     private $namespaces  = [];
-
-    public $legalHttpMethods = [
-        'GET',
-        'POST',
-        'PUT',
-        'PATCH',
-        'DELETE',
-        'OPTIONS',
-        'HEAD',
-    ];
 
     public function group(array $attrs, \Closure $closure)
     {
@@ -84,20 +77,12 @@ class Route extends Container implements Observable
         return $this;
     }
 
-    public function add($name, $args)
+    public function add($type, $args)
     {
-        $this->parseRouteAttrs($args, $route);
-        $this->fillRouteInfo($route);
-
-        foreach ($this->observers as $observer) {
-            $observer->onRegistered(
-                'route',
-                $name,
-                $route
-            );
-        }
-
-        return $this;
+        return $this
+        ->parseRouteAttrs($args, $route)
+        ->fillRouteInfo($route)
+        ->register($type, $route);
     }
 
     private function popAllTmpStacks()
@@ -195,7 +180,7 @@ class Route extends Container implements Observable
 
     public function denyNoneHttpMethods($name)
     {
-        if (!in_array($name, $this->legalHttpMethods)) {
+        if (!in_array($name, legal_http_methods())) {
             excp(
                 'Illegal HTTP Method `'.$name.'`.'
             );
@@ -204,7 +189,36 @@ class Route extends Container implements Observable
         return $this;
     }
 
-    protected function register($routes)
+    protected function register($type, $route)
+    {
+        if (isset($this->routes[$route['name']][$type])) {
+            excp(
+                'Duplicate definition on `'.
+                get_raw_route($route['name']).
+                '` of `'.$type.'`.'
+            );
+        }
+
+        if (in_array($route['alias'], array_keys($this->aliases))) {
+            excp(
+                'Duplicate route alias `'.
+                $route['alias'].
+                '` for `'.
+                get_raw_route($route['name'])
+            );
+        }
+
+        $this->aliases[$route['alias']]      = $route['name'];
+        $this->routes[$route['name']][$type] = [
+            'handle'      => $route['handle'],
+            'alias'       => $route['alias'],
+            'middlewares' => $route['middlewares'],
+        ];
+
+        return $this;
+    }
+
+    protected function loadRoutesFiles($routes)
     {
         $routePath = pathOf('route');
         foreach ($routes as $route) {
@@ -238,10 +252,9 @@ class Route extends Container implements Observable
 
     public function run($observer, $routes)
     {
-        $this
+        return $this
         ->addObserver($observer)
-        ->register($routes);
-
-        return $this;
+        ->loadRoutesFiles($routes)
+        ->trigger();
     }
 }

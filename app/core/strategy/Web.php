@@ -10,16 +10,7 @@ use Lif\Core\Factory\Web as WebFcty;
 
 class Web extends Container implements Observer, Strategy
 {
-    use \Lif\Core\Traits\WebGetter;
-
-    protected $nameAsObsesrver = 'web';
-    protected $request = null;    // request object
-    protected $route   = null;    // current route name
-    protected $headers = [];      // current request HTTP headers
-    protected $params  = [];      // current request params
-    protected $_route  = null;    // route object
-    protected $routes  = [];      // all routes and their bindings
-    protected $aliases = [];      // all routes and their aliases
+    protected $name = 'web';
 
     public function __construct()
     {
@@ -116,55 +107,60 @@ class Web extends Container implements Observer, Strategy
         return $this;
     }
 
-    public function onRegistered($name, $type = null, $args = null)
+    public function listen($name)
     {
-        $onRegistered = 'on'.ucfirst($name).'Registered';
+        $listen = 'listenOn'.ucfirst($name);
 
-        $this->$onRegistered($type, $args);
-
-        return $this;
+        return $this->$listen();
     }
 
-    protected function onRequestRegistered()
+    protected function listenOnRequest()
     {
-        $this->route   = $this->request->route;
-        $this->params  = $this->request->params;
-        $this->headers = $this->request->headers;
-
-        return $this;
+        return $this->handle();
     }
 
-    protected function onRouteRegistered($type, $route)
+    protected function listenOnRoute()
     {
-        if (isset($this->routes[$route['name']][$type])) {
-            excp(
-                'Duplicate definition on `'.
-                get_raw_route($route['name']).
-                '` of `'.$type.'`.'
-            );
-        }
-
-        if (in_array($route['alias'], array_keys($this->aliases))) {
-            excp(
-                'Duplicate route alias `'.
-                $route['alias'].
-                '` for `'.
-                get_raw_route($route['name'])
-            );
-        }
-
-        $this->aliases[$route['alias']]      = $route['name'];
-        $this->routes[$route['name']][$type] = [
-            'handle'      => $route['handle'],
-            'alias'       => $route['alias'],
-            'middlewares' => $route['middlewares'],
-        ];
-
-        return $this;
+        return $this->fire();
     }
 
-    public function nameAsObserver()
+    public function name()
     {
-        return $this->nameAsObsesrver;
+        return $this->name;
+    }
+
+    public function routes()
+    {
+        return $this->_route->routes;
+    }
+
+    public function aliases()
+    {
+        return $this->_route->aliases;
+    }
+
+    public function route()
+    {
+        return $this->request->route;
+    }
+
+    public function params()
+    {
+        return $this->request->params;
+    }
+
+    public function headers()
+    {
+        return $this->request->headers;
+    }
+
+    public function _route()
+    {
+        return $this->_route;
+    }
+
+    public function request()
+    {
+        return $this->request;
     }
 }

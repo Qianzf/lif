@@ -9,6 +9,7 @@ class Request extends Container implements Observable
 {
     use \Lif\Core\Traits\Observable;
     
+    protected $name    = 'request';
     protected $route   = null;
     protected $type    = null;
     protected $params  = null;
@@ -40,6 +41,8 @@ class Request extends Container implements Observable
     protected function init()
     {
         mb_http_input('UTF-8');
+        
+        return $this;
     }
 
     public function route()
@@ -98,14 +101,8 @@ class Request extends Container implements Observable
 
     public function run($observer)
     {
-        $this->addObserver($observer);
-
-        foreach ($this->observers as $observer) {
-            $observer->onRegistered('request');
-        }
-
-        $this->app->handle();
-
-        return $this;
+        return $this
+        ->addObserver($observer)
+        ->trigger();
     }
 }
