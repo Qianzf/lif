@@ -24,7 +24,7 @@ if (!function_exists('lif')) {
 if (!function_exists('init')) {
     function init()
     {
-        $timezone = config('app')['timezone'] ?? 'UTC';
+        $timezone = conf('app')['timezone'] ?? 'UTC';
         date_default_timezone_set($timezone);
         mb_internal_encoding('UTF-8');
         mb_regex_encoding('UTF-8');
@@ -70,7 +70,7 @@ if (!function_exists('pr')) {
 if (!function_exists('app_debug')) {
     function app_debug()
     {
-        $app = config('app');
+        $app = conf('app');
         return (isset($app['debug']) && in_array($app['debug'], [
             true,
             false
@@ -81,7 +81,7 @@ if (!function_exists('app_debug')) {
 if (!function_exists('app_env')) {
     function app_env()
     {
-        $app = config('app');
+        $app = conf('app');
         return (isset($app['env']) && in_array($app['env'], [
             'local',
             'staging',
@@ -159,11 +159,11 @@ if (!function_exists('pathOf')) {
             'app'    => $root.'/app/',
             'aux'    => $root.'/app/core/aux/',
             'web'    => $root.'/web/',
-            'view'   => $root.'/app/views/',
+            'view'   => $root.'/app/view/',
             'log'    => $root.'/var/logs/',
             'cache'  => $root.'/var/cache/',
             'route'  => $root.'/app/route/',
-            'config' => $root.'/app/config/',
+            'conf'   => $root.'/app/conf/',
             'static' => $root.'/web/static/',
         ];
 
@@ -342,7 +342,7 @@ if (!function_exists('cfg')) {
         $cfgFile = pathOf('config').$name.'.php';
         $config  = array_update_by_coherent_keys(
             $keyStr,
-            config($name),
+            conf($name),
             $data
         );
         $cfg  = array_stringify($config);
@@ -355,17 +355,17 @@ CFG;
     }
 }
 
-if (!function_exists('config_all')) {
-    function config_all($cfgPath = null)
+if (!function_exists('conf_all')) {
+    function conf_all($cfgPath = null)
     {
-        $cfgPath = $cfgPath ?? pathOf('config');
+        $cfgPath = $cfgPath ?? pathOf('conf');
 
         foreach (scandir($cfgPath) as $cfg) {
             $path = $cfgPath.$cfg;
             if (is_file($path)) {
                 $file = pathinfo($path);
                 if ('php' == $file['extension']) {
-                    $GLOBALS['LIF_CFG'][$file['filename']] = config(
+                    $GLOBALS['LIF_CFG'][$file['filename']] = conf(
                         $file['filename'],
                         $cfgPath
                     );
@@ -377,13 +377,13 @@ if (!function_exists('config_all')) {
     }
 }
 
-if (!function_exists('config')) {
-    function config($name = null, $cfgPath = null)
+if (!function_exists('conf')) {
+    function conf($name = null, $cfgPath = null)
     {
-        $cfgPath = $cfgPath ?? pathOf('config');
+        $cfgPath = $cfgPath ?? pathOf('conf');
 
         if (!$name) {
-            return config_all($cfgPath);
+            return conf_all($cfgPath);
         }
 
         if (isset($GLOBALS['LIF_CFG']) &&

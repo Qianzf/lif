@@ -1,12 +1,10 @@
 <?php
 
-// -------------------------------------------------------
+// -----------------------------------------------------
 //     This is default route file of LiF
-//     3 variables can be used to register route:
-//     - `$this` => route groups needn't `use ($this)`
-//     - `$app`  => route groups need `use ($app)`
-//     - `$web`  => route groups need `use ($web)`
-// -------------------------------------------------------
+//     Use pseudo variable `$this` to register route
+//     (Route groups needn't `use ($this)` any more)
+// -----------------------------------------------------
 
 $this->get('/', function () {
     lif();

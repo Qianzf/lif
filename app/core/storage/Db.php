@@ -25,7 +25,7 @@ class Db
 
     public static function pdo($conn = null)
     {
-        $db = config('db');
+        $db = conf('db');
         if (!exists($db, 'default')) {
             excp('Default database connection not set.');
         }

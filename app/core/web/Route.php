@@ -35,9 +35,6 @@ class Route extends Container implements Observable
     }
 
     // Push current route's 3 type of attrs into tmp stacks:
-    // - prefix
-    // - middleware
-    // - namespace
     public function pushTmpRouteStacks($attrs)
     {
         if ($prefix = exists($attrs, 'prefix')) {
@@ -76,8 +73,8 @@ class Route extends Container implements Observable
     }
 
     // This magic method is used to register web route only
-    // String $name => route type
-    // Array $args  => route attrs
+    // @$name String => route type
+    // @$args Array  => route attrs
     public function __call($name, $args)
     {
         $name = strtoupper($name);
@@ -188,9 +185,10 @@ class Route extends Container implements Observable
         $route['middlewares'] = $this->middlewares;
         $route['handle']      = $handle;
         $route['name']        = format_route_key($prefix.$route['name']);
-        $route['alias']       = $route['alias']
-        ? $route['alias']
-        : $route['name'];
+
+        if (!$route['alias']) {
+            $route['alias'] = $route['name'];
+        }
 
         return $this;
     }
@@ -209,7 +207,6 @@ class Route extends Container implements Observable
     protected function register($routes)
     {
         $routePath = pathOf('route');
-        $web = $app = &$this;
         foreach ($routes as $route) {
             $path = $routePath.$route.'.php';
             $file = pathinfo($path);
@@ -244,5 +241,7 @@ class Route extends Container implements Observable
         $this
         ->addObserver($observer)
         ->register($routes);
+
+        return $this;
     }
 }

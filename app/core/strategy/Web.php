@@ -6,7 +6,7 @@ use Lif\Core\Abst\Container;
 use Lif\Core\Intf\Observer;
 use Lif\Core\Intf\Strategy;
 use Lif\Core\Factory\Ctl;
-use Lif\Core\Factory\Web as WebFactory;
+use Lif\Core\Factory\Web as WebFcty;
 
 class Web extends Container implements Observer, Strategy
 {
@@ -46,16 +46,20 @@ class Web extends Container implements Observer, Strategy
             excp('Missing Routes files.');
         }
 
-        $this->_route = WebFactory::make('route');
+        $this->_route = WebFcty::make('route');
         $this->_route->run($this, $routeFiles);
 
         return $this;
     }
 
-    public function findRoute($key, $type, $name)
+    public function findRoute()
     {
+        $name  = $this->request->route();
+        $type  = $this->request->type();
+        $key   = format_route_key($name);
+
         if (!isset($this->routes[$key])) {
-            client_error('Route `'.$route.'` not found.', 404);
+            client_error('Route `'.$name.'` not found.', 404);
         }
 
         if (!in_array($type, array_keys($this->routes[$key]))) {
@@ -65,18 +69,19 @@ class Web extends Container implements Observer, Strategy
             );
         }
 
-        return $this;
+        if (!isset($this->routes[$key][$type]['handle'])) {
+            client_error(
+                'Handler for route `'.$name.'` (`'.$type.'`) not found.',
+                404
+            );
+        }
+
+        return $this->routes[$key][$type]['handle'];
     }
 
     public function handle()
     {
-        $route    = $this->request->route();
-        $reqType  = $this->request->type();
-        $routeKey = format_route_key($route);
-
-        $this->findRoute($routeKey, $reqType, $route);
-
-        $handler = $this->routes[$routeKey][$reqType]['handle'];
+        $handler = $this->findRoute();
 
         if (is_callable($handler)) {
             return response($handler());
@@ -105,7 +110,7 @@ class Web extends Container implements Observer, Strategy
 
     public function fire()
     {
-        $this->request = WebFactory::make('request');
+        $this->request = WebFcty::make('request');
         $this->request->run($this);
 
         return $this;
@@ -129,12 +134,6 @@ class Web extends Container implements Observer, Strategy
         return $this;
     }
 
-    /**
-     * [onRouteRegistered description]
-     * @param  [type] $type  [description]
-     * @param  [type] $route [description]
-     * @return [type]        [description]
-     */
     protected function onRouteRegistered($type, $route)
     {
         if (isset($this->routes[$route['name']][$type])) {
