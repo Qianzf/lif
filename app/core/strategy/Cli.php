@@ -11,8 +11,6 @@ class Cli extends Container implements Strategy
 
     public function fire()
     {
-        dd($GLOBALS);
-        dd(get_included_files());
         dd($this->argvs);
 
         return $this;
