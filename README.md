@@ -1,14 +1,22 @@
-##### TODO or Doing
+##### TODO
 
 - Model/ORM
 
+- Support variables assignment in route definition
+
 - Log
 
-- Support variables assignment in route definition
+- Version control database
 
 - Add CLI features(jobs, queue, update db, etc...)
 
 - Cache
+
+- Self-test
+
+- Mock data
+
+- Self-deploy
 
 - Views
 

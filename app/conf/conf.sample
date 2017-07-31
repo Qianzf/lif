@@ -1,27 +1,105 @@
 <?php
 
-// ------------------------------------------------------------------
+// ---------------------------------------------------------------------
 //     LiF will not read configurations from this sample file
-//     However it indicate how to configure each part in this way
-// ------------------------------------------------------------------
+//     However it indicates how to configure each part in this way
+// ---------------------------------------------------------------------
+//     Every first level KEY of this array is one single part
+//     which can be configured in a standalone file in `/app/conf/`
+//     For exampe:
+//     `/app/conf/app.php` is mapping to this array's subarray `app`
+//     and should return the value of this subarray (only)
+// ---------------------------------------------------------------------
+//     Each configure with default value means it's not mandatory
+//     Otherwise, it is an requirement if you want that configuring
+//     part works correctly
+// ---------------------------------------------------------------------
 
 return [
+
+    // --------------------------------------------------
+    //     `app` => Application's meta configurations
+    // --------------------------------------------------
     'app' => [
+
+        // ------------------------------------------
+        //     `env` => Application's environment
+        //     - production
+        //     - local   <= default
+        // ------------------------------------------
         'env'   => 'local',
+
+        // ------------------------------
+        //     `debug` => Debug model
+        //     - true    <= default
+        //     - false
+        // ------------------------------
         'debug' => true,
+
+        // ------------------------------------------------
+        //     `timezone` => System timezone
+        //     default => UTC, see list:
+        //     <http://php.net/manual/en/timezones.php>
+        // ------------------------------------------------
         'timezone' => 'Asia/Shanghai',
     ],
+
+    // -----------------------------------------------
+    //     `db` => Database related configurations
+    // -----------------------------------------------
     'db' => [
+
+        // -----------------------------------------------
+        //     *`default` => Default connection to use
+        //     (should in the list of `conns` below)
+        // -----------------------------------------------
         'default' => 'mysql_master_rw_0',
+
+        // ---------------------------------------------
+        //     *`conns` => Database connections list
+        // ---------------------------------------------
         'conns' => [
+
+            // -------------------------------------------------
+            //     *{mysql_master_rw_0} => Connection name
+            // -------------------------------------------------
             'mysql_master_rw_0' => [
+
+                // ------------------------------------
+                //     *`host` => Connection's host
+                //     (<IP|Domain:Port]>)
+                // ------------------------------------
                 'host'    => 'db',
+
+                // -----------------------------------------
+                //     *`driver` => Database driver type
+                // -----------------------------------------
                 'driver'  => 'mysql',
+
+                // ----------------------------------------
+                //     *`user` => Connection's username
+                // ----------------------------------------
                 'user'    => 'lif',
+
+                // ------------------------------------------
+                //     *`passwd` => Connection's password
+                // ------------------------------------------
                 'passwd'  => 'lif',
-                'dbname'  => 'lif',    // optional
+
+                // ----------------------------------------
+                //     *`dbname` => Database name
+                //     (optional, used after connected)
+                // ----------------------------------------
+                'dbname'  => 'lif',
+
+                // --------------------------------------------
+                //     *`charset` => Connection charset
+                //     (optional, used in whole connection)
+                // --------------------------------------------
                 'charset' => 'UTF8',
             ],
+
+            //  ...
         ],
     ],
 ];
