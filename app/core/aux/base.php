@@ -159,11 +159,11 @@ if (!function_exists('pathOf')) {
             'app'    => $root.'/app/',
             'aux'    => $root.'/app/core/aux/',
             'web'    => $root.'/web/',
-            'view'   => $root.'/app/views/',
+            'view'   => $root.'/app/view/',
             'log'    => $root.'/var/logs/',
             'cache'  => $root.'/var/cache/',
             'route'  => $root.'/app/route/',
-            'config' => $root.'/app/config/',
+            'conf'   => $root.'/app/conf/',
             'static' => $root.'/web/static/',
         ];
 
@@ -380,7 +380,7 @@ if (!function_exists('config_all')) {
 if (!function_exists('config')) {
     function config($name = null, $cfgPath = null)
     {
-        $cfgPath = $cfgPath ?? pathOf('config');
+        $cfgPath = $cfgPath ?? pathOf('conf');
 
         if (!$name) {
             return config_all($cfgPath);

@@ -129,12 +129,6 @@ class Web extends Container implements Observer, Strategy
         return $this;
     }
 
-    /**
-     * [onRouteRegistered description]
-     * @param  [type] $type  [description]
-     * @param  [type] $route [description]
-     * @return [type]        [description]
-     */
     protected function onRouteRegistered($type, $route)
     {
         if (isset($this->routes[$route['name']][$type])) {
