@@ -7,10 +7,10 @@
 if (!function_exists('lif')) {
     function lif()
     {
-        $msg = 'Hello World.';
+        $msg = 'Hello World';
         $lif = [
             'name'    => 'LiF',
-            'version' => '0.0.1',
+            'version' => get_lif_ver(),
         ];
 
         ('cli' === context())
@@ -20,7 +20,33 @@ if (!function_exists('lif')) {
         : response($lif, $msg);
     }
 }
+if (!function_exists('get_lif_ver')) {
+    // --------------------------------------------
+    //     The version format used in LiF:
+    //     [major].[minor].[release].[build]
+    //     2 commits = 1 build
+    //     1 release = 16 build  = 32 commits
+    //     1 minor   = 8 release = 256 commits
+    //     1 major   = 4 minor   = 1024 commits
+    // --------------------------------------------
+    function get_lif_ver()
+    {
+        $path = pathOf('root').'.ver';
+        if (!file_exists($path)) {
+            return '0.0.0.0';
+        }
+        $ver = $left = intval(file_get_contents($path));
+        $major   = floor($left / 1024);
+        $left    = $ver - $major*1024;
+        $minor   = floor($left / 256);
+        $left    = $left - $minor*256;
+        $release = floor($left / 32);
+        $left    = $left - $release*32;
+        $build   = floor($left / 2);
 
+        return $major.'.'.$minor.'.'.$release.'.'.$build;
+    }
+}
 if (!function_exists('init')) {
     function init()
     {
@@ -35,7 +61,6 @@ if (!function_exists('init')) {
         }
     }
 }
-
 if (!function_exists('dd')) {
     function dd()
     {
@@ -53,7 +78,6 @@ if (!function_exists('dd')) {
         }
     }
 }
-
 if (!function_exists('pr')) {
     function pr()
     {
@@ -66,7 +90,6 @@ if (!function_exists('pr')) {
         }
     }
 }
-
 if (!function_exists('app_debug')) {
     function app_debug()
     {
@@ -77,7 +100,6 @@ if (!function_exists('app_debug')) {
         ])) ? $app['debug'] : true;
     }
 }
-
 if (!function_exists('app_env')) {
     function app_env()
     {
@@ -89,7 +111,6 @@ if (!function_exists('app_env')) {
         ])) ? $app['env'] : 'local';
     }
 }
-
 if (!function_exists('context')) {
     function context()
     {
@@ -97,7 +118,6 @@ if (!function_exists('context')) {
         ? 'cli' : 'web';
     }
 }
-
 if (!function_exists('exists')) {
     function exists($var, $idx = null)
     {
@@ -123,7 +143,6 @@ if (!function_exists('exists')) {
         return (isset($var) && $var) ? $var : false;
     }
 }
-
 if (!function_exists('nsOf')) {
     function nsOf($of = null)
     {
@@ -150,7 +169,6 @@ if (!function_exists('nsOf')) {
         }
     }
 }
-
 if (!function_exists('pathOf')) {
     function pathOf($of = null)
     {
@@ -174,7 +192,6 @@ if (!function_exists('pathOf')) {
         );
     }
 }
-
 if (!function_exists('_json_encode')) {
     function _json_encode($arr)
     {
@@ -184,7 +201,6 @@ if (!function_exists('_json_encode')) {
         );
     }
 }
-
 if (!function_exists('json_http_response')) {
     function json_http_response($data)
     {
@@ -195,7 +211,6 @@ if (!function_exists('json_http_response')) {
         exit($data);
     }
 }
-
 if (!function_exists('exception')) {
     // ----------------------------------------------------------------------
     //     Errors caused by behaviours inside framework called exceptions
@@ -226,14 +241,12 @@ if (!function_exists('exception')) {
         }
     }
 }
-
 if (!function_exists('excp')) {
     function excp($msg, $err = 500, $format = 'json')
     {
         throw new \Lif\Core\Excp\Lif($msg, $err, $format);
     }
 }
-
 if (!function_exists('format_namespace')) {
     function format_namespace($namespaceRaw)
     {
@@ -252,7 +265,6 @@ if (!function_exists('format_namespace')) {
         return '\\';
     }
 }
-
 if (!function_exists('array_stringify_main')) {
     function array_stringify_main($arr, &$level)
     {
@@ -272,7 +284,6 @@ if (!function_exists('array_stringify_main')) {
         return $str;
     }
 }
-
 if (!function_exists('array_stringify')) {
     function array_stringify($arr)
     {
@@ -284,7 +295,6 @@ if (!function_exists('array_stringify')) {
         return $str;
     }
 }
-
 if (!function_exists('array_update_by_coherent_keys')) {
     function array_update_by_coherent_keys(
         $coherentKeyStr,
@@ -300,7 +310,6 @@ if (!function_exists('array_update_by_coherent_keys')) {
         );
     }
 }
-
 if (!function_exists('array_update_by_coherent_keys_main')) {
     function array_update_by_coherent_keys_main(
         $coherentKeys,
@@ -330,7 +339,6 @@ if (!function_exists('array_update_by_coherent_keys_main')) {
         return $dimensionArray;
     }
 }
-
 if (!function_exists('cfg')) {
     function cfg($name, $keyStr, $data)
     {
@@ -356,7 +364,6 @@ CFG;
         return file_put_contents($cfgFile, $_cfg, LOCK_EX);
     }
 }
-
 if (!function_exists('conf_all')) {
     function conf_all($cfgPath = null)
     {
@@ -378,7 +385,6 @@ if (!function_exists('conf_all')) {
         return $GLOBALS['LIF_CFG'] ?? [];
     }
 }
-
 if (!function_exists('conf')) {
     function conf($name = null, $cfgPath = null)
     {
@@ -405,7 +411,6 @@ if (!function_exists('conf')) {
         return $cfg;
     }
 }
-
 if (!function_exists('build_pdo_dsn')) {
     function build_pdo_dsn($conn)
     {
@@ -422,14 +427,12 @@ if (!function_exists('build_pdo_dsn')) {
         return $dsn;
     }
 }
-
 if (!function_exists('db')) {
     function db($conn = null)
     {
         return \Lif\Core\Factory\Storage::fetch('db', 'pdo', $conn);
     }
 }
-
 if (!function_exists('db_conns')) {
     function db_conns($conn = null)
     {
