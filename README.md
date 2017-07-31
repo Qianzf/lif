@@ -12,5 +12,5 @@
 ver="`pwd`/.ver"
 git rev-list --all --count > $ver
 git add -A
-echo Updated LiF version raw counts to `cat $ver`
+echo "Updated LiF version raw counts to `cat $ver`"
 ```

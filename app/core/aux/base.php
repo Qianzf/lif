@@ -35,7 +35,8 @@ if (!function_exists('get_lif_ver')) {
         if (!file_exists($path)) {
             return '0.0.0.0';
         }
-        $ver = $left = intval(file_get_contents($path));
+        // Plus 1 here because git client hook `pre-commit` always lag 1 time
+        $ver = $left = intval(file_get_contents($path)) + 1;
         $major   = floor($left / 1024);
         $left    = $ver - $major*1024;
         $minor   = floor($left / 256);
