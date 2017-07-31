@@ -7,13 +7,13 @@
 *.swp
 
 # Framework
-app/config/*
+app/conf/*
 var/cache/*
 var/log/*
 web/*
 web/static/*
-!app/config/.gitkeep
-!app/config/config.sample
+!app/conf/.gitkeep
+!app/conf/conf.sample
 !var/cache/.gitkeep
 !var/logs/.gitkeep
 !web/static/.gitkeep

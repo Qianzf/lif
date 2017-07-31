@@ -339,7 +339,7 @@ if (!function_exists('cfg')) {
             throw new \Lif\Core\Excp\Lif('Missing config params');
         }
 
-        $cfgFile = pathOf('config').$name.'.php';
+        $cfgFile = pathOf('conf').$name.'.php';
         $config  = array_update_by_coherent_keys(
             $keyStr,
             conf($name),
