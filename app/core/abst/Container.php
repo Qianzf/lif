@@ -25,7 +25,7 @@ abstract class Container
         }
     }
 
-    public function NONEXISTENTMETHODOFCONTROLLER($obj, $method)
+    public function NONEXISTENTMETHODOFCONTROLLER($obj, $method, $params)
     {
         if (!isset($obj) || !is_object($obj)) {
             excp(
@@ -39,7 +39,16 @@ abstract class Container
         }
 
         $this->app = $obj;
-        return $this->$method();
+
+        try {
+            return call_user_func_array([
+                $this,
+                $method
+            ], $params);
+        } catch (\ArgumentCountError $e) {
+            excp($e->getMessage());
+        } finally {
+        }
     }
 
     public function __call($name, $args)

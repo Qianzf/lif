@@ -4,7 +4,7 @@ namespace Lif\Ctl;
 
 class API extends Ctl
 {
-    public function user()
+    public function user($user)
     {
         response([
             'list' => [

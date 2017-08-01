@@ -10,8 +10,10 @@ $this->get('/', function () {
     lif();
 });
 
-$this->get('user', [
+$this->get('user/{id}', [
     'middleware' => [
-        'auth',
+        // 'auth',
     ],
+    'prefix' => 'test',
+    'alias' => 'test',
 ], 'API@user');

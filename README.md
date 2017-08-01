@@ -2,7 +2,9 @@
 
 - Model/ORM
 
-- Support variables assignment in route definition
+- Support variables assignment on route prefix
+
+- Core configuration to enable or disable some time-wasting but will be used features
 
 - Log
 
@@ -28,6 +30,8 @@
 
 - Nested route groups
 
+- Support basic variables assignment on route name and auto pass into controller
+
 ###### Request
 
 Basic functions supported.
@@ -50,7 +54,7 @@ Execute before controllers and after request.
 
 ##### About Version
 
-LiF use git client hook `pre-commit` to increase version raw counts
+LiF use git client hook `pre-commit` to increase version raw counts, and use `get_lif_ver()` to calculate the version automatically. (cause i am too lazy to ponder how to version my project)
 
 - First we create a shell script file:
 
@@ -64,8 +68,8 @@ chmod +x .git/hooks/pre-commit > .git/hooks/pre-commit
 #!/bin/sh
 
 ver="`pwd`/.ver"
-# Plus 1 here because git client hook `pre-commit` always lag 1 time
 cnt="`git rev-list --all --count`"
+# Plus 1 here because git client hook `pre-commit` always lag 1 time
 let cnt++
 echo $cnt > $ver
 git add -A

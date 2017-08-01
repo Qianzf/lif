@@ -21,13 +21,13 @@ class Route extends Container implements Observable
 
     public function group(array $attrs, \Closure $closure)
     {
-        $this->pushTmpRouteStacks($attrs);
-        $closure();    // equal with `call_user_func($closure, $this)`
-        $this->popAllTmpStacks();     // Magic happen here
+        $this->push($attrs);
+        $closure();      // equal with `call_user_func($closure, $this)`
+        $this->pop();    // Magic happen here
     }
 
-    // Push current route's 3 type of attrs into tmp stacks:
-    public function pushTmpRouteStacks($attrs)
+    // Push current route's attrs into tmp stacks:
+    public function push($attrs)
     {
         if ($prefix = exists($attrs, 'prefix')) {
             if (!is_string($prefix)) {
@@ -70,7 +70,7 @@ class Route extends Container implements Observable
     public function __call($name, $args)
     {
         $name = strtoupper($name);
-        $this->denyNoneHttpMethods($name);
+        $this->deny($name);
         $this->add($name, $args);
 
         return $this;
@@ -79,12 +79,12 @@ class Route extends Container implements Observable
     public function add($type, $args)
     {
         return $this
-        ->parseRouteAttrs($args, $route)
-        ->fillRouteInfo($route)
+        ->parse($args, $route)
+        ->join($route)
         ->register($type, $route);
     }
 
-    private function popAllTmpStacks()
+    private function pop()
     {
         array_pop($this->prefixes);
         array_pop($this->middlewares);
@@ -93,7 +93,8 @@ class Route extends Container implements Observable
         return $this;
     }
 
-    public function parseRouteAttrs($args, &$route)
+    // parse route definition and save basic attrs
+    protected function parse($args, &$route)
     {
         $argCnt = count($args);
 
@@ -122,7 +123,7 @@ class Route extends Container implements Observable
                     exists($attrs, 'alias') && is_string($attrs['alias'])
                 ) ? $attrs['alias'] : false;
 
-                $this->pushTmpRouteStacks($attrs);
+                $this->push($attrs);
             } else {
                 $bind = $args[1];
             }
@@ -137,24 +138,33 @@ class Route extends Container implements Observable
             if ($attrs = $args[1]) {
                 $bind  = exists($attrs, 'bind') ? $attrs['bind'] : $args[2];
                 $alias = exists($attrs, 'alias');
-                $this->pushTmpRouteStacks($attrs);
+                $this->push($attrs);
             } else {
                 $bind = $args[2];
             }
         }
 
         if (!legal_route_binding($bind)) {
-            excp('Illegal route bind.');
+            excp('Illegal route binding.');
         }
 
-        $route['name']  = $args[0];
-        $route['bind']  = $bind;
-        $route['alias'] = $alias;
+        $route['name']   = $args[0];
+        $route['bind']   = $bind;
+        $route['alias']  = $alias;
 
         return $this;
     }
 
-    public function fillRouteInfo(&$route)
+    // extract variables from route name
+    protected function extract($name)
+    {
+        preg_match_all('/\{(\w+)\}/', $name, $matches);
+
+        return $matches[1] ?? [];
+    }
+
+    // join route basic attrs with tmp attrs in stack
+    protected function join(&$route)
     {
         $prefix = $this->prefixes ? implode('/', $this->prefixes) : '/';
         
@@ -168,16 +178,13 @@ class Route extends Container implements Observable
 
         $route['middlewares'] = $this->middlewares;
         $route['handle']      = $handle;
-        $route['name']        = format_route_key($prefix.$route['name']);
-
-        if (!$route['alias']) {
-            $route['alias'] = $route['name'];
-        }
+        $route['name']        = format_route_key($prefix.'/'.$route['name']);
 
         return $this;
     }
 
-    public function denyNoneHttpMethods($name)
+    // deny non-http methods
+    public function deny($name)
     {
         if (!in_array($name, legal_http_methods())) {
             excp(
@@ -188,12 +195,15 @@ class Route extends Container implements Observable
         return $this;
     }
 
+    // register and save this route
     protected function register($type, $route)
     {
-        if (isset($this->routes[$route['name']][$type])) {
+        $rawName = $route['name'];
+        $name    = escape_route_name($rawName);
+        if (isset($this->routes[$name][$type])) {
             excp(
                 'Duplicate definition on `'.
-                get_raw_route($route['name']).
+                get_raw_route($name).
                 '` of `'.$type.'`.'
             );
         }
@@ -203,22 +213,29 @@ class Route extends Container implements Observable
                 'Duplicate route alias `'.
                 $route['alias'].
                 '` for `'.
-                get_raw_route($route['name']).
+                get_raw_route($name).
                 '`, already set for route `'.
                 get_raw_route($this->aliases[$route['alias']]).'`.'
             );
         }
 
-        $this->aliases[$route['alias']]      = $route['name'];
-        $this->routes[$route['name']][$type] = [
+        $alias = ($route['alias'] ? $route['alias'] : $name);
+        $aliasArr = [
+            'route' => $alias,
+            'type'  => $type,
+        ];
+        $this->aliases[$alias] = $aliasArr;
+        $this->routes[$name][$type] = [
             'handle'      => $route['handle'],
-            'alias'       => $route['alias'],
+            'params'      => $this->extract($rawName),
+            'alias'       => $aliasArr,
             'middlewares' => $route['middlewares'],
         ];
 
         return $this;
     }
 
+    // load route defination files
     protected function load($routes)
     {
         $routePath = pathOf('route');

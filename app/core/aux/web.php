@@ -85,6 +85,20 @@ if (!function_exists('format_route_key')) {
         return $routeKey ? $routeKey : '.';
     }
 }
+if (!function_exists('escape_route_name')) {
+    function escape_route_name($name)
+    {
+        return preg_replace_callback('/\{(\w+)\}/', function ($matches) {
+            if (is_array($matches) &&
+                isset($matches[1]) &&
+                is_string($matches[1]) &&
+                $matches[1]
+            ) {
+                return '{?}';
+            }
+        }, $name);
+    }
+}
 if (!function_exists('get_raw_route')) {
     function get_raw_route($key)
     {

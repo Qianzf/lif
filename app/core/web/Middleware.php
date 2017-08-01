@@ -12,17 +12,20 @@ class Middleware extends Container implements Observable
     
     protected $name  = 'middleware';
     protected $argvs = [];
+    protected $middlewares = [];
 
     public function run($observer, $middlewares = [])
     {
         return $this
         ->addObserver($observer)
-        ->middlewares($middlewares)
+        ->execute($middlewares)
         ->trigger();
     }
 
-    public function middlewares($middlewares)
+    public function execute($middlewares)
     {
+        $this->middlewares = $middlewares;
+
         $mdwrNS = nsOf('mdwr');
         foreach ($middlewares as $middleware) {
             $this->argvs[$middleware][] = (
@@ -31,6 +34,11 @@ class Middleware extends Container implements Observable
         }
 
         return $this;
+    }
+
+    public function all()
+    {
+        return $this->middlewares;
     }
 
     public function argvs()
