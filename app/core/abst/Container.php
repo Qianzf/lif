@@ -40,6 +40,11 @@ abstract class Container
 
         $this->app = $obj;
 
+        return $this->__callSave($method, $params);
+    }
+
+    public function __callSave($method, $params)
+    {
         try {
             return call_user_func_array([
                 $this,
@@ -47,6 +52,40 @@ abstract class Container
             ], $params);
         } catch (\ArgumentCountError $e) {
             excp($e->getMessage());
+        } catch (\TypeError $e) {
+            if (!preg_match(
+                '/Argument\ (\d+).*must\ be\ an?\ (.*)\ of\ ([\w\\\\]*),/',
+                $e->getMessage(),
+                $matches
+            ) || !(true &&
+                exists($matches, 1) &&
+                exists($matches, 2) &&
+                exists($matches, 3)
+            ) ||
+                ('instance' != $matches[2]) ||
+                !(($argOrder = intval($matches[1])) == $matches[1])
+            ) {
+                excp($e->getMessage());
+            }
+
+            if (!class_exists($matches[3])) {
+                excp(
+                    'Class `'.$matches[3].'` not exists.'
+                );
+            }
+
+            if (!exists($params, --$argOrder)) {
+                excp(
+                    'Missing params from route definition.'
+                );
+            }
+
+            // repalace the type error arg with object
+            $params[$argOrder] = new $matches[3](
+                $params[$argOrder]
+            );
+
+            return $this->__callSave($method, $params);
         } finally {
         }
     }

@@ -74,8 +74,9 @@ if (!function_exists('dd')) {
                 ? call_user_func($func, $arg)
                 : var_dump($arg);
             }
-            exit;
         }
+
+        exit;
     }
 }
 if (!function_exists('pr')) {

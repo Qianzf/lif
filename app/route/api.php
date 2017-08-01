@@ -14,6 +14,6 @@ $this->get('user/{id}', [
     'middleware' => [
         // 'auth',
     ],
-    'prefix' => 'test',
-    'alias' => 'test',
+    // 'prefix' => 'lif',
+    'alias' => 'get_user',
 ], 'API@user');
