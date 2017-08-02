@@ -158,7 +158,7 @@ class Route extends Container implements Observable
     // extract variables from route name
     protected function extract($name)
     {
-        preg_match_all('/\{(\w+)\}/', $name, $matches);
+        preg_match_all('/\{(\w+)\}/u', $name, $matches);
 
         return $matches[1] ?? [];
     }

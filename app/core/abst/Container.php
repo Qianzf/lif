@@ -51,10 +51,24 @@ abstract class Container
                 $method
             ], $params);
         } catch (\ArgumentCountError $e) {
-            excp($e->getMessage());
+            if (!preg_match(
+                '/^Too\ few\ arguments\ to\ function.*and\ exactly\ (\d)+\ expected$/u',
+                $e->getMessage(),
+                $matches
+            ) || (intval($missingArgsCnt = exists($matches, 1)) < 1)) {
+                excp($e->getMessage());
+            }
+
+            $forgeArgs = [];
+            for ($i=0; $i<$missingArgsCnt; ++$i) {
+                // !!! Do not forge `null`, because `isset(null)` is false
+                $forgeArgs[] = false;
+            }
+
+            return $this->__callSave($method, $forgeArgs);
         } catch (\TypeError $e) {
             if (!preg_match(
-                '/Argument\ (\d+).*must\ be\ an?\ (.*)\ of\ ([\w\\\\]*),/',
+                '/Argument\ (\d+).*must\ be\ an?\ (.*)\ of\ ([\w\\\\]*),/u',
                 $e->getMessage(),
                 $matches
             ) || !(true &&
@@ -74,7 +88,8 @@ abstract class Container
                 );
             }
 
-            if (!exists($params, --$argOrder)) {
+            // !!! `isset(false)` is true
+            if (!isset($params[--$argOrder])) {
                 excp(
                     'Missing params from route definition.'
                 );

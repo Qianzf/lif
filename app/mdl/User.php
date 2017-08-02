@@ -6,9 +6,9 @@ class User
 {
     protected $id = null;
 
-    public function __construct($id)
+    public function __construct($id = null)
     {
-        $this->id = $id;
+        $this->id = $id ? $id : 1024;
     }
 
     public function id()

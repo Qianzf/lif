@@ -4,7 +4,7 @@
 
 - Support variables assignment on route prefix
 
-- Core configuration to enable or disable some time-wasting but will be used features
+- Core configuration to enable or disable some time-wasting but will still be used features
 
 - Log
 
@@ -41,6 +41,8 @@ Basic functions supported.
 Execute before controllers and after request.
 
 ###### Controller
+
+- Support object injection in controller/container.
 
 ###### Configuration
 

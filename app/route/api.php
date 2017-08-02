@@ -10,7 +10,7 @@ $this->get('/', function () {
     lif();
 });
 
-$this->get('user/{id}', [
+$this->get('user/id', [
     'middleware' => [
         // 'auth',
     ],
