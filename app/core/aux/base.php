@@ -165,6 +165,10 @@ if (!function_exists('nsOf')) {
                 'ctl'  => '\Lif\Ctl\\',
                 'mdl'  => '\Lif\Mdl\\',
                 'mdwr' => '\Lif\Mdwr\\',
+                'core' => '\Lif\Core\\',
+                'web'  => '\Lif\Core\Web\\',
+                'storage'  => '\Lif\Core\storage\\',
+                'strategy' => '\Lif\Core\strategy\\',
             ];
             return $nsArr[$of] ?? '\\';
         }

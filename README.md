@@ -1,3 +1,9 @@
+Another simple, quick, lightweight PHP Framework.
+
+It's also stands for the recursive acronym ___LiF: LiF is Framework___.
+
+> It's not full-finished yet, but in my active development.
+
 ##### TODO
 
 - Model/ORM
@@ -14,9 +20,9 @@
 
 - Cache
 
-- Self-test
-
 - Mock data
+
+- Self-test
 
 - Self-deploy
 
@@ -26,15 +32,15 @@
 
 ###### Route
 
-- Basic route definition
+- Basic, quick, dynamic-load route definition
 
-- Nested route groups
+- Nested route groups(without `use ($app)`)
 
 - Support basic variables assignment on route name and auto pass into controller
 
 ###### Request
 
-Basic functions supported.
+Support Basic functions, auto amount to the main application instance.
 
 ###### Middleware
 
@@ -42,17 +48,25 @@ Execute before controllers and after request.
 
 ###### Controller
 
-- Support object injection in controller/container.
+- Support object auto injection in controller/container.
 
 ###### Configuration
 
 - Custom configuration
 
+Support any amount of custom configuration files.
+
 - Dynamic configuration
+
+Support modification of php formatted configuration files.
 
 ###### Useful Helper functions
 
-###### Exception & Error handle
+Well, I think you will like them, all in _app/core/aux/_.
+
+###### Exception
+
+LiF-styled exception output.
 
 ##### About Version
 
@@ -64,7 +78,7 @@ LiF use git client hook `pre-commit` to increase version raw counts, and use `ge
 chmod +x .git/hooks/pre-commit > .git/hooks/pre-commit
 ```
 
-- Then contented with these:
+- Then contented with:
 
 ``` shell
 #!/bin/sh

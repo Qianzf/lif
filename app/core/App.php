@@ -2,10 +2,7 @@
 
 namespace Lif\Core;
 
-use Lif\Core\Factory\Strategy;
-use Lif\Core\Abst\Container;
-
-class App extends Container
+class App
 {
     protected $strategy = null;
 
@@ -23,7 +20,10 @@ class App extends Container
 
     private function setStrategy()
     {
-        $this->strategy = Strategy::make(context());
+        $this->strategy = \Lif\Core\Abst\Factory::make(
+            context(),
+            nsOf('strategy')
+        );
     }
 
     public function __call($method, $args)

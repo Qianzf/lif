@@ -2,11 +2,10 @@
 
 namespace Lif\Core\Strategy;
 
-use Lif\Core\Abst\Container;
 use Lif\Core\Intf\Observer;
 use Lif\Core\Intf\Strategy;
-use Lif\Core\Factory\Ctl;
-use Lif\Core\Factory\Web as WebFcty;
+use Lif\Core\Abst\Container;
+use Lif\Core\Abst\Factory;
 
 class Web extends Container implements Observer, Strategy
 {
@@ -50,7 +49,7 @@ class Web extends Container implements Observer, Strategy
             excp('Missing Routes files.');
         }
 
-        $this->_route = WebFcty::make('route');
+        $this->_route = Factory::make('route', nsOf('web'));
         $this->_route->run($this, $routeFiles);
 
         return $this;
@@ -118,7 +117,7 @@ class Web extends Container implements Observer, Strategy
     protected function mdwr($middlewares)
     {
         $this->middlewares = $middlewares;
-        ($this->middleware = WebFcty::make('middleware'))
+        ($this->middleware = Factory::make('middleware', nsOf('web')))
         ->run($this, $middlewares);
 
         return $this;
@@ -126,7 +125,7 @@ class Web extends Container implements Observer, Strategy
 
     public function fire()
     {
-        ($this->request = WebFcty::make('request'))->run($this);
+        ($this->request = Factory::make('request', nsOf('web')))->run($this);
 
         return $this;
     }
@@ -144,7 +143,7 @@ class Web extends Container implements Observer, Strategy
                 throw new \Lif\Core\Excp\IllegalRouteDefinition(2);
             }
 
-            $ctl = Ctl::make($ctlName);
+            $ctl = Factory::make($ctlName, nsOf('ctl'));
             $act = lcfirst($act);
 
             return call_user_func_array([

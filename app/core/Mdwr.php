@@ -2,9 +2,7 @@
 
 namespace Lif\Core;
 
-use Lif\Core\Intf\Middleware;
-
-class Mdwr implements Middleware
+class Mdwr implements \Lif\Core\Intf\Middleware
 {
     public function handle($app)
     {

@@ -2,8 +2,6 @@
 
 namespace Lif\Mdwr;
 
-use Lif\Mdwr\Mdwr;
-
 class Auth extends Mdwr
 {
     public function handle($app)
