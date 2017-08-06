@@ -19,11 +19,43 @@ class Route extends Container implements Observable
     private $middlewares = [];
     private $namespaces  = [];
 
+    protected function any(...$args)
+    {
+        if (($attrsIf = exists($args, 1)) && exists($attrsIf, 'alias')) {
+            excp('Route alias not supported when use `any` or `match`');
+        }
+
+        foreach (legal_http_methods() as $method) {
+            $this
+            ->deny($method)
+            ->add($method, $args);
+        }
+
+        return $this;
+    }
+
+    protected function match($methods, ...$args)
+    {
+        if (($attrsIf = exists($args, 1)) && exists($attrsIf, 'alias')) {
+            excp('Route alias not supported when use `any` or `match`');
+        }
+
+        foreach (array_unique(array_filter($methods)) as $method) {
+            $this
+            ->deny($method)
+            ->add($method, $args);
+        }
+
+        return $this;
+    }
+
     public function group(array $attrs, \Closure $closure)
     {
         $this->push($attrs);
         $closure();      // equal with `call_user_func($closure, $this)`
         $this->pop();    // Magic happen here
+
+        return $this;
     }
 
     // Push current route's attrs into tmp stacks:
@@ -69,19 +101,21 @@ class Route extends Container implements Observable
     // @$args Array  => route attrs
     public function __call($name, $args)
     {
-        $name = strtoupper($name);
-        $this->deny($name);
-        $this->add($name, $args);
+        $this
+        ->deny($name)
+        ->add($name, $args);
 
         return $this;
     }
 
     public function add($type, $args)
     {
-        return $this
+        $this
         ->parse($args, $route)
         ->join($route)
-        ->register($type, $route);
+        ->register(strtoupper($type), $route);
+
+        return $this;
     }
 
     private function pop()
@@ -179,17 +213,20 @@ class Route extends Container implements Observable
         $route['middlewares'] = $this->middlewares;
         $route['handle']      = $handle;
         $route['name']        = format_route_key($prefix.'/'.$route['name']);
+        unset($route['bind']);
 
         return $this;
     }
 
     // deny non-http methods
-    public function deny($name)
+    public function deny(&$name)
     {
-        if (!in_array($name, legal_http_methods())) {
-            excp(
-                'Illegal HTTP Method `'.$name.'`.'
-            );
+        if (!is_string($name)) {
+            excp('Illegal HTTP method format.');
+        }
+
+        if (!in_array(strtoupper($name), legal_http_methods())) {
+            excp('Illegal HTTP method `'.$name.'`.');
         }
 
         return $this;
@@ -207,7 +244,6 @@ class Route extends Container implements Observable
                 '` of `'.$type.'`.'
             );
         }
-
         if (in_array($route['alias'], array_keys($this->aliases))) {
             excp(
                 'Duplicate route alias `'.
@@ -270,9 +306,11 @@ class Route extends Container implements Observable
 
     public function run($observer, $routes = [])
     {
-        return $this
+        $this
         ->addObserver($observer)
         ->load($routes)
-        ->trigger();
+        ->done();
+
+        return $this;
     }
 }

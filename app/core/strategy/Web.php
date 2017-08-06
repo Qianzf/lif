@@ -2,10 +2,8 @@
 
 namespace Lif\Core\Strategy;
 
-use Lif\Core\Intf\Observer;
-use Lif\Core\Intf\Strategy;
-use Lif\Core\Abst\Container;
-use Lif\Core\Abst\Factory;
+use Lif\Core\Intf\{Observer, Strategy};
+use Lif\Core\Abst\{Container,Factory};
 
 class Web extends Container implements Observer, Strategy
 {
@@ -56,7 +54,7 @@ class Web extends Container implements Observer, Strategy
     }
 
     // escape route key for variables-bound scenario
-    public function escape($key)
+    protected function escape($key)
     {
         if (!isset($this->routes[$key])) {
             $arr = array_reverse(array_filter(explode('.', $key)));
@@ -102,7 +100,9 @@ class Web extends Container implements Observer, Strategy
         $this->handler   = $this->routes[$key][$type]['handle'];
         $this->routeVars = $this->assign($this->routes[$key][$type]['params']);
 
-        return $this->execute();
+        $this->execute();
+
+        return $this;
     }
 
     protected function assign($params)
@@ -116,7 +116,6 @@ class Web extends Container implements Observer, Strategy
 
     protected function mdwr($middlewares)
     {
-        $this->middlewares = $middlewares;
         ($this->middleware = Factory::make('middleware', nsOf('web')))
         ->run($this, $middlewares);
 
@@ -167,7 +166,9 @@ class Web extends Container implements Observer, Strategy
             throw new \Lif\Core\Excp\MethodNotFound(__CLASS__, $handle);
         }
 
-        return $this->$handle();
+        $this->$handle();
+        
+        return $this;
     }
 
     public function name()

@@ -19,7 +19,7 @@ class Middleware extends Container implements Observable
         return $this
         ->addObserver($observer)
         ->execute($middlewares)
-        ->trigger();
+        ->done();
     }
 
     public function execute($middlewares)

@@ -34,8 +34,19 @@ if (!function_exists('response')) {
         }
 
         if ('json' === $format) {
-            json_http_response(_json_encode($info));
+            json_http_response($info);
         }
+    }
+}
+if (!function_exists('abort')) {
+    function abort($status = 403, $msg = '')
+    {
+        ob_start();
+        ob_end_clean();
+        header('HTTP/1.1 '.$status);
+        exit(json_http_response([
+            'Warning' => $msg.' ('.$status.')'
+        ]));
     }
 }
 if (!function_exists('legal_route_binding')) {
@@ -75,7 +86,7 @@ if (!function_exists('client_error')) {
     // ----------------------------------------------------------------------
     function client_error($msg, $err)
     {
-        response([], $msg, $err);
+        abort($err, $msg);
     }
 }
 if (!function_exists('format_route_key')) {
@@ -102,6 +113,12 @@ if (!function_exists('escape_route_name')) {
 if (!function_exists('get_raw_route')) {
     function get_raw_route($key)
     {
+        if (!is_scalar($key)) {
+            excp(
+                'Illegal route key.'
+            );
+        }
+
         if ('.' === $key) {
             return '/';
         }

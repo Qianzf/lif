@@ -17,3 +17,24 @@ $this->get('user/{id}', [
     // 'prefix' => 'lif',
     'alias' => 'get_user',
 ], 'API@user');
+
+$this->any('test', [
+    'middleware' => [
+        'auth'
+    ],
+    // 'alias' => 'test',
+], function () {
+    lif();
+});
+
+$this->match([
+    'gET',
+    'POST',
+    'PUT',
+], 'passwd', [
+    'middleware' => [
+        // 'auth'
+    ],
+], function () {
+    abort(403, 'Forbidden');
+});

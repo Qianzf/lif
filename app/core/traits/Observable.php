@@ -41,7 +41,7 @@ trait Observable
         return $this;
     }
 
-    protected function trigger()
+    protected function done()
     {
         foreach ($this->observers as $observer) {
             $observer->listen($this->name);

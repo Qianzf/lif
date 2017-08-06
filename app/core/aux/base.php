@@ -62,10 +62,10 @@ if (!function_exists('init')) {
     }
 }
 if (!function_exists('dd')) {
-    function dd()
+    function dd(...$args)
     {
         if (0 < func_num_args()) {
-            $args = func_get_args();
+            // $args = func_get_args();    // compatible with PHP < 5.6
             $func = extension_loaded('xdebug')
             ? 'var_dump' : 'print_r';
 
@@ -80,10 +80,10 @@ if (!function_exists('dd')) {
     }
 }
 if (!function_exists('pr')) {
-    function pr()
+    function pr(...$args)
     {
         if (0 < func_num_args()) {
-            $args = func_get_args();
+            // $args = func_get_args();    // compatible with PHP < 5.6
             $func = extension_loaded('xdebug')
             ? 'var_dump' : 'print_r';
 
@@ -131,6 +131,8 @@ if (!function_exists('exists')) {
                 }
             }
             return (1===count($idxes)) ? $var[$idx] : true;
+        } elseif (is_callable($var) || ($var instanceof \Closure)) {
+            return $idx ? false : ($var ?? false);
         } elseif (is_object($var) && $idx) {
             $attrs = is_array($idx) ? $idx : [$idx];
             foreach ($attrs as $attr) {
@@ -218,10 +220,12 @@ if (!function_exists('json_http_response')) {
     function json_http_response($data)
     {
         if (!headers_sent()) {
+            ob_start();
+            ob_end_clean();
             mb_http_output('UTF-8');
             header('Content-type:application/json; charset=UTF-8');
         }
-        exit($data);
+        exit(_json_encode($data));
     }
 }
 if (!function_exists('exception')) {
@@ -246,10 +250,8 @@ if (!function_exists('exception')) {
         }
 
         if ('json' === $format) {
-            $info = _json_encode($info);
-
             ('cli' === context())
-            ? exit($info)
+            ? exit(_json_encode($info))
             : json_http_response($info);
         }
     }

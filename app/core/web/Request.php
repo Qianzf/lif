@@ -36,6 +36,8 @@ class Request extends Container implements Observable
                 unset($this->params['__method']);
             }
         }
+
+        return $this;
     }
 
     protected function init()
@@ -75,19 +77,25 @@ class Request extends Container implements Observable
             return $this->params;
         }
 
+        $this->params = $_REQUEST;
+
         $cntType = isset($_SERVER['CONTENT_TYPE'])
         ? $_SERVER['CONTENT_TYPE']
         : 'application/x-www-form-urlencoded';
 
-        $rawInput = file_get_contents('php://input');
+        if (false === mb_strpos($cntType, 'multipart/form-data')) {
+            $rawInput = file_get_contents('php://input');
 
-        if (false !== mb_strpos($cntType, 'application/json')) {
-            $params = json_decode($rawInput, true);
-        } else {
-            parse_str($rawInput, $params);
+            if (false !== mb_strpos($cntType, 'application/json')) {
+                $params = json_decode($rawInput, true);
+            } else {
+                parse_str($rawInput, $params);
+            }
+
+            array_merge($this->params, $params);
         }
 
-        return $this->params = array_merge($params, $_REQUEST);
+        return $this->params;
     }
 
     public function headers()
@@ -101,8 +109,10 @@ class Request extends Container implements Observable
 
     public function run($observer, $params = [])
     {
-        return $this
+        $this
         ->addObserver($observer)
-        ->trigger();
+        ->done();
+
+        return $this;
     }
 }
