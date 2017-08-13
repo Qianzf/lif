@@ -77,7 +77,7 @@ class Request extends Container implements Observable
             return $this->params;
         }
 
-        $this->params = $_REQUEST;
+        $params = $_REQUEST;
 
         $cntType = isset($_SERVER['CONTENT_TYPE'])
         ? $_SERVER['CONTENT_TYPE']
@@ -87,15 +87,15 @@ class Request extends Container implements Observable
             $rawInput = file_get_contents('php://input');
 
             if (false !== mb_strpos($cntType, 'application/json')) {
-                $params = json_decode($rawInput, true);
+                $_params = json_decode($rawInput, true);
             } else {
-                parse_str($rawInput, $params);
+                parse_str($rawInput, $_params);
             }
 
-            array_merge($this->params, $params);
+            array_merge($_params, $params);
         }
 
-        return $this->params;
+        return $this->params = collect($params);
     }
 
     public function headers()
@@ -104,7 +104,7 @@ class Request extends Container implements Observable
             return $this->headers;
         }
 
-        return $this->headers = getallheaders();
+        return $this->headers = collect(getallheaders());
     }
 
     public function run($observer, $params = [])

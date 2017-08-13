@@ -542,3 +542,34 @@ if (!function_exists('create_ldo')) {
         );
     }
 }
+if (!function_exists('class_name')) {
+    function class_name($obj)
+    {
+        if (!is_object($obj)) {
+            return false;
+        }
+
+        return (new \ReflectionClass(get_class($obj)))->getShortName();
+    }
+}
+if (!function_exists('class_attrs')) {
+    function class_attrs($obj)
+    {
+        if (!is_object($obj)) {
+            return false;
+        }
+
+        return (new \ReflectionClass(get_class($obj)))->getProperties();
+    }
+}
+if (!function_exists('collect')) {
+    // Convert array to a collection class
+    function collect($params)
+    {
+        if (!is_array($params)) {
+            excp('Collect target must be an array.');
+        }
+
+        return new \Lif\Core\Coll($params);
+    }
+}

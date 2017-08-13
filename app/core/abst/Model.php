@@ -5,8 +5,8 @@ namespace Lif\Core\Abst;
 abstract class Model
 {
     protected $name = null;    // table name
-    protected $_tb  = null;    // table prefix
-    protected $_fd  = null;    // field prefix
+    protected $_tbx = null;    // table prefix
+    protected $_fdx = null;    // field prefix
     protected $pk   = null;    // primary key
 
     protected $unwriteable = [];    // protected fields that cann't update

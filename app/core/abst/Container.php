@@ -4,6 +4,8 @@ namespace Lif\Core\Abst;
 
 abstract class Container
 {
+    use \Lif\Core\Traits\MethodNotExists;
+    
     protected $app = null;
     
     public function __get($name)
