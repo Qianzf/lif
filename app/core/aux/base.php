@@ -1,8 +1,8 @@
 <?php
 
-// -------------------------------------
+// --------------------------------------
 //     Basic Helper Functions for LiF
-// -------------------------------------
+// --------------------------------------
 
 if (!function_exists('lif')) {
     function lif()
@@ -50,15 +50,20 @@ if (!function_exists('get_lif_ver')) {
 if (!function_exists('init')) {
     function init()
     {
+        $debugNonProd = !('production' == app_env()) && app_debug();
+
+        $display_startup_errors = $debugNonProd ? 1 : 0;
+        $display_errors  = $debugNonProd ? 'On' : 'Off';
+        $error_reporting = $debugNonProd ? E_ALL : 0;
+        error_reporting($error_reporting);
+        ini_set('display_errors', $display_errors);
+        ini_set('display_startup_errors', $display_startup_errors);
+
         $timezone = conf('app')['timezone'] ?? 'UTC';
         date_default_timezone_set($timezone);
         mb_internal_encoding('UTF-8');
         mb_regex_encoding('UTF-8');
         mb_language('uni');
-        if ('production' != app_env()) {
-            error_reporting(E_ALL);
-            ini_set('display_errors', 'On');
-        }
     }
 }
 if (!function_exists('dd')) {
@@ -130,7 +135,7 @@ if (!function_exists('exists')) {
                     return false;
                 }
             }
-            return (1===count($idxes)) ? $var[$idx] : true;
+            return (1===count($idxes)) ? $var[$_idx] : true;
         } elseif (is_callable($var) || ($var instanceof \Closure)) {
             return $idx ? false : ($var ?? false);
         } elseif (is_object($var) && $idx) {
@@ -140,7 +145,7 @@ if (!function_exists('exists')) {
                     return false;
                 }
             }
-            return (1===count($attrs)) ? $var->$idx : true;
+            return (1===count($attrs)) ? $var->$attr : true;
         }
 
         return (isset($var) && $var) ? $var : false;
@@ -196,8 +201,9 @@ if (!function_exists('pathOf')) {
             'excp'   => $root.'/app/excp/',
             'conf'   => $root.'/app/conf/',
             'mdwr'   => $root.'/app/mdwr/',
-            'log'    => $root.'/var/logs/',
+            'log'    => $root.'/var/log/',
             'cache'  => $root.'/var/cache/',
+            'upload' => $root.'/var/upload/',
             'web'    => $root.'/web/',
             'static' => $root.'/web/static/',
         ];
@@ -426,22 +432,6 @@ if (!function_exists('conf')) {
         return $cfg;
     }
 }
-if (!function_exists('build_pdo_dsn')) {
-    function build_pdo_dsn($conn)
-    {
-        $dsn = $conn['driver']
-        .':host='
-        .$conn['host'];
-
-        $dsn .= exists($conn, 'charset')
-        ? ';charset='.$conn['charset'] : '';
-
-        $dsn .= exists($conn, 'dbname')
-        ? ';dbname='.$conn['dbname'] : '';
-
-        return $dsn;
-    }
-}
 if (!function_exists('db')) {
     function db($conn = null)
     {
@@ -452,5 +442,103 @@ if (!function_exists('db_conns')) {
     function db_conns($conn = null)
     {
         return \Lif\Core\Factory\Storage::fetch('db', 'conns', $conn);
+    }
+}
+if (!function_exists('build_pdo_dsn')) {
+    // !!! $$conn => must `validate_db_conn` first
+    function build_pdo_dsn($conn)
+    {
+        $dsn = $conn['driver'].':';
+
+        switch ($conn['driver']) {
+            case 'mysql':
+                $dsn .= 'host='
+                .$conn['host'];
+                $dsn .= exists($conn, 'charset')
+                ? ';charset='.$conn['charset'] : '';
+                $dsn .= exists($conn, 'dbname')
+                ? ';dbname='.$conn['dbname'] : '';
+                break;
+            case 'sqlite':
+                if (exists($conn, 'memory')) {
+                    $dsn .= ':memory:';
+                } else {
+                    $dsn .= $path = pathOf('root').$conn['path'];
+                    if (!file_exists($path)) {
+                        excp(
+                            'Missing sqlite source file.'
+                        );
+                    }
+                }
+                break;
+            default:
+                excp(
+                    'Missing database driver name.'
+                );
+                break;
+        }
+
+        return $dsn;
+    }
+}
+if (!function_exists('validate_db_conn')) {
+    function validate_db_conn(&$conn)
+    {
+        $driverConfMap = [
+            'mysql'  => [
+                'host',
+                'user',
+                'passwd',
+            ],
+            'sqlite' => [
+                'path'   => 'path',
+                'memory' => 'memory',
+            ],
+        ];
+        if (!($conn['driver'] = strtolower(exists($conn, 'driver')))) {
+            excp(
+                'Missing database driver name.'
+            );
+        }
+        if (!exists($driverConfMap, $conn['driver'])) {
+            excp(
+                'Database driver `'.$driver.'` not supported yet.'
+            );
+        }
+        if ('sqlite' == $conn['driver']) {
+            $unset = exists($conn, 'memory') ? 'path' : 'memory';
+            unset($driverConfMap['sqlite'][$unset]);
+
+            $conn['user'] = (
+                exists($conn, 'user')
+                && is_string($conn['user'])
+            ) ? $conn['user'] : null;
+
+            $conn['passwd'] = (
+                exists($conn, 'passwd')
+                && is_string($conn['passwd'])
+            ) ? $conn['passwd'] : null;
+        }
+        if (!exists($conn, $driverConfMap[$conn['driver']])) {
+            excp(
+                'Missing necessary configurations for `'
+                .$conn['driver']
+                .'` type connection `'
+                .$conn['name'].'`'
+            );
+        }
+
+        return $conn;
+    }
+}
+if (!function_exists('create_ldo')) {
+    function create_ldo($conn)
+    {
+        $dsn  = build_pdo_dsn(validate_db_conn($conn));
+        return new \Lif\Core\Storage\LDO(
+            $dsn,
+            $conn['user'],
+            $conn['passwd']
+        );
     }
 }

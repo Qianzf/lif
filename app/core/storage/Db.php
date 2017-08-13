@@ -26,10 +26,15 @@ class Db
     public static function pdo($conn = null)
     {
         $db = conf('db');
-        if (!exists($db, 'default')) {
+        if (!$conn
+            && (
+                !($defaultConn = exists($db, 'default'))
+                || !is_string($defaultConn)
+            )
+        ) {
             excp('Default database connection not set.');
         }
-        $connName = $conn ?? $db['default'];
+        $connName = ($conn && is_string($conn)) ? $conn : $defaultConn;
 
         $new = (
             !exists(self::$conns, $connName) ||
@@ -49,22 +54,9 @@ class Db
                     );
                 }
                 $dbConn = $db['conns'][$connName];
-                if (!exists($dbConn, [
-                    'host',
-                    'driver',
-                    'user',
-                    'passwd',
-                ])) {
-                    excp(
-                        'Missing necessary configurations for connection `'
-                        .$connName.'`'
-                    );
-                }
-                self::$conns[$connName] = new LDO(
-                    build_pdo_dsn($dbConn),
-                    $dbConn['user'],
-                    $dbConn['passwd']
-                );
+                $dbConn['name'] = $connName;    // require connection name
+
+                self::$conns[$connName] = create_ldo($dbConn);
             } catch (\PDOException $pdoE) {
                 exception($pdoE);
             }

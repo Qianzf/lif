@@ -99,6 +99,26 @@ return [
                 'charset' => 'UTF8',
             ],
 
+            'sqlite_local_dev' => [
+                'driver' => 'sqlite',
+
+                // -----------------------------------------------------------
+                //     - `false` => default, can ignore (Optional)
+                //     - `true`  => when driver is sqlite, if `memory` set
+                //     to `true`, `path` will be ignored
+                // -----------------------------------------------------------
+                'memory' => false,
+
+                // -------------------------------------------------------
+                //     Sqlite database file path
+                //     Start with project root path (`pathOf('root')`)
+                // -------------------------------------------------------
+                'path' => '/var/db/db.sqlite',
+
+                // 'user'   => null,
+                // 'passwd' => null,
+            ],
+
             //  ...
         ],
     ],

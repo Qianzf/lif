@@ -41,20 +41,20 @@ abstract class Model
     {
     }
 
-    // ---------------------------------------------------
-    // $class => The model class belongs to this model
-    // $fk    => Foreign key, primary key if not set
-    // $lk    => Local key, primary key if not set
-    // ---------------------------------------------------
+    // -------------------------------------------------------
+    //     $class => The model class belongs to this model
+    //     $fk    => Foreign key, primary key if not set
+    //     $lk    => Local key, primary key if not set
+    // -------------------------------------------------------
     protected function hasMany($class, $fk = null, $lk = null)
     {
     }
 
-    // ---------------------------------------------------
-    // $class => The model class which owns this model
-    // $fk    => Foreign key, primary key if not set
-    // $lk    => Local key, primary key if not set
-    // ---------------------------------------------------
+    // -------------------------------------------------------
+    //     $class => The model class which owns this model
+    //     $fk    => Foreign key, primary key if not set
+    //     $lk    => Local key, primary key if not set
+    // -------------------------------------------------------
     protected function belongsTo($class, $fk = null, $lk = null)
     {
     }

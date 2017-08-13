@@ -10,12 +10,16 @@
 app/conf/*
 var/cache/*
 var/log/*
+var/db/*
+var/upload/*
 web/*
 web/static/*
 !app/conf/.gitkeep
 !app/conf/conf.sample
 !var/cache/.gitkeep
-!var/logs/.gitkeep
+!var/log/.gitkeep
+!var/db/.gitkeep
+!var/upload/.gitkeep
 !web/static/.gitkeep
 !web/index.php
 
