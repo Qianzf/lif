@@ -502,7 +502,7 @@ if (!function_exists('validate_db_conn')) {
         }
         if (!exists($driverConfMap, $conn['driver'])) {
             excp(
-                'Database driver `'.$driver.'` not supported yet.'
+                'Database driver `'.$conn['driver'].'` not supported yet.'
             );
         }
         if ('sqlite' == $conn['driver']) {
@@ -535,11 +535,55 @@ if (!function_exists('create_ldo')) {
     function create_ldo($conn)
     {
         $dsn  = build_pdo_dsn(validate_db_conn($conn));
-        return new \Lif\Core\Storage\LDO(
-            $dsn,
-            $conn['user'],
-            $conn['passwd']
-        );
+        return (
+            new \Lif\Core\Storage\LDO(
+                $dsn,
+                $conn['user'],
+                $conn['passwd']
+            )
+        )
+        ->__conn($conn['name'])
+        ->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    }
+}
+if (!function_exists('legal_sql_selects')) {
+    function legal_sql_selects($fields)
+    {
+        if (!is_string($fields) && !is_array($fields)) {
+            return false;
+        } elseif (! $fields) {
+            return '*';
+        }
+
+        $selects    = (array) $fields;
+
+        $select_str = '';
+
+        foreach ($selects as $alias => $select) {
+            if (is_array($select)) {
+                foreach ($select as $_alias => $_select) {
+                    if (! is_string($_select)) {
+                        return false;
+                    }
+
+                    $select_str .= is_string($_alias)
+                    ? $_select.' AS '.$_alias
+                    : $_select;
+
+                    $select_str .= (false === next($select))
+                    ? '' : ', ';
+                }
+            } elseif (is_string($select)) {
+                $select_str .= $select;
+            } else {
+                excp('Illgeal select field.');
+            }
+
+            $select_str .= (false === next($selects))
+            ? '' : ', ';
+        }
+
+        return $select_str;
     }
 }
 if (!function_exists('class_name')) {

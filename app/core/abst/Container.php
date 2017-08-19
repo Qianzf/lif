@@ -103,6 +103,8 @@ abstract class Container
             );
 
             return $this->__callSave($method, $params);
+        } catch (\Error $e) {
+            exception($e);
         } finally {
         }
     }

@@ -1,5 +1,9 @@
 <?php
 
+// -------------------------------------------------
+//     Manage database instances and connections
+// -------------------------------------------------
+
 namespace Lif\Core\Storage;
 
 class Db

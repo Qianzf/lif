@@ -64,6 +64,10 @@ Support modification of php formatted configuration files.
 
 Well, I think you will like them, all in _app/core/aux/_.
 
+###### Collection
+
+Support the transformation between array and collection class.
+
 ###### Exception
 
 LiF-styled exception output.
