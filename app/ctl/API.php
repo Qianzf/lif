@@ -6,18 +6,20 @@ class API extends Ctl
 {
     public function user(\Lif\Mdl\User $user)
     {
-        dd(db()
-            ->table('lif as a', [
-                'b' => 'lif',
-                'c' => 'lif',
-            ], 'lif as d')
+        ee(db()
+            ->table('lif as a, lif as b')
             // ->select('1+1')
             ->select('a.id as aid, a.id as cid', [
                 'bid' => 'b.id'
             ])
-            // ->where('id', 1)
+            ->where('aid', 'in', []
+                // ['bid', '=', 2]
+            )
             ->limit(2, 0)
-            ->sort('cid, bid')
+            ->sort('cid desc, bid asc', [
+                'aid' => 'desc',
+                'bid' => 'asc',
+            ])
             ->group(['aid', 'bid'], 'cid')
             // ->get()
             ->sql()

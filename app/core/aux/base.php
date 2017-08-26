@@ -96,6 +96,19 @@ if (!function_exists('pr')) {
         }
     }
 }
+if (!function_exists('ee')) {
+    function ee(...$scalars)
+    {
+        foreach ($scalars as $value) {
+            if (is_scalar($value)) {
+                echo $value, PHP_EOL;
+            } else {
+                print_r($value);
+            }
+        }
+        exit;
+    }
+}
 if (!function_exists('app_debug')) {
     function app_debug()
     {

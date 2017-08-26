@@ -54,39 +54,15 @@ class LDO extends \PDO
         return $this->$name();
     }
 
-    public function table(...$tables): LDO
+    public function table($name, $alias = null): LDO
     {
-        if (!$tables) {
-            excp('Missing table name.');
+        if (!$name || !is_string($name)) {
+            excp('Missing or illegal table name.');
+        } elseif ($alias && !is_string($alias)) {
+            excp('Illegal table alias.');
         }
 
-        $table   = '';
-
-        foreach ($tables as $as => $raw) {
-            if (is_array($raw)) {
-                foreach ($raw as $_as => $_raw) {
-                    if (! is_string($_raw)) {
-                        excp('Illgeal table name alias.');
-                    }
-
-                    $table .= (is_string($_raw) && $_raw)
-                    ? $_raw.' AS '.$_as
-                    : $_raw;
-
-                    if (next($raw)) {
-                        $table .= ' LEFT JOIN ';
-                    }
-                }
-            } elseif (is_string($raw)) {
-                $table .= $raw;
-            }  else {
-                excp('Illgeal table name.');
-            }
-
-            if (next($tables)) {
-                $table .= ' LEFT JOIN ';
-            }
-        }
+        $table = $alias ? $name.' AS '.$alias : $name;
 
         $this->table = $table;
 
@@ -95,7 +71,19 @@ class LDO extends \PDO
 
     public function where(...$conds): LDO
     {
-        // dd($conds);
+        if ($conds) {
+            switch (count($conds)) {
+                case 1: {
+                } break;
+                case 2: {
+                } break;
+                case 3: {
+                } break;
+                default:
+                break;
+            }
+        }
+
         return $this;
     }
 
@@ -130,6 +118,7 @@ class LDO extends \PDO
 
         $sql  = "SELECT {$this->select} ";
         $sql .= $this->table ? " FROM {$this->table} "   : '';
+        $sql .= $this->where ? " {$this->where} "        : '';
         $sql .= $this->group ? " GROUP BY {$this->group} "        : '';
         $sql .= $this->sort  ? " ORDER BY {$this->sort}" : '';
         $sql .= $this->limit ? " LIMIT {$this->limit} "  : '';
