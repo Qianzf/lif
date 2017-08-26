@@ -49,11 +49,14 @@ class Request extends Container implements Observable
 
     public function route()
     {
-        if (!$this->route) {
+        if (! $this->route) {
             $uriArr = isset($_SERVER['REQUEST_URI'])
-            ? parse_url($_SERVER['REQUEST_URI'])
+            ? parse_url(implode(
+                '/',
+                array_filter(explode('/', $_SERVER['REQUEST_URI'])))
+            )
             : false;
-
+            
             $this->route = $uriArr['path'] ?? '/';
         }
 
