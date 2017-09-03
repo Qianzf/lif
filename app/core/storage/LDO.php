@@ -69,18 +69,82 @@ class LDO extends \PDO
         return $this;
     }
 
+    protected function verifyWhereCondFields(array $conds)
+    {
+        switch (count($conds)) {
+            // Only one condition, and use default specific operator `=`
+            case 2: {
+                if (!($condCol = $conds[0]) || !is_string($condCol)) {
+                    excp('Expecting first field of condition a string.');
+                } elseif (! ($condVal = $conds[1])
+                    || (!is_string($condVal) && !is_numeric($condVal))
+                ) {
+                    excp('Expecting second field of condition a string.');
+                }
+
+                return '('.$condCol.' = '.$condVal.')';;
+            } break;
+
+            // Only one condition, and provide specific operator
+            case 3: {
+                if (!($condCol = $conds[0]) || !is_string($condCol)) {
+                    excp('Expecting first field of condition a string.');
+                } elseif (!($condOp = $conds[1])
+                    || !is_string($condOp)
+                ) {
+                    excp('Expecting second field of condition a string.');
+                } elseif (! $conds[2]
+                    || (!is_string($conds[2]) && !is_array($conds[2]))
+                ) {
+                    excp('Expecting third field of condition.');
+                }
+
+                $condVal = is_array($conds[2])
+                ? '('.implode(',', $conds[2]).')'
+                : $conds[2];
+
+                return '('.$condCol.' '.$condOp.' '.$condVal.')';
+            } break;
+            
+            default: {
+                excp('Illgeal where conditions.');
+            } break;
+        }
+    }
+
     public function where(...$conds): LDO
     {
         if ($conds) {
             switch (count($conds)) {
+                // Conditions formatted with array
                 case 1: {
+                    if (!$conds[0] || !is_array($conds[0])) {
+                        excp('Illgeal conditions, expect an un-empty array.');
+                    }
+
+                    if (! is_array($conds[0][0])) {
+                        $this->where = $this->verifyWhereCondFields($conds[0]);
+                    } else {
+                        $where = '';
+                        foreach ($conds[0] as $key => $cond) {
+                            $where .= $this->verifyWhereCondFields($cond);
+                            if (next($conds[0])) {
+                                $where .= ' AND ';
+                            }
+                        }
+
+                        $this->where = $where;
+                    }
                 } break;
-                case 2: {
-                } break;
+                
+                case 2:
                 case 3: {
+                    $this->where = $this->verifyWhereCondFields($conds);
                 } break;
-                default:
-                break;
+                
+                default: {
+                    excp('Illgeal where conditions');
+                } break;
             }
         }
 
@@ -117,11 +181,11 @@ class LDO extends \PDO
         $this->select = $this->select ?? '*';
 
         $sql  = "SELECT {$this->select} ";
-        $sql .= $this->table ? " FROM {$this->table} "   : '';
-        $sql .= $this->where ? " {$this->where} "        : '';
-        $sql .= $this->group ? " GROUP BY {$this->group} "        : '';
-        $sql .= $this->sort  ? " ORDER BY {$this->sort}" : '';
-        $sql .= $this->limit ? " LIMIT {$this->limit} "  : '';
+        $sql .= $this->table ? " FROM {$this->table} "     : '';
+        $sql .= $this->where ? " WHERE ({$this->where}) "  : '';
+        $sql .= $this->group ? " GROUP BY {$this->group} " : '';
+        $sql .= $this->sort  ? " ORDER BY {$this->sort}"   : '';
+        $sql .= $this->limit ? " LIMIT {$this->limit} "    : '';
 
         return $this->sql = $sql;
     }
@@ -147,10 +211,47 @@ class LDO extends \PDO
     //     Read/Retrieve
     // ---------------------
 
-    // $fields => String | Array
+    protected function legalSqlSelects($fields)
+    {
+        if (!is_string($fields) && !is_array($fields)) {
+            return false;
+        } elseif (! $fields) {
+            return '*';
+        }
+
+        $selects    = (array) $fields;
+
+        $select_str = '';
+
+        foreach ($selects as $alias => $select) {
+            if (is_array($select)) {
+                foreach ($select as $_alias => $_select) {
+                    if (! is_string($_select)) {
+                        return false;
+                    }
+
+                    $select_str .= is_string($_alias)
+                    ? $_select.' AS '.$_alias
+                    : $_select;
+
+                    $select_str .= (false === next($select))
+                    ? '' : ', ';
+                }
+            } elseif (is_string($select)) {
+                $select_str .= $select;
+            } else {
+                excp('Illgeal select field.');
+            }
+
+            $select_str .= (false === next($selects))
+            ? '' : ', ';
+        }
+
+        return $select_str;
+    }
     public function select(...$fields): LDO
     {
-        if (false === ($selects = legal_sql_selects($fields))) {
+        if (false === ($selects = $this->legalSqlSelects($fields))) {
             excp('Illgeal select values.');
         }
 

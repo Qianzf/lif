@@ -559,46 +559,6 @@ if (!function_exists('create_ldo')) {
         ->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 }
-if (!function_exists('legal_sql_selects')) {
-    function legal_sql_selects($fields)
-    {
-        if (!is_string($fields) && !is_array($fields)) {
-            return false;
-        } elseif (! $fields) {
-            return '*';
-        }
-
-        $selects    = (array) $fields;
-
-        $select_str = '';
-
-        foreach ($selects as $alias => $select) {
-            if (is_array($select)) {
-                foreach ($select as $_alias => $_select) {
-                    if (! is_string($_select)) {
-                        return false;
-                    }
-
-                    $select_str .= is_string($_alias)
-                    ? $_select.' AS '.$_alias
-                    : $_select;
-
-                    $select_str .= (false === next($select))
-                    ? '' : ', ';
-                }
-            } elseif (is_string($select)) {
-                $select_str .= $select;
-            } else {
-                excp('Illgeal select field.');
-            }
-
-            $select_str .= (false === next($selects))
-            ? '' : ', ';
-        }
-
-        return $select_str;
-    }
-}
 if (!function_exists('class_name')) {
     function class_name($obj)
     {
