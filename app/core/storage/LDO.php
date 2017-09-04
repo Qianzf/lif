@@ -82,6 +82,8 @@ class LDO extends \PDO
                     excp('Expecting second field of condition a string.');
                 }
 
+                $condVal = is_string($condVal) ? "'$condVal'" : $condVal;
+
                 return '('.$condCol.' = '.$condVal.')';;
             } break;
 
@@ -112,40 +114,78 @@ class LDO extends \PDO
         }
     }
 
-    public function where(...$conds): LDO
+    public function or(...$conds): LDO
     {
+        $where = $this->__where($conds);
+
+        if ($where) {
+            $this->where = $this->where
+            ? $this->where.' OR ('.$where.')'
+            : $where;
+        }
+
+        return $this;
+    }
+
+    protected function __where(array $conds): string
+    {
+        $where = '';
         if ($conds) {
             switch (count($conds)) {
                 // Conditions formatted with array
                 case 1: {
-                    if (!$conds[0] || !is_array($conds[0])) {
-                        excp('Illgeal conditions, expect an un-empty array.');
+                    if (!$conds[0]
+                        || (! is_string($conds[0])
+                            && !is_array($conds[0])
+                            && !($conds[0] instanceof \Closure)
+                        )
+                    ) {
+                        excp('Illgeal conditions, expect an un-empty array or closure.');
                     }
 
-                    if (! is_array($conds[0][0])) {
-                        $this->where = $this->verifyWhereCondFields($conds[0]);
-                    } else {
-                        $where = '';
-                        foreach ($conds[0] as $key => $cond) {
-                            $where .= $this->verifyWhereCondFields($cond);
-                            if (next($conds[0])) {
-                                $where .= ' AND ';
+                    if (is_string($conds[0])) {
+                        $where = $conds[0];
+                    } elseif (is_array($conds[0])) {
+                        if (! is_array($conds[0][0])) {
+                            $where = $this->verifyWhereCondFields($conds[0]);
+                        } else {
+                            foreach ($conds[0] as $key => $cond) {
+                                $where .= $this->verifyWhereCondFields($cond);
+                                if (next($conds[0])) {
+                                    $where .= ' AND ';
+                                }
                             }
                         }
-
-                        $this->where = $where;
+                    } elseif (is_callable($conds[0])) {
+                        $table = clone $this;
+                        $table->where = null;
+                        $conds[0]($table);
+                        $where = '('.$table->where.')';
                     }
                 } break;
                 
                 case 2:
                 case 3: {
-                    $this->where = $this->verifyWhereCondFields($conds);
+                    $where = $this->verifyWhereCondFields($conds);
                 } break;
                 
                 default: {
                     excp('Illgeal where conditions');
                 } break;
             }
+        }
+
+        return $where ? '('.$where.')' : '';
+    }
+
+    public function where(...$conds): LDO
+    {
+        $where = $this->__where($conds);
+
+        if ($where) {
+            $this->where = $this->where
+            ? $this->where.' AND ('.$where.')'
+            : $where;
         }
 
         return $this;
@@ -249,6 +289,7 @@ class LDO extends \PDO
 
         return $select_str;
     }
+    
     public function select(...$fields): LDO
     {
         if (false === ($selects = $this->legalSqlSelects($fields))) {
