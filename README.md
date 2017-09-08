@@ -6,7 +6,7 @@ It's also stands for the recursive acronym ___LiF: LiF is Framework___.
 
 ##### TODO
 
-- Model/ORM
+- DB SQL builder & Model/ORM
 
 - Support variables assignment on route prefix
 
@@ -25,8 +25,6 @@ It's also stands for the recursive acronym ___LiF: LiF is Framework___.
 - Self-test
 
 - Self-deploy
-
-- Views
 
 ##### Current Features
 
@@ -71,6 +69,18 @@ Support the transformation between array and collection class.
 ###### Exception
 
 LiF-styled exception output.
+
+###### Views
+
+LiF is an API-based web framework, so I didn't waste time to design a specialized view template engine. So LiF use plain PHP grammars to write view template.
+
+- Native PHP code, no new syntax to learn
+
+- Reuse with template layouts and sections
+
+- Cache or not can be confinable
+
+- Data share between templates
 
 ##### About Version
 

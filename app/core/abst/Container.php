@@ -42,10 +42,10 @@ abstract class Container
 
         $this->app = $obj;
 
-        return $this->__callSave($method, $params);
+        return $this->__callSafe($method, $params);
     }
 
-    public function __callSave($method, $params)
+    public function __callSafe($method, $params)
     {
         try {
             return call_user_func_array([
@@ -54,39 +54,41 @@ abstract class Container
             ], $params);
         } catch (\ArgumentCountError $e) {
             if (!preg_match(
-                '/^Too\ few\ arguments\ to\ function.*and\ exactly\ (\d)+\ expected$/u',
+                '/^Too\ few\ arguments\ to\ function ([\\\\\w]+)::.*and\ exactly\ (\d)+\ expected$/u',
                 $e->getMessage(),
                 $matches
-            ) || (intval($missingArgsCnt = exists($matches, 1)) < 1)) {
+            )
+            || (exists($matches, 1) != get_class($this))
+            || (intval($missingArgsCnt = exists($matches, 2)) < 1)
+            ) {
                 excp($e->getMessage());
             }
 
-            $forgeArgs = [];
-            for ($i=0; $i<$missingArgsCnt; ++$i) {
-                // !!! Do not forge `null`, because `isset(null)` is false
-                $forgeArgs[] = false;
-            }
-
-            return $this->__callSave($method, $forgeArgs);
+            // !!! Do not forge `null`, because `isset(null)` is false
+            $forgeArgs[] = array_fill(0, $missingArgsCnt, false);
+            
+            return $this->__callSafe($method, $forgeArgs);
         } catch (\TypeError $e) {
             if (!preg_match(
-                '/Argument\ (\d+).*must\ be\ an?\ (.*)\ of\ ([\w\\\\]*),/u',
+                '/Argument\ (\d+) passed to ([\\\\\w]+)::.*must\ be\ an?\ (.*)\ of\ ([\w\\\\]*),/u',
                 $e->getMessage(),
                 $matches
-            ) || !(true &&
+            )
+            || !(true &&
                 exists($matches, 1) &&
                 exists($matches, 2) &&
-                exists($matches, 3)
+                exists($matches, 3) &&
+                exists($matches, 4)
             ) ||
-                ('instance' != $matches[2]) ||
+                ('instance' != $matches[3]) ||
                 !(($argOrder = intval($matches[1])) == $matches[1])
             ) {
                 excp($e->getMessage());
             }
 
-            if (!class_exists($matches[3])) {
+            if (!class_exists($matches[4])) {
                 excp(
-                    'Class `'.$matches[3].'` not exists.'
+                    'Class `'.$matches[4].'` not exists.'
                 );
             }
 
@@ -98,11 +100,11 @@ abstract class Container
             }
 
             // repalace the type error arg with object
-            $params[$argOrder] = new $matches[3](
+            $params[$argOrder] = new $matches[4](
                 $params[$argOrder]
             );
 
-            return $this->__callSave($method, $params);
+            return $this->__callSafe($method, $params);
         } catch (\Error $e) {
             exception($e);
         } finally {

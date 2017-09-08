@@ -20,6 +20,11 @@ class Request extends Container implements Observable
         $this->init();
     }
 
+    public function get($key)
+    {
+        return $this->params()->$key ?? null;
+    }
+
     public function updateType()
     {
         if (('POST' == $this->type) &&

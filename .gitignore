@@ -13,14 +13,13 @@ var/log/*
 var/db/*
 var/upload/*
 web/*
-web/static/*
 !app/conf/.gitkeep
 !app/conf/conf.sample
 !var/cache/.gitkeep
 !var/log/.gitkeep
 !var/db/.gitkeep
 !var/upload/.gitkeep
-!web/static/.gitkeep
+!web/assets/
 !web/index.php
 
 # Composer

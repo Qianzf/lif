@@ -207,7 +207,8 @@ if (!function_exists('pathOf')) {
             'mdl'    => $root.'/app/mdl/',
             'traits' => $root.'/app/traits/',
             'mock'   => $root.'/app/dat/mock/',
-            'dbvc'   => $root.'/app/dat/dbvc/',
+            'mock'   => $root.'/app/dat/mock/',
+            'sysmsg' => $root.'/app/dat/msg/',
             'job'    => $root.'/app/job/',
             'view'   => $root.'/app/view/',
             'route'  => $root.'/app/route/',
@@ -218,7 +219,7 @@ if (!function_exists('pathOf')) {
             'cache'  => $root.'/var/cache/',
             'upload' => $root.'/var/upload/',
             'web'    => $root.'/web/',
-            'static' => $root.'/web/static/',
+            'static' => $root.'/web/assets/',
         ];
 
         return is_null($of) ? $paths : (
@@ -238,11 +239,11 @@ if (!function_exists('_json_encode')) {
 if (!function_exists('json_http_response')) {
     function json_http_response($data)
     {
-        if (!headers_sent()) {
+        if (! headers_sent()) {
             ob_start();
             ob_end_clean();
             mb_http_output('UTF-8');
-            header('Content-type:application/json; charset=UTF-8');
+            header('Content-type: application/json; charset=UTF-8');
         }
         exit(_json_encode($data));
     }
@@ -424,7 +425,7 @@ if (!function_exists('conf')) {
     {
         $cfgPath = $cfgPath ?? pathOf('conf');
 
-        if (!$name) {
+        if (! $name) {
             return conf_all($cfgPath);
         }
 
@@ -436,12 +437,13 @@ if (!function_exists('conf')) {
         }
 
         $cfgFile = $cfgPath.$name.'.php';
-        if (!file_exists($cfgFile)) {
+        if (! file_exists($cfgFile)) {
             excp('Configure File '.$cfgFile.' not exists');
         }
 
-        $cfg = include_once $cfgFile;
+        $cfg = include $cfgFile;
         $GLOBALS['LIF_CFG'][$name] = $cfg;
+
         return $cfg;
     }
 }
@@ -583,10 +585,87 @@ if (!function_exists('collect')) {
     // Convert array to a collection class
     function collect($params)
     {
-        if (!is_array($params)) {
+        if (! is_array($params)) {
             excp('Collect target must be an array.');
         }
 
         return new \Lif\Core\Coll($params);
+    }
+}
+if (! function_exists('fe')) {
+    function fe($name)
+    {
+        return function_exists($name);
+    }
+}
+if (! fe('view')) {
+    function view(string $template, array $data = [], $cache = null)
+    {
+        return (
+            new \Lif\Core\View($template, $data, $cache)
+        )->output();
+    }
+}
+if (! fe('sys_msg')) {
+    function sys_msg($key, $lang = 'zh')
+    {
+
+    }
+}
+if (! fe('uuid')) {
+    // Generate inner system unique number
+    // $id
+    // $type
+    // $domain: 00 => master
+    function uuid(
+        $id = 0,
+        $type = '01',
+        $domain = '00'
+    ): string
+    {
+        $domain  = str_pad(($domain%42), 2, '0', STR_PAD_LEFT);
+        $id      = str_pad(($id%1024), 4, '0', STR_PAD_LEFT);
+        $type    = in_array($type, ['01', '02', '03']) ? $type : '00';
+        $postfix = mb_substr(microtime(), 2, 6);
+
+        return date('YmdHis').$domain.$type.$id.mt_rand(1000, 9999).$postfix;
+    }
+}
+if (! fe('sysmsg')) {
+    function sysmsg($key, $lang = null)
+    {
+        if (! $lang) {
+            $lang = $_REQUEST['lang'] ?? 'zh';
+        }
+
+        if (isset($GLOBALS['__sys_msg'])
+            && is_array($GLOBALS['__sys_msg'])
+            && $GLOBALS['__sys_msg']
+        ) {
+            $msg = $GLOBALS['__sys_msg'];
+        } else {
+            $msg = [];
+            $path = pathOf('sysmsg').$lang;
+            if (file_exists($path)) {
+                $fsi = new \FilesystemIterator($path);
+                foreach ($fsi as $file) {
+                    if ($file->isFile() && 'php' == $file->getExtension()) {
+                        $_msg = include $file->getPathname();
+                        if ($_msg && is_array($_msg)) {
+                            $msg = array_merge($_msg, $msg);
+                        }
+                    }
+                }
+                
+                $GLOBALS['__sys_msg'] = $msg;
+            }
+        }
+
+        return $msg[$key]
+        ?? (
+            ('zh' == $lang)
+            ? '服务繁忙，请稍后再试'
+            : 'Service is busy or temporarily unavailable.'
+        );
     }
 }

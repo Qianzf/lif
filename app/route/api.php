@@ -10,6 +10,12 @@ $this->get('/', function () {
     lif();
 });
 
+$this->get('/dep', 'LDTDF@index');
+
+$this->any('/sys_msg', function () {
+    response((new \Lif\Core\SysMsg)->get());
+});
+
 $this->get('user/{id}', [
     'middleware' => [
         // 'auth',
