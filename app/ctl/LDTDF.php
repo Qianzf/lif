@@ -4,7 +4,9 @@ namespace Lif\Ctl;
 
 class LDTDF extends Ctl
 {
-    public function index()
+    protected $shareData = [];
+
+    public function __construct()
     {
         $nameWitchRole = 'cjli';
         $languages = [
@@ -14,6 +16,28 @@ class LDTDF extends Ctl
 
         $sysLang = $_REQUEST['lang'] ?? 'zh';
 
-        view('index', compact('nameWitchRole', 'languages', 'sysLang'), false);
+        $this->shareData = compact(
+            'nameWitchRole',
+            'languages',
+            'sysLang'
+        );
+    }
+
+    public function index()
+    {
+        view('ldtdf/index',
+            $this->shareData
+        );
+    }
+
+    public function profile()
+    {
+        view('ldtdf.profile', 
+            $this->shareData
+        );
+    }
+
+    public function logout()
+    {
     }
 }

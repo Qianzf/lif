@@ -14,7 +14,7 @@ class View
     protected $includes = [];
     protected $data     = [];
     protected $output   = '';
-    protected $cache    = true;
+    protected $cache    = false;
 
     public function __construct(
         string $template,

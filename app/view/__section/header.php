@@ -1,9 +1,9 @@
 <header>
     <strong><?= sysmsg('LDTDFMS') ?></strong>
 
-    <select>
+    <select name="loggedin">
         <option><?= $nameWitchRole ?></option>
-        <option id="user-profile"><?= sysmsg('USER_PROFILE') ?></option>
-        <option id="user-logout"><?= sysmsg('USER_LOGOUT') ?></option>
+        <option value="profile"><?= sysmsg('USER_PROFILE') ?></option>
+        <option value="logout"><?= sysmsg('USER_LOGOUT') ?></option>
     </select>
 </header>

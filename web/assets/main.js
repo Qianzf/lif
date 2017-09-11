@@ -2,38 +2,57 @@ $(window).ready(function () {
     $('select[name="system-lang"]').change(function () {
         reloadWithQuery('lang', this.value)
     })
+    $('select[name="loggedin"]').change(function () {
+        let aTag = getATag(location.href)
+        let url  = aTag.scheme + aTag.hostname + aTag.pathname
+        window.location.href = url
+        + '/'
+        + this.value
+        + window.location.search
+    })
 })
 
 function reloadWithQuery(key, val)
 {
-    let queryString = window.location.search.replace('?', '').split('&')
+    let queryString = window.location.search
+    .replace('?', '')
+    .split('&')
 
-    if (queryString) {
-        let newQueryString = updateQueryString(
-            queryString,
-            key,
-            val
-        )
-        let aTag = getATag(window.location.href)
-        let url  = aTag.scheme + aTag.hostname + aTag.pathname
+    let newQueryString = updateQueryString(
+        queryString,
+        key,
+        val
+    )
+    let aTag = getATag(window.location.href)
+    let url  = aTag.scheme + aTag.hostname + aTag.pathname
 
-        window.location = url + '?' + newQueryString
-    }
+    window.location = url + '?' + newQueryString
 }
 function updateQueryString(queryString, key, val)
 {
     let newQueryString = []
+    let hasBefore = false
 
-    for (i in queryString) {
-        let pair = queryString[i].split('=')
-        if (key == pair[0]) {
-            pair[1] = val
+    if (queryString) {
+        for (let i in queryString) {
+            console.log(i, queryString)
+            let pair = queryString[i].split('=')
+            if (key == pair[0]) {
+                hasBefore = true
+                pair[1] = val
+            }
+            let newPair = pair.join('=')
+            newQueryString.push(newPair)
         }
-        let newPair = pair.join('=')
-        newQueryString.push(newPair)
     }
 
-    return newQueryString.join('&')
+    newQueryString = newQueryString.join('&')
+
+    if (! hasBefore) {
+        newQueryString += (key + '=' + val)
+    }
+
+    return newQueryString
 }
 function getATag(url)
 {

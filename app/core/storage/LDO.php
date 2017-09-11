@@ -10,10 +10,14 @@ class LDO extends \PDO
 {
     use \Lif\Core\Traits\MethodNotExists;
 
-    protected $conn    = null;
-    protected $crud    = null;
-    protected $sql     = null;    // Used for prepare statement
-    protected $_sql    = null;    // Used for debug
+    protected $conn     = null;
+    protected $crud     = null;
+    protected $sql      = null;    // Used for prepare statement
+    protected $_sql     = null;    // Used for debug
+    protected $lastSql  = null;
+    protected $_lastSql = null;
+    protected $status   = null;
+    protected $result   = [];
 
     protected $table   = null;
     protected $select  = null;
@@ -21,8 +25,55 @@ class LDO extends \PDO
     protected $sort    = null;
     protected $group   = null;
     protected $limit   = null;
+    protected $updates = null;
+    protected $insertKeys = null;
+    protected $insertVals = null;
+    protected $statement  = null;
+    protected $bindValues = [];
+    protected $transRes   = true;    // Transaction result
 
-    private $bindValues = [];
+    public function transRes($value='')
+    {
+        return $this->transRes;
+    }
+
+    public function trans(\Closure $trans)
+    {
+        $this->start();
+
+        $transRes = $trans($this);
+
+        if (true === ($status = $this->transRes)) {
+            $this->commit();
+        } else {
+            $this->rollback();
+        }
+
+        $this->transRes = true;
+
+        return is_null($transRes) ? $status : $transRes;
+    }
+
+    public function start(): void
+    {
+        if (! $this->inTransaction()) {
+            $this->beginTransaction();
+        }
+    }
+
+    public function commit(): void
+    {
+        if ($this->inTransaction()) {
+            parent::commit();
+        }
+    }
+
+    public function rollback(): void
+    {
+        if ($this->inTransaction()) {
+            parent::rollback();
+        }
+    }
 
     public function __conn($conn): LDO
     {
@@ -150,6 +201,7 @@ class LDO extends \PDO
                         'Expecting second field of condition a string or array.'
                     );
                 }
+                $condOp = '=';
             } break;
 
             // Only one condition, and provide specific operator
@@ -161,7 +213,11 @@ class LDO extends \PDO
                 ) {
                     excp('Expecting second field of condition a string.');
                 } elseif (! ($condVal = $conds[2])
-                    || (!is_string($condVal) && !is_array($condVal))
+                    || (
+                        !is_string($condVal)
+                        && !is_numeric($condVal)
+                        && !is_array($condVal)
+                    )
                 ) {
                     excp('Expecting third field of condition.');
                 }
@@ -176,7 +232,7 @@ class LDO extends \PDO
             $condOpWithVal = ' in (?)';
             $this->bindValues[] = implode(',', $condVal);
         } else {
-            $condOpWithVal = ' = ?';
+            $condOpWithVal = ' '.$condOp.' ?';
             $this->bindValues[] = $condVal;
         }
 
@@ -268,7 +324,25 @@ class LDO extends \PDO
         return $this;
     }
 
-    public function __sql()
+    public function lastSql(): string
+    {
+        if ($this->lastSql) {
+            return $this->lastSql;
+        }
+
+        return $this->lastSql = $this->sql();
+    }
+
+    public function __lastSql(): string
+    {
+        if ($this->_lastSql) {
+            return $this->_lastSql;
+        }
+
+        return $this->_lastSql = $this->__sql();
+    }
+
+    public function __sql(): string
     {
         if ($this->_sql) {
             return $this->_sql;
@@ -280,7 +354,6 @@ class LDO extends \PDO
             return $sql;
         }
 
-        // dd($this->bindValues);
         $sql = preg_replace_callback('/\?/u', function ($matches) {
             static $idx = 0;
             return $this->bindValues[$idx++] ?? null;
@@ -288,7 +361,9 @@ class LDO extends \PDO
 
         unset($idx);
 
-        return $this->_sql = $sql;
+        $this->bindValues = [];
+
+        return $this->_sql = $this->_lastSql = $sql;
     }
 
     public function sql(): string
@@ -298,22 +373,45 @@ class LDO extends \PDO
         } else {
             if (!$this->table && !$this->select) {
                 excp('No base table or select commands specified.');
-            } elseif (!$this->crud
-                || !in_array($this->crud, [
-                    'CREATE', 'READ', 'UPDATE', 'DELETE'
+            } elseif (! $this->crud) {
+                $this->crud = 'READ';
+            }
+
+            if (! in_array($this->crud, [
+                    'CREATE',
+                    'INSERT',
+                    'READ',
+                    'SELECT',
+                    'UPDATE',
+                    'DELETE'
                 ])
             ) {
                 excp('Missing or wrong SQL manipulation.');
             }
 
             $sqlBuilder = 'sql'.ucfirst(strtolower($this->crud));
-            return $this->sql = $this->$sqlBuilder();
+
+            return $this->sql = $this->lastSql = $this->$sqlBuilder();
         }
+    }
+
+    protected function sqlInsert(): string
+    {
+        $sql  = "INSERT INTO {$this->table} ";
+        $sql .= $this->insertKeys ? "({$this->insertKeys}) " : '';
+        $sql .= "VALUES {$this->insertVals}";
+
+        return $this->sql = $sql;
+    }
+
+    protected function sqlShow(): string
+    {
+        return $this->sqlRead();
     }
 
     protected function sqlCreate(): string
     {
-        return $this->sql;
+        return $this->sqlInsert();
     }
 
     protected function sqlRead(): string
@@ -332,19 +430,70 @@ class LDO extends \PDO
     
     protected function sqlUpdate(): string
     {
-        return $this->sql;
+        // For data safety, LiF enforce developer to specify where condictions
+        if (! $this->where) {
+            excp('No where condictions when delete records.');
+        } elseif (! $this->updates) {
+            excp('No update infomations.');
+        }
+
+        $sql  = "UPDATE {$this->table} ";
+        $sql .= "SET {$this->updates} ";
+        $sql .= "WHERE {$this->where} ";
+
+        return $this->sql = $sql;
     }
 
     protected function sqlDelete(): string
     {
-        return $this->sql;
+        // For data safety, LiF enforce developer to specify where condictions
+        if (! $this->where) {
+            excp('No where condictions when delete records.');
+        }
+
+        $sql  = "DELETE FROM {$this->table} ";
+        $sql .= "WHERE {$this->where}";
+
+        return $this->sql = $sql;
     }
 
     // ---------------------
     //     Create/Insert
     // ---------------------
-    public function insert()
+    public function insert(array $inserts, $exec = true, $sql = false)
     {
+        $this->insertKeys = $this->insertVals = '';
+
+        $times = $_times = 0;
+        foreach ($inserts as $key => $val) {
+            ++$times;
+            $hasNext = next($inserts);
+            if (is_array($val) && $val) {
+                foreach ($val as $_key => $_val) {
+                    ++$_times;
+                    $_hasNext = next($val);
+                    if (1 === $times) {
+                        $this->insertKeys .= $_key;
+                        $this->insertKeys .= $_hasNext ? ',' : '';
+                    }
+                    $this->insertVals .= (1 === $_times) ? '(?' : '?';
+                    $this->insertVals .= $_hasNext ? ',' : ')';
+                    $this->insertVals .= (!$_hasNext && $hasNext) ? ',' : '';
+
+                    $this->bindValues[] = $_val;
+                }
+                $_times = 0;
+            } else {
+                $this->insertKeys .= $key;
+                $this->insertKeys .= $hasNext ? ',' : '';
+                $this->insertVals .= (1 === $times) ? '(?' : '?';
+                $this->insertVals .= $hasNext ? ',' : ')';
+
+                $this->bindValues[] = $val;
+            }
+        }
+
+        return $this->crud('INSERT')->execute($exec, $sql);
     }
 
     // ---------------------
@@ -527,33 +676,78 @@ class LDO extends \PDO
         return $this;
     }
 
-    public function get()
+    // $exec => If execute SQL right now
+    // $sql  => If get raw sql only (
+    //  false: don't return raw sql
+    //  1: without binding values
+    //  2: with binding vlaues
+    // )
+    protected function execute($exec = true, $sql = false)
     {
-        $this->crud('READ');
-
         try {
-            $statement = $this->prepare($this->sql());
+            if ($sql) {
+                $sqlArr = [
+                    1 => $this->sql(),
+                    2 => $this->__sql(),
+                    3 => $this->lastSql(),
+                    4 => $this->__lastSql(),
+                ];
 
-            foreach ($this->bindValues as $idx => $value) {
-                $type = is_bool($value)
-                ? self::PARAM_BOOL : (
-                    is_null($value)
-                    ? self::PARAM_NULL : (
-                        is_integer($value)
-                        ? self::PARAM_INT : self::PARAM_STR
-                    )
-                );
-                $statement->bindValue(++$idx, $value, $type);
+                return $sqlArr[$sql] ?? $sqlArr[1];
+            } elseif ($exec) {
+                $this->statement = $this->prepare($this->sql());
+                foreach ($this->bindValues as $idx => $value) {
+                    $type = is_bool($value)
+                    ? self::PARAM_BOOL : (
+                        is_null($value)
+                        ? self::PARAM_NULL : (
+                            is_integer($value)
+                            ? self::PARAM_INT : self::PARAM_STR
+                        )
+                    );
+
+                    $this->statement->bindValue(++$idx, $value, $type);
+                }
+
+                $this->statement->execute();
+
+                if ('00000' !== ($this->status = $this->statement->errorCode())) {
+                    $msg = implode(
+                        '; ',
+                        array_reverse($this->statement->errorInfo())
+                    );
+                    excp($msg);
+                }
+
+                // Reset for transaction
+                $this->bindValues = [];
+                $this->sql = $this->_sql = null;
+
+                if (in_array($this->crud, [
+                    'CREATE',
+                    'INSERT',
+                    'UPDATE',
+                    'DELETE'
+                ])) {
+                    // Always return last insert ID when insert
+                    // Number of rows affected by the last SQL statement
+                    $this->result = ('INSERT' === $this->crud)
+                    ? $this->lastInsertId()
+                    : $this->statement->rowCount();
+
+                    $this->transRes = $this->transRes && ($this->result >= 0);
+                } else {
+                    $this->result = $this->statement->fetchAll(
+                        \PDO::FETCH_ASSOC
+                    );
+
+                    $this->trans = true;
+                }
+
+                return $this->result;
             }
 
-            $statement->execute();
-
-            if ('00000' !== $statement->errorCode()) {
-                $msg = implode('; ', array_reverse($statement->errorInfo()));
-                excp($msg);
-            }
-
-            return $statement->fetchAll(\PDO::FETCH_ASSOC);
+            return $this;
         } catch (\PDOException $pdoe) {
             excp(
                 $pdoe->getMessage()
@@ -562,17 +756,56 @@ class LDO extends \PDO
         }
     }
 
+    public function get($exec = true, $sql = false)
+    {
+        return $this->crud('READ')->execute($exec, $sql);
+    }
+
     // --------------
     //     Update
     // --------------
-    public function update()
+    public function update(array $updates, $exec = true, $sql = false)
     {
+        $this->updates = '';
+
+        foreach ($updates as $key => $newVal) {
+            $this->updates .= $key.'='.$newVal;
+
+            if (next($updates)) {
+                $this->updates .= ',';
+            }
+        }
+
+        return $this->crud('UPDATE')->execute($exec, $sql);
     }
 
     // --------------
     //     Delete
     // --------------
-    public function delete()
+    public function delete($exec = true, $sql = false)
     {
+        return $this->crud('DELETE')->execute($exec, $sql);
+    }
+
+    public function truncate()
+    {
+        return $this->crud('DELETE')->raw('TRUNCATE TABLE '.$this->table);
+    }
+
+    public function raw($raw, array $values = [], $exec = true, $sql = false)
+    {
+        if (! $this->crud) {
+            $sqlArr  = explode(' ', $raw);
+            if (! isset($sqlArr[0])) {
+                excp('Illgeal SQL statement.');
+            } else {
+                $this->curd = strtoupper($sqlArr[0]);
+            }
+        }
+
+        $this->sql = $raw;
+        $this->bindValues = $values;
+
+        return $this->execute($exec, $sql);
     }
 }

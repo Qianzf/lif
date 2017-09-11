@@ -5,6 +5,6 @@ return [
     'debug' => true,
     'timezone' => 'Asia/Shanghai',
     'view'  => [
-        'cache' => true
+        'cache' => false
     ],
 ];

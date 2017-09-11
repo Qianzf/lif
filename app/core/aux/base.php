@@ -599,7 +599,7 @@ if (! function_exists('fe')) {
     }
 }
 if (! fe('view')) {
-    function view(string $template, array $data = [], $cache = null)
+    function view(string $template, array $data = [], $cache = false)
     {
         return (
             new \Lif\Core\View($template, $data, $cache)

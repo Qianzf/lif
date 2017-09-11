@@ -1,4 +1,5 @@
 <footer>
+    <em><?= sysmsg('SWITCH_LANG') ?></em>
     <select name="system-lang">
         
         <?php foreach ($languages as $key => $lang) { ?>

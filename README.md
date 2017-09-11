@@ -6,7 +6,7 @@ It's also stands for the recursive acronym ___LiF: LiF is Framework___.
 
 ##### TODO
 
-- DB SQL builder & Model/ORM
+- Model/ORM
 
 - Support variables assignment on route prefix
 
@@ -69,6 +69,10 @@ Support the transformation between array and collection class.
 ###### Exception
 
 LiF-styled exception output.
+
+###### DB SQL builder
+
+LiF has it's own database SQL query builder, it's simple, and extends functionalities from base PDO class, which handles all the SQL things.
 
 ###### Views
 

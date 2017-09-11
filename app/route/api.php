@@ -10,7 +10,13 @@ $this->get('/', function () {
     lif();
 });
 
-$this->get('/dep', 'LDTDF@index');
+$this->group([
+    'prefix' => 'dep',
+], function () {
+    $this->get('/', 'LDTDF@index');
+    $this->get('profile', 'LDTDF@profile');
+    $this->get('logout', 'LDTDF@logout');
+});
 
 $this->any('/sys_msg', function () {
     response((new \Lif\Core\SysMsg)->get());

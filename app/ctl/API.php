@@ -4,8 +4,44 @@ namespace Lif\Ctl;
 
 class API extends Ctl
 {
-    public function user(\Lif\Mdl\User $user)
+    public function user()
     {
+        // dd(db()->raw('show tables', []));
+        // dd(db()->table('checkcode')->truncate());
+
+        dd(db()->trans(function ($table) {
+            $table->table('checkcode')->insert([
+                // 'id' => time(),
+                'value' => 'cjli@cjli.info',
+            ]);
+            // $table->table('checkcode')->whereId(1001)->delete();
+            // $table->table('checkcode')->truncate();
+        }));
+
+        ee(db('local_sqlite')
+            ->table('lif')
+            // ->leftJoin('lif b', 'a.id', '=', 'b.id')
+            // ->where('val', 'like', '1%')
+            // ->get()
+            // ->get(false, 2)
+            ->insert([
+                ['id' => 1001, 'val' => 'cjli@cjli.info',],
+                // ['id' => 111111, 'val' => 1112223333,],
+            ])
+            // ->update([
+            //     'val' => 44,
+            // ])
+            // ->__sql()
+        );
+
+        // ->update([
+        //     'val' => 'test2',
+        // ]));
+
+        $xml = '1.xml';
+
+        ee(json_encode(simplexml_load_file($xml, 'SimpleXMLElement', LIBXML_NOCDATA)));
+
         ee(db()
             ->table('checkcode c')
             ->leftJoin('jh_member m', 'c.id', '=', 'm.uid')
