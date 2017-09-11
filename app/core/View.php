@@ -55,11 +55,11 @@ class View
         try {
             $level = ob_get_level();
             
-            $content = $__main__ = $this->include($this->tplPath);
+            $content = $__MAIN__ = $this->include($this->tplPath);
 
             if ($this->layout) {
                 $content = $this->include($this->layout, [
-                    '__main__' => $__main__,
+                    '__MAIN__' => $__MAIN__,
                 ]);
             }
 

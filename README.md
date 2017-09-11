@@ -1,4 +1,4 @@
-Another simple, quick, lightweight PHP Framework.
+Another simple, quick, lightweight, API-based PHP Framework.
 
 It's also stands for the recursive acronym ___LiF: LiF is Framework___.
 
@@ -6,25 +6,25 @@ It's also stands for the recursive acronym ___LiF: LiF is Framework___.
 
 ##### TODO
 
+- IoC/DI Container
+
 - Model/ORM
+
+- Add CLI features(jobs, queue, update db, etc...)
 
 - Support variables assignment on route prefix
 
-- Core configuration to enable or disable some time-wasting but will still be used features
-
 - Log
 
-- Version control database
+- Core configuration to enable or disable some time-wasting but will still be used features
 
-- Add CLI features(jobs, queue, update db, etc...)
+- Version control database
 
 - Cache
 
 - Mock data
 
-- Self-test
-
-- Self-deploy
+- Self-test, self-deploy, shell-based tasks handle
 
 ##### Current Features
 
@@ -76,7 +76,7 @@ LiF has it's own database SQL query builder, it's simple, and extends functional
 
 ###### Views
 
-LiF is an API-based web framework, so I didn't waste time to design a specialized view template engine. So LiF use plain PHP grammars to write view template.
+LiF is an API-based web framework, so I didn't waste time to design a specialized view template engine. So LiF use plain PHP grammars to write view template. It's has these features:
 
 - Native PHP code, no new syntax to learn
 
