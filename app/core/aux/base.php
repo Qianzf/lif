@@ -669,3 +669,25 @@ if (! fe('sysmsg')) {
         );
     }
 }
+if (! fe('xml2arr')) {
+    function xml2arr(string $xml) {
+        return json_decode(json_encode(simplexml_load_string(
+            $xml,
+            'SimpleXMLElement',
+            LIBXML_NOCDATA
+        )), true);
+    }
+}
+if (! fe('arr2xml')) {
+    function arr2xml(array $array) {
+        // Exchange keys and values of array coz: 
+        // <https://stackoverflow.com/questions/1397036/how-to-convert-array-to-simplexml>
+        $array = array_flip($array);
+        $xml   = new \SimpleXMLElement('<xml/>');
+
+        array_walk_recursive($array, [$xml, 'addChild']);
+
+        // Filter line break
+        return preg_replace('/(\n)*/u', '', $xml->asXML());
+    }
+}

@@ -27,9 +27,23 @@ class Middleware extends Container implements Observable
         $this->middlewares = $middlewares;
 
         $mdwrNS = nsOf('mdwr');
-        foreach ($middlewares as $middleware) {
+        foreach ($middlewares as $key => $middleware) {
+            if (is_string($key)) {
+                $ns = '';
+            } else {
+                $ns = $mdwrNS;
+                if (false !== mb_strpos($middleware, '.')) {
+                    $nsArr = explode('.', $middleware);
+                    array_walk($nsArr, function (&$item, $key) {
+                        $item = ucfirst($item);
+                    });
+
+                    $middleware = implode('\\', $nsArr);
+                }
+            }
+
             $this->argvs[$middleware][] = (
-                Factory::make($middleware, $mdwrNS)
+                Factory::make($middleware, $ns)
             )->handle($this->app);
         }
 

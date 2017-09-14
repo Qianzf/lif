@@ -113,7 +113,8 @@ class Route extends Container implements Observable
         $this
         ->parse($args, $route)
         ->join($route)
-        ->register(strtoupper($type), $route);
+        ->register(strtoupper($type), $route)
+        ->pop();    // !!! Reset temp stack after one route is registered
 
         return $this;
     }
@@ -182,9 +183,9 @@ class Route extends Container implements Observable
             excp('Illegal route binding.');
         }
 
-        $route['name']   = $args[0];
-        $route['bind']   = $bind;
-        $route['alias']  = $alias;
+        $route['name']  = $args[0];
+        $route['bind']  = $bind;
+        $route['alias'] = $alias;
 
         return $this;
     }

@@ -38,10 +38,6 @@ class API extends Ctl
         //     'val' => 'test2',
         // ]));
 
-        $xml = '1.xml';
-
-        ee(json_encode(simplexml_load_file($xml, 'SimpleXMLElement', LIBXML_NOCDATA)));
-
         ee(db()
             ->table('checkcode c')
             ->leftJoin('jh_member m', 'c.id', '=', 'm.uid')

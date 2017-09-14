@@ -24,7 +24,7 @@ $this->any('/sys_msg', function () {
 
 $this->get('user/{id}', [
     'middleware' => [
-        // 'auth',
+        'auth.jwt',
     ],
     // 'prefix' => 'lif',
     'alias' => 'get_user',
@@ -32,7 +32,7 @@ $this->get('user/{id}', [
 
 $this->any('test', [
     'middleware' => [
-        'auth'
+        'auth',
     ],
     // 'alias' => 'test',
 ], function () {
@@ -40,12 +40,12 @@ $this->any('test', [
 });
 
 $this->match([
-    'gET',
-    'POST',
-    'PUT',
+    'get',
+    'post',
+    'put',
 ], 'passwd', [
     'middleware' => [
-        // 'auth'
+        'auth.jwt'
     ],
 ], function () {
     abort(403, 'Forbidden');

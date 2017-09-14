@@ -10,7 +10,8 @@ class Web extends Container implements Observer, Strategy
     protected $name        = 'web';
     protected $_route      = null;
     protected $request     = null;
-    protected $middleware  = null;
+    protected $middleware  = [];
+    protected $globalMiddlewares  = [];
 
     private $listenHandleMap = [
         'route'      => 'fire',
@@ -28,11 +29,11 @@ class Web extends Container implements Observer, Strategy
     }
 
     // load web helpers
-    protected function load()
+    protected function load(): Web
     {
         $webHelpers = pathOf('aux').'web.php';
         
-        if (!file_exists($webHelpers)) {
+        if (! file_exists($webHelpers)) {
             excp('Web helper file does not exists.');
         }
 
@@ -41,14 +42,33 @@ class Web extends Container implements Observer, Strategy
         return $this;
     }
 
-    public function withRoutes($routeFiles)
+    public function withMiddlewares(...$globalMiddlewares): Web
     {
-        if (!$routeFiles || !is_array($routeFiles)) {
-            excp('Missing Routes files.');
+        if ((1 === count($globalMiddlewares))
+            && isset($globalMiddlewares[0])
+            && is_array($globalMiddlewares[0])
+        ) {
+            $globalMiddlewares = $globalMiddlewares[0];
         }
 
-        $this->_route = Factory::make('route', nsOf('web'));
-        $this->_route->run($this, $routeFiles);
+        $this->globalMiddlewares = $globalMiddlewares;
+
+        return $this;
+    }
+
+    public function withRoutes(...$routes): Web
+    {
+        if ((1 === count($routes))
+            && isset($routes[0])
+            && is_array($routes[0])
+        ) {
+            $routes = $routes[0];
+        }
+
+        if ($routes) {
+            $this->_route = Factory::make('route', nsOf('web'));
+            $this->_route->run($this, $routes);
+        }
 
         return $this;
     }
@@ -116,6 +136,11 @@ class Web extends Container implements Observer, Strategy
 
     protected function mdwr($middlewares)
     {
+        if ($this->globalMiddlewares) {
+            // !!! Make sure global middlewares be executed first
+            $middlewares = array_merge($this->globalMiddlewares, $middlewares);
+        }
+
         ($this->middleware = Factory::make('middleware', nsOf('web')))
         ->run($this, $middlewares);
 
