@@ -602,7 +602,7 @@ if (! fe('view')) {
     function view(string $template, array $data = [], $cache = false)
     {
         return (
-            new \Lif\Core\View($template, $data, $cache)
+            new \Lif\Core\Web\View($template, $data, $cache)
         )->output();
     }
 }
@@ -670,12 +670,25 @@ if (! fe('sysmsg')) {
     }
 }
 if (! fe('xml2arr')) {
-    function xml2arr(string $xml) {
-        return json_decode(json_encode(simplexml_load_string(
+    function xml2arr($xml, $loaded = false) {
+        $xml = $loaded
+        ? $xml
+        : simplexml_load_string(
             $xml,
             'SimpleXMLElement',
             LIBXML_NOCDATA
-        )), true);
+        );
+
+        return json_decode(json_encode($xml), true);
+    }
+}
+if (! fe('xml2obj')) {
+    // Return string of error message if $xml is illegal
+    // Return object when $xml is legal
+    function xml2obj(string $xml) {
+        $res = is_xml($xml);
+
+        return $res['data'];
     }
 }
 if (! fe('arr2xml')) {
@@ -689,5 +702,183 @@ if (! fe('arr2xml')) {
 
         // Filter line break
         return preg_replace('/(\n)*/u', '', $xml->asXML());
+    }
+}
+if (! fe('xml_decode')) {
+    function xml_decode(string $xml, $array = true) {
+        if ($array) {
+            return xml2arr($xml);
+        }
+
+        return xml2obj($xml);
+    }
+}
+if (! fe('xml_encode')) {
+    function xml_encode($data) {
+        if (is_array($data)) {
+            return arr2xml($data);
+        } elseif (is_object($data)) {
+            return method_exists($data, 'toXml')
+            ? (
+                is_array($data->toXml())
+                ? arr2xml($ret)
+                : 'Return value of `toXml()` in object.'
+            )
+            : 'Missing `toXml()` method in object.';
+        }
+
+        return false;
+    }
+}
+if (! fe('request_http_api')) {
+    function request_http_api(
+        string $uri,
+        string $type = 'GET',
+        array $headers = [],
+        $params = []
+    ) {
+        $setOpt = [
+            CURLOPT_URL            => $uri,
+            CURLOPT_RETURNTRANSFER => true,
+        ];
+
+        if ($headers) {
+            $setOpt[CURLOPT_HTTPHEADER] = $headers;
+        }
+
+        if ('POST' == $type) {
+            $setOpt[CURLOPT_POST]       = true;
+            $setOpt[CURLOPT_POSTFIELDS] = $params;
+        }
+
+        $ch = curl_init();
+        curl_setopt_array($ch, $setOpt);
+        $res = curl_exec($ch);
+
+        $errNo  = curl_errno($ch);
+        $errMsg = curl_error($ch);
+
+        curl_close($ch);
+
+        return [
+            'err' => $errNo,
+            'msg' => ($errMsg ?: 'ok'),
+            'res' => $res,
+        ];
+    }
+}
+if (! fe('request_json_api')) {
+    function request_json_api(
+        $uri,
+        $type = 'GET',
+        $params = [],
+        $headers = []
+    ) {
+        $headers = [
+            'Content-Type: application/json; Charset: UTF-8',
+        ];
+
+        $ret = request_http_api($uri, $type, $headers, $params);
+
+        if (0 == $ret['err'] && $ret['res']) {
+            $ret['res'] = is_integer($json = is_json($ret['res']))
+            ? get_json_err_msg($json) : $json;
+        }
+
+        return $ret;
+    }
+}
+if (! fe('request_xml_api')) {
+    function request_xml_api(
+        $uri,
+        $type = 'GET',
+        $params = [],
+        $headers = []
+    ) {
+        $headers = [
+            'Content-Type: application/xml; Charset: UTF-8',
+        ];
+
+        $ret = request_http_api($uri, $type, $headers, $params);
+
+        if (0 == $ret['err'] && $ret['res']) {
+            $xml = is_xml($ret['res']);
+
+            $ret['res'] = (true === $xml['status'])
+            ? xml2arr($xml['data'], true)
+            : $xml['data'];
+        }
+
+        return $ret;
+    }
+}
+if (! fe('is_json')) {
+    // Return an array or object if $json is legal
+    // Return an integer number if $json is illegal
+    function is_json(string $json, bool $array = true) {
+        $res = json_decode($json, $array);
+
+        return (($err = json_last_error()) == JSON_ERROR_NONE)
+        ? $res : $err;
+    }
+}
+if (! fe('get_json_err_msg')) {
+    function get_json_err_msg(int $code): string {
+        if (! defined('JSON_ERROR_RECURSION')) {
+            define('JSON_ERROR_RECURSION', 6);
+        }
+        if (! defined('JSON_ERROR_INF_OR_NAN')) {
+            define('JSON_ERROR_INF_OR_NAN', 7);
+        }
+        if (! defined('JSON_ERROR_UNSUPPORTED_TYPE')) {
+            define('JSON_ERROR_UNSUPPORTED_TYPE', 8);
+        }
+        $knownErrors = [
+            JSON_ERROR_NONE  => 'No error',
+            JSON_ERROR_DEPTH => 'Maximum stack depth exceeded',
+            JSON_ERROR_STATE_MISMATCH => 'State mismatch (invalid or malformed JSON)',
+            JSON_ERROR_CTRL_CHAR => 'Control character error, possibly incorrectly encoded',
+            JSON_ERROR_SYNTAX    => 'Syntax error',
+            JSON_ERROR_UTF8      => 'Malformed UTF-8 characters, possibly incorrectly encoded',
+            JSON_ERROR_RECURSION => 'One or more recursive references in the value to be encoded',
+            JSON_ERROR_INF_OR_NAN => 'One or more NAN or INF values in the value to be encoded',
+            JSON_ERROR_UNSUPPORTED_TYPE => 'A value of a type that cannot be encoded was given',
+        ];
+
+        $errMsg = $knownErrors[$code] ?? 'Unknown error';
+
+        return 'Illegal JSON: '.$errMsg;
+    }
+}
+if (! fe('json_last_error_msg')) {
+    function json_last_error_msg(): string {
+        return get_json_err_msg(json_last_error());
+    }
+}
+if (! fe('is_xml')) {
+    // Must return an array:
+    // status => bool: is XML or not
+    // data   => mixed: XML doc (status=true) or error message (status=false)
+    function is_xml(string $xml) : array {
+        libxml_use_internal_errors(true);
+        if (! ($doc = simplexml_load_string(
+            $xml,
+            'SimpleXMLElement',
+            LIBXML_NOCDATA
+        ))) {
+            $error = libxml_get_last_error();    // LibXMLError object
+
+            libxml_clear_errors();
+
+            return [
+                'status' => false,
+                'data'   => 'Illegal XML: '.$error->message,
+            ];
+        }
+
+        return [
+            'status' => true,
+            'data'   => $doc,
+        ];
     }
 }

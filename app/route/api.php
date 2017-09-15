@@ -10,43 +10,18 @@ $this->get('/', function () {
     lif();
 });
 
-$this->group([
-    'prefix' => 'dep',
-], function () {
-    $this->get('/', 'LDTDF@index');
-    $this->get('profile', 'LDTDF@profile');
-    $this->get('logout', 'LDTDF@logout');
-});
-
 $this->any('/sys_msg', function () {
     response((new \Lif\Core\SysMsg)->get());
 });
 
-$this->get('user/{id}', [
+$this->group([
+    'prefix'    => 'dep',
+    'namespace' => 'Ldtdf',
     'middleware' => [
-        'auth.jwt',
-    ],
-    // 'prefix' => 'lif',
-    'alias' => 'get_user',
-], 'API@user');
-
-$this->any('test', [
-    'middleware' => [
-        'auth',
-    ],
-    // 'alias' => 'test',
-], function () {
-    lif();
-});
-
-$this->match([
-    'get',
-    'post',
-    'put',
-], 'passwd', [
-    'middleware' => [
-        'auth.jwt'
+        // 'auth.jwt',
     ],
 ], function () {
-    abort(403, 'Forbidden');
+    $this->get('/', 'LDTDF@index');
+    $this->get('profile', 'LDTDF@profile');
+    $this->get('logout', 'LDTDF@logout');
 });

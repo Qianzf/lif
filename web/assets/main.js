@@ -5,8 +5,7 @@ $(window).ready(function () {
     $('select[name="loggedin"]').change(function () {
         let aTag = getATag(location.href)
         let url  = aTag.scheme + aTag.hostname + aTag.pathname
-        window.location.href = url
-        + '/'
+        window.location.href = '/dep/'
         + this.value
         + window.location.search
     })

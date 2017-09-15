@@ -1,6 +1,6 @@
 <?php
 
-namespace Lif\Ctl;
+namespace Lif\Ctl\Ldtdf;
 
 class LDTDF extends Ctl
 {
@@ -32,7 +32,7 @@ class LDTDF extends Ctl
 
     public function profile()
     {
-        view('ldtdf.profile', 
+        view('ldtdf/profile', 
             $this->shareData
         );
     }

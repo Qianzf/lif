@@ -11,12 +11,16 @@ require_once __DIR__.'/../../vendor/autoload.php';
 )
 
 // -------------------------------------------------------------
-//     Tell web strategy how many route files need to add in
+//     Tell web strategy how many global middlewares we need
 // -------------------------------------------------------------
 
 ->withMiddlewares(
     'cors'
 )
+
+// -------------------------------------------------------------
+//     Tell web strategy how many route files need to add in
+// -------------------------------------------------------------
 
 ->withRoutes(
     'api'

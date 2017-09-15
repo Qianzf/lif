@@ -15,9 +15,13 @@ class Route extends Container implements Observable
     protected $aliases   = [];      // all routes and their aliases
 
     // Temporary stacks for route
-    private $prefixes    = [];
-    private $middlewares = [];
-    private $namespaces  = [];
+    private $prefixes     = [];
+    private $middlewares  = [];
+    private $namespaces   = [];
+    private $_prefixes    = [];
+    private $_middlewares = [];
+    private $_namespaces  = [];
+    private $groupDepth   = 0;       // Nest group routes depth
 
     protected function any(...$args)
     {
@@ -51,47 +55,88 @@ class Route extends Container implements Observable
 
     public function group(array $attrs, \Closure $closure)
     {
-        $this->push($attrs);
+        ++$this->groupDepth;
+        $this->pushCurrentGroup($attrs);
         $closure();      // equal with `call_user_func($closure, $this)`
-        $this->pop();    // Magic happen here
+        $this->popCurrentGroup();    // Magic happen here
+        --$this->groupDepth;
 
         return $this;
     }
 
-    // Push current route's attrs into tmp stacks:
-    public function push($attrs)
+    // Push current group route's attrs into tmp stacks
+    private function pushCurrentGroup($attrs)
     {
+        $this->push(
+            $attrs,
+            $this->prefixes,
+            $this->middlewares,
+            $this->namespaces
+        );
+
+        return $this;
+    }
+
+    // Whenever current route has prefix/middlewares/namespace or not
+    // We need a stub for current route anyway
+    private function push(
+        $attrs,
+        &$prefixes,
+        &$middlewares,
+        &$namespaces
+    ): Route {
+        $prefix = $namespace = false;
+
         if ($prefix = exists($attrs, 'prefix')) {
-            if (!is_string($prefix)) {
+            if (! is_string($prefix)) {
                 excp('Route prefix type is not string.');
             }
-            $this->prefixes[] = $prefix;
         }
 
-        if ($middlewares = exists($attrs, 'middleware')) {
-            $string = is_string($middlewares);
-            $array  = is_array($middlewares);
+        $prefixes[] = $prefix;
+
+        if ($middleware = exists($attrs, 'middleware')) {
+            $string = is_string($middleware);
+            $array  = is_array($middleware);
             if (!$string && !$array) {
                 excp(
                     'Route middlewares type neither string nor array.'
                 );
             }
-            if ($string && !in_array($middlewares, $this->middlewares)) {
-                $this->middlewares[] = $middlewares;
-            } elseif ($array) {
-                $this->middlewares = array_unique(array_merge(
-                    $this->middlewares,
-                    $middlewares
-                ));
+            if ($string && !in_array($middleware, $middlewares)) {
+                $middleware = [$middleware];
             }
+        } else {
+            $middleware = [];
+        }
+
+        if ($middleware) {
+            $middlewares = array_unique(array_merge(
+                $middlewares,
+                $middleware
+            ));
         }
 
         if ($namespace = exists($attrs, 'namespace')) {
             if (!is_string($namespace)) {
                 excp('Route namespace type is not string.');
             }
-            $this->namespaces[] = $namespace;
         }
+
+        $namespaces[] = $namespace;
+
+        return $this;
+    }
+
+    // Push current single non-group route's attrs into tmp stacks
+    private function pushCurrentOne($attrs): Route
+    {
+        $this->push(
+            $attrs,
+            $this->_prefixes,
+            $this->_middlewares,
+            $this->_namespaces
+        );
 
         return $this;
     }
@@ -114,12 +159,22 @@ class Route extends Container implements Observable
         ->parse($args, $route)
         ->join($route)
         ->register(strtoupper($type), $route)
-        ->pop();    // !!! Reset temp stack after one route is registered
+        // !!! Reset temp stack after one route is registered
+        ->popCurrentOne();
 
         return $this;
     }
 
-    private function pop()
+    private function popCurrentOne()
+    {
+        array_pop($this->_prefixes);
+        array_pop($this->_middlewares);
+        array_pop($this->_namespaces);
+
+        return $this;
+    }
+
+    private function popCurrentGroup()
     {
         array_pop($this->prefixes);
         array_pop($this->middlewares);
@@ -158,7 +213,7 @@ class Route extends Container implements Observable
                     exists($attrs, 'alias') && is_string($attrs['alias'])
                 ) ? $attrs['alias'] : false;
 
-                $this->push($attrs);
+                $this->pushCurrentOne($attrs);
             } else {
                 $bind = $args[1];
             }
@@ -173,13 +228,13 @@ class Route extends Container implements Observable
             if ($attrs = $args[1]) {
                 $bind  = exists($attrs, 'bind') ? $attrs['bind'] : $args[2];
                 $alias = exists($attrs, 'alias');
-                $this->push($attrs);
+                $this->pushCurrentOne($attrs);
             } else {
                 $bind = $args[2];
             }
         }
 
-        if (!legal_route_binding($bind)) {
+        if (! legal_route_binding($bind)) {
             excp('Illegal route binding.');
         }
 
@@ -206,7 +261,7 @@ class Route extends Container implements Observable
         if (is_callable($route['bind'])) {
             $handle = $route['bind'];
         } elseif (is_string($route['bind'])) {
-            $handle = format_namespace($this->namespaces).$route['bind'];
+            $handle = format_namespace($this->namespaces).'\\'.$route['bind'];
         } else {
             throw new \Lif\Core\Excp\IllegalRouteDefinition(1);
         }

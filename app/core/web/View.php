@@ -4,7 +4,7 @@
 //     View engine of LiF
 // --------------------------
 
-namespace Lif\Core;
+namespace Lif\Core\Web;
 
 class View
 {
