@@ -7,10 +7,6 @@ namespace Lif\Mdwr;
 
 class CORS extends Mdwr
 {
-    public function __construct()
-    {
-    }
-
     public function handle($app)
     {
         $headers = [
@@ -33,5 +29,7 @@ class CORS extends Mdwr
                 header($key.': '.$val);
             }
         }
+
+        return true;
     }
 }

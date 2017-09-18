@@ -761,6 +761,15 @@ class LDO extends \PDO
         return $this->crud('READ')->execute($exec, $sql);
     }
 
+    public function first($exec = true, $sql = false)
+    {
+        $this->limit = 1;
+
+        $res = $this->crud('READ')->execute($exec, $sql);
+
+        return $res[0] ?? [];
+    }
+
     // --------------
     //     Update
     // --------------

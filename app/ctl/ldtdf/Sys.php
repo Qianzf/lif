@@ -2,10 +2,9 @@
 
 namespace Lif\Ctl\Ldtdf;
 
-class LDTDF extends Ctl
+class Sys extends Ctl
 {
     public function index()
     {
-        view('ldtdf/index');
     }
 }

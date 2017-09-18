@@ -21,6 +21,8 @@ class Route extends Container implements Observable
     private $_prefixes    = [];
     private $_middlewares = [];
     private $_namespaces  = [];
+    private $type         = null;    // Current single route type
+    private $route        = null;    // Current single route name
     private $groupDepth   = 0;       // Nest group routes depth
 
     protected function any(...$args)
@@ -183,6 +185,30 @@ class Route extends Container implements Observable
         return $this;
     }
 
+    // Cancel some middlewares for current single route
+    public function cancel(...$middlewares): Route
+    {
+        if ((1 == count($middlewares))
+            && isset($middlewares[0])
+            && is_array($middlewares[0])
+        ) {
+            $middlewares = $middlewares[0];
+        }
+        
+        if ($middlewares) {
+            $tmpRoutes = $this->routes[$this->route][$this->type]['middlewares'];
+            foreach ($tmpRoutes as $idx => $middleware) {
+                if (in_array($middleware, $middlewares)) {
+                    unset($tmpRoutes[$idx]);
+                }
+            }
+
+            $this->routes[$this->route][$this->type]['middlewares'] = $tmpRoutes;
+        }
+
+        return $this;
+    }
+
     // parse route definition and save basic attrs
     protected function parse($args, &$route)
     {
@@ -291,8 +317,9 @@ class Route extends Container implements Observable
     // register and save this route
     protected function register($type, $route)
     {
-        $rawName = $route['name'];
-        $name    = escape_route_name($rawName);
+        $this->type = $type;
+        $rawName    = $route['name'];
+        $name       = $this->route = escape_route_name($rawName);
         if (isset($this->routes[$name][$type])) {
             excp(
                 'Duplicate definition on `'.
@@ -350,6 +377,14 @@ class Route extends Container implements Observable
         return $this;
     }
 
+    protected function share(): Route
+    {
+        $GLOBALS['LIF_ROUTES']         = $this->routes;
+        $GLOBALS['LIF_ROUTES_ALIASES'] = $this->aliases;
+        
+        return $this;
+    }
+
     public function files()
     {
         return $this->files;
@@ -365,6 +400,7 @@ class Route extends Container implements Observable
         $this
         ->addObserver($observer)
         ->load($routes)
+        ->share()
         ->done();
 
         return $this;

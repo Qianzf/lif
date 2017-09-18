@@ -7,6 +7,10 @@ abstract class Container
     use \Lif\Core\Traits\MethodNotExists;
     
     protected $app = null;
+
+    public function __construct()
+    {
+    }
     
     public function __get($name)
     {
@@ -65,8 +69,8 @@ abstract class Container
             }
 
             // !!! Do not forge `null`, because `isset(null)` is false
-            $forgeArgs[] = array_fill(0, $missingArgsCnt, false);
-            
+            $forgeArgs = array_fill(0, $missingArgsCnt, false);
+
             return $this->__callSafe($method, $forgeArgs);
         } catch (\TypeError $e) {
             if (!preg_match(

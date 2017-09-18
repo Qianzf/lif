@@ -18,10 +18,17 @@ $this->group([
     'prefix'    => 'dep',
     'namespace' => 'Ldtdf',
     'middleware' => [
-        // 'auth.jwt',
+        'auth.web',
     ],
 ], function () {
     $this->get('/', 'LDTDF@index');
-    $this->get('profile', 'LDTDF@profile');
-    $this->get('logout', 'LDTDF@logout');
+
+    $this->group([
+        'prefix' => 'user',
+    ], function () {
+        $this->get('{id}', 'User@profile');
+        $this->get('login', 'Passport@login')->cancel('auth.web');
+        $this->post('login', 'Passport@loginAction')->cancel('auth.web');
+        $this->get('logout', 'Passport@logout');
+    });
 });

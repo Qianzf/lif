@@ -5,12 +5,19 @@ $(window).ready(function () {
     $('select[name="loggedin"]').change(function () {
         let aTag = getATag(location.href)
         let url  = aTag.scheme + aTag.hostname + aTag.pathname
-        window.location.href = '/dep/'
+        window.location.href = '/dep/user/'
         + this.value
         + window.location.search
     })
-})
 
+    hasErrorOrNot()
+})
+function hasErrorOrNot() {
+    let error = $('input[name="__error"]').val()
+    if (error) {
+        alert(error)
+    }
+}
 function reloadWithQuery(key, val)
 {
     let queryString = window.location.search

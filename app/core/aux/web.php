@@ -4,10 +4,9 @@
 //     Helper Functions for Web Scenario Only
 // ----------------------------------------------
 
-if (!function_exists('getallheaders')) {
+if (! fe('getallheaders')) {
     // For nginx, compatible with apache format
-    function getallheaders()
-    {
+    function getallheaders() {
         $headers = [];
         foreach ($_SERVER as $name => $value) {
             if (mb_substr($name, 0, 5) === 'HTTP_') {
@@ -17,7 +16,7 @@ if (!function_exists('getallheaders')) {
         return $headers;
     }
 }
-if (!function_exists('response')) {
+if (! fe('response')) {
     function response(
         $dat = [],
         $msg = 'ok',
@@ -38,9 +37,8 @@ if (!function_exists('response')) {
         }
     }
 }
-if (!function_exists('abort')) {
-    function abort($status = 403, $msg = '')
-    {
+if (! fe('abort')) {
+    function abort($status = 403, $msg = '') {
         ob_start();
         ob_end_clean();
         header('HTTP/1.1 '.$status);
@@ -49,9 +47,8 @@ if (!function_exists('abort')) {
         ]));
     }
 }
-if (!function_exists('legal_route_binding')) {
-    function legal_route_binding($routeBind)
-    {
+if (! fe('legal_route_binding')) {
+    function legal_route_binding($routeBind) {
         if (is_callable($routeBind)) {
             return true;
         }
@@ -62,9 +59,8 @@ if (!function_exists('legal_route_binding')) {
         return false;
     }
 }
-if (!function_exists('legal_http_methods')) {
-    function legal_http_methods()
-    {
+if (! fe('legal_http_methods')) {
+    function legal_http_methods() {
         return [
             'GET',
             'POST',
@@ -76,7 +72,7 @@ if (!function_exists('legal_http_methods')) {
         ];
     }
 }
-if (!function_exists('client_error')) {
+if (! fe('client_error')) {
     // ----------------------------------------------------------------------
     //     PHP errors caused by client behaviours called client error
     //     eg: route not found, params illegal, etc.
@@ -84,21 +80,18 @@ if (!function_exists('client_error')) {
     //     Client error is used to tell cllient what's going wrong
     //     Debug model or environment will not effect client error output
     // ----------------------------------------------------------------------
-    function client_error($msg, $err)
-    {
+    function client_error($msg, $err) {
         abort($err, $msg);
     }
 }
-if (!function_exists('format_route_key')) {
-    function format_route_key($route)
-    {
+if (! fe('format_route_key')) {
+    function format_route_key($route) {
         $routeKey = implode('.', array_filter(explode('/', $route)));
         return $routeKey ? $routeKey : '.';
     }
 }
-if (!function_exists('escape_route_name')) {
-    function escape_route_name($name)
-    {
+if (! fe('escape_route_name')) {
+    function escape_route_name($name) {
         return preg_replace_callback('/\{(\w+)\}/', function ($matches) {
             if (is_array($matches) &&
                 isset($matches[1]) &&
@@ -110,10 +103,20 @@ if (!function_exists('escape_route_name')) {
         }, $name);
     }
 }
-if (!function_exists('get_raw_route')) {
-    function get_raw_route($key)
-    {
-        if (!is_scalar($key)) {
+if (! fe('route')) {
+    function route($alias) : string {
+        $route = $GLOBALS['LIF_ROUTES_ALIASES'][$alias] ?? false;
+
+        if (false === $route) {
+            excp('Route alias not found for `'.$alias.'`');
+        }
+
+        return get_raw_route($route['route']);
+    }
+}
+if (! fe('get_raw_route')) {
+    function get_raw_route($key) {
+        if (! is_scalar($key)) {
             excp(
                 'Illegal route key.'
             );
@@ -126,29 +129,77 @@ if (!function_exists('get_raw_route')) {
         return '/'.str_replace('.', '/', $key);
     }
 }
-if (!function_exists('try_client_ip_key')) {
-    function try_client_ip_key($possible_key)
-    {
+if (! fe('try_client_ip_key')) {
+    function try_client_ip_key($possible_key) {
         return getenv($possible_key)
         ?? (
             $_SERVER[$possible_key] ?? null
         );
     }
 }
-if (!function_exists('ip_of_client')) {
-    function ip_of_client() {
-        if ($clientIP     = try_client_ip_key('HTTP_CLIENT_IP')) {}
-        elseif ($clientIP = try_client_ip_key('HTTP_X_FORWARDED_FOR')) {}
-        elseif ($clientIP = try_client_ip_key('HTTP_X_FORWARDED')) {}
-        elseif ($clientIP = try_client_ip_key('HTTP_FORWARDED_FOR')) {}
-        elseif ($clientIP = try_client_ip_key('HTTP_FORWARDED')) {}
-        elseif ($clientIP = try_client_ip_key('REMOTE_ADDR')) {}
-        else $clientIP    = 'UNKNOWN';
+if (! fe('redirect')) {
+    function redirect($uri) {
+        header('Location: '.$uri);
 
-        return $clientIP;
+        exit;
     }
 }
-if (!function_exists('is_mobile_device')) {
+if (! fe('ip_of_client')) {
+    function ip_of_client() {
+        $clientIPKeys = [
+            'HTTP_CLIENT_IP',
+            'HTTP_X_FORWARDED_FOR',
+            'HTTP_X_FORWARDED',
+            'HTTP_FORWARDED_FOR',
+            'HTTP_FORWARDED',
+            'REMOTE_ADDR',
+        ];
+
+        foreach ($clientIPKeys as $key) {
+            if ($clientIP = try_client_ip_key($key)) {
+                break;
+            }
+        }
+
+        return $clientIP ?? 'UNKNOWN';
+    }
+}
+if (! fe('share')) {
+    function share(string $key, $val = null, bool $delete = false) {
+        $session = session();
+
+        if ($delete) {
+            return $session->delete($key);
+        } elseif (! is_null($val)) {
+            return $session->set($key, $val);
+        } else {
+            return $session->get($key);
+        }
+    }
+}
+if (! fe('share_flush')) {
+    function share_flush(string $key) {
+        return session()->flush($key);
+    }
+}
+if (! fe('syslang')) {
+    function syslang() {
+        return $_REQUEST['lang'] ?? (
+            session()->get('__lang') ?? 'zh'
+        );
+    }
+}
+if (! fe('session')) {
+    function session() {
+        $session = $GLOBALS['LIF_SESSION'] ?? null;
+        if (! $session || !is_object($session)) {
+            $GLOBALS['LIF_SESSION'] = $session = new \Lif\Core\Web\Session;
+        }
+
+        return $session;
+    }
+}
+if (! fe('is_mobile_device')) {
     function is_mobile_device() {
         if (! ($ua = $_SERVER['HTTP_USER_AGENT']) || !is_string($ua)) {
             return false;

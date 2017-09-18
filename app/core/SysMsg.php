@@ -97,7 +97,15 @@ class SysMsg implements \ArrayAccess
 
     protected function getFilesystemIterator()
     {
-        if (($path = $this->path()) && file_exists($path)) {
+        if (($path = $this->path())) {
+            if (! file_exists($path)) {
+                $this->lang = 'zh';
+                $path = $this->path();
+                if (! file_exists($path)) {
+                    return false;
+                }
+            }
+
             return new \FilesystemIterator($path);
         }
 

@@ -4,9 +4,13 @@
 //     Basic Helper Functions for LiF
 // --------------------------------------
 
-if (!function_exists('lif')) {
-    function lif()
-    {
+if (! function_exists('fe')) {
+    function fe($name) {
+        return function_exists($name);
+    }
+}
+if (! fe('lif')) {
+    function lif() {
         $msg = 'Hello World';
         $lif = [
             'name'    => 'LiF',
@@ -20,7 +24,7 @@ if (!function_exists('lif')) {
         : response($lif, $msg);
     }
 }
-if (!function_exists('get_lif_ver')) {
+if (! fe('get_lif_ver')) {
     // --------------------------------------------
     //     The version format used in LiF:
     //     [major].[minor].[release].[build]
@@ -29,8 +33,7 @@ if (!function_exists('get_lif_ver')) {
     //     1 minor   = 8 release = 256 commits
     //     1 major   = 4 minor   = 1024 commits
     // --------------------------------------------
-    function get_lif_ver()
-    {
+    function get_lif_ver() {
         $path = pathOf('root').'.ver';
         if (!file_exists($path)) {
             return '0.0.0.0';
@@ -47,9 +50,8 @@ if (!function_exists('get_lif_ver')) {
         return $major.'.'.$minor.'.'.$release.'.'.$build;
     }
 }
-if (!function_exists('init')) {
-    function init()
-    {
+if (! fe('init')) {
+    function init() {
         $debugNonProd = !('production' == app_env()) && app_debug();
 
         $display_startup_errors = $debugNonProd ? 1 : 0;
@@ -64,11 +66,11 @@ if (!function_exists('init')) {
         mb_internal_encoding('UTF-8');
         mb_regex_encoding('UTF-8');
         mb_language('uni');
+        ini_set('session.name', 'LIFSESSID');
     }
 }
-if (!function_exists('dd')) {
-    function dd(...$args)
-    {
+if (! fe('dd')) {
+    function dd(...$args) {
         if (0 < func_num_args()) {
             // $args = func_get_args();    // compatible with PHP < 5.6
             $func = extension_loaded('xdebug')
@@ -84,9 +86,8 @@ if (!function_exists('dd')) {
         exit;
     }
 }
-if (!function_exists('pr')) {
-    function pr(...$args)
-    {
+if (! fe('pr')) {
+    function pr(...$args) {
         if (0 < func_num_args()) {
             // $args = func_get_args();    // compatible with PHP < 5.6
             $func = extension_loaded('xdebug')
@@ -96,9 +97,8 @@ if (!function_exists('pr')) {
         }
     }
 }
-if (!function_exists('ee')) {
-    function ee(...$scalars)
-    {
+if (! fe('ee')) {
+    function ee(...$scalars) {
         foreach ($scalars as $value) {
             if (is_scalar($value)) {
                 echo $value, PHP_EOL;
@@ -109,9 +109,8 @@ if (!function_exists('ee')) {
         exit;
     }
 }
-if (!function_exists('app_debug')) {
-    function app_debug()
-    {
+if (! fe('app_debug')) {
+    function app_debug() {
         $app = conf('app');
         return (isset($app['debug']) && in_array($app['debug'], [
             true,
@@ -119,9 +118,8 @@ if (!function_exists('app_debug')) {
         ])) ? $app['debug'] : true;
     }
 }
-if (!function_exists('app_env')) {
-    function app_env()
-    {
+if (! fe('app_env')) {
+    function app_env() {
         $app = conf('app');
         return (isset($app['env']) && in_array($app['env'], [
             'local',
@@ -130,16 +128,14 @@ if (!function_exists('app_env')) {
         ])) ? $app['env'] : 'local';
     }
 }
-if (!function_exists('context')) {
-    function context()
-    {
+if (! fe('context')) {
+    function context() {
         return ('cli' === php_sapi_name())
         ? 'cli' : 'web';
     }
 }
-if (!function_exists('exists')) {
-    function exists($var, $idx = null)
-    {
+if (! fe('exists')) {
+    function exists($var, $idx = null) {
         // !!! be carefurl if `$var` is not an assoc array
         if (is_array($var) && $idx) {
             $idxes = is_array($idx) ? $idx : [$idx];
@@ -164,10 +160,9 @@ if (!function_exists('exists')) {
         return (isset($var) && $var) ? $var : false;
     }
 }
-if (!function_exists('nsOf')) {
-    function nsOf($of = null)
-    {
-        if (!$of) {
+if (! fe('nsOf')) {
+    function nsOf($of = null) {
+        if (! $of) {
             return '\\';
         }
 
@@ -194,9 +189,8 @@ if (!function_exists('nsOf')) {
         }
     }
 }
-if (!function_exists('pathOf')) {
-    function pathOf($of = null)
-    {
+if (! fe('pathOf')) {
+    function pathOf($of = null) {
         $root  = realpath(__DIR__.'/../../../');
         $paths = [
             'root'   => $root.'/',
@@ -227,18 +221,16 @@ if (!function_exists('pathOf')) {
         );
     }
 }
-if (!function_exists('_json_encode')) {
-    function _json_encode($arr)
-    {
+if (! fe('_json_encode')) {
+    function _json_encode($arr) {
         return json_encode(
             $arr,
             JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
         );
     }
 }
-if (!function_exists('json_http_response')) {
-    function json_http_response($data)
-    {
+if (! fe('json_http_response')) {
+    function json_http_response($data) {
         if (! headers_sent()) {
             ob_start();
             ob_end_clean();
@@ -248,7 +240,7 @@ if (!function_exists('json_http_response')) {
         exit(_json_encode($data));
     }
 }
-if (!function_exists('exception')) {
+if (! fe('exception')) {
     // ----------------------------------------------------------------------
     //     Errors caused by behaviours inside framework called exceptions
     //     eg: route bind illegal, file not exists, etc.
@@ -256,8 +248,7 @@ if (!function_exists('exception')) {
     //     Exceptions is used for developer to locate bugs
     //     Debug model and environment will effect exception output
     // ----------------------------------------------------------------------
-    function exception(&$exObj, $format = 'json')
-    {
+    function exception(&$exObj, $format = 'json') {
         $info = [
             'Exception' => $exObj->getMessage(),
             'Code'      => $exObj->getCode(),
@@ -276,15 +267,13 @@ if (!function_exists('exception')) {
         }
     }
 }
-if (!function_exists('excp')) {
-    function excp($msg, $err = 500, $format = 'json')
-    {
+if (! fe('excp')) {
+    function excp($msg, $err = 500, $format = 'json') {
         throw new \Lif\Core\Excp\Lif($msg, $err, $format);
     }
 }
-if (!function_exists('format_namespace')) {
-    function format_namespace($namespaceRaw)
-    {
+if (! fe('format_namespace')) {
+    function format_namespace($namespaceRaw) {
         if (is_array($namespaceRaw) && $namespaceRaw) {
             return implode(
                 '\\',
@@ -300,9 +289,8 @@ if (!function_exists('format_namespace')) {
         return '\\';
     }
 }
-if (!function_exists('array_stringify_main')) {
-    function array_stringify_main($arr, &$level)
-    {
+if (! fe('array_stringify_main')) {
+    function array_stringify_main($arr, &$level) {
         $str = '';
         $margin = str_repeat("\t", $level++);
         foreach ($arr as $key => $val) {
@@ -319,9 +307,8 @@ if (!function_exists('array_stringify_main')) {
         return $str;
     }
 }
-if (!function_exists('array_stringify')) {
-    function array_stringify($arr)
-    {
+if (! fe('array_stringify')) {
+    function array_stringify($arr) {
         $level = 1;
         $str   = "[\n";
         $str  .= array_stringify_main($arr, $level);
@@ -330,7 +317,7 @@ if (!function_exists('array_stringify')) {
         return $str;
     }
 }
-if (!function_exists('array_update_by_coherent_keys')) {
+if (! fe('array_update_by_coherent_keys')) {
     function array_update_by_coherent_keys(
         $coherentKeyStr,
         $dimensionArray,
@@ -345,7 +332,7 @@ if (!function_exists('array_update_by_coherent_keys')) {
         );
     }
 }
-if (!function_exists('array_update_by_coherent_keys_main')) {
+if (! fe('array_update_by_coherent_keys_main')) {
     function array_update_by_coherent_keys_main(
         $coherentKeys,
         $dimensionArray,
@@ -374,9 +361,8 @@ if (!function_exists('array_update_by_coherent_keys_main')) {
         return $dimensionArray;
     }
 }
-if (!function_exists('cfg')) {
-    function cfg($name, $keyStr, $data)
-    {
+if (! fe('cfg')) {
+    function cfg($name, $keyStr, $data) {
         if (!$name || !is_string($name) ||
             !$keyStr || !is_string($keyStr) ||
             !$data
@@ -399,9 +385,8 @@ CFG;
         return file_put_contents($cfgFile, $_cfg, LOCK_EX);
     }
 }
-if (!function_exists('conf_all')) {
-    function conf_all($cfgPath = null)
-    {
+if (! fe('conf_all')) {
+    function conf_all($cfgPath = null) {
         $cfgPath = $cfgPath ?? pathOf('conf');
 
         foreach (scandir($cfgPath) as $cfg) {
@@ -420,9 +405,8 @@ if (!function_exists('conf_all')) {
         return $GLOBALS['LIF_CFG'] ?? [];
     }
 }
-if (!function_exists('conf')) {
-    function conf($name = null, $cfgPath = null)
-    {
+if (! fe('conf')) {
+    function conf($name = null, $cfgPath = null) {
         $cfgPath = $cfgPath ?? pathOf('conf');
 
         if (! $name) {
@@ -447,22 +431,19 @@ if (!function_exists('conf')) {
         return $cfg;
     }
 }
-if (!function_exists('db')) {
-    function db($conn = null)
-    {
+if (! fe('db')) {
+    function db($conn = null) {
         return \Lif\Core\Factory\Storage::fetch('db', 'pdo', $conn);
     }
 }
-if (!function_exists('db_conns')) {
-    function db_conns($conn = null)
-    {
+if (! fe('db_conns')) {
+    function db_conns($conn = null) {
         return \Lif\Core\Factory\Storage::fetch('db', 'conns', $conn);
     }
 }
-if (!function_exists('build_pdo_dsn')) {
+if (! fe('build_pdo_dsn')) {
     // !!! $$conn => must `validate_db_conn` first
-    function build_pdo_dsn($conn)
-    {
+    function build_pdo_dsn($conn) {
         $dsn = $conn['driver'].':';
 
         switch ($conn['driver']) {
@@ -496,9 +477,8 @@ if (!function_exists('build_pdo_dsn')) {
         return $dsn;
     }
 }
-if (!function_exists('validate_db_conn')) {
-    function validate_db_conn(&$conn)
-    {
+if (! fe('validate_db_conn')) {
+    function validate_db_conn(&$conn) {
         $driverConfMap = [
             'mysql'  => [
                 'host',
@@ -546,9 +526,8 @@ if (!function_exists('validate_db_conn')) {
         return $conn;
     }
 }
-if (!function_exists('create_ldo')) {
-    function create_ldo($conn)
-    {
+if (! fe('create_ldo')) {
+    function create_ldo($conn) {
         $dsn  = build_pdo_dsn(validate_db_conn($conn));
         return (
             new \Lif\Core\Storage\LDO(
@@ -561,9 +540,8 @@ if (!function_exists('create_ldo')) {
         ->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 }
-if (!function_exists('class_name')) {
-    function class_name($obj)
-    {
+if (! fe('class_name')) {
+    function class_name($obj) {
         if (!is_object($obj)) {
             return false;
         }
@@ -571,9 +549,8 @@ if (!function_exists('class_name')) {
         return (new \ReflectionClass(get_class($obj)))->getShortName();
     }
 }
-if (!function_exists('class_attrs')) {
-    function class_attrs($obj)
-    {
+if (! fe('class_attrs')) {
+    function class_attrs($obj) {
         if (!is_object($obj)) {
             return false;
         }
@@ -581,10 +558,9 @@ if (!function_exists('class_attrs')) {
         return (new \ReflectionClass(get_class($obj)))->getProperties();
     }
 }
-if (!function_exists('collect')) {
+if (! fe('collect')) {
     // Convert array to a collection class
-    function collect($params)
-    {
+    function collect($params) {
         if (! is_array($params)) {
             excp('Collect target must be an array.');
         }
@@ -592,23 +568,15 @@ if (!function_exists('collect')) {
         return new \Lif\Core\Coll($params);
     }
 }
-if (! function_exists('fe')) {
-    function fe($name)
-    {
-        return function_exists($name);
-    }
-}
 if (! fe('view')) {
-    function view(string $template, array $data = [], $cache = false)
-    {
+    function view(string $template, array $data = [], $cache = false) {
         return (
             new \Lif\Core\Web\View($template, $data, $cache)
         )->output();
     }
 }
 if (! fe('sys_msg')) {
-    function sys_msg($key, $lang = 'zh')
-    {
+    function sys_msg($key, $lang = 'zh') {
 
     }
 }
@@ -621,8 +589,7 @@ if (! fe('uuid')) {
         $id = 0,
         $type = '01',
         $domain = '00'
-    ): string
-    {
+    ): string {
         $domain  = str_pad(($domain%42), 2, '0', STR_PAD_LEFT);
         $id      = str_pad(($id%1024), 4, '0', STR_PAD_LEFT);
         $type    = in_array($type, ['01', '02', '03']) ? $type : '00';
@@ -632,10 +599,14 @@ if (! fe('uuid')) {
     }
 }
 if (! fe('sysmsg')) {
-    function sysmsg($key, $lang = null)
-    {
+    function sysmsg($key, $lang = null) {
         if (! $lang) {
-            $lang = $_REQUEST['lang'] ?? 'zh';
+            $lang = $_REQUEST['lang'] ?? null;
+            if (! $lang) {
+                $session = new \Lif\Core\Web\Session;
+
+                $lang = $session->get('__lang') ?? 'zh';
+            }
         }
 
         if (isset($GLOBALS['__sys_msg'])
@@ -645,7 +616,9 @@ if (! fe('sysmsg')) {
             $msg = $GLOBALS['__sys_msg'];
         } else {
             $msg = [];
-            $path = pathOf('sysmsg').$lang;
+            $langPath = pathOf('sysmsg');
+            $path = $langPath.$lang;
+            $path = file_exists($path) ? $path : $langPath.'zh';
             if (file_exists($path)) {
                 $fsi = new \FilesystemIterator($path);
                 foreach ($fsi as $file) {
@@ -880,5 +853,50 @@ if (! fe('is_xml')) {
             'status' => true,
             'data'   => $doc,
         ];
+    }
+}
+if (! fe('unihex_text')) {
+    // Attained like this: <https://www.branah.com/unicode-converter>
+    function unihex_text(string $unicode) : string {
+        $json = '{"key":"'.$unicode.'"}';
+
+        $res  = json_decode($json);
+
+        if ($code = json_last_error()) {
+            return get_json_err_msg($code);
+        }
+
+        return $res->key;
+    }
+}
+if (! fe('unihex2text')) {
+    // Slower than unihex_text(~4x) but suitable for more complicated scenarios
+    // See: <https://zh.wikipedia.org/wiki/UTF-16>
+    function unihex2text(string $unicode) : string {
+        return preg_replace_callback(
+            '/\\\\u([0-9a-fA-F]{4})/u',
+            function ($match) {
+                return mb_convert_encoding(
+                    pack(
+                        'H*',
+                        $match[1]
+                    ),
+                    'UTF-8',
+                    'UTF-16BE'
+                );
+            },
+            $unicode
+        );
+    }
+}
+if (! fe('get_func_cost')) {
+    function get_func_cost(Closure $closure, int $times = 10000) : float {
+        $start = microtime(true);
+        for ($i=0; $i<=$times; ++$i) {
+            $closure();
+        }
+        $end   = microtime(true);
+
+        return $end-$start;
     }
 }

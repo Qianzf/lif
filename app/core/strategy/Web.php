@@ -113,12 +113,13 @@ class Web extends Container implements Observer, Strategy
             );
         }
 
-        if ($middlewares = exists($this->routes[$key][$type], 'middlewares')) {
-            return $this->mdwr($middlewares);
-        }
-
+        // !!! Hander must set before middlewares be executed
         $this->handler   = $this->routes[$key][$type]['handle'];
         $this->routeVars = $this->assign($this->routes[$key][$type]['params']);
+
+        if ($middlewares = exists($this->routes[$key][$type], 'middlewares')) {
+            $this->mdwr($middlewares);
+        }
 
         $this->execute();
 
@@ -185,8 +186,8 @@ class Web extends Container implements Observer, Strategy
     {
         $handle = $this->listenHandleMap[$name];
 
-        if (!exists($this->listenHandleMap, $name) ||
-            !method_exists($this, $handle)
+        if (!exists($this->listenHandleMap, $name)
+            || !method_exists($this, $handle)
         ) {
             throw new \Lif\Core\Excp\MethodNotFound(__CLASS__, $handle);
         }

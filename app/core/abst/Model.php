@@ -4,10 +4,11 @@ namespace Lif\Core\Abst;
 
 abstract class Model
 {
-    protected $name = null;    // table name
-    protected $_tbx = null;    // table prefix
-    protected $_fdx = null;    // field prefix
-    protected $pk   = null;    // primary key
+    protected $conn  = null;
+    protected $table = null;    // table name
+    protected $_tbx  = null;    // table prefix
+    protected $_fdx  = null;    // field prefix
+    protected $pk    = null;    // primary key
 
     protected $unwriteable = [];    // protected fields that cann't update
     protected $unreadable  = [];    // protected fields that cann't read
@@ -36,9 +37,32 @@ abstract class Model
         return $this;
     }
 
+    public function __call($name, $args)
+    {
+        return call_user_func_array(
+            [
+                db($this->conn)->table($this->__table()),
+                $name
+            ],
+            $args
+        );
+    }
+
     // If record exists then update or create
     protected function save()
     {
+    }
+
+    protected function __table()
+    {
+        if (! $this->table) {
+            $defaultTableName = (new \ReflectionClass($this))
+            ->getShortName();
+
+            return $defaultTableName;
+        }
+
+        return $this->table;
     }
 
     // -------------------------------------------------------
