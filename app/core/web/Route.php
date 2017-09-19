@@ -1,5 +1,9 @@
 <?php
 
+// -----------------------------
+//     LiF routes management
+// -----------------------------
+
 namespace Lif\Core\Web;
 
 use Lif\Core\Intf\Observable;
@@ -25,7 +29,7 @@ class Route extends Container implements Observable
     private $route        = null;    // Current single route name
     private $groupDepth   = 0;       // Nest group routes depth
 
-    protected function any(...$args)
+    protected function any(...$args): Route
     {
         if (($attrsIf = exists($args, 1)) && exists($attrsIf, 'alias')) {
             excp('Route alias not supported when use `any` or `match`');
@@ -40,7 +44,7 @@ class Route extends Container implements Observable
         return $this;
     }
 
-    protected function match($methods, ...$args)
+    protected function match($methods, ...$args): Route
     {
         if (($attrsIf = exists($args, 1)) && exists($attrsIf, 'alias')) {
             excp('Route alias not supported when use `any` or `match`');
@@ -55,7 +59,7 @@ class Route extends Container implements Observable
         return $this;
     }
 
-    public function group(array $attrs, \Closure $closure)
+    public function group(array $attrs, \Closure $closure): Route
     {
         ++$this->groupDepth;
         $this->pushCurrentGroup($attrs);
@@ -67,7 +71,7 @@ class Route extends Container implements Observable
     }
 
     // Push current group route's attrs into tmp stacks
-    private function pushCurrentGroup($attrs)
+    private function pushCurrentGroup($attrs): Route
     {
         $this->push(
             $attrs,
@@ -79,14 +83,15 @@ class Route extends Container implements Observable
         return $this;
     }
 
-    // Whenever current route has prefix/middlewares/namespace or not
-    // We need a stub for current route anyway
     private function push(
         $attrs,
         &$prefixes,
         &$middlewares,
         &$namespaces
     ): Route {
+        // If current route hasn't prefix/middlewares/namespace
+        // We need a stub for current route anyway
+
         $prefix = $namespace = false;
 
         if ($prefix = exists($attrs, 'prefix')) {
@@ -146,7 +151,7 @@ class Route extends Container implements Observable
     // This magic method is used to register web route only
     // @$name String => route type
     // @$args Array  => route attrs
-    public function __call($name, $args)
+    public function __call($name, $args): Route
     {
         $this
         ->deny($name)
@@ -155,7 +160,7 @@ class Route extends Container implements Observable
         return $this;
     }
 
-    public function add($type, $args)
+    public function add($type, $args): Route
     {
         $this
         ->parse($args, $route)
@@ -167,7 +172,7 @@ class Route extends Container implements Observable
         return $this;
     }
 
-    private function popCurrentOne()
+    private function popCurrentOne(): Route
     {
         array_pop($this->_prefixes);
         array_pop($this->_middlewares);
@@ -176,7 +181,7 @@ class Route extends Container implements Observable
         return $this;
     }
 
-    private function popCurrentGroup()
+    private function popCurrentGroup(): Route
     {
         array_pop($this->prefixes);
         array_pop($this->middlewares);
@@ -210,7 +215,7 @@ class Route extends Container implements Observable
     }
 
     // parse route definition and save basic attrs
-    protected function parse($args, &$route)
+    protected function parse($args, &$route): Route
     {
         $argCnt = count($args);
 
@@ -280,7 +285,7 @@ class Route extends Container implements Observable
     }
 
     // join route basic attrs with tmp attrs in stack
-    protected function join(&$route)
+    protected function join(&$route): Route
     {
         $prefix = $this->prefixes ? implode('/', $this->prefixes) : '/';
         
@@ -301,7 +306,7 @@ class Route extends Container implements Observable
     }
 
     // deny non-http methods
-    public function deny(&$name)
+    public function deny(&$name): Route
     {
         if (!is_string($name)) {
             excp('Illegal HTTP method format.');
@@ -315,11 +320,12 @@ class Route extends Container implements Observable
     }
 
     // register and save this route
-    protected function register($type, $route)
+    protected function register($type, $route): Route
     {
         $this->type = $type;
         $rawName    = $route['name'];
         $name       = $this->route = escape_route_name($rawName);
+
         if (isset($this->routes[$name][$type])) {
             excp(
                 'Duplicate definition on `'.
@@ -355,15 +361,15 @@ class Route extends Container implements Observable
     }
 
     // load route defination files
-    protected function load($routes)
+    protected function load($routes): Route
     {
         $routePath = pathOf('route');
         foreach ($routes as $route) {
             $path = $routePath.$route.'.php';
             $file = pathinfo($path);
-            if (!is_file($path) ||
-                !isset($file['extension']) ||
-                !('php' === $file['extension'])
+            if (!is_file($path)
+                || !isset($file['extension'])
+                || !('php' === $file['extension'])
             ) {
                 excp(
                     'Missing or illegal route file `'.$route.'.php`.'
@@ -385,7 +391,7 @@ class Route extends Container implements Observable
         return $this;
     }
 
-    public function files()
+    public function files() 
     {
         return $this->files;
     }

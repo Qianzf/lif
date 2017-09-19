@@ -1,8 +1,6 @@
 A simple, quick, lightweight, API-based PHP Framework.
 
-It's also stands for the recursive acronym ___LiF: LiF is Framework___.
-
-> It's not full-finished yet, but in my active development.
+> It's also stands for the recursive acronym ___LiF: LiF is Framework___.
 
 ## Features
 
@@ -12,7 +10,7 @@ It's also stands for the recursive acronym ___LiF: LiF is Framework___.
 
 - Nested route groups(without `use ($app)`)
 
-- Support basic variables assignment on route name and auto pass into controller
+- Support variables assignment on both route prefix and route name, and auto pass into controller
 
 ### Request
 
@@ -24,7 +22,7 @@ Execute before controllers and after request.
 
 ### Controller
 
-- Support object auto injection in controller/container.
+Support object auto injection in controller/container.
 
 ### Useful Helper functions
 
@@ -69,28 +67,27 @@ LiF-styled exception output.
 
 See: _var/doc_.
 
-## TODO
+> TODO (It's not full-finished yet, but in my active development)
 
-- IoC/DI Container
+> - IoC/DI Container
 
-- Model/ORM
+> - Model/ORM
 
-- Add CLI features(jobs, queue, update db, etc...)
+> - Add CLI features(jobs, queue, update db, etc...)
 
-- Support variables assignment on route prefix
+> - Support routes cache
 
-- Log
+> - Log
 
-- Core configuration to enable or disable some time-wasting but will still be used features
+> - Enable or disable some time-wasting but will still be used features via Core configurations
 
-- Version control database
+> - Version control database
 
-- Cache
+> - Mock data
 
-- Mock data
-
-- Self-test, self-deploy, shell-based tasks handle
+> - Self-test, self-deploy, shell-based tasks handle
+> 
 
 ## LICENSE
 
-LiF is open-sourced under[MIT license](https://opensource.org/licenses/MIT).
+LiF is open-sourced under [MIT license](https://opensource.org/licenses/MIT).

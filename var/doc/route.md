@@ -59,3 +59,16 @@ $this->get('user/{id}', [
     'alias' => 'user_info',
 ], 'User@query');
 ```
+
+- Variables assignment
+
+``` php
+$this->group([
+    'prefix' => 'a/{b}',    // On route prefix
+], function () {
+    // On route name
+    $this->get('c/{d}', function () {
+        dd($this->vars);
+    });
+});
+```

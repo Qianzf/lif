@@ -307,6 +307,30 @@ if (! fe('array_stringify_main')) {
         return $str;
     }
 }
+if (! fe('subsets')) {
+    // See: <https://stackoverflow.com/questions/6092781/finding-the-subsets-of-an-array-in-php>
+    function subsets(array $data, int $minLen = 1) : array {
+        $count   = count($data);
+        $times   = pow(2, $count);
+        $result  = [];
+        for ($i = 0; $i < $times; ++$i) {
+            // $bin = sprintf('%0'.$count.'b', $i);
+            $tmp = [];
+            for ($j = 0; $j < $count; ++$j) {
+                // Use bitwise operation is more faster than sprintf
+                if ($i >> $j & 1) {
+                // if ('1' == $bin{$j}) {    // get NO.$j letter in string $bin
+                    $tmp[] = $data[$j];
+                }
+            }
+            if (count($tmp) >= $minLen) {
+                $result[] = $tmp;
+            }
+        }
+
+        return $result; 
+    }
+}
 if (! fe('array_stringify')) {
     function array_stringify($arr) {
         $level = 1;
@@ -664,8 +688,34 @@ if (! fe('xml2obj')) {
         return $res['data'];
     }
 }
+if (! fe('arrToXML')) {
+    function arrToXML(array $array, string &$xml): string
+    {
+        foreach ($array as $key => &$val) {
+            if (is_array($val)) {
+                $_xml = '';
+                $val = arrToXML($val, $_xml);
+            }
+            $xml .= "<$key>$val</$key>";
+        }
+
+        unset($val);
+
+        return $xml;
+    }
+}
 if (! fe('arr2xml')) {
-    function arr2xml(array $array) {
+    function arr2xml(array $array, string $xml = '') : string {
+        $_xml  = '<?xml version="1.0" encoding="utf-8"?><xml>'
+        .arrToXML($array, $xml)
+        .'</xml>';
+
+        return $_xml;
+    }
+}
+if (! fe('arr2xml_unsafe')) {
+    // !!! This function is dysfunctional when same values in $array
+    function arr2xml_unsafe(array $array) {
         // Exchange keys and values of array coz: 
         // <https://stackoverflow.com/questions/1397036/how-to-convert-array-to-simplexml>
         $array = array_flip($array);
@@ -898,5 +948,14 @@ if (! fe('get_func_cost')) {
         $end   = microtime(true);
 
         return $end-$start;
+    }
+}
+if (! fe('is_timestamp')) {
+    function is_timestamp($timestamp) {
+        return (
+            is_integer($timestamp)
+            && ($timestamp >= 0)
+            && ($timestamp <= 2147472000)
+        );
     }
 }

@@ -1,5 +1,9 @@
 <?php
 
+// ---------------------------
+//     LiF Web Application
+// ---------------------------
+
 namespace Lif\Core\Strategy;
 
 use Lif\Core\Intf\{Observer, Strategy};
@@ -76,17 +80,27 @@ class Web extends Container implements Observer, Strategy
     // escape route key for variables-bound scenario
     protected function escape($key)
     {
-        if (!isset($this->routes[$key])) {
-            $arr = array_reverse(array_filter(explode('.', $key)));
+        if (! isset($this->routes[$key])) {
+            $arr = array_filter(explode('.', $key));
+            $subsets = subsets(array_keys($arr));
+            
+            foreach ($subsets as &$val) {
+                $tmp  = $arr;
+                $vars = [];
+                foreach ($val as &$_val) {
+                    $tmp[$_val] = '{?}';
+                    $vars[] = $arr[$_val];
+                }
+                $escapedKey = implode('.', $tmp);
 
-            foreach ($arr as $idx => $val) {
-                $arr[$idx]    = '{?}';
-                $this->vars[] = $val;
-                $escapeKey = implode('.', array_reverse($arr));
-                if (isset($this->routes[$escapeKey])) {
-                    return $escapeKey;
+                if (isset($this->routes[$escapedKey])) {
+                    $this->vars = array_reverse($vars);
+                    unset($val, $_val, $tmp);
+                    return $escapedKey;
                 }
             }
+
+            unset($val, $_val, $tmp);
 
             client_error('Route `'.$this->request->route.'` not found.', 404);
         }

@@ -58,8 +58,20 @@ trait SimpleJWT
                         $header.'.'.$payload,
                         $this->getSecureKeyOfOldSys())
                     ) {
-                        // TODO check timestamp
-                        return json_decode(base64_decode($payload), true);
+                        $data = json_decode(base64_decode($payload), true);
+                        // Missing expire date or wrong JWT
+                        if (! isset($data['exp'])
+                            && ! is_timestamp($data['exp'])
+                        ) {
+                            return false;
+                        }
+                        // JWT expired
+                        // !!! Make sure equal timezone were used both in JWT issuing and JWT checking
+                        if (time() > $data['exp']) {
+                            return false;
+                        }
+
+                        return $data;
                     }
                 }
             }

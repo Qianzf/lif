@@ -1,5 +1,9 @@
 <?php
 
+// --------------------------------------
+//     LiF web middlewares management
+// --------------------------------------
+
 namespace Lif\Core\Web;
 
 use Lif\Core\Abst\Container;
@@ -22,7 +26,7 @@ class Middleware extends Container implements Observable
         ->done();
     }
 
-    public function execute($middlewares)
+    public function execute($middlewares): Middleware
     {
         $this->middlewares = $middlewares;
 
