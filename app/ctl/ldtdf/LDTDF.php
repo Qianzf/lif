@@ -6,6 +6,8 @@ class LDTDF extends Ctl
 {
     public function index()
     {
-        view('ldtdf/index');
+        $uid   = share('LOGGED_USER.id');
+
+        view('ldtdf/index')->withUid($uid);
     }
 }

@@ -12,6 +12,6 @@
 
 <input type="hidden" name="__error" value="<?= share_flush('__error') ?>">
 
-<?= $this->js([
-    'main'
+<?= js([
+    'js/main'
 ]) ?>

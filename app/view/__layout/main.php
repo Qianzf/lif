@@ -4,13 +4,24 @@
     <title>
         <?= $title ?>
     </title>
+
+    <?=
+        css([
+            'css/main',
+        ]);
+
+        js([
+            'js/jquery.min',
+        ]);
+    ?>
+
 </head>
 
-<?= $this->js([
-    '/js/jquery.min'
-]) ?>
+<br>
 
 <?= $this->section('header') ?>
+
+<br>
 
 <body>
 
@@ -18,6 +29,10 @@
 
 </body>
 
+<br>
+
 <?= $this->section('footer') ?>
+
+<br>
 
 </html>

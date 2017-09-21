@@ -199,6 +199,78 @@ if (! fe('session')) {
         return $session;
     }
 }
+if (! fe('view')) {
+    function view(string $template, array $data = [], $cache = false) {
+        return (
+            new \Lif\Core\Web\View($template, $data, $cache)
+        );
+    }
+}
+if (! fe('js')) {
+    function js($js) {
+        echo _js($js);
+    }
+}
+if (! fe('css')) {
+    function css($js) {
+        echo _css($js);
+    }
+}
+if (! fe('_js')) {
+    function _js($js) {
+        if (! $js) {
+            return null;
+        }
+
+        if (is_string($js)) {
+            $path = ('/' == mb_substr($css, 0, 1))
+            ? $js.'.js'
+            : '/assets/'.$js.'.js';
+            
+            return '<script src="'.$path.'"></script>'.PHP_EOL;
+        } elseif (is_array($js)) {
+            $script = '';
+            foreach ($js as $name) {
+                $path    = ('/' == mb_substr($name, 0, 1))
+                ? $name.'.js'
+                : '/assets/'.$name.'.js';
+                $script .= '<script src="'.$path.'"></script>'.PHP_EOL;
+            }
+
+            return $script;
+        }
+
+        return null;
+    }
+}
+if (! fe('_css')) {
+    function _css($css) {
+        if (! $css) {
+            return null;
+        }
+
+        if (is_string($css)) {
+            $path = ('/' == mb_substr($css, 0, 1))
+            ? $css.'.css'
+            : '/assets/'.$css.'.css';
+
+            return '<link rel="stylesheet" href="'.$path.'">'.PHP_EOL;
+        } elseif (is_array($css)) {
+            $style = '';
+            foreach ($css as $name) {
+                $path    = ('/' == mb_substr($name, 0, 1))
+                ? $name.'.css'
+                : '/assets/'.$name.'.css';
+
+                $style .= '<link rel="stylesheet" href="'.$path.'">'.PHP_EOL;
+            }
+
+            return $style;
+        }
+
+        return null;
+    }
+}
 if (! fe('is_mobile_device')) {
     function is_mobile_device() {
         if (! ($ua = $_SERVER['HTTP_USER_AGENT']) || !is_string($ua)) {

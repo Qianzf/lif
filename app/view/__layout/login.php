@@ -5,8 +5,8 @@
         <?= $title ?>
     </title>
 
-    <?= $this->js([
-        '/js/jquery.min'
+    <?= js([
+        'js/jquery.min'
     ]) ?>
 </head>
 

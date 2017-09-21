@@ -1,4 +1,4 @@
-A simple, quick, lightweight, API-based PHP Framework.
+A simple, quick, lightweight, API-based modern PHP Framework.
 
 > It's also stands for the recursive acronym ___LiF: LiF is Framework___.
 
@@ -68,8 +68,6 @@ LiF-styled exception output.
 See: _var/doc_.
 
 > TODO (It's not full-finished yet, but in my active development)
-
-> - IoC/DI Container
 
 > - Model/ORM
 

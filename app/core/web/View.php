@@ -14,6 +14,7 @@ class View
     protected $includes = [];
     protected $data     = [];
     protected $output   = '';
+    protected $outputed = false;
     protected $cache    = false;
 
     public function __construct(
@@ -31,7 +32,7 @@ class View
         $this->data     = $data;
         
         $this->cache = $cache ?? (
-            conf('app')['view']['cache'] ?? true
+            conf('app')['view']['cache'] ?? false
         );
 
         unset($data);
@@ -124,57 +125,12 @@ class View
 
     public function css($css)
     {
-        if (! $css) {
-            return null;
-        }
-
-        if (is_string($css)) {
-            $path = ('/' == mb_substr($css, 0, 1))
-            ? $css.'.css'
-            : '/assets/'.$css.'.css';
-
-            return '<link rel="stylesheet" href="'.$path.'">'.PHP_EOL;
-        } elseif (is_array($css)) {
-            $style = '';
-            foreach ($css as $name) {
-                $path    = ('/' == mb_substr($name, 0, 1))
-                ? $name.'.css'
-                : '/assets/'.$name.'.css';
-
-                $style .= '<link rel="stylesheet" href="'.$path.'">'.PHP_EOL;
-            }
-
-            return $style;
-        }
-
-        return null;
+        return _css($css);
     }
 
     public function js($js)
     {
-        if (! $js) {
-            return null;
-        }
-
-        if (is_string($js)) {
-            $path = ('/' == mb_substr($css, 0, 1))
-            ? $js.'.js'
-            : '/assets/'.$js.'.js';
-            
-            return '<script src="'.$path.'"></script>'.PHP_EOL;
-        } elseif (is_array($js)) {
-            $script = '';
-            foreach ($js as $name) {
-                $path    = ('/' == mb_substr($name, 0, 1))
-                ? $name.'.js'
-                : '/assets/'.$name.'.js';
-                $script .= '<script src="'.$path.'"></script>'.PHP_EOL;
-            }
-
-            return $script;
-        }
-
-        return null;
+        return _js($js);
     }
 
     protected function data($data): View
@@ -198,11 +154,12 @@ class View
         return $this;
     }
 
-    public function __call($name, $args): void
+    public function __call($name, $args)
     {
         if ('with' == mb_substr($name, 0, 4)) {
             $rest = mb_substr($name, 4);
             if ($rest) {
+                // Support one word variable only, `userId` not supported
                 $rest = preg_replace_callback('/[A-Z]/u', function ($match) {
                     if (isset($match[0]) && is_string($match[0])) {
                         return '.'.strtolower($match[0]);
@@ -210,6 +167,7 @@ class View
                 }, $rest);
 
                 $vars   = array_values(array_filter(explode('.', $rest)));
+
                 $varCnt = count($vars);
                 $argCnt = count($args);
                 
@@ -262,10 +220,16 @@ class View
         }
 
         echo $this->output;
+
+        $this->outputed = true;
     }
 
     public function __destruct()
     {
+        if (! $this->outputed) {
+            $this->output();
+        }
+
         exit;
     }
 }

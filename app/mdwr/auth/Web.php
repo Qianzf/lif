@@ -11,12 +11,12 @@ class Web extends Container
 
     public function handle($app)
     {
-        $s = new Session;
-
-        if (! ($this->auth = $s->get('LOGGED_USER'))) {
-            redirect(route('dep.user.login'));
+        if (($this->auth = session()->get('LOGGED_USER'))
+            && ($this->auth['id'])
+        ) {
+            return $this->auth;
         }
 
-        return $this->auth;
+        redirect(route('dep.user.login'));
     }
 }

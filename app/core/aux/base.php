@@ -341,6 +341,24 @@ if (! fe('array_stringify')) {
         return $str;
     }
 }
+if (! fe('array_query_by_coherent_keys')) {
+    function array_query_by_coherent_keys(array $haystack, string $key) {
+        if (!$key || false === mb_strpos($key, '.')) {
+            return $haystack[$key] ?? null;
+        }
+
+        $coherentKeys = explode('.', $key);
+
+        $query  = null;
+        $tmpArr = $haystack;
+
+        foreach ($coherentKeys as $val) {
+            $query = ($tmpArr = ($tmpArr[$val] ?? null));
+        }
+
+        return $query;
+    }
+}
 if (! fe('array_update_by_coherent_keys')) {
     function array_update_by_coherent_keys(
         $coherentKeyStr,
@@ -592,13 +610,6 @@ if (! fe('collect')) {
         return new \Lif\Core\Coll($params);
     }
 }
-if (! fe('view')) {
-    function view(string $template, array $data = [], $cache = false) {
-        return (
-            new \Lif\Core\Web\View($template, $data, $cache)
-        )->output();
-    }
-}
 if (! fe('sys_msg')) {
     function sys_msg($key, $lang = 'zh') {
 
@@ -626,11 +637,11 @@ if (! fe('sysmsg')) {
     function sysmsg($key, $lang = null) {
         if (! $lang) {
             $lang = $_REQUEST['lang'] ?? null;
+            $session = new \Lif\Core\Web\Session;
             if (! $lang) {
-                $session = new \Lif\Core\Web\Session;
-
                 $lang = $session->get('__lang') ?? 'zh';
             }
+            $session->set('__lang', $lang);
         }
 
         if (isset($GLOBALS['__sys_msg'])
@@ -664,6 +675,12 @@ if (! fe('sysmsg')) {
             ? '服务繁忙，请稍后再试'
             : 'Service is busy or temporarily unavailable.'
         );
+    }
+}
+if (! fe('lang')) {
+    function lang($key, $lang = null)
+    {
+        return sysmsg($key, $lang);
     }
 }
 if (! fe('xml2arr')) {

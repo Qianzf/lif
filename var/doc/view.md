@@ -6,14 +6,28 @@ For example:
 <!DOCTYPE html>
 <html>
 <head>
-<?= $this->css([
-    'main'
-]) ?>
+<?=
+    echo $this->css([
+        'main'
+    ]);
+
+    // Or
+    css([
+        'main'
+    ]);
+?>
 </head>
 
-<?= $this->js([
-    'jquery.min'
-]) ?>
+<?=
+    echo $this->js([
+    'jquery'
+    ]);
+
+    // Or
+    js([
+        'jquery'
+    ]);
+?>
 
 <?= $this->section('header') ?>
 
@@ -52,7 +66,7 @@ For example:
 
 ``` php
 <?= $this->layout('main') ?>
-<?= $this->title([sysmsg('HOMEPAGE'), sysmsg('LIF')]) ?>
+<?= $this->title([lang('HOMEPAGE'), lang('LIF')]) ?>
 ```
 
 Well, if frontend developers don't familiar with PHP, the better way is to build web app via HTTP API.

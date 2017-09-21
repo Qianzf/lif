@@ -705,7 +705,7 @@ class LDO extends \PDO
                             ? self::PARAM_INT : self::PARAM_STR
                         )
                     );
-
+                    
                     $this->statement->bindValue(++$idx, $value, $type);
                 }
 
@@ -778,7 +778,8 @@ class LDO extends \PDO
         $this->updates = '';
 
         foreach ($updates as $key => $newVal) {
-            $this->updates .= $key.'='.$newVal;
+            $this->updates     .= $key.' = ? ';
+            array_unshift($this->bindValues, $newVal);
 
             if (next($updates)) {
                 $this->updates .= ',';

@@ -26,7 +26,8 @@ $this->group([
     $this->group([
         'prefix' => 'user',
     ], function () {
-        $this->get('{id}', 'User@profile');
+        $this->get('profile', 'User@profile');
+        $this->post('profile', 'User@update');
         $this->get('login', 'Passport@login')->cancel('auth.web');
         $this->post('login', 'Passport@loginAction')->cancel('auth.web');
         $this->get('logout', 'Passport@logout');

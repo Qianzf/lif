@@ -21,7 +21,7 @@ class Passport extends Ctl
         $lang    = $this->request->get('lang');
         $account = $this->request->get('account');
         $passwd  = $this->request->get('passwd');
-        $user    = $u->select('account', 'email', 'passwd')
+        $user    = $u->select('id', 'account', 'email', 'passwd')
         ->whereAccount($account)
         ->orEmail($account)
         ->first();
@@ -49,7 +49,7 @@ class Passport extends Ctl
 
     public function logout(Session $s)
     {
-        $s->delete('LOGGED_USER');
+        $s->destory();
 
         redirect(route('dep.user.login'));
     }
