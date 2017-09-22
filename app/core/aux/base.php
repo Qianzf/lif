@@ -289,24 +289,6 @@ if (! fe('format_namespace')) {
         return '\\';
     }
 }
-if (! fe('array_stringify_main')) {
-    function array_stringify_main($arr, &$level) {
-        $str = '';
-        $margin = str_repeat("\t", $level++);
-        foreach ($arr as $key => $val) {
-            $str .= $margin."'".$key."' => ";
-            if (is_array($val)) {
-                $str .= "[\n";
-                $str .= array_stringify_main($val, $level);
-                $str .= $margin."],\n";
-                --$level;
-            } else {
-                $str .= "'".$val."',\n";
-            }
-        }
-        return $str;
-    }
-}
 if (! fe('subsets')) {
     // See: <https://stackoverflow.com/questions/6092781/finding-the-subsets-of-an-array-in-php>
     function subsets(array $data, int $minLen = 1) : array {
@@ -338,6 +320,24 @@ if (! fe('array_stringify')) {
         $str  .= array_stringify_main($arr, $level);
         $str  .= ']';
 
+        return $str;
+    }
+}
+if (! fe('array_stringify_main')) {
+    function array_stringify_main($arr, &$level) {
+        $str = '';
+        $margin = str_repeat("\t", $level++);
+        foreach ($arr as $key => $val) {
+            $str .= $margin."'".$key."' => ";
+            if (is_array($val)) {
+                $str .= "[\n";
+                $str .= array_stringify_main($val, $level);
+                $str .= $margin."],\n";
+                --$level;
+            } else {
+                $str .= "'".$val."',\n";
+            }
+        }
         return $str;
     }
 }
@@ -455,11 +455,11 @@ if (! fe('conf')) {
             return conf_all($cfgPath);
         }
 
-        if (isset($GLOBALS['LIF_CFG']) &&
-            isset($GLOBALS['LIF_CFG'][$name]) &&
-            $GLOBALS['LIF_CFG'][$name]
+        if (isset($GLOBALS['LIF_CFG'])
+            && isset($GLOBALS['LIF_CFG'][$name])
+            && $GLOBALS['LIF_CFG'][$name]
         ) {
-            return $GLOBALS['LIF_CFG'][$name];
+            return array_query_by_coherent_keys($GLOBALS['LIF_CFG'], $name);
         }
 
         $cfgFile = $cfgPath.$name.'.php';
@@ -471,6 +471,11 @@ if (! fe('conf')) {
         $GLOBALS['LIF_CFG'][$name] = $cfg;
 
         return $cfg;
+    }
+}
+if (! fe('config')) {
+    function config($key) {
+        return array_query_by_coherent_keys(conf_all(), $key);
     }
 }
 if (! fe('db')) {
@@ -610,11 +615,6 @@ if (! fe('collect')) {
         return new \Lif\Core\Coll($params);
     }
 }
-if (! fe('sys_msg')) {
-    function sys_msg($key, $lang = 'zh') {
-
-    }
-}
 if (! fe('uuid')) {
     // Generate inner system unique number
     // $id
@@ -631,6 +631,11 @@ if (! fe('uuid')) {
         $postfix = mb_substr(microtime(), 2, 6);
 
         return date('YmdHis').$domain.$type.$id.mt_rand(1000, 9999).$postfix;
+    }
+}
+if (! fe('sysmsgs')) {
+    function sysmsgs() {
+        return (new \Lif\Core\SysMsg)->get();
     }
 }
 if (! fe('sysmsg')) {

@@ -7,4 +7,7 @@ return [
     'view'  => [
         'cache' => false
     ],
+    'route' => [
+        'cache' => true,
+    ]
 ];

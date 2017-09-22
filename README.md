@@ -12,6 +12,8 @@ A simple, quick, lightweight, API-based modern PHP Framework.
 
 - Support variables assignment on both route prefix and route name, and auto pass into controller
 
+- Support routes cache (Colsure not supported)
+
 ### Request
 
 Support Basic functions, auto amount to the main application instance.
@@ -72,8 +74,6 @@ See: _var/doc_.
 > - Model/ORM
 
 > - Add CLI features(jobs, queue, update db, etc...)
-
-> - Support routes cache
 
 > - Log
 

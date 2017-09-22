@@ -14,6 +14,10 @@ class Route extends Container implements Observable
     use \Lif\Core\Traits\Observable;
     
     protected $name      = 'route';
+    protected $cache     = false;
+    protected $updated   = false;
+    protected $_routes   = null;    // routes cache file
+    protected $_liases   = null;    // routes aliases cache file
     protected $files     = [];
     protected $routes    = [];      // all routes and their bindings
     protected $aliases   = [];      // all routes and their aliases
@@ -363,6 +367,42 @@ class Route extends Container implements Observable
     // load route defination files
     protected function load($routes): Route
     {
+        $this->cache = config('app.route.cache') ?? false;
+
+        if ($this->cache) {
+            $_routes  = pathOf('cache').'route/';
+            $_aliases = pathOf('cache').'route/';
+        
+            if (file_exists($_routes) && file_exists($_aliases)) {
+                $this->_routes  = $_routes.'routes.json';
+                $this->_aliases = $_aliases.'aliases.json';
+
+                if (file_exists($this->_routes)
+                    && file_exists($this->_aliases)
+                ) {
+                    $_routes   = json_decode(
+                        file_get_contents($this->_routes),
+                        true
+                    );
+                    $_aliases  = json_decode(
+                        file_get_contents($this->_aliases),
+                        true
+                    );
+
+                    if ($_routes
+                        && $_aliases
+                        && is_array($_routes)
+                        && is_array($_aliases)
+                    ) {
+                        $this->routes  = $_routes;
+                        $this->aliases = $_aliases;
+
+                        return $this;
+                    }
+                }
+            }
+        }
+
         $routePath = pathOf('route');
         foreach ($routes as $route) {
             $path = $routePath.$route.'.php';
@@ -380,11 +420,29 @@ class Route extends Container implements Observable
             include_once $path;
         }
 
+        $this->updated = true;
+
         return $this;
     }
 
     protected function share(): Route
     {
+        if ($this->cache && $this->updated) {
+            if (!$this->_routes || !$this->_aliases) {
+                excp('Routes cache path unreachable.');
+            }
+
+            if ($this->routes && $this->aliases) {
+                file_put_contents($this->_routes, json_encode(
+                    $this->routes
+                ));
+
+                file_put_contents($this->_aliases, json_encode(
+                    $this->aliases
+                ));
+            }
+        }
+
         $GLOBALS['LIF_ROUTES']         = $this->routes;
         $GLOBALS['LIF_ROUTES_ALIASES'] = $this->aliases;
         

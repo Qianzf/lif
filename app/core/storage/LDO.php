@@ -252,6 +252,13 @@ class LDO extends \PDO
         return $this;
     }
 
+    public function __clone()
+    {
+        // Clear tmp stack
+        $this->where = null;
+        $this->bindValues = [];
+    }
+
     protected function __where(array $conds): string
     {
         $where = '';
@@ -283,8 +290,6 @@ class LDO extends \PDO
                         }
                     } elseif (is_callable($conds[0])) {
                         $table = clone $this;
-                        $table->where = null;
-                        $table->bindValues = [];
                         $conds[0]($table);
                         $where = $table->where ? '('.$table->where.')' : null;
 

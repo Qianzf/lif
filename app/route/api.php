@@ -11,7 +11,7 @@ $this->get('/', function () {
 });
 
 $this->any('/sys_msg', function () {
-    response((new \Lif\Core\SysMsg)->get());
+    response(sysmsgs());
 });
 
 $this->group([
