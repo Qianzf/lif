@@ -1,8 +1,8 @@
 <?php
 
-// ----------------------------------------------
-//     Helper Functions for Web Scenario Only
-// ----------------------------------------------
+// ------------------------------------------
+//     Helper Functions for Web Scenarios
+// ------------------------------------------
 
 if (! fe('getallheaders')) {
     // For nginx, compatible with apache format
