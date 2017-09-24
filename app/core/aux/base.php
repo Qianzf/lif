@@ -135,29 +135,30 @@ if (! fe('context')) {
     }
 }
 if (! fe('exists')) {
+    // !!! Be careful to check bool value like false
     function exists($var, $idx = null) {
-        // !!! be carefurl if `$var` is not an assoc array
+        // !!! Be carefurl if `$var` is not an assoc array
         if (is_array($var) && $idx) {
             $idxes = is_array($idx) ? $idx : [$idx];
             foreach ($idxes as $_idx) {
-                if (!isset($var[$_idx]) || !$var[$_idx]) {
+                if (! isset($var[$_idx])) {
                     return false;
                 }
             }
-            return (1===count($idxes)) ? $var[$_idx] : true;
+            return (1 === count($idxes)) ? $var[$_idx] : true;
         } elseif (is_callable($var) || ($var instanceof \Closure)) {
             return $idx ? false : ($var ?? false);
         } elseif (is_object($var) && $idx) {
             $attrs = is_array($idx) ? $idx : [$idx];
             foreach ($attrs as $attr) {
-                if (!isset($var->$attr) || !$var->$attr) {
+                if (! isset($var->$attr)) {
                     return false;
                 }
             }
             return (1===count($attrs)) ? $var->$attr : true;
         }
 
-        return (isset($var) && $var) ? $var : false;
+        return $var;
     }
 }
 if (! fe('nsOf')) {

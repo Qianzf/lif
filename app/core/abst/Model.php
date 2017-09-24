@@ -9,48 +9,114 @@ abstract class Model
     protected $_tbx  = null;    // table prefix
     protected $_fdx  = null;    // field prefix
     protected $pk    = null;    // primary key
+    protected $query = null;    // LDO query object
 
     protected $unwriteable = [];    // protected fields that cann't update
     protected $unreadable  = [];    // protected fields that cann't read
 
-    // Stack for __set()
-    protected $_fields = [
-    ];
-    // Stack for __get()
-    protected $fields = [
-    ];
+    // Stack of current query result
+    protected $fields = [];
+    protected $attrs  = [];
 
     public function __construct($id = null)
     {
         $this->fields['id'] = ($this->pk = $id);
     }
 
-    public function __get($field)
+    public function __get($key)
     {
-        return $this->fields[$field] ?? null;
+        return $this->$key ?? (
+            $this->fields[$key] ?? null
+        );
+    }
+
+    public function __unset($key): void
+    {
+        if (isset($this->fields[$key])) {
+            unset($this->fields[$key]);
+        }
     }
 
     public function __set($field, $value)
     {
-        $this->_fields[$field] = $value;
+        $this->fields[$field] = $value;
 
         return $this;
     }
 
     public function __call($name, $args)
     {
-        return call_user_func_array(
+        $res = call_user_func_array(
             [
-                db($this->conn)->table($this->__table()),
+                $this->query(),
                 $name
             ],
             $args
         );
+
+        if (is_object($res)) {
+            if (method_exists($res, 'getAttrsForModel')) {
+                $this->attrs = $res->getAttrsForModel();
+            }
+
+            $this->query = $res;
+
+            return $this;
+        } elseif (is_array($res)) {
+            if (! $res) {
+                return null;
+            }
+
+            $this->fields = $res;
+
+            return $this;
+        }
+
+        return $res;
+    }
+
+    public function items() : array
+    {
+        return $this->fields;
     }
 
     // If record exists then update or create
-    protected function save()
+    public function save(array $data = [])
     {
+        if (! $data) {
+            $data = $this->fields;
+        }
+
+        if (isset($this->pk) && $this->pk) {
+            unset($data[$this->pk]);
+        } else {
+            unset($data['id']);
+        }
+
+        if (isset($this->attrs['where'])) {
+            return $this->query()->update($data);
+        }
+
+        return $this->query()->insert($data);
+    }
+
+    public function reset(): Model
+    {
+        $this->attrs = [];
+
+        return $this;
+    }
+
+    protected function query()
+    {
+        if (! $this->query || !is_object($this->query)) {
+            $this->query = db($this->conn)
+            ->table(
+                $this->__table()
+            );
+        }
+
+        return $this->query->setAttrsForModel($this->attrs);
     }
 
     protected function __table()

@@ -2,61 +2,62 @@
 
 namespace Lif\Ctl\Ldtdf;
 
-use Lif\Core\Web\Session;
+use Lif\Mdl\User as UserModel;
 
 class User extends Ctl
 {
-    public function profile($uid, Session $s)
+    public function profile($uid)
     {
-        $uid   = share('LOGGED_USER.id');
-        $email = share('LOGGED_USER.email');
-
-        view('ldtdf/user/profile')->withUidEmail($uid, $email);
+        view('ldtdf/user/profile')->withUidEmail(
+            share('__USER.id'),
+            share('__USER.email')
+        );
     }
 
-    public function update()
+    public function update(UserModel $user)
     {
         $request = $this->request->params;
-        $uid     = share('LOGGED_USER.id');
-        $email   = share('LOGGED_USER.email');
-        $data    = [];
+
+        $user = $user->whereId(share('__USER.id'))->first();
+
+        if (! $user) {
+            session()->delete('__USER');
+            share('__error', sysmsg('NO_USER'));
+            return redirect('/dep/user/login');
+        }
 
         // If pass password then update it
         // If pass email and new email not equal to old email then update it
-        if ($request->password) {
-            $data['passwd'] = password_hash(
-                $request->password,
+        if ($request->passwordNew) {
+            if (! $request->passwordOld) {
+                return sysmsg('PROVIDE_OLD_PASSWD');
+            }
+            if (! password_verify($request->passwordOld, $user->passwd)) {
+                return sysmsg('ILLEGAL_OLD_PASSWD');
+            }
+
+            $user->passwd = password_hash(
+                $request->passwordNew,
                 PASSWORD_DEFAULT
             );
-        } elseif ($request->email && ($email != $request->email)) {
-            $data['email']  = $request->email;
+        } elseif ($request->email && ($user->email != $request->email)) {
+            $user->email  = $request->email;
         }
 
-        if ($data) {
-            $updateSuccess = db()
-            ->table('user')
-            ->whereId($uid)
-            ->update($data);
+        $sysmsg = sysmsg('UPDATE_FAILED');
 
-            if ($updateSuccess) {
-                share('LOGGED_USER', [
-                    'id' => $uid,
-                    'email' => $request->email,
-                ]);
+        if ($user->save()) {
+            unset($user->passwd);
+            share('__USER', $user->items());
 
-                $sysmsg = sysmsg('UPDATED_OK');
-            } else {
-                $sysmsg = sysmsg('UPDATE_FAILED');
+            $sysmsg = sysmsg('UPDATED_OK');
+
+            if ($request->passwordNew) {
+                session()->delete('__USER');
             }
-        } else {
-            $sysmsg = sysmsg('UPDATED_NOTHING');
         }
 
         share('__error', $sysmsg);
-
-        if ($request->password) {
-            session()->delete('LOGGED_USER');
-        }
 
         redirect('/dep/user/profile');
     }

@@ -2,21 +2,19 @@
 
 namespace Lif\Mdwr\Auth;
 
-use Lif\Core\Web\Session;
-use Lif\Core\Abst\Container;
-
-class Web extends Container
+class Web
 {
     protected $auth = false;
 
     public function handle($app)
     {
-        if (($this->auth = session()->get('LOGGED_USER'))
-            && ($this->auth['id'])
+        if (($this->auth = session()->get('__USER'))
+            && (false !== exists($this->auth, 'id'))
+            && (false !== exists($this->auth, 'role'))
         ) {
             return $this->auth;
         }
 
-        redirect(route('dep.user.login'));
+        redirect('/dep/user/login');
     }
 }

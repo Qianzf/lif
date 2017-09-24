@@ -2,8 +2,13 @@
 <?= $this->title([lang('USER_PROFILE'), lang('LDTDFMS')]) ?>
 
 <form method="POST" action="/dep/user/profile">
-    <label><?= lang('PASSWORD') ?>:
-        <input type="password" name="password">
+    <label><?= lang('PASSWORD_OLD') ?>:
+        <input type="password" name="passwordOld"
+        placeholder="<?= lang('PROVIDE_OLD_PASSWD') ?>">
+    </label> <br>
+    <label><?= lang('PASSWORD_NEW') ?>:
+        <input type="password" name="passwordNew"
+        placeholder="<?= lang('PROVIDE_NEW_PASSWD') ?>">
     </label> <br>
 
     <br>

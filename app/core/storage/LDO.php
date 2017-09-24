@@ -10,16 +10,22 @@ class LDO extends \PDO
 {
     use \Lif\Core\Traits\MethodNotExists;
 
+    // Un-resetable attrs
     protected $conn     = null;
-    protected $crud     = null;
-    protected $sql      = null;    // Used for prepare statement
-    protected $_sql     = null;    // Used for debug
+    protected $table    = null;
     protected $lastSql  = null;
     protected $_lastSql = null;
-    protected $status   = null;
     protected $result   = [];
+    protected $transRes = true;    // Transaction result
+    protected $lastWhere = null;
+    protected $lastBindValues = [];
 
-    protected $table   = null;
+    // Resetable attrs
+    protected $sql      = null;    // Used for prepare statement
+    protected $_sql     = null;    // Used for debug
+    protected $crud     = null;
+    protected $status   = null;
+
     protected $select  = null;
     protected $where   = null;
     protected $sort    = null;
@@ -30,7 +36,6 @@ class LDO extends \PDO
     protected $insertVals = null;
     protected $statement  = null;
     protected $bindValues = [];
-    protected $transRes   = true;    // Transaction result
 
     public function transRes($value='')
     {
@@ -101,6 +106,45 @@ class LDO extends \PDO
         $this->crud = strtoupper($value ?? $this->crud);
 
         return $this;
+    }
+
+    public function getAttrsForModel(): array
+    {
+        return [
+            'where'      => $this->where,
+            'bindValues' => $this->bindValues,
+        ];
+    }
+
+    public function setAttrsForModel(array $attrs): LDO
+    {
+        foreach ($attrs as $key => $value) {
+            // !!! Use `isset()` to check a null value is false
+            if (isset($this->$key) || is_null($this->$key)) {
+                $this->$key = $value;
+            }
+        }
+
+        return $this;
+    }
+
+    public function reset()
+    {
+        $this->lastWhere      = $this->where;
+        $this->lastBindValues = $this->bindValues;
+        $this->sql  = null;
+        $this->crud     = null;
+        $this->status   = null;
+        $this->select   = null;
+        $this->where    = null;
+        $this->sort     = null;
+        $this->group    = null;
+        $this->limit    = null;
+        $this->updates  = null;
+        $this->insertKeys = null;
+        $this->insertVals = null;
+        $this->statement  = null;
+        $this->bindValues = [];
     }
 
     public function __get($name)
@@ -338,16 +382,16 @@ class LDO extends \PDO
         return $this->lastSql = $this->sql();
     }
 
-    public function __lastSql(): string
+    public function _lastSql(): string
     {
         if ($this->_lastSql) {
             return $this->_lastSql;
         }
 
-        return $this->_lastSql = $this->__sql();
+        return $this->_lastSql = $this->_sql();
     }
 
-    public function __sql(): string
+    public function _sql(): string
     {
         if ($this->_sql) {
             return $this->_sql;
@@ -365,8 +409,6 @@ class LDO extends \PDO
         }, $sql);
 
         unset($idx);
-
-        $this->bindValues = [];
 
         return $this->_sql = $this->_lastSql = $sql;
     }
@@ -437,7 +479,7 @@ class LDO extends \PDO
     {
         // For data safety, LiF enforce developer to specify where condictions
         if (! $this->where) {
-            excp('No where condictions when delete records.');
+            excp('No where condictions when update records.');
         } elseif (! $this->updates) {
             excp('No update infomations.');
         }
@@ -693,11 +735,10 @@ class LDO extends \PDO
             if ($sql) {
                 $sqlArr = [
                     1 => $this->sql(),
-                    2 => $this->__sql(),
+                    2 => $this->_sql(),
                     3 => $this->lastSql(),
-                    4 => $this->__lastSql(),
+                    4 => $this->_lastSql(),
                 ];
-
                 return $sqlArr[$sql] ?? $sqlArr[1];
             } elseif ($exec) {
                 $this->statement = $this->prepare($this->sql());
@@ -724,10 +765,6 @@ class LDO extends \PDO
                     excp($msg);
                 }
 
-                // Reset for transaction
-                $this->bindValues = [];
-                $this->sql = $this->_sql = null;
-
                 if (in_array($this->crud, [
                     'CREATE',
                     'INSERT',
@@ -748,6 +785,8 @@ class LDO extends \PDO
 
                     $this->trans = true;
                 }
+
+                $this->reset();    // Reset for transaction
 
                 return $this->result;
             }
@@ -781,15 +820,18 @@ class LDO extends \PDO
     public function update(array $updates, $exec = true, $sql = false)
     {
         $this->updates = '';
+        $bindValues    = [];
 
         foreach ($updates as $key => $newVal) {
-            $this->updates     .= $key.' = ? ';
-            array_unshift($this->bindValues, $newVal);
+            $this->updates .= $key.' = ? ';
+            $bindValues[]   = $newVal;
 
             if (next($updates)) {
                 $this->updates .= ',';
             }
         }
+
+        $this->bindValues = array_merge($bindValues, $this->bindValues);
 
         return $this->crud('UPDATE')->execute($exec, $sql);
     }
