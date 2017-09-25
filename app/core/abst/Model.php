@@ -20,7 +20,11 @@ abstract class Model
 
     public function __construct($id = null)
     {
-        $this->fields['id'] = ($this->pk = $id);
+        if ($id) {
+            $pk = $this->pk ?? 'id';
+
+            $this->fields[$pk] = $id;
+        }
     }
 
     public function __get($key)
@@ -97,7 +101,9 @@ abstract class Model
             return $this->query()->update($data);
         }
 
-        return $this->query()->insert($data);
+        $lastInserstId = $this->query()->insert($data);
+
+        return $this->fields[$this->pk] = $lastInserstId;
     }
 
     public function reset(): Model
@@ -113,6 +119,13 @@ abstract class Model
             $this->query = db($this->conn)
             ->table(
                 $this->__table()
+            );
+        }
+
+        if (isset($this->fields[$this->pk])) {
+            $this->query = $this->query->where(
+                $this->pk,
+                $this->fields[$this->pk]
             );
         }
 

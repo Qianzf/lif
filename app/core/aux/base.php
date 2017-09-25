@@ -238,7 +238,9 @@ if (! fe('json_http_response')) {
             mb_http_output('UTF-8');
             header('Content-type: application/json; charset=UTF-8');
         }
-        exit(_json_encode($data));
+        
+        echo _json_encode($data);
+        exit;
     }
 }
 if (! fe('exception')) {

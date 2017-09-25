@@ -35,6 +35,10 @@ Well, I think you will like them, all in _app/core/aux/_.
 
 LiF has it's own database SQL query builder, it's simple, and extends functionalities from base PDO class, which handles all the SQL things.
 
+### Model/ORM
+
+Support basic Model/ORM functionalities.
+
 ### Views
 
 LiF is an API-based web framework, so I didn't waste time to design a specialized view template engine. So LiF use plain PHP grammars to write view template. It's has these features:
@@ -71,13 +75,11 @@ See: _var/doc_.
 
 > TODO (It's not full-finished yet, but in my active development)
 
-> - Model/ORM
-
-> - Add CLI features(jobs, queue, update db, etc...)
-
 > - Log
 
 > - Enable or disable some time-wasting but will still be used features via Core configurations
+
+> - Add CLI features(jobs, queue, update db, etc...)
 
 > - Version control database
 

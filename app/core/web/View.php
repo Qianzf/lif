@@ -24,6 +24,7 @@ class View
     ) {
         $path = pathOf('view').$template.'.php';
         if (! file_exists($path)) {
+            $this->outputed = true;
             excp('Template `'.$template.'` not exists.');
         }
 
@@ -82,6 +83,10 @@ class View
 
     protected function include($path, $data = []): string
     {
+        if (! $path || !file_exists($path)) {
+            excp('View path not exists.');
+        }
+
         if ($data) {
             $this->data($data);
         }
