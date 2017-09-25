@@ -984,3 +984,11 @@ if (! fe('is_timestamp')) {
         );
     }
 }
+if (! fe('validate')) {
+    function validate(array $data, array $rules) {
+        return (new \Lif\Core\Validation)->run(
+            $data,
+            $rules
+        );
+    }
+}

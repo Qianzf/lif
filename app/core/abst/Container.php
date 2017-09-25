@@ -115,6 +115,18 @@ abstract class Container
         }
     }
 
+    public function validate(array $data, array $rules)
+    {
+        $prepare = validate($data, $rules);
+
+        if (true !== $prepare && ('web' == context())) {
+            share('__error', sysmsg($prepare));
+            redirect('/'.$this->route);
+        }
+
+        return $prepare;
+    }
+
     public function __call($name, $args)
     {
         if (method_exists($this->app, $name)) {

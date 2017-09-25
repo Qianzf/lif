@@ -65,6 +65,14 @@ Support modification of php formatted configuration files.
 
 Support the transformation between array and collection class.
 
+#### Validation
+
+Support custom validation and keep an uniform return values: false or language key.
+
+#### I18N
+
+Use `sysmsg()`/`lang()` and dynamic language packages, LiF can easily achieve i18n.
+
 ### Exception
 
 LiF-styled exception output.

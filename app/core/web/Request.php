@@ -79,6 +79,11 @@ class Request extends Container implements Observable
         return $this->type;
     }
 
+    public function all()
+    {
+        return $this->params()->toArray();
+    }
+
     public function params()
     {
         if ($this->params) {
@@ -96,6 +101,8 @@ class Request extends Container implements Observable
 
             if (false !== mb_strpos($cntType, 'application/json')) {
                 $_params = json_decode($rawInput, true);
+            } elseif (false !== mb_strpos($cntType, 'application/xml')) {
+                $_params = xml2arr($rawInput);
             } else {
                 parse_str($rawInput, $_params);
             }

@@ -12,7 +12,9 @@ abstract class Model
     protected $query = null;    // LDO query object
 
     protected $unwriteable = [];    // protected fields that cann't update
-    protected $unreadable  = [];    // protected fields that cann't read
+    protected $unreadable  = [
+        'passwd',
+    ];    // protected fields that cann't read
 
     // Stack of current query result
     protected $fields = [];
@@ -23,7 +25,12 @@ abstract class Model
         if ($id) {
             $pk = $this->pk ?? 'id';
 
-            $this->fields[$pk] = $id;
+            $this->fields = $this->query()->where(
+                $this->pk,
+                $id
+            )->first();
+
+            $this->attrs['where'] = '((`'.$pk.'` = ?))';
         }
     }
 
@@ -73,15 +80,55 @@ abstract class Model
 
             $this->fields = $res;
 
-            return $this;
+            array_walk($res, function (&$item, $key) {
+                $item = collect($item);
+            });
+
+            return $res;
+        }
+
+        if (('delete' == $name) && $res) {
+            $this->reset();
         }
 
         return $res;
     }
 
+    // Get public user data
+    public function data(): array
+    {
+        $data = $this->fields;
+
+        foreach ($this->unreadable as $key) {
+            if (isset($data[$key]) || is_null($data[$key])) {
+                unset($data[$key]);
+            }
+        }
+
+        return $data;
+    }
+
+    // Get all user data
     public function items() : array
     {
         return $this->fields;
+    }
+
+    public function all()
+    {
+        $res = $this->query()->select(
+            'id',
+            'account',
+            'name',
+            'email',
+            'role'
+        )->get();
+
+        array_walk($res, function (&$item, $key) {
+            $item = collect($item);
+        });
+
+        return $res;
     }
 
     // If record exists then update or create
@@ -106,9 +153,18 @@ abstract class Model
         return $this->fields[$this->pk] = $lastInserstId;
     }
 
-    public function reset(): Model
+    public function clear() : Model
     {
         $this->attrs = [];
+
+        return $this;
+    }
+
+    public function reset() : Model
+    {
+        $this->attrs  = [];
+        $this->fields = [];
+        $this->query  = null;
 
         return $this;
     }

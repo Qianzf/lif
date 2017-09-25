@@ -470,7 +470,9 @@ class LDO extends \PDO
         $sql .= $this->where ? " WHERE ({$this->where}) "  : '';
         $sql .= $this->group ? " GROUP BY {$this->group} " : '';
         $sql .= $this->sort  ? " ORDER BY {$this->sort}"   : '';
-        $sql .= $this->limit ? " LIMIT {$this->limit} "    : '';
+        
+        $sql .= mb_strlen($this->limit)
+        ? " LIMIT {$this->limit} "   : '';
 
         return $this->sql = $sql;
     }
@@ -514,11 +516,11 @@ class LDO extends \PDO
         $times = $_times = 0;
         foreach ($inserts as $key => $val) {
             ++$times;
-            $hasNext = next($inserts);
-            if (is_array($val) && $val) {
+            $hasNext = (false === next($inserts)) ? false : true;
+            if (is_array($val)) {
                 foreach ($val as $_key => $_val) {
                     ++$_times;
-                    $_hasNext = next($val);
+                    $_hasNext = (false === next($val)) ? false : true;
                     if (1 === $times) {
                         $this->insertKeys .= $_key;
                         $this->insertKeys .= $_hasNext ? ',' : '';
@@ -623,24 +625,27 @@ class LDO extends \PDO
     {
         $this->crud('READ');
 
-        $limit = '';
+        $start  = is_null($start)  ? null : intval($start);
+        $offset = is_null($offset) ? null : intval($offset);
+
+        $limit  = '';
 
         if ((0 === $start) || $start) {
-            if (is_numeric($start) && (0 <= intval($start))) {
+            if (0 <= intval($start)) {
                 $limit .= $start;
             } else {
-                excp('Illgeal limit offset: `'.$start.'`.');
+                excp('Illgeal limit start: `'.$start.'`.');
             }
         }
         if ((0 === $offset) || $offset) {
-            if (is_numeric($offset) && (0 <= intval($offset))) {
+            if (0 <= intval($offset)) {
                 $limit .= ', '.$offset;
             } else {
                 excp('Illgeal limit offset: `'.$offset.'`.');
             }
         }
 
-        $this->limit = $limit ? $limit : null;
+        $this->limit = $limit ?? null;
 
         return $this;
     }
@@ -800,7 +805,7 @@ class LDO extends \PDO
         }
     }
 
-    public function get($exec = true, $sql = false)
+    public function get($exec = true, $sql = false): array
     {
         return $this->crud('READ')->execute($exec, $sql);
     }

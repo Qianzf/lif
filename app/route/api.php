@@ -31,6 +31,16 @@ $this->group([
         ],
     ], function () {
         $this->get('/', 'Admin@index');
+        $this->group([
+            'prefix' => 'users',
+        ], function () {
+            $this->get('/', 'User@index');
+            $this->get('new', 'User@info');
+            $this->post('new', 'User@add');
+            $this->get('edit/{id}', 'User@info');
+            $this->get('delete/{id}', 'User@delete');
+            $this->post('edit/{id}', 'User@update');
+        });
     });
 
     $this->group([
