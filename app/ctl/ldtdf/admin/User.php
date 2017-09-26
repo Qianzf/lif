@@ -8,23 +8,50 @@ class User extends Ctl
 {
     public function index(UserModel $user)
     {
-        view('ldtdf/admin/users')->withUsers($user->limit(16)->get());   
+        $request = $this->request->all();
+
+        legal_or($request, [
+            'search' => ['string', ''],
+            'role'   => ['in:ADMIN,DEVELOPER,TESTER', false],
+            'page'   => ['int|min:1', 1],
+        ]);
+
+        $offset = 16;
+        $start  = ($request['page'] - 1) * $offset;
+
+        if ($request['role']) {
+            $user = $user->whereRole($request['role']);
+        }
+        if ($keyword = $request['search']) {
+            // TODO: Virtual table && full text search
+            $user = $user->where(function ($table) use ($keyword) {
+                $table
+                ->whereAccount('like', '%'.$keyword.'%')
+                ->orEmail('like', '%'.$keyword.'%')
+                ->orName('like', '%'.$keyword.'%');
+            });
+        }
+
+        $users = $user
+        ->limit($start, $offset)
+        ->get();
+
+        view('ldtdf/admin/users')
+        ->withUsers($users)
+        ->withKeyword($keyword)
+        ->withSearchrole($request['role']);
     }
 
     public function info(UserModel $user)
     {
-        share('system-roles', [
-            'ADMIN',
-            'DEVELOPER',
-            'TESTER',
-        ]);
-
         view('ldtdf/admin/users/edit')->withUser($user);
     }
 
     public function add(UserModel $user)
     {
-        $this->validate($this->request->all(), [
+        $request = $this->request->all();
+
+        $this->validate($request, [
             'account' => 'need',
             'name'    => 'need',
             'email'   => 'need|email',
@@ -32,7 +59,7 @@ class User extends Ctl
             'role'    => 'need|in:ADMIN,TESTER,DEVELOPER',
         ]);
 
-        foreach ($this->request->all() as $key => $value) {
+        foreach ($request as $key => $value) {
             if ('passwd' == $key) {
                 $value = password_hash($value, PASSWORD_DEFAULT);
             }

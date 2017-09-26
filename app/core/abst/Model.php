@@ -80,6 +80,14 @@ abstract class Model
 
             $this->fields = $res;
 
+            // If only one result
+            // Then return Model instance self
+            if (! isset($res[0])) {
+                return $this;
+            }
+
+            // If result is collections
+            // Then return collected object-based array
             array_walk($res, function (&$item, $key) {
                 $item = collect($item);
             });

@@ -14,18 +14,27 @@ class Validation
                 if (!isset($_ruleArr[0])
                     || !method_exists($this, $_ruleArr[0])
                 ) {
-                    excp('Missing validator: `'.($_ruleArr[0] ?? 'unknown'));
+                    excp('Missing validator: '.($_ruleArr[0] ?? 'unknown'));
                 }
 
                 $validator = $_ruleArr[0];
                 $extra     = $_ruleArr[1] ?? null;
 
-                if (true !== ($err = $this->$validator(
-                    $key,
-                    $data,
-                    $extra
-                ))) {
-                    return $err;
+                if (('need' != $validator)) {
+                    if (! isset($data[$key])) {
+                        continue;
+                    }
+
+                    if (true !== ($err = $this->$validator(
+                        $data[$key],
+                        $extra
+                    ))) {
+                        return is_string($err)
+                        ? $err
+                        : 'ILLEGAL_'.strtoupper($key);
+                    }
+                } else {
+                    return $this->need($key, $data);
                 }
             }
         }
@@ -34,7 +43,7 @@ class Validation
     }
 
     // Check existing and un-empty value
-    public function need(string $key, array $data, $extra = null)
+    public function need(string $key, array $data)
     {
         return (isset($data[$key]) && !empty($data[$key]))
         ? true
@@ -43,37 +52,48 @@ class Validation
 
     // If has email field then check it
     // Or always return true
-    public function email(string $key, array $data, array $extra = null)
+    public function email($value, $extra = null)
     {
-        if (isset($data[$key]) || is_null($data[$key])) {
-            if (! $data[$key]) {
-                return true;
-            }
-            if (false === filter_var($data[$key], FILTER_VALIDATE_EMAIL)) {
-                return 'ILLEGAL_EMAIL';
-            }
+        if (false === filter_var($value, FILTER_VALIDATE_EMAIL)) {
+            return 'ILLEGAL_EMAIL';
         }
 
         return true;
     }
 
-    public function in(string $key, array $data, $in)
+    public function string($value, $extra = null)
     {
-        if (isset($data[$key]) || is_null($data[$key])) {
-            if (! $data[$key]) {
-                return true;
-            }
-            if (!is_array($in) && !is_string($in)) {
-                return 'ILLEGAL_VALUE_RANGE';
-            }
+        return is_string($value);
+    }
+
+    public function int($value, $extra = null)
+    {
+        return (intval($value) == $value);
+    }
+
+    public function min($value, $min)
+    {
+        if (! is_numeric($min)) {
+            return 'ILLEGAL_MIN_VALUE';
+        }
+
+        if (is_numeric($value)) {
+            return ($value >= $min);
+        } elseif (is_string($value)) {
+            return true;    // TODO
+        }
+    }
+
+    public function in($value, $in)
+    {
+        if (!is_array($in) && !is_string($in)) {
+            return 'ILLEGAL_VALUE_RANGE';
         }
 
         if (is_string($in)) {
             $in = explode(',', $in);
         }
 
-        $err = 'ILLEGAL_'.strtoupper($key);
-
-        return in_array($data[$key], $in) ? true : $err;
+        return in_array($value, $in);
     }
 }

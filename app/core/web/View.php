@@ -140,10 +140,7 @@ class View
 
     protected function data($data): View
     {
-        $this->data = array_unique(
-            array_merge($this->data, $data),
-            SORT_REGULAR
-        );
+        $this->data = array_merge($this->data, $data);
 
         return $this;
     }
@@ -189,6 +186,8 @@ class View
                 }
 
                 $this->data($data);
+
+                return $this;
             }
         } else {
             $value = isset($args[0]) ? (
@@ -198,6 +197,7 @@ class View
                     : (string) $args[0]
                 )
             ) : '';
+
             $this->data[$name] = $value;
         }
     }

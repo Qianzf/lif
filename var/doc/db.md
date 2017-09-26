@@ -94,7 +94,7 @@ db()->raw('show variables like ?', ['ver%']);
 db()
 // ...
 ->sql();    // Without binding values
-// ->__sql();    // With binding values
+// ->_sql();    // With binding values
 
 // Or
 db()->table('lif')->whereId(1)->get(false, 1);    // Without binding values

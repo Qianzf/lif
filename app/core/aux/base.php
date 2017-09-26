@@ -134,6 +134,30 @@ if (! fe('context')) {
         ? 'cli' : 'web';
     }
 }
+if (! fe('legal_or')) {
+    function legal_or(array &$data, array $rulesWithDefaults) {
+        if (! $rulesWithDefaults) {
+            return true;
+        } elseif (!is_array($data) && !is_object($data)) {
+            excp('Validate source must be an arra or object.');
+        }
+
+        $validator = new \Lif\Core\Validation;
+        foreach ($rulesWithDefaults as $key => list($rules, $default)) {
+            if (!isset($data[$key]) || is_null($data[$key])) {
+                $data[$key] = $default;
+            } else {
+                if (! is_array($rules)) {
+                    $rules = [$key => $rules];
+                }
+                
+                if (true !== $validator->run($data, $rules)) {
+                    $data[$key] = $default;
+                }
+            }
+        }
+    }
+}
 if (! fe('exists')) {
     // !!! Be careful to check bool value like false
     function exists($var, $idx = null) {

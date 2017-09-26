@@ -9,42 +9,73 @@ $(window).ready(function () {
         + this.value
         + window.location.search
     })
+    $('select[name="system-roles"]').change(function () {
+        reloadWithQuery('role', this.value)
+    })
+    $('input[name="search-btn"]').click(function () {
+        search()
+    })
+    $('input[name="search"]').on('keydown', function (e) {
+        if (e.which == 13) {
+            e.preventDefault()
+            search()
+        }
+    })
+    $('input[name="clear-search-btn"]').click(function () {
+        $('input[name="search"]').val('')
+    })
+    $('input[name="reset-all-btn"]').click(function () {
+        if (window.location.search) {
+            let aTag = getATag(window.location.href)
+            let url  = aTag.scheme + aTag.hostname + aTag.pathname
+
+            window.location = url
+        }
+    })
 
     hasErrorOrNot()
 })
+function search() {
+    let search = $('input[name="search"]').val()
+    if (search.length > 0) {
+        reloadWithQuery('search', search)
+    }
+}
 function hasErrorOrNot() {
     let error = $('input[name="__error"]').val()
     if (error) {
         alert(error)
     }
 }
-function reloadWithQuery(key, val)
-{
-    let queryString = window.location.search
-    .replace('?', '')
-    .split('&')
+function reloadWithQuery(key, val) {
+    let queryStringBefore = window.location.search
 
-    let newQueryString = updateQueryString(
-        queryString,
+    if (queryStringBefore) {
+        queryStringBefore = queryStringBefore
+        .replace('?', '')
+        .split('&')
+    }
+
+    let newQueryString = updatequeryStringBefore(
+        queryStringBefore,
         key,
         val
     )
+
     let aTag = getATag(window.location.href)
     let url  = aTag.scheme + aTag.hostname + aTag.pathname
 
     window.location = url + '?' + newQueryString
 }
-function updateQueryString(queryString, key, val)
-{
+function updatequeryStringBefore(queryStringBefore, key, val) {
     let newQueryString = []
-    let hasBefore = false
+    let noThisQueryKeyBefore = true
 
-    if (queryString) {
-        for (let i in queryString) {
-            console.log(i, queryString)
-            let pair = queryString[i].split('=')
+    if (queryStringBefore) {
+        for (let i in queryStringBefore) {
+            let pair = queryStringBefore[i].split('=')
             if (key == pair[0]) {
-                hasBefore = true
+                noThisQueryKeyBefore = false
                 pair[1] = val
             }
             let newPair = pair.join('=')
@@ -52,16 +83,15 @@ function updateQueryString(queryString, key, val)
         }
     }
 
-    newQueryString = newQueryString.join('&')
-
-    if (! hasBefore) {
-        newQueryString += (key + '=' + val)
+    if (noThisQueryKeyBefore) {
+        newQueryString.push(key + '=' + val)
     }
+
+    newQueryString = newQueryString.join('&')
 
     return newQueryString
 }
-function getATag(url)
-{
+function getATag(url) {
     let a = document.createElement('a')
     let urlArr = url.split('/')
 

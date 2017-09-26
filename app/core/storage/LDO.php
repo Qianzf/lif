@@ -132,15 +132,15 @@ class LDO extends \PDO
     {
         $this->lastWhere      = $this->where;
         $this->lastBindValues = $this->bindValues;
-        $this->sql  = null;
-        $this->crud     = null;
-        $this->status   = null;
-        $this->select   = null;
-        $this->where    = null;
-        $this->sort     = null;
-        $this->group    = null;
-        $this->limit    = null;
-        $this->updates  = null;
+        $this->sql     = null;
+        $this->crud    = null;
+        $this->status  = null;
+        $this->select  = null;
+        $this->where   = null;
+        $this->sort    = null;
+        $this->group   = null;
+        $this->limit   = null;
+        $this->updates = null;
         $this->insertKeys = null;
         $this->insertVals = null;
         $this->statement  = null;
@@ -190,21 +190,34 @@ class LDO extends \PDO
             $argCnt   = count($args);
             
             if ($argCnt > $fieldCnt) {
-                excp('Condition count can not greater than fields count.');
-            }
+                if (1 === $argCnt) {
+                    $args = ['=', $args[0]];
+                } elseif (2 === $argCnt) {
+                } else {
+                    excp('Illgeal conditions amount.');
+                }
+                array_walk($fields,
+                    function (&$item, $key, $args) {
+                        $item = [
+                            $item,
+                            $args[0],
+                            $args[1],
+                        ];
+                }, $args);
+            } else {
+                $lastArg = $args[--$argCnt];
+                for ($i = $argCnt+1; $i < $fieldCnt; ++$i) {
+                    $args[] = $lastArg;
+                }
 
-            $lastArg = $args[--$argCnt];
-            for ($i = $argCnt+1; $i < $fieldCnt; ++$i) {
-                $args[] = $lastArg;
+                array_walk($fields,
+                    function (&$item, $key, $args) {
+                        $item = [
+                            $item,
+                            $args[$key]
+                        ];
+                }, $args);
             }
-
-            array_walk($fields,
-                function (&$item, $key, $args) {
-                    $item = [
-                        $item,
-                        $args[$key]
-                    ];
-            }, $args);
 
             return $fields;
         }

@@ -36,6 +36,11 @@ class Passport extends Ctl
         unset($user->passwd);
 
         share('__USER', $user->items());
+        share('system-roles', [
+            'ADMIN',
+            'DEVELOPER',
+            'TESTER',
+        ]);
         
         if ($lang) {
             share('__lang', $lang);

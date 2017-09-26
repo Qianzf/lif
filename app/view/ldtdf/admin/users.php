@@ -3,6 +3,23 @@
 
 <ul>
     <li>
+        <input type="text" name="search"
+        value="<?= $keyword ?>" required
+        placeholder="<?= lang('PROVIDE_KEYWORDS') ?>">
+
+        <input type="button" name="search-btn"
+        value="<?= lang('SEARCH') ?>">
+
+        <input type="button" name="clear-search-btn"
+        value="<?= lang('CLEAR') ?>">
+
+        <input type="button" name="reset-all-btn"
+        value="<?= lang('RESET_ALL') ?>">
+    </li>
+
+    <br>
+
+    <li>
         <a href="users/new"><?= lang('ADD_USER') ?></a>
     </li>
 </ul>
@@ -13,13 +30,24 @@
         <th><?= lang('ACCOUNT') ?></th>
         <th><?= lang('NAME') ?></th>
         <th><?= lang('EMAIL') ?></th>
-        <th><?= lang('USER_ROLE') ?></th>
+        <th>
+            <?= lang('USER_ROLE') ?>
+            <select name="system-roles">
+                <option value="all"><?= lang('ALL') ?></option>
+                <?php foreach (share('system-roles') as $role) { ?>
+                <?php $selected = ($searchrole == $role) ? 'selected' : '' ?>
+                <option value="<?= $role ?>" <?= $selected ?>>
+                    <?= lang($role) ?>
+                </option>
+                <?php } ?>
+            </select>
+        </th>
         <th><?= lang('OPERATIONS') ?></th>
     </tr>
 
     <?php if ($users) { ?>
     <?php foreach($users as $user) { ?>
-    <tr>
+    <tr <?php echo $keyword ? 'class="search-res"' : ''; ?>>
         <td><?= $user->account ?></td>
         <td><?= $user->name ?></td>
         <td><?= $user->email ?></td>
