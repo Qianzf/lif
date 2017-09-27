@@ -22,9 +22,11 @@ class User extends Ctl
 
         if (! $user) {
             session()->delete('__USER');
-            share('__error', sysmsg('NO_USER'));
+            share_error_i18n('NO_USER');
             return redirect('/dep/user/login');
         }
+
+        $needUpdate = false;
 
         // If pass password then update it
         // If pass email and new email not equal to old email then update it
@@ -35,29 +37,39 @@ class User extends Ctl
             if (! password_verify($request->passwordOld, $user->passwd)) {
                 return sysmsg('ILLEGAL_OLD_PASSWD');
             }
-
-            $user->passwd = password_hash(
-                $request->passwordNew,
-                PASSWORD_DEFAULT
-            );
-        } elseif ($request->email && ($user->email != $request->email)) {
-            $user->email  = $request->email;
+            if (! password_verify($request->passwordNew, $user->passwd)) {
+                $needUpdate = true;
+                $user->passwd = password_hash(
+                    $request->passwordNew,
+                    PASSWORD_DEFAULT
+                );
+            }
+        }
+        if ($request->email && ($user->email != $request->email)) {
+            $needUpdate = true;
+            $user->email = $request->email;
         }
 
-        $sysmsg = sysmsg('UPDATE_FAILED');
+        $err = 'UPDATED_NOTHING';
 
-        if ($user->save()) {
-            unset($user->passwd);
-            share('__USER', $user->items());
+        if ($needUpdate) {
+            if ($user->save()) {
+                unset($user->passwd);
+                share('__USER', $user->items());
 
-            $sysmsg = sysmsg('UPDATED_OK');
+                $err = 'UPDATED_OK';
 
-            if ($request->passwordNew) {
-                session()->delete('__USER');
+                if ($request->passwordNew) {
+                    session()->delete('__USER');
+
+                    redirect('/dep/user/login');
+                }
+            } else {
+                $err = 'UPDATE_FAILED';
             }
         }
 
-        share('__error', $sysmsg);
+        share_error_i18n($err);
 
         redirect('/dep/user/profile');
     }

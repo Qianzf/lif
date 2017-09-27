@@ -1,6 +1,7 @@
+<br>
 <header>
     <a href="/dep">
-        <strong><?= lang('LDTDFMS') ?></strong>
+        <em><?= lang('LDTDFMS') ?></em>
     </a>
 
     <select name="loggedin">

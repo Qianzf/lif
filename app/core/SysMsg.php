@@ -44,13 +44,7 @@ class SysMsg implements \ArrayAccess
 
     public function offsetGet($offset)
     {
-        return isset($this->text[$offset])
-        ? $this->text[$offset]
-        : (
-            ('zh' == $this->lang)
-            ? '服务繁忙，请稍后再试'
-            : 'Service is busy or temporarily unavailable.'
-        );
+        return isset($this->text[$offset]) ?? $offset;
     }
 
     public function offsetSet($offset, $value): void

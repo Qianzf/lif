@@ -1,3 +1,4 @@
+<br>
 <footer>
     <em><?= sysmsg('SWITCH_LANG') ?></em>
     <select name="system-lang">

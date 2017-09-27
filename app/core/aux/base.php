@@ -701,12 +701,7 @@ if (! fe('sysmsg')) {
             }
         }
 
-        return $msg[$key]
-        ?? (
-            ('zh' == $lang)
-            ? '服务繁忙，请稍后再试'
-            : 'Service is busy or temporarily unavailable.'
-        );
+        return $msg[$key] ?? $key;
     }
 }
 if (! fe('lang')) {

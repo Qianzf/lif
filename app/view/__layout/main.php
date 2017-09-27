@@ -17,22 +17,13 @@
 
 </head>
 
-<br>
-
-<?= $this->section('header') ?>
-
-<br>
-
 <body>
+
+    <?= $this->section('header') ?>
 
     <?= $__MAIN__ ?>
 
+    <?= $this->section('footer') ?>
+
 </body>
-
-<br>
-
-<?= $this->section('footer') ?>
-
-<br>
-
 </html>

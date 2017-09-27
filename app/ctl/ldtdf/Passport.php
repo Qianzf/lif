@@ -21,11 +21,15 @@ class Passport extends Ctl
         $account = $this->request->get('account');
         $passwd  = $this->request->get('passwd');
         $user    = $u
-        ->whereAccount($account)
-        ->orEmail($account)
+        ->whereStatus(1)
+        ->where(function ($user) use ($account) {
+            $user
+            ->whereAccount($account)
+            ->orEmail($account);
+        })
         ->first();
 
-        if (! $user) {
+        if (! $user || !is_object($user)) {
             share('__error', sysmsg('NO_USER'));
             redirect('/dep/user/login');
         } elseif (! password_verify($passwd, $user->passwd)) {

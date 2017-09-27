@@ -6,5 +6,7 @@ class User extends Mdl
 {
     protected $table = 'user';
 
-    protected $pk = 'id';
+    protected $unreadable = [
+        'passwd',
+    ];
 }

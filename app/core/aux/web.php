@@ -177,6 +177,16 @@ if (! fe('share')) {
         }
     }
 }
+if (! fe('share_error')) {
+    function share_error($data) {
+        share('__error', $data);
+    }
+}
+if (! fe('share_error_i18n')) {
+    function share_error_i18n(string $key) {
+        share('__error', lang($key));
+    }
+}
 if (! fe('share_flush')) {
     function share_flush(string $key) {
         return session()->flush($key);

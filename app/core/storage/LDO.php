@@ -240,7 +240,8 @@ class LDO extends \PDO
         return $this;
     }
 
-    protected function verifyWhereCondFields(array $conds)
+    // Verify where conditionals and parse out fields and their conditions
+    protected function whereConditionals(array $conds)
     {
         switch (count($conds)) {
             // Only one condition, and use default specific operator `=`
@@ -336,10 +337,10 @@ class LDO extends \PDO
                         $where = $conds[0];
                     } elseif (is_array($conds[0])) {
                         if (! is_array($conds[0][array_keys($conds[0])[0]])) {
-                            $where = $this->verifyWhereCondFields($conds[0]);
+                            $where = $this->whereConditionals($conds[0]);
                         } else {
                             foreach ($conds[0] as $key => $cond) {
-                                $where .= $this->verifyWhereCondFields($cond);
+                                $where .= $this->whereConditionals($cond);
                                 if (next($conds[0])) {
                                     $where .= ' AND ';
                                 }
@@ -361,7 +362,7 @@ class LDO extends \PDO
                 
                 case 2:
                 case 3: {
-                    $where = $this->verifyWhereCondFields($conds);
+                    $where = $this->whereConditionals($conds);
                 } break;
                 
                 default: {
@@ -839,12 +840,12 @@ class LDO extends \PDO
     {
         $this->updates = '';
         $bindValues    = [];
-
+        
         foreach ($updates as $key => $newVal) {
             $this->updates .= $key.' = ? ';
             $bindValues[]   = $newVal;
 
-            if (next($updates)) {
+            if (false !== next($updates)) {
                 $this->updates .= ',';
             }
         }

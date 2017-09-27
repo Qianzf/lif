@@ -4,7 +4,6 @@ namespace Lif\Core\Abst;
 
 abstract class Model
 {
-    protected $conn  = null;
     protected $table = null;    // table name
     protected $_tbx  = null;    // table prefix
     protected $_fdx  = null;    // field prefix
@@ -12,9 +11,7 @@ abstract class Model
     protected $query = null;    // LDO query object
 
     protected $unwriteable = [];    // protected fields that cann't update
-    protected $unreadable  = [
-        'passwd',
-    ];    // protected fields that cann't read
+    protected $unreadable  = [];    // protected fields that cann't read
 
     // Stack of current query result
     protected $fields = [];
@@ -23,14 +20,14 @@ abstract class Model
     public function __construct($id = null)
     {
         if ($id) {
-            $pk = $this->pk ?? 'id';
+            $this->pk = $this->pk ?? 'id';
 
             $this->fields = $this->query()->where(
                 $this->pk,
                 $id
             )->first();
 
-            $this->attrs['where'] = '((`'.$pk.'` = ?))';
+            $this->attrs['where'] = '((`'.$this->pk.'` = ?))';
         }
     }
 
@@ -124,13 +121,7 @@ abstract class Model
 
     public function all()
     {
-        $res = $this->query()->select(
-            'id',
-            'account',
-            'name',
-            'email',
-            'role'
-        )->get();
+        $res = $this->query()->get();
 
         array_walk($res, function (&$item, $key) {
             $item = collect($item);
@@ -159,6 +150,13 @@ abstract class Model
         $lastInserstId = $this->query()->insert($data);
 
         return $this->fields[$this->pk] = $lastInserstId;
+    }
+
+    public function empty() : Model
+    {
+        $this->fields = [];
+
+        return $this;
     }
 
     public function clear() : Model

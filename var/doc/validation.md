@@ -65,9 +65,9 @@ dd($prepare);
 ```
 - `legal_or()`
 
-Use `legal_or()` can also be used to validate an given array data with given array rules.
+`legal_or()` can also be used to validate an given array data with given rules.
 
-The mainly different between `validate()` and `legal_or()` is that `legal_or()` can assign a default value when any value of that array data validation fails.
+The mainly difference between `validate()` and `legal_or()` is that `legal_or()` can assign a default value when any value of that array data validation fails.
 
 For example:
 
@@ -79,6 +79,6 @@ legal_or($request, [
 ]);
 ```
 
-In this case, if `$request['page']` is not an integer over 1, then `$request['page']` will be transfered into exactly integer `1`.
+In this case, if `$request['page']` is not an integer over 1, then `$request['page']` will be transformed into exactly integer `1`.
 
 It's useful in some scenarios like dynamic search query strings.

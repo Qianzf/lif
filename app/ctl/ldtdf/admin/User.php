@@ -24,7 +24,8 @@ class User extends Ctl
         }
         if ($keyword = $request['search']) {
             // TODO: Virtual table && full text search
-            $user = $user->where(function ($table) use ($keyword) {
+            $user = $user
+            ->where(function ($table) use ($keyword) {
                 $table
                 ->whereAccount('like', '%'.$keyword.'%')
                 ->orEmail('like', '%'.$keyword.'%')
@@ -33,6 +34,7 @@ class User extends Ctl
         }
 
         $users = $user
+        ->whereStatus(1)
         ->limit($start, $offset)
         ->get();
 
@@ -49,6 +51,11 @@ class User extends Ctl
 
     public function add(UserModel $user)
     {
+        // PRG: POST - Redirect - GET
+        if (is_object($user) && $user->id) {
+            return redirect('/dep/admin/users/'.$user->id);
+        }
+
         $request = $this->request->all();
 
         $this->validate($request, [
@@ -68,12 +75,13 @@ class User extends Ctl
         }
 
         if ($user->save()) {
-            share('__error', sysmsg('CREATED_SUCCESS'));
+            share_error_i18n('CREATED_SUCCESS');
 
             redirect(route('dep.admin.users'));
         }
 
-        share('__error', sysmsg('CREATE_FAILED'));
+        share_error_i18n('CREATE_FAILED');
+
         return redirect('/'.$this->route);
     }
 
@@ -114,7 +122,7 @@ class User extends Ctl
             }
         }
 
-        share('__error', sysmsg($sysmsg));
+        share_error_i18n($sysmsg);
 
         redirect(route('dep.admin.users'));
     }
@@ -122,18 +130,17 @@ class User extends Ctl
     public function delete(UserModel $user)
     {
         $err = 'DELETED_FAILED';
+        $user->status = 0;
 
-        $deleteUserID = $user->id;
-
-        if ($user->delete()) {
+        if ($user->save()) {
             $err = 'DELETED_OK';
             // Check if delete self
-            if ($deleteUserID == share('__USER.id')) {
+            if ($user->id == share('__USER.id')) {
                 session()->delete('__USER');
             }
         }
 
-        share('__error', sysmsg($err));
+        share_error_i18n($err);
 
         redirect(route('dep.admin.users'));
     }

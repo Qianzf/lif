@@ -24,7 +24,7 @@
     </li>
 </ul>
 
-<table border="1">
+<table>
     <caption><?= lang('USER_LIST') ?></caption>
     <tr>
         <th><?= lang('ACCOUNT') ?></th>

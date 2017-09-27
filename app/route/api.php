@@ -22,6 +22,15 @@ $this->group([
     ],
 ], function () {
     $this->get('/', 'LDTDF@index');
+    $this->get('trending', 'LDTDF@trending');
+
+    $this->group([
+        'prefix' => 'tasks',
+    ], function () {
+        $this->get('/', 'Task@index');
+        $this->get('{id}', 'Task@detail');
+        $this->post('edit', 'Task@edit');
+    });
 
     $this->group([
         'prefix'    => 'admin',
@@ -41,6 +50,26 @@ $this->group([
             $this->get('delete/{id}', 'User@delete');
             $this->post('edit/{id}', 'User@update');
         });
+    });
+
+    $this->group([
+        'prefix'    => 'developer',
+        'namespace' => 'Developer',
+        'middleware' => [
+            'auth.developer',
+        ],
+    ], function () {
+        $this->get('/', 'Developer@index');
+    });
+
+    $this->group([
+        'prefix'    => 'tester',
+        'namespace' => 'Tester',
+        'middleware' => [
+            'auth.tester',
+        ],
+    ], function () {
+        $this->get('/', 'Tester@index');
     });
 
     $this->group([

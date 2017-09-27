@@ -38,6 +38,7 @@ class Session
 
     public function destory()
     {
+        // session_regenerate_id(true);
         return (
             session_destroy()
             && setcookie('LIFSESSID', '', time()-1)

@@ -2,11 +2,11 @@
 
 namespace Lif\Mdwr\Auth;
 
-class Admin
+class Tester
 {
     public function handle($app)
     {
-        if ('ADMIN' !== strtoupper(share('__USER.role'))) {
+        if ('TESTER' !== strtoupper(share('__USER.role'))) {
             share_error_i18n('VIEW_PERMISSION_DENIED');
             
             session()->delete('__USER');
