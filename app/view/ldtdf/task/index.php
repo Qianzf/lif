@@ -1,5 +1,6 @@
 <?= $this->layout('main') ?>
 <?= $this->title([lang('TASK_LIST'), lang('LDTDFMS')]) ?>
+<?= $this->section('search') ?>
 
 <br>
 

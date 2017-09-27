@@ -52,6 +52,13 @@ abstract class Model
         return $this;
     }
 
+    public function __clone()
+    {
+        $this->reset();
+
+        return $this;
+    }
+
     public function __call($name, $args)
     {
         $res = call_user_func_array(
@@ -83,11 +90,7 @@ abstract class Model
                 return $this;
             }
 
-            // If result is collections
-            // Then return collected object-based array
-            array_walk($res, function (&$item, $key) {
-                $item = collect($item);
-            });
+            $this->__toModel($res);
 
             return $res;
         }
@@ -119,13 +122,24 @@ abstract class Model
         return $this->fields;
     }
 
+    protected function __toModel(array &$data) : Model
+    {
+        array_walk($data, function (&$item, $key) {
+            $model = clone $this;
+            $model->fields = $item;
+            $item = $model;
+        });
+
+        unset($item);
+
+        return $this;
+    }
+
     public function all()
     {
         $res = $this->query()->get();
 
-        array_walk($res, function (&$item, $key) {
-            $item = collect($item);
-        });
+        $this->__toModel($res);
 
         return $res;
     }
@@ -166,11 +180,16 @@ abstract class Model
         return $this;
     }
 
+    public function clean() : Model
+    {
+        $this->query = null;
+
+        return $this;
+    }
+
     public function reset() : Model
     {
-        $this->attrs  = [];
-        $this->fields = [];
-        $this->query  = null;
+        $this->clean()->clear()->empty();
 
         return $this;
     }
@@ -197,30 +216,106 @@ abstract class Model
     protected function __table()
     {
         if (! $this->table) {
-            $defaultTableName = (new \ReflectionClass($this))
-            ->getShortName();
+            $defaultTableName   = (
+                new \ReflectionClass($this)
+            )->getShortName();
 
-            return $defaultTableName;
+            return $this->table = defaultTableName;
         }
 
         return $this->table;
     }
 
-    // -------------------------------------------------------
-    //     $class => The model class belongs to this model
-    //     $fk    => Foreign key, primary key if not set
-    //     $lk    => Local key, primary key if not set
-    // -------------------------------------------------------
-    protected function hasMany($class, $fk = null, $lk = null)
+    public function pk()
     {
+        return $this->pk ?? 'id';
     }
 
-    // -------------------------------------------------------
-    //     $class => The model class which owns this model
-    //     $fk    => Foreign key, primary key if not set
-    //     $lk    => Local key, primary key if not set
-    // -------------------------------------------------------
-    protected function belongsTo($class, $fk = null, $lk = null)
-    {
+    // One model has many related models
+    protected function hasMany(
+        string $model,
+        string $lk = null,
+        string $fk = null,
+        string $cond = '=',
+        $lv = null
+    ) {
+        return $this->join(
+            $model,
+            1,
+            $lk,
+            $fk,
+            $cond,
+            $lv
+        );
+    }
+
+    // ---------------------------------------------------------------
+    //     $class => The model class belongs to this model
+    //     $type  => 1: has many; 2: belongs to
+    //     $lk    => Local key, primary key of this table
+    //     $fk    => Foreign key, primary key of join table
+    //     $cond  => Join string between foreign key and local key
+    //     $lv    => Local value mapping to locak key
+    // ---------------------------------------------------------------
+    protected function join(
+        string $model,
+        int $type,
+        string $lk = null,
+        string $fk = null,
+        string $cond = '=',
+        $lv = null
+    ) {
+        if (! $this->fields) {
+            $this->first();
+        }
+
+        $this->clean()->clear();
+
+        $model   = model($model);
+        $selects = $model->table.'.*';
+        $lk = ($lk ?? 'id');
+        $fk = ($fk ?? 'id');
+        $_lk   = (1 === $type) ? $lk : $fk;    // Exchanged local key
+        $fetch = (1 === $type) ? 'get' : 'first';
+        $where = $this->table.'.'.$_lk;
+
+        if ($lv) {
+            if (is_array($lv)) {
+                $value = '('.implode(',', $lv).')';
+            } else {
+                $value = (string) $lv;
+            }
+        } else {
+            $value = $this->fields[$this->pk()] ?? null;
+        }
+
+        return $model
+        ->select($selects)
+        ->leftJoin(
+            $this->table,
+            $model->table.'.'.$fk,
+            $cond,
+            $where
+        )
+        ->where($where, $value)
+        ->$fetch();
+    }
+
+    // One model only belongs to one model
+    protected function belongsTo(
+        string $model,
+        string $lk = null,
+        string $fk = null,
+        string $cond = '=',
+        $lv = null
+    ) {
+        return $this->join(
+            $model,
+            2,
+            $lk,
+            $fk,
+            $cond,
+            $lv
+        );
     }
 }

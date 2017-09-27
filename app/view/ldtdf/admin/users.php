@@ -1,24 +1,8 @@
 <?= $this->layout('main') ?>
 <?= $this->title([lang('USER_MANAGE'), lang('LDTDFMS')]) ?>
+<?= $this->section('search') ?>
 
 <ul>
-    <li>
-        <input type="text" name="search"
-        value="<?= $keyword ?>" required
-        placeholder="<?= lang('PROVIDE_KEYWORDS') ?>">
-
-        <input type="button" name="search-btn"
-        value="<?= lang('SEARCH') ?>">
-
-        <input type="button" name="clear-search-btn"
-        value="<?= lang('CLEAR') ?>">
-
-        <input type="button" name="reset-all-btn"
-        value="<?= lang('RESET_ALL') ?>">
-    </li>
-
-    <br>
-
     <li>
         <a href="users/new"><?= lang('ADD_USER') ?></a>
     </li>
@@ -32,15 +16,7 @@
         <th><?= lang('EMAIL') ?></th>
         <th>
             <?= lang('USER_ROLE') ?>
-            <select name="system-roles">
-                <option value="all"><?= lang('ALL') ?></option>
-                <?php foreach (share('system-roles') as $role) { ?>
-                <?php $selected = ($searchrole == $role) ? 'selected' : '' ?>
-                <option value="<?= $role ?>" <?= $selected ?>>
-                    <?= lang($role) ?>
-                </option>
-                <?php } ?>
-            </select>
+            <?= $this->section('filter/roles') ?>
         </th>
         <th><?= lang('OPERATIONS') ?></th>
     </tr>

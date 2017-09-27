@@ -248,37 +248,48 @@ class LDO extends \PDO
             case 2: {
                 if (!($condCol = $conds[0]) || !is_string($condCol)) {
                     excp('Expecting first field of condition a string.');
-                } elseif (! ($condVal = $conds[1])
-                    || (
-                        !is_string($condVal)
-                        && !is_numeric($condVal)
-                        && !is_array($condVal)
-                    )
-                ) {
-                    excp(
-                        'Expecting second field of condition a string or array.'
-                    );
                 }
-                $condOp = '=';
+                if (isset($conds[1])) {
+                    if (!is_string($conds[1])
+                        && !is_numeric($conds[1])
+                        && !is_array($conds[1])
+                    ) {
+                        excp(
+                            'Expecting second field of condition a string or array.'
+                        );
+                    }
+                    if (! $conds[1]) {
+                        $conds[1] = '';    
+                    }
+                } else {
+                    $conds[1] = null;
+                }
+
+                $condVal = $conds[1];
+                $condOp  = '=';
             } break;
 
             // Only one condition, and provide specific operator
             case 3: {
                 if (!($condCol = $conds[0]) || !is_string($condCol)) {
                     excp('Expecting first field of condition a string.');
-                } elseif (!($condOp = $conds[1])
-                    || !is_string($condOp)
+                }
+                if (!($condOp = $conds[1]) || !is_string($condOp)
                 ) {
                     excp('Expecting second field of condition a string.');
-                } elseif (! ($condVal = $conds[2])
-                    || (
-                        !is_string($condVal)
-                        && !is_numeric($condVal)
-                        && !is_array($condVal)
-                    )
-                ) {
-                    excp('Expecting third field of condition.');
                 }
+                if (isset($conds[2])) {
+                    if (!is_string($conds[2])
+                        && !is_numeric($conds[2])
+                        && !is_array($conds[2])
+                    ) {
+                        excp('Expecting third field of condition.');
+                    }
+                } else {
+                    $conds[2] = null;
+                }
+
+                $condVal = $conds[2];
             } break;
             
             default: {
@@ -287,14 +298,14 @@ class LDO extends \PDO
         }
 
         if (is_array($condVal)) {
-            $condOpWithVal = ' in (?)';
+            $condOpWithVal      = ' in (?)';
             $this->bindValues[] = implode(',', $condVal);
         } else {
-            $condOpWithVal = ' '.$condOp.' ?';
+            $condOpWithVal      = ' '.$condOp.' ?';
             $this->bindValues[] = $condVal;
         }
 
-        return '(`'.$condCol.'`'.$condOpWithVal.')';
+        return '('.escape_fields($condCol).$condOpWithVal.')';
     }
 
     public function or(...$conds): LDO

@@ -287,6 +287,8 @@ if (! fe('exception')) {
             $info['Trace'] = $exObj->getTrace();
         }
 
+        $GLOBALS['LIF_EXCP'] = true;
+        
         if ('json' === $format) {
             ('cli' === context())
             ? exit(_json_encode($info))
@@ -614,6 +616,30 @@ if (! fe('create_ldo')) {
         ->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 }
+if (! fe('model')) {
+    function model(string $class, $pk = null) {
+        if (! class_exists($class)) {
+            excp('Model class not exists: '.$class);
+        }
+
+        return new $class($pk);
+    }
+}
+if (! fe('escape_fields')) {
+    function escape_fields(string $raw) : string
+    {
+        if (false !== mb_strpos($raw, '.')) {
+            $arr = explode('.', $raw);
+            array_walk($arr, function (&$item, $key) {
+                $item = '`'.$item.'`';
+            });
+
+            return implode('.', $arr);
+        }
+
+        return '`'.$raw.'`';
+    }
+}
 if (! fe('class_name')) {
     function class_name($obj) {
         if (!is_object($obj)) {
@@ -634,12 +660,12 @@ if (! fe('class_attrs')) {
 }
 if (! fe('collect')) {
     // Convert array to a collection class
-    function collect($params) {
+    function collect($params, $origin = null) {
         if (! is_array($params)) {
             excp('Collect target must be an array.');
         }
 
-        return new \Lif\Core\Coll($params);
+        return new \Lif\Core\Coll($params, $origin);
     }
 }
 if (! fe('uuid')) {
@@ -665,9 +691,29 @@ if (! fe('sysmsgs')) {
         return (new \Lif\Core\SysMsg)->get();
     }
 }
+if (! fe('load_array')) {
+    function load_array(string $path) : array {
+        $msg = [];
+        if (file_exists($path)) {
+            $fsi = new \FilesystemIterator($path);
+            foreach ($fsi as $file) {
+                if ($file->isFile() && 'php' == $file->getExtension()) {
+                    $_msg = include $file->getPathname();
+                    if ($_msg && is_array($_msg)) {
+                        $msg = array_merge($_msg, $msg);
+                    }
+                }
+            }
+            unset($fsi);
+        }
+
+        return $msg;
+    }
+}
 if (! fe('sysmsg')) {
-    function sysmsg($key, $lang = null) {
-        if (! $lang) {
+    function sysmsg($key, string $lang = null) {
+        $key = strtoupper($key);
+        if (! $lang || !is_string($lang)) {
             $lang = $_REQUEST['lang'] ?? null;
             $session = new \Lif\Core\Web\Session;
             if (! $lang) {
@@ -676,32 +722,41 @@ if (! fe('sysmsg')) {
             $session->set('__lang', $lang);
         }
 
-        if (isset($GLOBALS['__sys_msg'])
-            && is_array($GLOBALS['__sys_msg'])
-            && $GLOBALS['__sys_msg']
+        if (isset($GLOBALS['__sys_msg'][$lang])
+            && is_array($GLOBALS['__sys_msg'][$lang])
+            && $GLOBALS['__sys_msg'][$lang]
         ) {
-            $msg = $GLOBALS['__sys_msg'];
+            $msg = $GLOBALS['__sys_msg'][$lang];
         } else {
-            $msg = [];
             $langPath = pathOf('sysmsg');
             $path = $langPath.$lang;
             $path = file_exists($path) ? $path : $langPath.'zh';
-            if (file_exists($path)) {
-                $fsi = new \FilesystemIterator($path);
-                foreach ($fsi as $file) {
-                    if ($file->isFile() && 'php' == $file->getExtension()) {
-                        $_msg = include $file->getPathname();
-                        if ($_msg && is_array($_msg)) {
-                            $msg = array_merge($_msg, $msg);
-                        }
-                    }
+            $GLOBALS['__sys_msg'][$lang] = $msg = load_array($path);
+        }
+
+        if (isset($msg[$key])) {
+            return $msg[$key];
+        }
+
+        // Support get missing system message by single word key
+        if (false !== mb_strpos($key, '_')) {
+            $arr  = explode('_', $key);
+            $_msg = '';
+            $stub = ('en' ? ' ' : '');
+            foreach ($arr as $_key) {
+                if (! isset($msg[$_key])) {
+                    return $key;
                 }
-                
-                $GLOBALS['__sys_msg'] = $msg;
+
+                $_msg .= $stub.$msg[$_key];
+            }
+
+            if ($_msg = ltrim($_msg)) {
+                return $GLOBALS['__sys_msg'][$lang][$key] = $_msg;
             }
         }
 
-        return $msg[$key] ?? $key;
+        return $key;
     }
 }
 if (! fe('lang')) {

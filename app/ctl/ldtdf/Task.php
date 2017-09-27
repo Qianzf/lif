@@ -8,7 +8,7 @@ class Task extends Ctl
 {
     public function index(TaskModel $task)
     {
-        view('ldtdf/tasks')->withTasks($task->all());
+        view('ldtdf/task/index')->withTasks($task->all());
     }
 
     public function detail(TaskModel $task)

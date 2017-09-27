@@ -14,9 +14,15 @@ class SysMsg implements \ArrayAccess
     public $lang = null;
     public $text = [];
 
-    protected function path()
+    protected function path() : string
     {
-        return pathOf('sysmsg').$this->lang;
+        $path = pathOf('sysmsg');
+
+        if (! file_exists($path.$this->lang)) {
+            $path .= $this->getDefaultLang();
+        }
+
+        return $path;
     }
 
     protected function request()
@@ -64,24 +70,11 @@ class SysMsg implements \ArrayAccess
 
     public function load($lang = null)
     {
-        if (! $this->lang) {
-            $this->lang = $lang ?? $this->getDefaultLang();
+        if (! $lang) {
+            $this->lang = $this->lang ?? $this->getDefaultLang();
         }
 
-        $dat = [];
-
-        if ($fsi = $this->getFilesystemIterator()) {
-            foreach ($fsi as $file) {
-                if ($file->isFile() && 'php' == $file->getExtension()) {
-                    $_dat = include_once $file->getPathname();
-                    if ($_dat && is_array($_dat)) {
-                        $dat = array_merge($_dat, $dat);
-                    }
-                }
-            }
-        }
-
-        return $this->text = $dat;
+        return $this->text = load_array($this->path());
     }
 
     protected function getDefaultLang(): string
@@ -89,20 +82,14 @@ class SysMsg implements \ArrayAccess
         return 'zh';
     }
 
-    protected function getFilesystemIterator()
+    protected function getFilesystemIterator($path = null)
     {
-        if (($path = $this->path())) {
-            if (! file_exists($path)) {
-                $this->lang = 'zh';
-                $path = $this->path();
-                if (! file_exists($path)) {
-                    return false;
-                }
-            }
+        $path = $path ?? $this->path();
 
-            return new \FilesystemIterator($path);
+        if (! file_exists($path)) {
+            return false;
         }
 
-        return false;
+        return new \FilesystemIterator($path);
     }
 }

@@ -1,6 +1,8 @@
 <?= $this->layout('main') ?>
 <?= $this->title([lang('USER_EDIT'), lang('LDTDFMS')]) ?>
 
+<br>
+
 <form method="POST" autocomplete="off">
     <label><?= lang('ACCOUNT') ?>：
         <input type="text" name="account" value="<?= $user->account ?>">

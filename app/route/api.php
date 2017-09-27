@@ -22,7 +22,7 @@ $this->group([
     ],
 ], function () {
     $this->get('/', 'LDTDF@index');
-    $this->get('trending', 'LDTDF@trending');
+    $this->get('trending', 'User@trending');
 
     $this->group([
         'prefix' => 'tasks',

@@ -25,6 +25,7 @@ $(window).ready(function () {
         $('input[name="search"]').val('')
     })
     $('input[name="reset-all-btn"]').click(function () {
+        $('input[name="search"]').val('')
         if (window.location.search) {
             let aTag = getATag(window.location.href)
             let url  = aTag.scheme + aTag.hostname + aTag.pathname

@@ -9,4 +9,13 @@ class User extends Mdl
     protected $unreadable = [
         'passwd',
     ];
+
+    public function trendings()
+    {
+        return $this->hasMany(
+            Trending::class,
+            'id',
+            'uid'
+        );
+    }
 }

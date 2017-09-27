@@ -231,7 +231,14 @@ class View
 
     public function __destruct()
     {
-        if (! $this->outputed) {
+        if (!$this->outputed && (
+            (
+                !isset($GLOBALS['LIF_EXCP'])
+            ) || (
+                isset($GLOBALS['LIF_EXCP'])
+                && (true !== $GLOBALS['LIF_EXCP'])
+            )
+        )) {
             $this->output();
         }
 

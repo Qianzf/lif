@@ -29,6 +29,7 @@ return [
     'ILLEGAL_USER_CREDENTIALS' => '非法用户',
     'ILLEGAL_OLD_PASSWD' => '原密码错误',
     'ALL' => '所有',
+    'ALL_ROLES' => '所有角色',
     'CREATE' => '创建',
     'UPDATE' => '更新',
     'OPERATIONS' => '操作',

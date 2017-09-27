@@ -2,10 +2,20 @@
 
 namespace Lif\Ctl\Ldtdf;
 
-use Lif\Mdl\User as UserModel;
+use Lif\Mdl\{User as UserModel, Trending};
 
 class User extends Ctl
 {
+    public function trending(UserModel $user, Trending $trending)
+    {
+        $data = ('ADMIN' === ($uid = share('__USER.role')))
+        ? $trending->list()
+        : $user->whereId($uid)->trendings();
+
+        view('ldtdf/user/trending')
+        ->withTrending($data);
+    }
+
     public function profile($uid)
     {
         view('ldtdf/user/profile')->withUidEmail(
