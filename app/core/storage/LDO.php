@@ -341,7 +341,7 @@ class LDO extends \PDO
                         } else {
                             foreach ($conds[0] as $key => $cond) {
                                 $where .= $this->whereConditionals($cond);
-                                if (next($conds[0])) {
+                                if (false !== next($conds[0])) {
                                     $where .= ' AND ';
                                 }
                             }
@@ -684,7 +684,7 @@ class LDO extends \PDO
                         ? $_field.' '.$_order
                         : $_order;
 
-                        if (next($order)) {
+                        if (false !== next($order)) {
                             $sort .= ', ';
                         }
                     }
@@ -694,7 +694,7 @@ class LDO extends \PDO
                     excp('Illgeal sort order.');
                 }
 
-                if (next($fields)) {
+                if (false !== next($fields)) {
                     $sort .= ', ';
                 }
             }
@@ -721,7 +721,7 @@ class LDO extends \PDO
 
                         $group .= $_field;
 
-                        if (next($field)) {
+                        if (false !== next($field)) {
                             $group .= ', ';
                         }
                     }
@@ -731,7 +731,7 @@ class LDO extends \PDO
                     excp('Illgeal group by field.');
                 }
 
-                if (next($fields)) {
+                if (false !== next($fields)) {
                     $group .= ', ';
                 }
             }
