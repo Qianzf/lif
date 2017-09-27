@@ -2,61 +2,84 @@
 
 namespace Lif\Ctl\Ldtdf;
 
-use Lif\Core\Web\Session;
+use Lif\Mdl\{User as UserModel, Trending};
 
 class User extends Ctl
 {
-    public function profile($uid, Session $s)
+    public function trending(UserModel $user, Trending $trending)
     {
-        $uid   = share('LOGGED_USER.id');
-        $email = share('LOGGED_USER.email');
-
-        view('ldtdf/user/profile')->withUidEmail($uid, $email);
+        $data = ($admin = ('ADMIN' === share('__USER.role')))
+        ? $trending->list()
+        : $user->find(share('__USER.id'))->trendings();
+    
+        view('ldtdf/user/trending')
+        ->withAdminTrending($admin, $data);
     }
 
-    public function update()
+    public function profile($uid)
+    {
+        view('ldtdf/user/profile')->withUidEmail(
+            share('__USER.id'),
+            share('__USER.email')
+        );
+    }
+
+    public function update(UserModel $user)
     {
         $request = $this->request->params;
-        $uid     = share('LOGGED_USER.id');
-        $email   = share('LOGGED_USER.email');
-        $data    = [];
+
+        $user = $user->whereId(share('__USER.id'))->first();
+
+        if (! $user) {
+            session()->delete('__USER');
+            share_error_i18n('NO_USER');
+            return redirect('/dep/user/login');
+        }
+
+        $needUpdate = false;
 
         // If pass password then update it
         // If pass email and new email not equal to old email then update it
-        if ($request->password) {
-            $data['passwd'] = password_hash(
-                $request->password,
-                PASSWORD_DEFAULT
-            );
-        } elseif ($request->email && ($email != $request->email)) {
-            $data['email']  = $request->email;
-        }
-
-        if ($data) {
-            $updateSuccess = db()
-            ->table('user')
-            ->whereId($uid)
-            ->update($data);
-
-            if ($updateSuccess) {
-                share('LOGGED_USER', [
-                    'id' => $uid,
-                    'email' => $request->email,
-                ]);
-
-                $sysmsg = sysmsg('UPDATED_OK');
-            } else {
-                $sysmsg = sysmsg('UPDATE_FAILED');
+        if ($request->passwordNew) {
+            if (! $request->passwordOld) {
+                return sysmsg('PROVIDE_OLD_PASSWD');
             }
-        } else {
-            $sysmsg = sysmsg('UPDATED_NOTHING');
+            if (! password_verify($request->passwordOld, $user->passwd)) {
+                return sysmsg('ILLEGAL_OLD_PASSWD');
+            }
+            if (! password_verify($request->passwordNew, $user->passwd)) {
+                $needUpdate = true;
+                $user->passwd = password_hash(
+                    $request->passwordNew,
+                    PASSWORD_DEFAULT
+                );
+            }
+        }
+        if ($request->email && ($user->email != $request->email)) {
+            $needUpdate = true;
+            $user->email = $request->email;
         }
 
-        share('__error', $sysmsg);
+        $err = 'UPDATED_NOTHING';
 
-        if ($request->password) {
-            session()->delete('LOGGED_USER');
+        if ($needUpdate) {
+            if ($user->save()) {
+                unset($user->passwd);
+                share('__USER', $user->items());
+
+                $err = 'UPDATED_OK';
+
+                if ($request->passwordNew) {
+                    session()->delete('__USER');
+
+                    redirect('/dep/user/login');
+                }
+            } else {
+                $err = 'UPDATE_FAILED';
+            }
         }
+
+        share_error_i18n($err);
 
         redirect('/dep/user/profile');
     }

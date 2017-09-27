@@ -10,15 +10,17 @@ class Coll implements
 {
     use \Lif\Core\Traits\MethodNotExists;
 
-    private $data  = [];
-    private $keys  = [];
-    protected $count = -1;
+    private $origin  = null;
+    private $data    = [];
+    private $keys    = [];
+    private $count   = -1;
     private $pointer = 0;
 
-    public function __construct($data)
+    public function __construct($data, $origin = null)
     {
-        $this->data = $data;
-        $this->keys = array_keys($data);
+        $this->origin = $origin;
+        $this->data   = $data;
+        $this->keys   = array_keys($data);
     }
 
     public function get($key)
@@ -33,6 +35,20 @@ class Coll implements
             $this->data[$key] = $value;
         } else {
             $this->data[] = $value;
+        }
+    }
+
+    public function origin()
+    {
+        return $this->origin;
+    }
+
+    public function __call($name, $args)
+    {
+        if (is_object($this->origin)
+            && method_exists($this->origin, $name)
+        ) {
+            return $this->origin->$name($args);
         }
     }
 

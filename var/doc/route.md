@@ -58,6 +58,17 @@ $this->get('user/{id}', [
     'prefix' => 'lif',
     'alias' => 'user_info',
 ], 'User@query');
+
+$this->group([
+    'middleware' => [
+        'auth.web'
+    ],
+], function () {
+    // Cancel middleware for specific route
+    $this->get('/', 'User@info');
+    $this->get('login', 'Passport@login')->cancel('auth.web');
+    $this->post('login', 'Passport@loginAction')->cancel('auth.web');
+});
 ```
 
 - Variables assignment

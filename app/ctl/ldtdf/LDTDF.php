@@ -6,8 +6,11 @@ class LDTDF extends Ctl
 {
     public function index()
     {
-        $uid   = share('LOGGED_USER.id');
+        $entryRouteOfRole = '/'
+        .$this->route
+        .'/'
+        .strtolower(share('__USER.role'));
 
-        view('ldtdf/index')->withUid($uid);
+        redirect($entryRouteOfRole);
     }
 }

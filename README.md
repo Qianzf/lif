@@ -12,6 +12,8 @@ A simple, quick, lightweight, API-based modern PHP Framework.
 
 - Support variables assignment on both route prefix and route name, and auto pass into controller
 
+- Support routes cache (Colsure not supported)
+
 ### Request
 
 Support Basic functions, auto amount to the main application instance.
@@ -32,6 +34,10 @@ Well, I think you will like them, all in _app/core/aux/_.
 ### DB SQL builder
 
 LiF has it's own database SQL query builder, it's simple, and extends functionalities from base PDO class, which handles all the SQL things.
+
+### Model/ORM
+
+Support basic Model/ORM functionalities.
 
 ### Views
 
@@ -59,6 +65,14 @@ Support modification of php formatted configuration files.
 
 Support the transformation between array and collection class.
 
+#### Validation
+
+Support custom validation and keep an uniform return values: false or language key.
+
+#### I18N
+
+Use `sysmsg()`/`lang()` and dynamic language packages, LiF can easily achieve i18n.
+
 ### Exception
 
 LiF-styled exception output.
@@ -69,15 +83,11 @@ See: _var/doc_.
 
 > TODO (It's not full-finished yet, but in my active development)
 
-> - Model/ORM
-
-> - Add CLI features(jobs, queue, update db, etc...)
-
-> - Support routes cache
-
 > - Log
 
 > - Enable or disable some time-wasting but will still be used features via Core configurations
+
+> - Add CLI features(jobs, queue, update db, etc...)
 
 > - Version control database
 

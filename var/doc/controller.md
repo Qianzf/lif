@@ -13,9 +13,11 @@ $this->get('user/{id}', 'User@query');
 ``` php
 namespace Lif\Ctl;
 
+use Lif\Mdl\User as UserModel;
+
 class User extends Ctl
 {
-    public function query(\Lif\Mdl\User $user)
+    public function query(UserModel $user)
     {
         response([
             'id' => $user->id

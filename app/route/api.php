@@ -11,7 +11,7 @@ $this->get('/', function () {
 });
 
 $this->any('/sys_msg', function () {
-    response((new \Lif\Core\SysMsg)->get());
+    response(sysmsgs());
 });
 
 $this->group([
@@ -22,14 +22,63 @@ $this->group([
     ],
 ], function () {
     $this->get('/', 'LDTDF@index');
+    $this->get('trending', 'User@trending');
+
+    $this->group([
+        'prefix' => 'tasks',
+    ], function () {
+        $this->get('/', 'Task@index');
+        $this->get('{id}', 'Task@detail');
+        $this->post('edit', 'Task@edit');
+    });
+
+    $this->group([
+        'prefix'    => 'admin',
+        'namespace' => 'Admin',
+        'middleware' => [
+            'auth.admin',
+        ],
+    ], function () {
+        $this->get('/', 'Admin@index');
+        $this->group([
+            'prefix' => 'users',
+        ], function () {
+            $this->get('/', 'User@index');
+            $this->get('new', 'User@info');
+            $this->post('new', 'User@add');
+            $this->get('edit/{id}', 'User@info');
+            $this->get('delete/{id}', 'User@delete');
+            $this->post('edit/{id}', 'User@update');
+        });
+    });
+
+    $this->group([
+        'prefix'    => 'developer',
+        'namespace' => 'Developer',
+        'middleware' => [
+            'auth.developer',
+        ],
+    ], function () {
+        $this->get('/', 'Developer@index');
+    });
+
+    $this->group([
+        'prefix'    => 'tester',
+        'namespace' => 'Tester',
+        'middleware' => [
+            'auth.tester',
+        ],
+    ], function () {
+        $this->get('/', 'Tester@index');
+    });
 
     $this->group([
         'prefix' => 'user',
     ], function () {
-        $this->get('profile', 'User@profile');
-        $this->post('profile', 'User@update');
         $this->get('login', 'Passport@login')->cancel('auth.web');
         $this->post('login', 'Passport@loginAction')->cancel('auth.web');
+        $this->get('profile', 'User@profile');
+        $this->post('profile', 'User@update');
         $this->get('logout', 'Passport@logout');
     });
 });

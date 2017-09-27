@@ -10,16 +10,22 @@ class LDO extends \PDO
 {
     use \Lif\Core\Traits\MethodNotExists;
 
+    // Un-resetable attrs
     protected $conn     = null;
-    protected $crud     = null;
-    protected $sql      = null;    // Used for prepare statement
-    protected $_sql     = null;    // Used for debug
+    protected $table    = null;
     protected $lastSql  = null;
     protected $_lastSql = null;
-    protected $status   = null;
     protected $result   = [];
+    protected $transRes = true;    // Transaction result
+    protected $lastWhere = null;
+    protected $lastBindValues = [];
 
-    protected $table   = null;
+    // Resetable attrs
+    protected $sql      = null;    // Used for prepare statement
+    protected $_sql     = null;    // Used for debug
+    protected $crud     = null;
+    protected $status   = null;
+
     protected $select  = null;
     protected $where   = null;
     protected $sort    = null;
@@ -30,7 +36,6 @@ class LDO extends \PDO
     protected $insertVals = null;
     protected $statement  = null;
     protected $bindValues = [];
-    protected $transRes   = true;    // Transaction result
 
     public function transRes($value='')
     {
@@ -103,6 +108,45 @@ class LDO extends \PDO
         return $this;
     }
 
+    public function getAttrsForModel(): array
+    {
+        return [
+            'where'      => $this->where,
+            'bindValues' => $this->bindValues,
+        ];
+    }
+
+    public function setAttrsForModel(array $attrs): LDO
+    {
+        foreach ($attrs as $key => $value) {
+            // !!! Use `isset()` to check a null value is false
+            if (isset($this->$key) || is_null($this->$key)) {
+                $this->$key = $value;
+            }
+        }
+
+        return $this;
+    }
+
+    public function reset()
+    {
+        $this->lastWhere      = $this->where;
+        $this->lastBindValues = $this->bindValues;
+        $this->sql     = null;
+        $this->crud    = null;
+        $this->status  = null;
+        $this->select  = null;
+        $this->where   = null;
+        $this->sort    = null;
+        $this->group   = null;
+        $this->limit   = null;
+        $this->updates = null;
+        $this->insertKeys = null;
+        $this->insertVals = null;
+        $this->statement  = null;
+        $this->bindValues = [];
+    }
+
     public function __get($name)
     {
         return $this->$name();
@@ -146,21 +190,34 @@ class LDO extends \PDO
             $argCnt   = count($args);
             
             if ($argCnt > $fieldCnt) {
-                excp('Condition count can not greater than fields count.');
-            }
+                if (1 === $argCnt) {
+                    $args = ['=', $args[0]];
+                } elseif (2 === $argCnt) {
+                } else {
+                    excp('Illgeal conditions amount.');
+                }
+                array_walk($fields,
+                    function (&$item, $key, $args) {
+                        $item = [
+                            $item,
+                            $args[0],
+                            $args[1],
+                        ];
+                }, $args);
+            } else {
+                $lastArg = $args[--$argCnt];
+                for ($i = $argCnt+1; $i < $fieldCnt; ++$i) {
+                    $args[] = $lastArg;
+                }
 
-            $lastArg = $args[--$argCnt];
-            for ($i = $argCnt+1; $i < $fieldCnt; ++$i) {
-                $args[] = $lastArg;
+                array_walk($fields,
+                    function (&$item, $key, $args) {
+                        $item = [
+                            $item,
+                            $args[$key]
+                        ];
+                }, $args);
             }
-
-            array_walk($fields,
-                function (&$item, $key, $args) {
-                    $item = [
-                        $item,
-                        $args[$key]
-                    ];
-            }, $args);
 
             return $fields;
         }
@@ -183,44 +240,56 @@ class LDO extends \PDO
         return $this;
     }
 
-    protected function verifyWhereCondFields(array $conds)
+    // Verify where conditionals and parse out fields and their conditions
+    protected function whereConditionals(array $conds)
     {
         switch (count($conds)) {
             // Only one condition, and use default specific operator `=`
             case 2: {
                 if (!($condCol = $conds[0]) || !is_string($condCol)) {
                     excp('Expecting first field of condition a string.');
-                } elseif (! ($condVal = $conds[1])
-                    || (
-                        !is_string($condVal)
-                        && !is_numeric($condVal)
-                        && !is_array($condVal)
-                    )
-                ) {
-                    excp(
-                        'Expecting second field of condition a string or array.'
-                    );
                 }
-                $condOp = '=';
+                if (isset($conds[1])) {
+                    if (!is_string($conds[1])
+                        && !is_numeric($conds[1])
+                        && !is_array($conds[1])
+                    ) {
+                        excp(
+                            'Expecting second field of condition a string or array.'
+                        );
+                    }
+                    if (! $conds[1]) {
+                        $conds[1] = '';    
+                    }
+                } else {
+                    $conds[1] = null;
+                }
+
+                $condVal = $conds[1];
+                $condOp  = '=';
             } break;
 
             // Only one condition, and provide specific operator
             case 3: {
                 if (!($condCol = $conds[0]) || !is_string($condCol)) {
                     excp('Expecting first field of condition a string.');
-                } elseif (!($condOp = $conds[1])
-                    || !is_string($condOp)
+                }
+                if (!($condOp = $conds[1]) || !is_string($condOp)
                 ) {
                     excp('Expecting second field of condition a string.');
-                } elseif (! ($condVal = $conds[2])
-                    || (
-                        !is_string($condVal)
-                        && !is_numeric($condVal)
-                        && !is_array($condVal)
-                    )
-                ) {
-                    excp('Expecting third field of condition.');
                 }
+                if (isset($conds[2])) {
+                    if (!is_string($conds[2])
+                        && !is_numeric($conds[2])
+                        && !is_array($conds[2])
+                    ) {
+                        excp('Expecting third field of condition.');
+                    }
+                } else {
+                    $conds[2] = null;
+                }
+
+                $condVal = $conds[2];
             } break;
             
             default: {
@@ -229,14 +298,14 @@ class LDO extends \PDO
         }
 
         if (is_array($condVal)) {
-            $condOpWithVal = ' in (?)';
+            $condOpWithVal      = ' in (?)';
             $this->bindValues[] = implode(',', $condVal);
         } else {
-            $condOpWithVal = ' '.$condOp.' ?';
+            $condOpWithVal      = ' '.$condOp.' ?';
             $this->bindValues[] = $condVal;
         }
 
-        return '(`'.$condCol.'`'.$condOpWithVal.')';
+        return '('.escape_fields($condCol).$condOpWithVal.')';
     }
 
     public function or(...$conds): LDO
@@ -250,6 +319,13 @@ class LDO extends \PDO
         }
 
         return $this;
+    }
+
+    public function __clone()
+    {
+        // Clear tmp stack
+        $this->where = null;
+        $this->bindValues = [];
     }
 
     protected function __where(array $conds): string
@@ -272,19 +348,17 @@ class LDO extends \PDO
                         $where = $conds[0];
                     } elseif (is_array($conds[0])) {
                         if (! is_array($conds[0][array_keys($conds[0])[0]])) {
-                            $where = $this->verifyWhereCondFields($conds[0]);
+                            $where = $this->whereConditionals($conds[0]);
                         } else {
                             foreach ($conds[0] as $key => $cond) {
-                                $where .= $this->verifyWhereCondFields($cond);
-                                if (next($conds[0])) {
+                                $where .= $this->whereConditionals($cond);
+                                if (false !== next($conds[0])) {
                                     $where .= ' AND ';
                                 }
                             }
                         }
                     } elseif (is_callable($conds[0])) {
                         $table = clone $this;
-                        $table->where = null;
-                        $table->bindValues = [];
                         $conds[0]($table);
                         $where = $table->where ? '('.$table->where.')' : null;
 
@@ -299,7 +373,7 @@ class LDO extends \PDO
                 
                 case 2:
                 case 3: {
-                    $where = $this->verifyWhereCondFields($conds);
+                    $where = $this->whereConditionals($conds);
                 } break;
                 
                 default: {
@@ -333,16 +407,16 @@ class LDO extends \PDO
         return $this->lastSql = $this->sql();
     }
 
-    public function __lastSql(): string
+    public function _lastSql(): string
     {
         if ($this->_lastSql) {
             return $this->_lastSql;
         }
 
-        return $this->_lastSql = $this->__sql();
+        return $this->_lastSql = $this->_sql();
     }
 
-    public function __sql(): string
+    public function _sql(): string
     {
         if ($this->_sql) {
             return $this->_sql;
@@ -360,8 +434,6 @@ class LDO extends \PDO
         }, $sql);
 
         unset($idx);
-
-        $this->bindValues = [];
 
         return $this->_sql = $this->_lastSql = $sql;
     }
@@ -423,7 +495,9 @@ class LDO extends \PDO
         $sql .= $this->where ? " WHERE ({$this->where}) "  : '';
         $sql .= $this->group ? " GROUP BY {$this->group} " : '';
         $sql .= $this->sort  ? " ORDER BY {$this->sort}"   : '';
-        $sql .= $this->limit ? " LIMIT {$this->limit} "    : '';
+        
+        $sql .= mb_strlen($this->limit)
+        ? " LIMIT {$this->limit} "   : '';
 
         return $this->sql = $sql;
     }
@@ -432,7 +506,7 @@ class LDO extends \PDO
     {
         // For data safety, LiF enforce developer to specify where condictions
         if (! $this->where) {
-            excp('No where condictions when delete records.');
+            excp('No where condictions when update records.');
         } elseif (! $this->updates) {
             excp('No update infomations.');
         }
@@ -467,11 +541,11 @@ class LDO extends \PDO
         $times = $_times = 0;
         foreach ($inserts as $key => $val) {
             ++$times;
-            $hasNext = next($inserts);
-            if (is_array($val) && $val) {
+            $hasNext = (false === next($inserts)) ? false : true;
+            if (is_array($val)) {
                 foreach ($val as $_key => $_val) {
                     ++$_times;
-                    $_hasNext = next($val);
+                    $_hasNext = (false === next($val)) ? false : true;
                     if (1 === $times) {
                         $this->insertKeys .= $_key;
                         $this->insertKeys .= $_hasNext ? ',' : '';
@@ -576,24 +650,27 @@ class LDO extends \PDO
     {
         $this->crud('READ');
 
-        $limit = '';
+        $start  = is_null($start)  ? null : intval($start);
+        $offset = is_null($offset) ? null : intval($offset);
+
+        $limit  = '';
 
         if ((0 === $start) || $start) {
-            if (is_numeric($start) && (0 <= intval($start))) {
+            if (0 <= intval($start)) {
                 $limit .= $start;
             } else {
-                excp('Illgeal limit offset: `'.$start.'`.');
+                excp('Illgeal limit start: `'.$start.'`.');
             }
         }
         if ((0 === $offset) || $offset) {
-            if (is_numeric($offset) && (0 <= intval($offset))) {
+            if (0 <= intval($offset)) {
                 $limit .= ', '.$offset;
             } else {
                 excp('Illgeal limit offset: `'.$offset.'`.');
             }
         }
 
-        $this->limit = $limit ? $limit : null;
+        $this->limit = $limit ?? null;
 
         return $this;
     }
@@ -618,7 +695,7 @@ class LDO extends \PDO
                         ? $_field.' '.$_order
                         : $_order;
 
-                        if (next($order)) {
+                        if (false !== next($order)) {
                             $sort .= ', ';
                         }
                     }
@@ -628,7 +705,7 @@ class LDO extends \PDO
                     excp('Illgeal sort order.');
                 }
 
-                if (next($fields)) {
+                if (false !== next($fields)) {
                     $sort .= ', ';
                 }
             }
@@ -655,7 +732,7 @@ class LDO extends \PDO
 
                         $group .= $_field;
 
-                        if (next($field)) {
+                        if (false !== next($field)) {
                             $group .= ', ';
                         }
                     }
@@ -665,7 +742,7 @@ class LDO extends \PDO
                     excp('Illgeal group by field.');
                 }
 
-                if (next($fields)) {
+                if (false !== next($fields)) {
                     $group .= ', ';
                 }
             }
@@ -688,11 +765,10 @@ class LDO extends \PDO
             if ($sql) {
                 $sqlArr = [
                     1 => $this->sql(),
-                    2 => $this->__sql(),
+                    2 => $this->_sql(),
                     3 => $this->lastSql(),
-                    4 => $this->__lastSql(),
+                    4 => $this->_lastSql(),
                 ];
-
                 return $sqlArr[$sql] ?? $sqlArr[1];
             } elseif ($exec) {
                 $this->statement = $this->prepare($this->sql());
@@ -719,10 +795,6 @@ class LDO extends \PDO
                     excp($msg);
                 }
 
-                // Reset for transaction
-                $this->bindValues = [];
-                $this->sql = $this->_sql = null;
-
                 if (in_array($this->crud, [
                     'CREATE',
                     'INSERT',
@@ -744,6 +816,8 @@ class LDO extends \PDO
                     $this->trans = true;
                 }
 
+                $this->reset();    // Reset for transaction
+
                 return $this->result;
             }
 
@@ -756,7 +830,7 @@ class LDO extends \PDO
         }
     }
 
-    public function get($exec = true, $sql = false)
+    public function get($exec = true, $sql = false): array
     {
         return $this->crud('READ')->execute($exec, $sql);
     }
@@ -776,15 +850,18 @@ class LDO extends \PDO
     public function update(array $updates, $exec = true, $sql = false)
     {
         $this->updates = '';
-
+        $bindValues    = [];
+        
         foreach ($updates as $key => $newVal) {
-            $this->updates     .= $key.' = ? ';
-            array_unshift($this->bindValues, $newVal);
+            $this->updates .= $key.' = ? ';
+            $bindValues[]   = $newVal;
 
-            if (next($updates)) {
+            if (false !== next($updates)) {
                 $this->updates .= ',';
             }
         }
+
+        $this->bindValues = array_merge($bindValues, $this->bindValues);
 
         return $this->crud('UPDATE')->execute($exec, $sql);
     }

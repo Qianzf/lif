@@ -24,6 +24,7 @@ class View
     ) {
         $path = pathOf('view').$template.'.php';
         if (! file_exists($path)) {
+            $this->outputed = true;
             excp('Template `'.$template.'` not exists.');
         }
 
@@ -82,6 +83,10 @@ class View
 
     protected function include($path, $data = []): string
     {
+        if (! $path || !file_exists($path)) {
+            excp('View path not exists.');
+        }
+
         if ($data) {
             $this->data($data);
         }
@@ -135,10 +140,7 @@ class View
 
     protected function data($data): View
     {
-        $this->data = array_unique(
-            array_merge($this->data, $data),
-            SORT_REGULAR
-        );
+        $this->data = array_merge($this->data, $data);
 
         return $this;
     }
@@ -184,6 +186,8 @@ class View
                 }
 
                 $this->data($data);
+
+                return $this;
             }
         } else {
             $value = isset($args[0]) ? (
@@ -193,6 +197,7 @@ class View
                     : (string) $args[0]
                 )
             ) : '';
+
             $this->data[$name] = $value;
         }
     }
@@ -226,7 +231,14 @@ class View
 
     public function __destruct()
     {
-        if (! $this->outputed) {
+        if (!$this->outputed && (
+            (
+                !isset($GLOBALS['LIF_EXCP'])
+            ) || (
+                isset($GLOBALS['LIF_EXCP'])
+                && (true !== $GLOBALS['LIF_EXCP'])
+            )
+        )) {
             $this->output();
         }
 

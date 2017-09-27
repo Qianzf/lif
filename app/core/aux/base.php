@@ -134,30 +134,55 @@ if (! fe('context')) {
         ? 'cli' : 'web';
     }
 }
+if (! fe('legal_or')) {
+    function legal_or(array &$data, array $rulesWithDefaults) {
+        if (! $rulesWithDefaults) {
+            return true;
+        } elseif (!is_array($data) && !is_object($data)) {
+            excp('Validate source must be an arra or object.');
+        }
+
+        $validator = new \Lif\Core\Validation;
+        foreach ($rulesWithDefaults as $key => list($rules, $default)) {
+            if (!isset($data[$key]) || is_null($data[$key])) {
+                $data[$key] = $default;
+            } else {
+                if (! is_array($rules)) {
+                    $rules = [$key => $rules];
+                }
+                
+                if (true !== $validator->run($data, $rules)) {
+                    $data[$key] = $default;
+                }
+            }
+        }
+    }
+}
 if (! fe('exists')) {
+    // !!! Be careful to check bool value like false
     function exists($var, $idx = null) {
-        // !!! be carefurl if `$var` is not an assoc array
+        // !!! Be carefurl if `$var` is not an assoc array
         if (is_array($var) && $idx) {
             $idxes = is_array($idx) ? $idx : [$idx];
             foreach ($idxes as $_idx) {
-                if (!isset($var[$_idx]) || !$var[$_idx]) {
+                if (! isset($var[$_idx])) {
                     return false;
                 }
             }
-            return (1===count($idxes)) ? $var[$_idx] : true;
+            return (1 === count($idxes)) ? $var[$_idx] : true;
         } elseif (is_callable($var) || ($var instanceof \Closure)) {
             return $idx ? false : ($var ?? false);
         } elseif (is_object($var) && $idx) {
             $attrs = is_array($idx) ? $idx : [$idx];
             foreach ($attrs as $attr) {
-                if (!isset($var->$attr) || !$var->$attr) {
+                if (! isset($var->$attr)) {
                     return false;
                 }
             }
             return (1===count($attrs)) ? $var->$attr : true;
         }
 
-        return (isset($var) && $var) ? $var : false;
+        return $var;
     }
 }
 if (! fe('nsOf')) {
@@ -237,7 +262,9 @@ if (! fe('json_http_response')) {
             mb_http_output('UTF-8');
             header('Content-type: application/json; charset=UTF-8');
         }
-        exit(_json_encode($data));
+        
+        echo _json_encode($data);
+        exit;
     }
 }
 if (! fe('exception')) {
@@ -260,6 +287,8 @@ if (! fe('exception')) {
             $info['Trace'] = $exObj->getTrace();
         }
 
+        $GLOBALS['LIF_EXCP'] = true;
+        
         if ('json' === $format) {
             ('cli' === context())
             ? exit(_json_encode($info))
@@ -287,24 +316,6 @@ if (! fe('format_namespace')) {
         }
 
         return '\\';
-    }
-}
-if (! fe('array_stringify_main')) {
-    function array_stringify_main($arr, &$level) {
-        $str = '';
-        $margin = str_repeat("\t", $level++);
-        foreach ($arr as $key => $val) {
-            $str .= $margin."'".$key."' => ";
-            if (is_array($val)) {
-                $str .= "[\n";
-                $str .= array_stringify_main($val, $level);
-                $str .= $margin."],\n";
-                --$level;
-            } else {
-                $str .= "'".$val."',\n";
-            }
-        }
-        return $str;
     }
 }
 if (! fe('subsets')) {
@@ -338,6 +349,24 @@ if (! fe('array_stringify')) {
         $str  .= array_stringify_main($arr, $level);
         $str  .= ']';
 
+        return $str;
+    }
+}
+if (! fe('array_stringify_main')) {
+    function array_stringify_main($arr, &$level) {
+        $str = '';
+        $margin = str_repeat("\t", $level++);
+        foreach ($arr as $key => $val) {
+            $str .= $margin."'".$key."' => ";
+            if (is_array($val)) {
+                $str .= "[\n";
+                $str .= array_stringify_main($val, $level);
+                $str .= $margin."],\n";
+                --$level;
+            } else {
+                $str .= "'".$val."',\n";
+            }
+        }
         return $str;
     }
 }
@@ -455,11 +484,11 @@ if (! fe('conf')) {
             return conf_all($cfgPath);
         }
 
-        if (isset($GLOBALS['LIF_CFG']) &&
-            isset($GLOBALS['LIF_CFG'][$name]) &&
-            $GLOBALS['LIF_CFG'][$name]
+        if (isset($GLOBALS['LIF_CFG'])
+            && isset($GLOBALS['LIF_CFG'][$name])
+            && $GLOBALS['LIF_CFG'][$name]
         ) {
-            return $GLOBALS['LIF_CFG'][$name];
+            return array_query_by_coherent_keys($GLOBALS['LIF_CFG'], $name);
         }
 
         $cfgFile = $cfgPath.$name.'.php';
@@ -471,6 +500,11 @@ if (! fe('conf')) {
         $GLOBALS['LIF_CFG'][$name] = $cfg;
 
         return $cfg;
+    }
+}
+if (! fe('config')) {
+    function config($key) {
+        return array_query_by_coherent_keys(conf_all(), $key);
     }
 }
 if (! fe('db')) {
@@ -582,6 +616,30 @@ if (! fe('create_ldo')) {
         ->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 }
+if (! fe('model')) {
+    function model(string $class, $pk = null) {
+        if (! class_exists($class)) {
+            excp('Model class not exists: '.$class);
+        }
+
+        return new $class($pk);
+    }
+}
+if (! fe('escape_fields')) {
+    function escape_fields(string $raw) : string
+    {
+        if (false !== mb_strpos($raw, '.')) {
+            $arr = explode('.', $raw);
+            array_walk($arr, function (&$item, $key) {
+                $item = '`'.$item.'`';
+            });
+
+            return implode('.', $arr);
+        }
+
+        return '`'.$raw.'`';
+    }
+}
 if (! fe('class_name')) {
     function class_name($obj) {
         if (!is_object($obj)) {
@@ -602,17 +660,12 @@ if (! fe('class_attrs')) {
 }
 if (! fe('collect')) {
     // Convert array to a collection class
-    function collect($params) {
+    function collect($params, $origin = null) {
         if (! is_array($params)) {
             excp('Collect target must be an array.');
         }
 
-        return new \Lif\Core\Coll($params);
-    }
-}
-if (! fe('sys_msg')) {
-    function sys_msg($key, $lang = 'zh') {
-
+        return new \Lif\Core\Coll($params, $origin);
     }
 }
 if (! fe('uuid')) {
@@ -633,9 +686,34 @@ if (! fe('uuid')) {
         return date('YmdHis').$domain.$type.$id.mt_rand(1000, 9999).$postfix;
     }
 }
+if (! fe('sysmsgs')) {
+    function sysmsgs() {
+        return (new \Lif\Core\SysMsg)->get();
+    }
+}
+if (! fe('load_array')) {
+    function load_array(string $path) : array {
+        $msg = [];
+        if (file_exists($path)) {
+            $fsi = new \FilesystemIterator($path);
+            foreach ($fsi as $file) {
+                if ($file->isFile() && 'php' == $file->getExtension()) {
+                    $_msg = include $file->getPathname();
+                    if ($_msg && is_array($_msg)) {
+                        $msg = array_merge($_msg, $msg);
+                    }
+                }
+            }
+            unset($fsi);
+        }
+
+        return $msg;
+    }
+}
 if (! fe('sysmsg')) {
-    function sysmsg($key, $lang = null) {
-        if (! $lang) {
+    function sysmsg($key, string $lang = null) {
+        $key = strtoupper($key);
+        if (! $lang || !is_string($lang)) {
             $lang = $_REQUEST['lang'] ?? null;
             $session = new \Lif\Core\Web\Session;
             if (! $lang) {
@@ -644,37 +722,41 @@ if (! fe('sysmsg')) {
             $session->set('__lang', $lang);
         }
 
-        if (isset($GLOBALS['__sys_msg'])
-            && is_array($GLOBALS['__sys_msg'])
-            && $GLOBALS['__sys_msg']
+        if (isset($GLOBALS['__sys_msg'][$lang])
+            && is_array($GLOBALS['__sys_msg'][$lang])
+            && $GLOBALS['__sys_msg'][$lang]
         ) {
-            $msg = $GLOBALS['__sys_msg'];
+            $msg = $GLOBALS['__sys_msg'][$lang];
         } else {
-            $msg = [];
             $langPath = pathOf('sysmsg');
             $path = $langPath.$lang;
             $path = file_exists($path) ? $path : $langPath.'zh';
-            if (file_exists($path)) {
-                $fsi = new \FilesystemIterator($path);
-                foreach ($fsi as $file) {
-                    if ($file->isFile() && 'php' == $file->getExtension()) {
-                        $_msg = include $file->getPathname();
-                        if ($_msg && is_array($_msg)) {
-                            $msg = array_merge($_msg, $msg);
-                        }
-                    }
+            $GLOBALS['__sys_msg'][$lang] = $msg = load_array($path);
+        }
+
+        if (isset($msg[$key])) {
+            return $msg[$key];
+        }
+
+        // Support get missing system message by single word key
+        if (false !== mb_strpos($key, '_')) {
+            $arr  = explode('_', $key);
+            $_msg = '';
+            $stub = ('en' ? ' ' : '');
+            foreach ($arr as $_key) {
+                if (! isset($msg[$_key])) {
+                    return $key;
                 }
-                
-                $GLOBALS['__sys_msg'] = $msg;
+
+                $_msg .= $stub.$msg[$_key];
+            }
+
+            if ($_msg = ltrim($_msg)) {
+                return $GLOBALS['__sys_msg'][$lang][$key] = $_msg;
             }
         }
 
-        return $msg[$key]
-        ?? (
-            ('zh' == $lang)
-            ? '服务繁忙，请稍后再试'
-            : 'Service is busy or temporarily unavailable.'
-        );
+        return $key;
     }
 }
 if (! fe('lang')) {
@@ -973,6 +1055,14 @@ if (! fe('is_timestamp')) {
             is_integer($timestamp)
             && ($timestamp >= 0)
             && ($timestamp <= 2147472000)
+        );
+    }
+}
+if (! fe('validate')) {
+    function validate(array $data, array $rules) {
+        return (new \Lif\Core\Validation)->run(
+            $data,
+            $rules
         );
     }
 }
