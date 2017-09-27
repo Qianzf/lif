@@ -1,4 +1,4 @@
-Basic `DI/find()/save()/delete()` examples:
+Basic DI/`find()/save()/delete()` examples:
 
 ``` php
 use Lif\Mdl\User;
