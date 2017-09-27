@@ -1,5 +1,9 @@
 <?php
 
+// ------------------------
+//     Model/ORM of LiF
+// ------------------------
+
 namespace Lif\Core\Abst;
 
 abstract class Model
@@ -29,6 +33,17 @@ abstract class Model
 
             $this->attrs['where'] = '((`'.$this->pk.'` = ?))';
         }
+    }
+
+    // Find model via primary key
+    public function find($pk)
+    {
+        $this->fields = $this
+        ->query()
+        ->where($this->pk(), $pk)
+        ->first();
+
+        return $this->fields ? $this : null;
     }
 
     public function __get($key)
@@ -80,19 +95,15 @@ abstract class Model
         } elseif (is_array($res)) {
             if (! $res) {
                 return null;
-            }
-
-            $this->fields = $res;
-
-            // If only one result
-            // Then return Model instance self
-            if (! isset($res[0])) {
+            } elseif (! isset($res[0])) {
+                // If only one result
+                // Then return current model instance itself
+                $this->fields = $res;
                 return $this;
+            } else {
+                $this->__toModel($res);
+                return $res;
             }
-
-            $this->__toModel($res);
-
-            return $res;
         }
 
         if (('delete' == $name) && $res) {
@@ -231,24 +242,6 @@ abstract class Model
         return $this->pk ?? 'id';
     }
 
-    // One model has many related models
-    protected function hasMany(
-        string $model,
-        string $lk = null,
-        string $fk = null,
-        string $cond = '=',
-        $lv = null
-    ) {
-        return $this->join(
-            $model,
-            1,
-            $lk,
-            $fk,
-            $cond,
-            $lv
-        );
-    }
-
     // ---------------------------------------------------------------
     //     $class => The model class belongs to this model
     //     $type  => 1: has many; 2: belongs to
@@ -265,19 +258,12 @@ abstract class Model
         string $cond = '=',
         $lv = null
     ) {
-        if (! $this->fields) {
-            $this->first();
-        }
-
-        $this->clean()->clear();
-
         $model   = model($model);
         $selects = $model->table.'.*';
         $lk = ($lk ?? 'id');
         $fk = ($fk ?? 'id');
-        $_lk   = (1 === $type) ? $lk : $fk;    // Exchanged local key
         $fetch = (1 === $type) ? 'get' : 'first';
-        $where = $this->table.'.'.$_lk;
+        $where = $this->table.'.'.$lk;
 
         if ($lv) {
             if (is_array($lv)) {
@@ -286,7 +272,8 @@ abstract class Model
                 $value = (string) $lv;
             }
         } else {
-            $value = $this->fields[$this->pk()] ?? null;
+            // Use local key mapped value of current model
+            $value = $this->fields[$lk] ?? null;
         }
 
         return $model
@@ -298,11 +285,46 @@ abstract class Model
             $where
         )
         ->where($where, $value)
+        // ->_sql();
         ->$fetch();
     }
 
-    // One model only belongs to one model
-    protected function belongsTo(
+    // Get all associated models with current model
+    // Many-to-Many
+    public function withIn(
+        string $model,
+        string $lk = null,
+        string $fk = null,
+        string $cond = '=',
+        $lv = null
+    ) {
+        // TODO
+        // Use middle table to transform many-to-many
+        // Into double One-to-many
+    }
+
+    // Get all related models of current model
+    // One-to-Many
+    public function hasMany(
+        string $model,
+        string $lk = null,
+        string $fk = null,
+        string $cond = '=',
+        $lv = null
+    ) {
+        return $this->join(
+            $model,
+            1,
+            $lk,
+            $fk,
+            $cond,
+            $lv
+        );
+    }
+
+    // Get one specific model current model belongs to only
+    // One-to-One
+    public function belongsTo(
         string $model,
         string $lk = null,
         string $fk = null,

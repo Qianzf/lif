@@ -10,7 +10,11 @@
             (
                 $event->at
                 .' , '
-                .($event->user()->name)
+                .(
+                    (isset($admin) && $admin)
+                    ? $event->user()->name
+                    : share('__USER.name')
+                )
                 .' '
                 .$event->detail
             )

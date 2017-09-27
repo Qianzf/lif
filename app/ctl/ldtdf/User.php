@@ -8,12 +8,12 @@ class User extends Ctl
 {
     public function trending(UserModel $user, Trending $trending)
     {
-        $data = ('ADMIN' === ($uid = share('__USER.role')))
+        $data = ($admin = ('ADMIN' === share('__USER.role')))
         ? $trending->list()
-        : $user->whereId($uid)->trendings();
-
+        : $user->find(share('__USER.id'))->trendings();
+    
         view('ldtdf/user/trending')
-        ->withTrending($data);
+        ->withAdminTrending($admin, $data);
     }
 
     public function profile($uid)
