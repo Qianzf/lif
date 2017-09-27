@@ -111,6 +111,10 @@ if (! fe('ee')) {
 }
 if (! fe('app_debug')) {
     function app_debug() {
+        if (! file_exists(pathOf('conf').'app.php')) {
+            return true;
+        }
+
         $app = conf('app');
         return (isset($app['debug']) && in_array($app['debug'], [
             true,
@@ -120,6 +124,10 @@ if (! fe('app_debug')) {
 }
 if (! fe('app_env')) {
     function app_env() {
+        if (! file_exists(pathOf('conf').'app.php')) {
+            return 'local';
+        }
+
         $app = conf('app');
         return (isset($app['env']) && in_array($app['env'], [
             'local',
@@ -281,6 +289,8 @@ if (! fe('exception')) {
             'Code'      => $exObj->getCode(),
         ];
 
+        // !!! Make sure check app conf path first
+        // !!! Or infinite loop will occur when app conf file not exists
         if (('production' != app_env()) && app_debug()) {
             $info['File']  = $exObj->getFile();
             $info['Line']  = $exObj->getLine();
@@ -484,6 +494,7 @@ if (! fe('conf')) {
             return conf_all($cfgPath);
         }
 
+
         if (isset($GLOBALS['LIF_CFG'])
             && isset($GLOBALS['LIF_CFG'][$name])
             && $GLOBALS['LIF_CFG'][$name]
@@ -492,6 +503,7 @@ if (! fe('conf')) {
         }
 
         $cfgFile = $cfgPath.$name.'.php';
+
         if (! file_exists($cfgFile)) {
             excp('Configure File '.$cfgFile.' not exists');
         }

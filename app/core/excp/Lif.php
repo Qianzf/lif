@@ -13,7 +13,7 @@ class Lif extends \Exception
     {
         $this->message = $msg;
         $this->code    = $err;
-
+        
         exception($this, $format);
     }
 }
