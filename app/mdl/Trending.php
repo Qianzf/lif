@@ -16,7 +16,7 @@ class Trending extends Mdl
         ->hasMany(Trending::class, 'id', 'uid');
     }
 
-    public function user(...$args)
+    public function user()
     {
         return $this->belongsTo(
             User::class,

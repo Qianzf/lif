@@ -48,7 +48,7 @@ class View
         return $this->cache;
     }
 
-    public function render()
+    public function render() : string
     {
         if ($this->data) {
             extract($this->data, EXTR_OVERWRITE);
@@ -160,7 +160,7 @@ class View
     {
         if ('with' == mb_substr($name, 0, 4)) {
             $rest = mb_substr($name, 4);
-            if ($rest) {
+            if ($rest && $args) {
                 // Support one word variable only, `userId` not supported
                 $rest = preg_replace_callback('/[A-Z]/u', function ($match) {
                     if (isset($match[0]) && is_string($match[0])) {

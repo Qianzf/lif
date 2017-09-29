@@ -2,7 +2,7 @@
 
 namespace Lif\Ctl\Ldtdf;
 
-use Lif\Mdl\User;
+use Lif\Mdl\{User, Trending};
 
 class Passport extends Ctl
 {
@@ -15,7 +15,7 @@ class Passport extends Ctl
         view('ldtdf/user/login');
     }
 
-    public function loginAction(User $u)
+    public function loginAction(User $u, Trending $trend)
     {
         $lang    = $this->request->get('lang');
         $account = $this->request->get('account');
@@ -40,6 +40,13 @@ class Passport extends Ctl
         unset($user->passwd);
 
         share('__USER', $user->items());
+
+        // Save login event to trending
+        $trend->at     = date('Y-m-d H:i:s');
+        $trend->uid    = $user->id;
+        $trend->event  = 'LOGGEDIN';
+        $trend->save();
+
         share('system-roles', [
             'ADMIN',
             'DEVELOPER',

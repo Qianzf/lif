@@ -33,9 +33,93 @@ $(window).ready(function () {
             window.location = url
         }
     })
+    $('.pagination-bar input[type="button"]').click(function () {
+        let page   = 1
+        let _page  = this.dataset.page
+        let __page = $('input[name="pagination-number"]').val()
+
+        if (_page) {
+            page = _page
+        } else if (__page) {
+            page = __page
+        }
+
+        tryReloadWithNewPage(page)
+    })
+    $('input[name="pagination-number"]').on('keydown', function (e) {
+        if (e.which == 13) {
+            e.preventDefault()
+            tryReloadWithNewPage(this.value)
+        }
+    })
 
     hasErrorOrNot()
 })
+function tryReloadWithNewPage(page)
+{
+    let canReload = false
+
+    if (!isNaN(parseInt(page)) && (page > 0)) {
+        canReload = true
+        page = parseInt(page)
+    } else if (-1 != $.inArray(page, [
+        '_start',
+        '_next',
+        '_prior',
+        '_end',
+    ])) {
+        canReload = true
+        let pageCount = $('input[name="pagination-count"]').val()
+        pageCount = (!isNaN(parseInt(pageCount)) && (pageCount > 0))
+        ? parseInt(pageCount)
+        : -1
+        switch (page) {
+            case '_start' : {
+                page = 1
+            } break
+            case '_next' : {
+                let currentPage = getCurrentQueryPage()
+
+                page = ((0 < currentPage) && (currentPage < pageCount))
+                ? (currentPage + 1) : 1
+            } break
+            case '_prior' : {
+                let currentPage = getCurrentQueryPage()
+
+                page = ((1 < currentPage) && (currentPage < pageCount))
+                ? (currentPage - 1) : 1
+            } break
+            case '_end' : {
+                page = pageCount
+            } break
+            default : {
+                canReload = false
+            } break
+        }
+    }
+
+    if (canReload) {
+        reloadWithQuery('page', page)
+    }
+}
+function getCurrentQueryPage() {
+    let currentPage  = 1
+    let queryStrings = window.location.search.replace('?', '').split('&')
+
+    if (queryStrings) {
+        for (let i in queryStrings) {
+            let keyVal = queryStrings[i].split('=')
+            if ('page' == keyVal[0]) {
+                currentPage = (!isNaN(parseInt(keyVal[1])) && (keyVal[1] > 0))
+                ? parseInt(keyVal[1]) : 1
+
+                break
+            }
+        }
+    }
+
+    return currentPage
+}
 function search() {
     let search = $('input[name="search"]').val()
     if (search.length > 0) {

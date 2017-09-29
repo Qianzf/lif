@@ -21,7 +21,7 @@
         <th><?= lang('OPERATIONS') ?></th>
     </tr>
 
-    <?php if ($users) { ?>
+    <?php if (isset($users) && $users) { ?>
     <?php foreach($users as $user) { ?>
     <tr <?php echo $keyword ? 'class="search-res"' : ''; ?>>
         <td><?= $user->account ?></td>
@@ -38,3 +38,4 @@
 
 </table>
 
+<?= $this->section('pagebar') ?>

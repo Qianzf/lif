@@ -68,7 +68,7 @@ class Validation
 
     public function int($value, $extra = null)
     {
-        return (intval($value) == $value);
+        return is_numeric($value) && (intval($value) == $value);
     }
 
     public function min($value, $min)

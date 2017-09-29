@@ -26,3 +26,5 @@
     <?php } ?>
 
 </table>
+
+<?= $this->section('pagebar') ?>

@@ -16,8 +16,7 @@ class User extends Ctl
             'page'   => ['int|min:1', 1],
         ]);
 
-        $offset = 16;
-        $start  = ($request['page'] - 1) * $offset;
+        $user = $user->whereStatus(1);
 
         if ($request['role']) {
             $user = $user->whereRole($request['role']);
@@ -33,15 +32,19 @@ class User extends Ctl
             });
         }
 
+        $offset = 16;
+        $start  = ($request['page'] - 1) * $offset;
+        
         $users = $user
-        ->whereStatus(1)
         ->limit($start, $offset)
         ->get();
+        $pages = ceil(($user->count() / $offset));
 
         view('ldtdf/admin/users')
         ->withUsers($users)
         ->withKeyword($keyword)
-        ->withSearchrole($request['role']);
+        ->withSearchrole($request['role'])
+        ->withPages($pages);
     }
 
     public function info(UserModel $user)

@@ -1,6 +1,8 @@
 <?= $this->layout('main') ?>
 <?= $this->title([lang('USER_PROFILE'), lang('LDTDFMS')]) ?>
 
+<br>
+
 <form method="POST" action="/dep/user/profile">
     <label><?= lang('PASSWORD_OLD') ?>:
         <input type="password" name="passwordOld"

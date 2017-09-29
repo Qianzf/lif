@@ -754,7 +754,7 @@ if (! fe('sysmsg')) {
         if (false !== mb_strpos($key, '_')) {
             $arr  = explode('_', $key);
             $_msg = '';
-            $stub = ('en' ? ' ' : '');
+            $stub = (('en' == $lang) ? ' ' : '');
             foreach ($arr as $_key) {
                 if (! isset($msg[$_key])) {
                     return $key;
@@ -909,7 +909,7 @@ if (! fe('request_json_api')) {
         $headers = []
     ) {
         $headers = [
-            'Content-Type: application/json; Charset: UTF-8',
+            'Content-Type: application/json; Charset=UTF-8',
         ];
 
         $ret = request_http_api($uri, $type, $headers, $params);
@@ -930,7 +930,7 @@ if (! fe('request_xml_api')) {
         $headers = []
     ) {
         $headers = [
-            'Content-Type: application/xml; Charset: UTF-8',
+            'Content-Type: application/xml; Charset=UTF-8',
         ];
 
         $ret = request_http_api($uri, $type, $headers, $params);

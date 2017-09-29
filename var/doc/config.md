@@ -6,7 +6,7 @@
 return [
     'env'   => 'local',
     'debug' => true,
-    'timezone' => 'Asia/Shanghai',
+    'timezone' => 'Asia/Shanghai',    // !!! Default is UTC
     'view'  => [
         'cache' => false
     ],

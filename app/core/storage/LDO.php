@@ -613,6 +613,15 @@ class LDO extends \PDO
         return $select_str;
     }
 
+    public function count($exec = true, $sql = false)
+    {
+        $this->select = 'count(*) AS `count`';
+
+        $res = $this->execute($exec, $sql);
+
+        return intval($res[0]['count'] ?? 0);
+    }
+
     public function select(...$fields): LDO
     {
         if (false === ($selects = $this->legalSqlSelects($fields))) {
