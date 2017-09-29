@@ -34,7 +34,9 @@ class Validation
                         : 'ILLEGAL_'.strtoupper($key);
                     }
                 } else {
-                    return $this->need($key, $data);
+                    if (true !== ($err = $this->need($key, $data))) {
+                        return $err;
+                    }
                 }
             }
         }
@@ -66,6 +68,11 @@ class Validation
         return is_string($value);
     }
 
+    public function array($value, $extra = null)
+    {
+        return is_array($value);
+    }
+
     public function int($value, $extra = null)
     {
         return is_numeric($value) && (intval($value) == $value);
@@ -95,5 +102,11 @@ class Validation
         }
 
         return in_array($value, $in);
+    }
+
+    public function domain()
+    {
+        // TODO
+        return true;
     }
 }

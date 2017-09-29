@@ -215,6 +215,7 @@ if (! fe('nsOf')) {
                 'mdwr' => '\Lif\Mdwr\\',
                 'core' => '\Lif\Core\\',
                 'web'  => '\Lif\Core\Web\\',
+                'lib'  => '\Lif\Core\Lib\\',
                 'storage'  => '\Lif\Core\storage\\',
                 'strategy' => '\Lif\Core\strategy\\',
             ];
@@ -467,7 +468,7 @@ CFG;
     }
 }
 if (! fe('conf_all')) {
-    function conf_all($cfgPath = null) {
+    function conf_all($cfgPath = null) : array {
         $cfgPath = $cfgPath ?? pathOf('conf');
 
         foreach (scandir($cfgPath) as $cfg) {
@@ -487,7 +488,7 @@ if (! fe('conf_all')) {
     }
 }
 if (! fe('conf')) {
-    function conf($name = null, $cfgPath = null) {
+    function conf($name = null, $cfgPath = null) : array{
         $cfgPath = $cfgPath ?? pathOf('conf');
 
         if (! $name) {
@@ -1076,5 +1077,83 @@ if (! fe('validate')) {
             $data,
             $rules
         );
+    }
+}
+if (! fe('classname')) {
+    function classname(string $raw) {
+        $needle = false;
+        if (false !== mb_strpos($raw, '-')) {
+            $needle = '-';
+        } elseif (false !== mb_strpos($raw, '.')) {
+            $needle = '.';
+        }
+
+        if (false !== $needle) {
+            $arr = explode($needle, $raw);
+
+            array_walk($arr, function (&$item, $key) {
+                $item = ucfirst($item);
+            });
+
+            return implode('', $arr);
+        }
+
+        return ucfirst($raw);
+    }
+}
+if (! fe('email')) {
+    // ----------------------------------------------------------------
+    //     Keys of $params :
+    //     - Array`to` => Support multiple receivers for same email
+    //                 => Key is receiver's email
+    //                 => Value is receiver's dispaly name
+    //     - String `title` => Email subject
+    //     - String `body`  => Email context
+    // ----------------------------------------------------------------
+    function email(array $params, string $sender = null) : bool {
+        if (! ($config = config('mail'))
+            || (true !== validate($config, [
+                'default' => 'need|string',
+                'senders' => 'need|array',
+            ]))
+        ) {
+            excp('Missing mail sender configurations.');
+        }
+
+        $sender = $sender ?? $config['default'];
+
+        if (! isset($config['senders'][$sender])
+            || ! ($sender = $config['senders'][$sender])
+            || ! is_array($sender)
+        ) {
+            excp('Missing configurations for mail sender: '.$sender);
+        }
+
+        if (true !== ($err = validate($sender, [
+            'driver' => 'need|string',
+            'host'   => 'need|domain',
+            'port'   => 'need|int|min:25',
+            'account'      => 'need|string',
+            'credential'   => 'need|string',
+            'sender_name'  => 'need|string',
+            'sender_email' => 'need|email',
+            'encryption'   => 'string|in:ssl,tls',
+        ]))) {
+            excp('Illegal mail sender configurations: '.$err);
+        } elseif (true !== ($err = validate($params, [
+            'to'    => 'need|array',
+            'title' => 'need|string',
+            'body'  => 'need|string',
+        ]))) {
+            excp('Illegal email message: '.$err);
+        }
+
+        $driver = nsOf('lib').'Mail\\'.classname($sender['driver']);
+
+        if (! class_exists($driver)) {
+            excp('Mail sender not support: '.$sender['driver']);
+        }
+
+        return (new $driver)->send($sender, $params);
     }
 }
