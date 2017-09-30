@@ -15,5 +15,5 @@
         <input type="password" name="passwd" required>
     </label>
 
-    <input type="submit" value="<?= sysmsg('SIGN_IN') ?>">
+    <input type="submit" value="<?= sysmsg('SIGNIN') ?>">
 </form>

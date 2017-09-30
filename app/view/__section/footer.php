@@ -11,7 +11,10 @@
     </select>
 </footer>
 
-<input type="hidden" name="__error" value="<?= share_flush('__error') ?>">
+<input
+type="hidden"
+name="__error"
+value="<?= lang(share_flush('__error')) ?>">
 
 <?= js([
     'js/main'

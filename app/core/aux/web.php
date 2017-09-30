@@ -84,9 +84,23 @@ if (! fe('client_error')) {
         abort($err, $msg);
     }
 }
+if (! fe('filter_route')) {
+    function filter_route(string $route) : array {
+        return array_filter(
+            explode('/', $route),
+            function (&$item) {
+                // Just filter empty string
+                return ('' != $item);
+            }
+        );
+    }
+}
 if (! fe('format_route_key')) {
-    function format_route_key($route) {
-        $routeKey = implode('.', array_filter(explode('/', $route)));
+    function format_route_key(string $route) {
+        $routeKey = implode(
+            '.',
+            filter_route($route)
+        );
         return $routeKey ? $routeKey : '.';
     }
 }

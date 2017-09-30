@@ -26,9 +26,13 @@ $this->group([
 
     $this->group([
         'prefix' => 'tasks',
+        'filter' => [
+            'id' => 'int|min:1',
+        ],
     ], function () {
         $this->get('/', 'Task@index');
         $this->get('{id}', 'Task@detail');
+        $this->post('{id}', 'Task@update');
         $this->post('edit', 'Task@edit');
     });
 

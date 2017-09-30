@@ -87,7 +87,22 @@ class Validation
         if (is_numeric($value)) {
             return ($value >= $min);
         } elseif (is_string($value)) {
-            return true;    // TODO
+            // TODO
+            return true;
+        }
+    }
+
+    public function max($value, $max)
+    {
+        if (! is_numeric($max)) {
+            return 'ILLEGAL_MAX_VALUE';
+        }
+
+        if (is_numeric($value)) {
+            return ($value <= $max);
+        } else {
+            // TODO
+            return true;
         }
     }
 
@@ -108,5 +123,13 @@ class Validation
     {
         // TODO
         return true;
+    }
+
+    // Don't need start and end part
+    public function regex(string $value, string $regex)
+    {
+        $regex = '/'.$regex.'/u';
+        
+        return (0 < preg_match($regex, $value));
     }
 }

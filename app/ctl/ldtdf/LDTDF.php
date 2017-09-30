@@ -6,11 +6,12 @@ class LDTDF extends Ctl
 {
     public function index()
     {
-        $entryRouteOfRole = '/'
-        .$this->route
-        .'/'
-        .strtolower(share('__USER.role'));
+        $entryRouteOfRole = format_route_key('/'
+            .$this->route
+            .'/'
+            .strtolower(share('__USER.role'))
+        );
 
-        redirect($entryRouteOfRole);
+        redirect(route($entryRouteOfRole));
     }
 }

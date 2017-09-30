@@ -1157,3 +1157,12 @@ if (! fe('email')) {
         return (new $driver)->send($sender, $params);
     }
 }
+if (! fe('iteratable')) {
+    function iteratable($var) {
+        if (is_array($var) && $var) {
+            return $var;
+        }
+
+        return false;
+    }
+}

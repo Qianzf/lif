@@ -78,10 +78,11 @@ class Web extends Container implements Observer, Strategy
     }
 
     // escape route key for variables-bound scenario
+    // !!! Must `format_route_key($key)` before `escape()`
     protected function escape($key)
     {
         if (! isset($this->routes[$key])) {
-            $arr = array_filter(explode('.', $key));
+            $arr     = explode('.', $key);
             $subsets = subsets(array_keys($arr));
             
             foreach ($subsets as &$val) {
@@ -127,6 +128,12 @@ class Web extends Container implements Observer, Strategy
             );
         }
 
+        // Filter route parameters
+        $needFilter = $this->routes[$key][$type]['filters'];
+        if ($needFilter) {
+            $this->filter($needFilter, $this->routes[$key][$type]['params']);
+        }
+
         // !!! Hander must set before middlewares be executed
         $this->handler   = $this->routes[$key][$type]['handle'];
         $this->routeVars = $this->assign($this->routes[$key][$type]['params']);
@@ -147,6 +154,22 @@ class Web extends Container implements Observer, Strategy
         }
 
         return $params;
+    }
+
+    protected function filter($filters, $params) : Web
+    {
+        if (count($params) != count($this->vars)) {
+            excp('Illegal route params count.');
+        }
+
+        if (true !== ($err = validate(
+            array_combine($params, $this->vars),
+            $filters
+        ))) {
+            excp('Route parameter validation failed: '.$err);
+        }
+
+        return $this;
     }
 
     protected function mdwr($middlewares)
@@ -172,12 +195,12 @@ class Web extends Container implements Observer, Strategy
     public function execute()
     {
         if (is_callable($this->handler)) {
-            return ($this->handler)();
+            return $this->__closureSafe($this->handler, $this->vars);
         } elseif (is_string($this->handler)) {
             $args = explode('@', $this->handler);
-            if (count($args) !== 2 ||
-                !($ctlName = trim(format_namespace($args[0]))) ||
-                !($act = trim($args[1]))
+            if ((count($args) !== 2)
+                || !($ctlName = trim(format_namespace($args[0])))
+                || !($act = trim($args[1]))
             ) {
                 throw new \Lif\Core\Excp\IllegalRouteDefinition(2);
             }

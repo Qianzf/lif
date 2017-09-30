@@ -8,12 +8,11 @@ namespace Lif\Core\Abst;
 
 abstract class Model
 {
-    protected $table = null;    // table name
-    protected $_tbx  = null;    // table prefix
-    protected $_fdx  = null;    // field prefix
-    protected $pk    = null;    // primary key
-    protected $query = null;    // LDO query object
-
+    protected $table  = null;    // table name
+    protected $_tbx   = null;    // table prefix
+    protected $_fdx   = null;    // field prefix
+    protected $pk     = null;    // primary key
+    protected $query  = null;    // LDO query object
     protected $unwriteable = [];    // protected fields that cann't update
     protected $unreadable  = [];    // protected fields that cann't read
 
@@ -24,14 +23,17 @@ abstract class Model
     public function __construct($id = null)
     {
         if ($id) {
-            $this->pk = $this->pk ?? 'id';
-
+            $this->pk     = $this->pk ?? 'id';
             $this->fields = $this->query()->where(
                 $this->pk,
                 $id
             )->first();
 
-            $this->attrs['where'] = '((`'.$this->pk.'` = ?))';
+            if (! $this->fields) {
+                $this->reset();
+            } else {
+                $this->attrs['where'] = '((`'.$this->pk.'` = ?))';
+            }
         }
     }
 

@@ -116,3 +116,23 @@ $this->group([
     });
 });
 ```
+
+- Route parameters filter
+
+``` php
+$this
+->get('{id}', function (\Lif\Mdl\User $user) {
+    dd($user->email);
+})
+->filter([
+    'id' => 'int|min:1',
+]);
+
+$this->group([
+    'filter' => [
+        'id' => 'int|min:1',
+    ],
+], function () {
+    $this->get('{id}', 'User@detail');
+});
+```
