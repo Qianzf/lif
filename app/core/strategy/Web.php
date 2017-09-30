@@ -172,7 +172,7 @@ class Web extends Container implements Observer, Strategy
     public function execute()
     {
         if (is_callable($this->handler)) {
-            return response(($this->handler)());
+            return ($this->handler)();
         } elseif (is_string($this->handler)) {
             $args = explode('@', $this->handler);
             if (count($args) !== 2 ||

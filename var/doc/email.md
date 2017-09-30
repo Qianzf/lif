@@ -9,7 +9,7 @@ return [
     'senders' => [
         'swiftmailer' => [
             'driver'  => 'swift-mailer',    // static
-            'host'    => 'smtp.exampe.com',
+            'host'    => 'smtp.example.com',
             'port'    => 465,
             'account' => 'user@example.com',
             'credential'   => 'access_credential',

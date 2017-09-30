@@ -223,16 +223,28 @@ class Route extends Container implements Observable
     {
         $argCnt = count($args);
 
-        if (2>$argCnt || 3<$argCnt) {
+        if (1>$argCnt || 3<$argCnt) {
             excp('Wrong route definition.');
-        }
-
-        if (!is_string($args[0])) {
+        } elseif ((1 == $argCnt) && !is_array($args[0])) {
+            excp('Wrong route definition.');
+        } elseif ((1 < $argCnt) && !is_string($args[0])) {
             excp('Illegal route name `'.$args[0].'`');
         }
 
         $alias = false;
-        if (2 === $argCnt) {
+        if (1 == $argCnt) {
+            if (!($name = exists($args[0], 'name'))
+                || !($bind = exists($args[0], 'bind'))
+            ) {
+                excp('Missing route name and handler.');
+            }
+
+            $alias = exists($args[0], 'as');
+            $attrs = $args[0];
+            unset($attrs['name'], $attrs['as'], $attrs['bind']);
+            $args[0] = $name;
+            $this->pushCurrentOne($attrs);
+        } elseif (2 === $argCnt) {
             if (!is_string($args[1]) &&
                 !is_callable($args[1]) &&
                 (!is_array($args[1]) || !isset($args[1]['bind']))
@@ -291,17 +303,33 @@ class Route extends Container implements Observable
     // join route basic attrs with tmp attrs in stack
     protected function join(&$route): Route
     {
-        $prefix = $this->prefixes ? implode('/', $this->prefixes) : '/';
+        $prefix  = $this->prefixes  ? implode('/', $this->prefixes)  : '/';
+        $prefix .= $this->_prefixes ? implode('/', $this->_prefixes) : '';
         
+        $namespaces = [];
+        if ($this->namespaces || $this->_namespaces) {
+            $namespaces = array_merge(
+                $this->namespaces,
+                $this->_namespaces
+            );
+        }
+
+        $middlewares = [];
+        if ($this->middlewares || $this->_middlewares) {
+            $middlewares = array_unique(array_filter(array_merge(
+                $this->middlewares,
+                $this->_middlewares
+            )));
+        }
         if (is_callable($route['bind'])) {
             $handle = $route['bind'];
         } elseif (is_string($route['bind'])) {
-            $handle = format_namespace($this->namespaces).'\\'.$route['bind'];
+            $handle = format_namespace($namespaces).'\\'.$route['bind'];
         } else {
             throw new \Lif\Core\Excp\IllegalRouteDefinition(1);
         }
 
-        $route['middlewares'] = $this->middlewares;
+        $route['middlewares'] = $middlewares;
         $route['handle']      = $handle;
         $route['name']        = format_route_key($prefix.'/'.$route['name']);
         unset($route['bind']);

@@ -15,7 +15,7 @@ class Test extends Ctl
         $user->name = 'cjli';
         $user->role = 'ADMIN';
 
-        return $user->save();    // > 0 success
+        return $user->save();    // > 0 => success
     }
 
     public function update(User $user)
@@ -25,14 +25,14 @@ class Test extends Ctl
         $user->name = 'cjli2';
         $user->role = 'TESTER';
 
-        return $user->save();    // > 0 success
+        return $user->save();    // > 0 => success
     }
 
     public function delete(User $user)
     {
         $user = $user->whereId(share('__USER.id'))->first();
 
-        return $user->delete();    // > 0 success
+        return $user->delete();    // > 0 => success
     }
 }
 ```

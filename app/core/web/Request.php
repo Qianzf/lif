@@ -62,7 +62,7 @@ class Request extends Container implements Observable
             )
             : false;
             
-            $this->route = $uriArr['path'] ?? '/';
+            $this->route = $uriArr['path'] ?: '/';
         }
 
         return $this->route;

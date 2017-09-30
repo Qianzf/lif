@@ -13,5 +13,7 @@ class Task extends Ctl
 
     public function detail(TaskModel $task)
     {
+        dd($task->items());
+        view('ldtdf/task/detail');
     }
 }

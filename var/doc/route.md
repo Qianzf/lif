@@ -3,10 +3,29 @@ Route register examples:
 - Basic
 
 ``` php
+// CASE-1
 $this->get('/', function () {
     lif();
 });
+
+// CASE-2
+$this->get([
+    'name' => '/test',
+    'as'   => 't.e.s.t',
+    'prefix' => 'demo',
+    'middleware' => [
+        'auth.test',
+    ],
+    'bind' => 'Test@test',
+    // 'bind' => function () {
+    //     // do sth
+    // }
+]);
 ```
+
+#### NOTICE
+
+In `CASE-2`, if the value of `bind` key is an anonymous function or a closure, then the codes in it will be executed twice.
 
 - Nested Group
 
@@ -70,6 +89,20 @@ $this->group([
     $this->post('login', 'Passport@loginAction')->cancel('auth.web');
 });
 ```
+
+#### NOTICE
+
+`alias` is mainly used for getting its raw route:
+
+``` php
+$alias = 'user_login';
+$route = route($alias);
+redirect($route);
+```
+
+__`alias` has a default value if no `alias` explicit indicated in that route.__
+
+And naming style like this: for route `a/b/c`, its alias will be `a.b.c`.
 
 - Variables assignment
 
