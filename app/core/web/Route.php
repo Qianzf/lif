@@ -506,8 +506,8 @@ class Route extends Container implements Observable
     {
         if (! $args) {
             excp('No filter object and rules.');
-        } elseif (count($args) != 1 || !isset($args[0])) {
-            excp('Filter rules must be an array only');
+        } elseif ((count($args) != 1) || !isset($args[0])) {
+            excp('Filter rules must be an array only.');
         } elseif (! isset($this->routes[$this->route][$this->type])) {
             excp('Route not found.');
         }

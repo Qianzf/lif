@@ -12,6 +12,8 @@ A simple, quick, lightweight, API-based modern PHP Framework.
 
 - Support variables assignment on both route prefix and route name, and auto pass into controller
 
+- Support route parameters filtering
+
 - Support routes cache (Colsure not supported)
 
 ### Request
@@ -65,17 +67,25 @@ Support modification of php formatted configuration files.
 
 Support the transformation between array and collection class.
 
-#### Validation
+### Validation
 
 Support custom validation and keep an uniform return values: false or language key.
 
-#### I18N
+### I18N
 
 Use `sysmsg()`/`lang()` and dynamic language packages, LiF can easily achieve i18n.
 
 ### Exception
 
 LiF-styled exception output.
+
+### Libraries
+
+LiF re-packaged with some common used component's APIs in a more easier to use .
+
+#### Mail
+
+Use `email()` to send an email is very simple, see more details in doc.
 
 ## Documentations
 
