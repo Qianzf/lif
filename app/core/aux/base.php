@@ -215,6 +215,8 @@ if (! fe('nsOf')) {
                 'mdwr' => '\Lif\Mdwr\\',
                 'core' => '\Lif\Core\\',
                 'web'  => '\Lif\Core\Web\\',
+                '_cmd' => '\Lif\Core\Cmd\\',
+                'cmd'  => '\Lif\Cmd\\',
                 'lib'  => '\Lif\Core\Lib\\',
                 'storage'  => '\Lif\Core\storage\\',
                 'strategy' => '\Lif\Core\strategy\\',
@@ -231,6 +233,8 @@ if (! fe('pathOf')) {
             'app'    => $root.'/app/',
             'core'   => $root.'/app/core/',
             'aux'    => $root.'/app/core/aux/',
+            '_cmd'   => $root.'/app/core/cmd/',
+            'cmd'    => $root.'/app/cmd/',
             'ctl'    => $root.'/app/ctl/',
             'mdl'    => $root.'/app/mdl/',
             'traits' => $root.'/app/traits/',
@@ -263,6 +267,19 @@ if (! fe('_json_encode')) {
         );
     }
 }
+if (! fe('xml_http_response')) {
+    function xml_http_response($data) {
+        if (! headers_sent()) {
+            ob_start();
+            ob_end_clean();
+            mb_http_output('UTF-8');
+            header('Content-type: application/xml; charset=UTF-8');
+        }
+        
+        echo arr2xml($data);
+        exit;
+    }
+}
 if (! fe('json_http_response')) {
     function json_http_response($data) {
         if (! headers_sent()) {
@@ -284,7 +301,16 @@ if (! fe('exception')) {
     //     Exceptions is used for developer to locate bugs
     //     Debug model and environment will effect exception output
     // ----------------------------------------------------------------------
-    function exception(&$exObj, $format = 'json') {
+    function exception($exObj, $format = 'json') {
+        if ('cli' === context()) {
+            return cli_excp($exObj);
+        }
+
+        $response = $format.'_http_response';
+        if (! function_exists($response)) {
+            $response = 'json_http_response';
+        }
+
         $info = [
             'Exception' => $exObj->getMessage(),
             'Code'      => $exObj->getCode(),
@@ -300,11 +326,7 @@ if (! fe('exception')) {
 
         $GLOBALS['LIF_EXCP'] = true;
         
-        if ('json' === $format) {
-            ('cli' === context())
-            ? exit(_json_encode($info))
-            : json_http_response($info);
-        }
+        return $response($info);
     }
 }
 if (! fe('excp')) {
@@ -441,6 +463,23 @@ if (! fe('array_update_by_coherent_keys_main')) {
         }
 
         return $dimensionArray;
+    }
+}
+if (! fe('array_group_key_by_value')) {
+    function array_group_key_by_value(
+        array $arr,
+        string $implode = null
+    ) : array {
+        $tmp = $_tmp = [];
+        foreach ($arr as $key => $value) {
+            $tmp[$value][] = $key;
+            if (is_string($implode)) {
+                $_tmp[$value] = implode($implode, $tmp[$value]);
+            }
+        }
+
+        return is_string($implode)
+        ? $_tmp : $tmp;
     }
 }
 if (! fe('cfg')) {
@@ -702,6 +741,20 @@ if (! fe('uuid')) {
 if (! fe('sysmsgs')) {
     function sysmsgs() {
         return (new \Lif\Core\SysMsg)->get();
+    }
+}
+if (! fe('load')) {
+    // !!! Loaded files cann't contain `$this`
+    function load(string $path, string $desc = 'File', $once = true) : void {
+        if (! file_exists($path)) {
+            excp($desc.' does not exists.');
+        }
+
+        if ($once) {
+            require_once $path;
+        } else {
+            require $path;
+        }
     }
 }
 if (! fe('load_array')) {
@@ -1164,5 +1217,43 @@ if (! fe('iteratable')) {
         }
 
         return false;
+    }
+}
+if (! fe('cli')) {
+    function cli(array $argv) {
+        if (
+            isset($GLOBALS['LIF_CLI'])
+            && $GLOBALS['LIF_CLI'] instanceof Lif\Core\Strategy\Cli
+        ) {
+            $cli = $GLOBALS['LIF_CLI'];
+        } else {
+            $GLOBALS['LIF_CLI'] = $cli = new Lif\Core\Strategy\Cli;
+        }
+
+        return $cli
+        ->setArgvs($argv)
+        ->fire();
+    }
+}
+if (! fe('to_arr')) {
+    function to_arr($arr, $var) {
+        return is_array($arr)
+        ? array_merge($arr, [$var])
+        : [$var];
+    }
+}
+if (! fe('line_wrap')) {
+    function line_wrap(int $cnt = 1) : string {
+        $lineWrap = ('web' == context())
+        ? '<br>' : PHP_EOL;
+
+        $cnt = ($cnt < 0) ? 1 : $cnt;
+        $str = '';
+
+        for ($i=0; $i<$cnt; ++$i) {
+            $str .= $lineWrap;
+        }
+
+        return $str;
     }
 }

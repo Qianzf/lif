@@ -4,11 +4,14 @@ namespace Lif\Core\Abst;
 
 abstract class Factory
 {
-    protected static $namespace = null;
+    protected static $namespace = '';
 
-    public static function make($name, $namespace = null)
+    public static function make($name, $namespace = '')
     {
-        if (is_null($namespace)) {
+        if (!$name && !$namespace) {
+            excp('Missing class name.');
+        }
+        if (! $namespace) {
             // use `static` instead of `self`
             // because we need the namespace of sub class
             $namespace = static::$namespace;
@@ -16,14 +19,14 @@ abstract class Factory
         
         $class = $namespace.ucfirst($name);
 
-        if (!class_exists($class)) {
+        if (! class_exists($class)) {
             excp('Class `'.$class.'` not exists.');
         }
 
         return new $class;
     }
 
-    public static function fetch($class, $method, $args = null)
+    public static function fetch($class, $method, $args = '')
     {
         return (static::$namespace.ucfirst($class))::$method($args);
     }

@@ -7,7 +7,7 @@
 namespace Lif\Core\Strategy;
 
 use Lif\Core\Intf\{Observer, Strategy};
-use Lif\Core\Abst\{Container,Factory};
+use Lif\Core\Abst\{Container, Factory};
 
 class Web extends Container implements Observer, Strategy
 {
@@ -32,16 +32,13 @@ class Web extends Container implements Observer, Strategy
         $this->load();
     }
 
-    // load web helpers
+    // Load web helpers
     protected function load(): Web
     {
-        $webHelpers = pathOf('aux').'web.php';
-        
-        if (! file_exists($webHelpers)) {
-            excp('Web helper file does not exists.');
-        }
-
-        require_once $webHelpers;
+        load(
+            pathOf('aux').'web.php',
+            'Web helper file'
+        );
 
         return $this;
     }
@@ -295,5 +292,10 @@ class Web extends Container implements Observer, Strategy
     public function vars()
     {
         return $this->routeVars;
+    }
+
+    public function __destruct()
+    {
+        $GLOBALS = [];
     }
 }
