@@ -32,7 +32,6 @@ Support object auto injection in controller/container.
 
 Well, I think you will like them, all in _app/core/aux/_.
 
-
 ### DB SQL builder
 
 LiF has it's own database SQL query builder, it's simple, and extends functionalities from base PDO class, which handles all the SQL things.
@@ -52,6 +51,12 @@ LiF is an API-based web framework, so I didn't waste time to design a specialize
 - Cache or not can be confinable
 
 - Data share between templates
+
+### CLI
+
+- Support basic command line features
+
+- Support user-customized command class
 
 ### Configuration
 
@@ -97,7 +102,7 @@ See: _var/doc_.
 
 > - Enable or disable some time-wasting but will still be used features via Core configurations
 
-> - Add CLI features(jobs, queue, update db, etc...)
+> - Queue
 
 > - Version control database
 

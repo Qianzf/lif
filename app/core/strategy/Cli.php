@@ -16,12 +16,11 @@ class Cli extends Container implements Strategy
     protected $cmd     = null;    // Command class of current command
     protected $_cmd    = null;    // Command namespace of current command
     protected $act     = null;    // Command class action of current command
-    protected $debug   = false;
 
     public function fire() : Cli
     {
         $this
-        ->setInstance()
+        ->setApp()
         ->load()
         ->parse()
         ->run();
@@ -29,10 +28,11 @@ class Cli extends Container implements Strategy
         return $this;
     }
 
-    protected function setInstance() : Cli
+    protected function setApp() : Cli
     {
+        $class = __CLASS__;
         if (!isset($GLOBALS['LIF_CLI'])
-            || !($GLOBALS['LIF_CLI'] instanceof Lif\Core\Strategy\Cli)
+            || !($GLOBALS['LIF_CLI'] instanceof $class)
         ) {
             $GLOBALS['LIF_CLI'] = &$this;
         }
@@ -66,11 +66,6 @@ class Cli extends Container implements Strategy
     {
         unset($this->argvs[0]);
         return $this->argvs = array_values($this->argvs);        
-    }
-
-    protected function isOption(string $arg) : bool
-    {
-        
     }
 
     protected function parse() : Cli
@@ -134,7 +129,9 @@ class Cli extends Container implements Strategy
     {
         $this->cmd = Factory::make($this->_cmd);
 
-        if (!$this->cmd || !is_object($this->cmd)) {
+        if (!$this->cmd
+            || !($this->cmd instanceof \Lif\Core\Abst\Command)
+        ) {
             excp('Illegal command: '.$this->_cmd);
         } elseif (! method_exists($this->cmd, $this->act)) {
             excp('Command handler not exists: '.$this->act);
@@ -149,13 +146,8 @@ class Cli extends Container implements Strategy
         );
     }
 
-    public function setDebug(bool $debug)
-    {
-        return $this->debug = $debug;
-    }
-
     public function __destruct()
     {
-        $GLOBALS = [];
+        unset($GLOBALS);
     }
 }

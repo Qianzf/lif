@@ -4,17 +4,13 @@ namespace Lif\Core\Cmd;
 
 class LifFire extends Command
 {
-    protected $name   = 'lif:fire';
-    protected $desc   = 'LiF Default command action';
+    protected $intro  = 'LiF Default command action';
     protected $option = [
         '-V'        => 'version',
         '--version' => 'version',
-        '-H'        => 'help',
-        '--help'    => 'help',
     ];
-    protected $_desc  = [
-        'version' => 'Get current LiF version',
-        'help'    => 'Output help message for current command',
+    protected $desc = [
+        'version' => 'Get version of LiF application',
     ];
 
     public function fire(array $params)
@@ -31,21 +27,10 @@ class LifFire extends Command
         $this->parse($params, $options, $args);
 
         if ($args) {
-            excp('No arguments for command: '.$this->name);
+            excp('No arguments for command: '.color($this->name(), 'BROWN'));
         }
 
-        foreach ($options as $option) {
-            if (! in_array($option, array_keys($this->option))) {
-                excp('Option not exists: '.$option);
-            } elseif (! method_exists($this, $this->option[$option])) {
-                excp('Option handler not exists: '.$this->option[$option]);
-            }
-
-            call_user_func_array([
-                $this,
-                $this->option[$option]
-            ], []);
-        }
+        $this->withOptions($options);
 
         return $this;
     }
@@ -77,8 +62,14 @@ class LifFire extends Command
         );
     }
 
+    protected function getColoredCmdsText(array $cmds) : string
+    {
+        return segstr(color('help', 'LIGHT_GREEN'));
+    }
+
     protected function cmds() : string
     {
-        return segstr(color('Commands: ', 'LIGHT_PURPLE'));
+        return segstr(color('Commands: ', 'LIGHT_PURPLE'))
+        .$this->getColoredCmdsText(get_all_cmds());
     }
 }

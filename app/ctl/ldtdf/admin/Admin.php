@@ -8,9 +8,6 @@ class Admin extends Ctl
 {
     public function index(UserModel $user)
     {
-        // dd(cli([
-        //     'test'
-        // ]));
         view('ldtdf/admin/index');
     }
 }

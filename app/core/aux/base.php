@@ -20,7 +20,7 @@ if (! fe('lif')) {
         ('cli' === context())
         ? exit(_json_encode(array_merge([
             'msg' => $msg,
-        ], $lif)))
+       ], $lif)))
         : response($lif, $msg);
     }
 }
@@ -119,7 +119,7 @@ if (! fe('app_debug')) {
         return (isset($app['debug']) && in_array($app['debug'], [
             true,
             false
-        ])) ? $app['debug'] : true;
+       ])) ? $app['debug'] : true;
     }
 }
 if (! fe('app_env')) {
@@ -133,7 +133,7 @@ if (! fe('app_env')) {
             'local',
             'staging',
             'production',
-        ])) ? $app['env'] : 'local';
+       ])) ? $app['env'] : 'local';
     }
 }
 if (! fe('context')) {
@@ -170,7 +170,7 @@ if (! fe('exists')) {
     // !!! Be careful to check bool value like false
     function exists($var, $idx = null) {
         // !!! Be carefurl if `$var` is not an assoc array
-        if (is_array($var) && $idx) {
+        if (is_array($var) && !is_null($idx)) {
             $idxes = is_array($idx) ? $idx : [$idx];
             foreach ($idxes as $_idx) {
                 if (! isset($var[$_idx])) {
@@ -220,7 +220,7 @@ if (! fe('nsOf')) {
                 'lib'  => '\Lif\Core\Lib\\',
                 'storage'  => '\Lif\Core\storage\\',
                 'strategy' => '\Lif\Core\strategy\\',
-            ];
+           ];
             return $nsArr[$of] ?? '\\';
         }
     }
@@ -252,11 +252,11 @@ if (! fe('pathOf')) {
             'upload' => $root.'/var/upload/',
             'web'    => $root.'/web/',
             'static' => $root.'/web/assets/',
-        ];
+       ];
 
         return is_null($of) ? $paths : (
             isset($paths[$of]) ? $paths[$of] : null
-        );
+       );
     }
 }
 if (! fe('_json_encode')) {
@@ -264,7 +264,7 @@ if (! fe('_json_encode')) {
         return json_encode(
             $arr,
             JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
-        );
+       );
     }
 }
 if (! fe('xml_http_response')) {
@@ -311,17 +311,19 @@ if (! fe('exception')) {
             $response = 'json_http_response';
         }
 
-        $info = [
+        $info  = [
             'Exception' => $exObj->getMessage(),
             'Code'      => $exObj->getCode(),
-        ];
+       ];
 
         // !!! Make sure check app conf path first
         // !!! Or infinite loop will occur when app conf file not exists
         if (('production' != app_env()) && app_debug()) {
-            $info['File']  = $exObj->getFile();
-            $info['Line']  = $exObj->getLine();
-            $info['Trace'] = $exObj->getTrace();
+            $trace         = $exObj->getTrace();
+            $info['File']  = $trace[0]['file'];
+            $info['Line']  = $trace[0]['line'];
+            unset($trace[0]);
+            $info['Trace'] = $trace;
         }
 
         $GLOBALS['LIF_EXCP'] = true;
@@ -341,8 +343,8 @@ if (! fe('format_namespace')) {
                 '\\',
                 array_filter(
                     explode('\\', implode('\\', $namespaceRaw))
-                )
-            );
+               )
+           );
         }
         if (is_string($namespaceRaw) && $namespaceRaw) {
             return implode('\\', array_filter(explode('\\', $namespaceRaw)));
@@ -426,14 +428,14 @@ if (! fe('array_update_by_coherent_keys')) {
         $coherentKeyStr,
         $dimensionArray,
         $data
-    ) {
+   ) {
         $coherentKeys = explode('.', $coherentKeyStr);
 
         return array_update_by_coherent_keys_main(
             $coherentKeys,
             $dimensionArray,
             $data
-        );
+       );
     }
 }
 if (! fe('array_update_by_coherent_keys_main')) {
@@ -441,19 +443,19 @@ if (! fe('array_update_by_coherent_keys_main')) {
         $coherentKeys,
         $dimensionArray,
         $data
-    ) {
+   ) {
         $tmpKeys = $coherentKeys;
         foreach ($coherentKeys as $idx => $key) {
             if (isset($dimensionArray[$key]) &&
                 (false !== next($coherentKeys)) &&
                 is_array($dimensionArray[$key])
-            ) {
+           ) {
                 unset($tmpKeys[$idx]);
                 $dimensionArray[$key] = array_update_by_coherent_keys_main(
                     $tmpKeys,
                     $dimensionArray[$key],
                     $data
-                );
+               );
                 // !!! must break the loop
                 // !!! or `else` will be wrong executed
                 break;
@@ -469,7 +471,7 @@ if (! fe('array_group_key_by_value')) {
     function array_group_key_by_value(
         array $arr,
         string $implode = null
-    ) : array {
+   ) : array {
         $tmp = $_tmp = [];
         foreach ($arr as $key => $value) {
             $tmp[$value][] = $key;
@@ -487,7 +489,7 @@ if (! fe('cfg')) {
         if (!$name || !is_string($name) ||
             !$keyStr || !is_string($keyStr) ||
             !$data
-        ) {
+       ) {
             throw new \Lif\Core\Excp\Lif('Missing config params');
         }
 
@@ -496,7 +498,7 @@ if (! fe('cfg')) {
             $keyStr,
             conf($name),
             $data
-        );
+       );
         $cfg  = array_stringify($config);
         $_cfg = <<< CFG
 <?php
@@ -518,7 +520,7 @@ if (! fe('conf_all')) {
                     $GLOBALS['LIF_CFG'][$file['filename']] = conf(
                         $file['filename'],
                         $cfgPath
-                    );
+                   );
                 }
             }
         }
@@ -538,7 +540,7 @@ if (! fe('conf')) {
         if (isset($GLOBALS['LIF_CFG'])
             && isset($GLOBALS['LIF_CFG'][$name])
             && $GLOBALS['LIF_CFG'][$name]
-        ) {
+       ) {
             return array_query_by_coherent_keys($GLOBALS['LIF_CFG'], $name);
         }
 
@@ -591,14 +593,14 @@ if (! fe('build_pdo_dsn')) {
                     if (!file_exists($path)) {
                         excp(
                             'Missing sqlite source file.'
-                        );
+                       );
                     }
                 }
                 break;
             default:
                 excp(
                     'Missing database driver name.'
-                );
+               );
                 break;
         }
 
@@ -612,21 +614,21 @@ if (! fe('validate_db_conn')) {
                 'host',
                 'user',
                 'passwd',
-            ],
+           ],
             'sqlite' => [
                 'path'   => 'path',
                 'memory' => 'memory',
-            ],
-        ];
+           ],
+       ];
         if (!($conn['driver'] = strtolower(exists($conn, 'driver')))) {
             excp(
                 'Missing database driver name.'
-            );
+           );
         }
         if (!exists($driverConfMap, $conn['driver'])) {
             excp(
                 'Database driver `'.$conn['driver'].'` not supported yet.'
-            );
+           );
         }
         if ('sqlite' == $conn['driver']) {
             $unset = exists($conn, 'memory') ? 'path' : 'memory';
@@ -635,12 +637,12 @@ if (! fe('validate_db_conn')) {
             $conn['user'] = (
                 exists($conn, 'user')
                 && is_string($conn['user'])
-            ) ? $conn['user'] : null;
+           ) ? $conn['user'] : null;
 
             $conn['passwd'] = (
                 exists($conn, 'passwd')
                 && is_string($conn['passwd'])
-            ) ? $conn['passwd'] : null;
+           ) ? $conn['passwd'] : null;
         }
         if (!exists($conn, $driverConfMap[$conn['driver']])) {
             excp(
@@ -648,7 +650,7 @@ if (! fe('validate_db_conn')) {
                 .$conn['driver']
                 .'` type connection `'
                 .$conn['name'].'`'
-            );
+           );
         }
 
         return $conn;
@@ -662,8 +664,8 @@ if (! fe('create_ldo')) {
                 $dsn,
                 $conn['user'],
                 $conn['passwd']
-            )
-        )
+           )
+       )
         ->__conn($conn['name'])
         ->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
@@ -729,7 +731,7 @@ if (! fe('uuid')) {
         $id = 0,
         $type = '01',
         $domain = '00'
-    ): string {
+   ): string {
         $domain  = str_pad(($domain%42), 2, '0', STR_PAD_LEFT);
         $id      = str_pad(($id%1024), 4, '0', STR_PAD_LEFT);
         $type    = in_array($type, ['01', '02', '03']) ? $type : '00';
@@ -791,7 +793,7 @@ if (! fe('sysmsg')) {
         if (isset($GLOBALS['__sys_msg'][$lang])
             && is_array($GLOBALS['__sys_msg'][$lang])
             && $GLOBALS['__sys_msg'][$lang]
-        ) {
+       ) {
             $msg = $GLOBALS['__sys_msg'][$lang];
         } else {
             $langPath = pathOf('sysmsg');
@@ -839,7 +841,7 @@ if (! fe('xml2arr')) {
             $xml,
             'SimpleXMLElement',
             LIBXML_NOCDATA
-        );
+       );
 
         return json_decode(json_encode($xml), true);
     }
@@ -911,7 +913,7 @@ if (! fe('xml_encode')) {
                 is_array($data->toXml())
                 ? arr2xml($ret)
                 : 'Return value of `toXml()` in object.'
-            )
+           )
             : 'Missing `toXml()` method in object.';
         }
 
@@ -924,11 +926,11 @@ if (! fe('request_http_api')) {
         string $type = 'GET',
         array $headers = [],
         $params = []
-    ) {
+   ) {
         $setOpt = [
             CURLOPT_URL            => $uri,
             CURLOPT_RETURNTRANSFER => true,
-        ];
+       ];
 
         if ($headers) {
             $setOpt[CURLOPT_HTTPHEADER] = $headers;
@@ -952,7 +954,7 @@ if (! fe('request_http_api')) {
             'err' => $errNo,
             'msg' => ($errMsg ?: 'ok'),
             'res' => $res,
-        ];
+       ];
     }
 }
 if (! fe('request_json_api')) {
@@ -961,10 +963,10 @@ if (! fe('request_json_api')) {
         $type = 'GET',
         $params = [],
         $headers = []
-    ) {
+   ) {
         $headers = [
             'Content-Type: application/json; Charset=UTF-8',
-        ];
+       ];
 
         $ret = request_http_api($uri, $type, $headers, $params);
 
@@ -982,10 +984,10 @@ if (! fe('request_xml_api')) {
         $type = 'GET',
         $params = [],
         $headers = []
-    ) {
+   ) {
         $headers = [
             'Content-Type: application/xml; Charset=UTF-8',
-        ];
+       ];
 
         $ret = request_http_api($uri, $type, $headers, $params);
 
@@ -1031,7 +1033,7 @@ if (! fe('get_json_err_msg')) {
             JSON_ERROR_RECURSION => 'One or more recursive references in the value to be encoded',
             JSON_ERROR_INF_OR_NAN => 'One or more NAN or INF values in the value to be encoded',
             JSON_ERROR_UNSUPPORTED_TYPE => 'A value of a type that cannot be encoded was given',
-        ];
+       ];
 
         $errMsg = $knownErrors[$code] ?? 'Unknown error';
 
@@ -1053,7 +1055,7 @@ if (! fe('is_xml')) {
             $xml,
             'SimpleXMLElement',
             LIBXML_NOCDATA
-        ))) {
+       ))) {
             $error = libxml_get_last_error();    // LibXMLError object
 
             libxml_clear_errors();
@@ -1061,13 +1063,13 @@ if (! fe('is_xml')) {
             return [
                 'status' => false,
                 'data'   => 'Illegal XML: '.$error->message,
-            ];
+           ];
         }
 
         return [
             'status' => true,
             'data'   => $doc,
-        ];
+       ];
     }
 }
 if (! fe('unihex_text')) {
@@ -1095,13 +1097,13 @@ if (! fe('unihex2text')) {
                     pack(
                         'H*',
                         $match[1]
-                    ),
+                   ),
                     'UTF-8',
                     'UTF-16BE'
-                );
+               );
             },
             $unicode
-        );
+       );
     }
 }
 if (! fe('get_func_cost')) {
@@ -1121,7 +1123,7 @@ if (! fe('is_timestamp')) {
             is_integer($timestamp)
             && ($timestamp >= 0)
             && ($timestamp <= 2147472000)
-        );
+       );
     }
 }
 if (! fe('validate')) {
@@ -1129,7 +1131,7 @@ if (! fe('validate')) {
         return (new \Lif\Core\Validation)->run(
             $data,
             $rules
-        );
+       );
     }
 }
 if (! fe('classname')) {
@@ -1168,8 +1170,8 @@ if (! fe('email')) {
             || (true !== validate($config, [
                 'default' => 'need|string',
                 'senders' => 'need|array',
-            ]))
-        ) {
+           ]))
+       ) {
             excp('Missing mail sender configurations.');
         }
 
@@ -1178,7 +1180,7 @@ if (! fe('email')) {
         if (! isset($config['senders'][$sender])
             || ! ($sender = $config['senders'][$sender])
             || ! is_array($sender)
-        ) {
+       ) {
             excp('Missing configurations for mail sender: '.$sender);
         }
 
@@ -1191,13 +1193,13 @@ if (! fe('email')) {
             'sender_name'  => 'need|string',
             'sender_email' => 'need|email',
             'encryption'   => 'string|in:ssl,tls',
-        ]))) {
+       ]))) {
             excp('Illegal mail sender configurations: '.$err);
         } elseif (true !== ($err = validate($params, [
             'to'    => 'need|array',
             'title' => 'need|string',
             'body'  => 'need|string',
-        ]))) {
+       ]))) {
             excp('Illegal email message: '.$err);
         }
 
@@ -1221,13 +1223,14 @@ if (! fe('iteratable')) {
 }
 if (! fe('cli')) {
     function cli(array $argv) {
+        $class = 'Lif\Core\Strategy\Cli';
         if (
             isset($GLOBALS['LIF_CLI'])
-            && $GLOBALS['LIF_CLI'] instanceof Lif\Core\Strategy\Cli
-        ) {
+            && ($GLOBALS['LIF_CLI'] instanceof $class)
+       ) {
             $cli = $GLOBALS['LIF_CLI'];
         } else {
-            $GLOBALS['LIF_CLI'] = $cli = new Lif\Core\Strategy\Cli;
+            $GLOBALS['LIF_CLI'] = $cli = new $class;
         }
 
         return $cli
@@ -1242,8 +1245,8 @@ if (! fe('to_arr')) {
         : [$var];
     }
 }
-if (! fe('line_wrap')) {
-    function line_wrap(int $cnt = 1) : string {
+if (! fe('linewrap')) {
+    function linewrap(int $cnt = 1) : string {
         $lineWrap = ('web' == context())
         ? '<br>' : PHP_EOL;
 
@@ -1255,5 +1258,102 @@ if (! fe('line_wrap')) {
         }
 
         return $str;
+    }
+}
+if (! fe('tab_indent')) {
+    function tab_indent(int $cnt = 1) : string {
+        $tabIndent = ('web' == context())
+        ? '&nbsp;&nbsp;&nbsp;&nbsp;' : "\t";
+
+        $cnt = ($cnt < 0) ? 1 : $cnt;
+        $str = '';
+
+        for ($i=0; $i<$cnt; ++$i) {
+            $str .= $tabIndent;
+        }
+
+        return $str;
+    }
+}
+if (! fe('char_case_is')) {
+    function char_case_is(string $char, $case = 'upper') : bool {
+        if (! in_array($case, ['upper', 'lower'])) {
+            return false;
+        }
+
+        if ('upper' === $case) {
+            $asciiStart = 64;
+            $asciiEnd   = 91;
+            $preg = '/[A-Z]/u';
+        } else {
+            $asciiStart = 96;
+            $asciiEnd   = 123;
+            $preg = '/[a-z]/u';
+        }
+
+        $arr = str_split($char);
+        if (1 === count($arr)) {
+            $ascii = ord($char);
+            // A-Z ASCII number range => 65~90
+            // a-z ASCII number range => 97~122
+            return (
+                (($asciiStart < $ascii) && ($ascii < $asciiEnd))
+                || preg_match($preg, $char)
+           );
+        }
+
+        return false;
+    }
+}
+if (! fe('ucase_char')) {
+    function ucase_char(string $char) : bool {
+        return char_case_is($char, 'upper');
+    }
+}
+if (! fe('lcase_char')) {
+    function lcase_char(string $char) : bool {
+        return char_case_is($char, 'lower');
+    }
+}
+if (! fe('underline2camelcase')) {
+    function underline2camelcase(string $underline) {
+        if (!is_string($underline)) {
+            return false;
+        }
+        $arr = str_split($underline);
+        $len = count($arr);
+
+        if ('_' != $arr[0]) {
+            $arr[0] = strtoupper($arr[0]);
+        }
+        foreach ($arr as $key => $val) {
+            if ('_' == $val) {
+                if (($key < ($len-1))
+                    && ('_' != $arr[$key+1])
+                ) {
+                    $arr[$key+1] = strtoupper($arr[$key+1]);
+                }
+                $arr[$key] = '';
+            }
+            // $camelcase .= $arr[$key];    // slower than implode()
+        }
+        return implode('', $arr);
+    }
+}
+
+if (! fe('camelcase2underline')) {
+    function camelcase2underline(string $camelcase) {
+        $arr = str_split($camelcase);
+        foreach ($arr as $key => $val) {
+            if (0 == $key) {
+                $arr[0] = strtolower($val);
+            } else {
+                if (ucase_char($val)) {
+                    $arr[$key] = '_'.strtolower($val);
+                }
+            }
+        }
+
+        return implode('', $arr);
     }
 }

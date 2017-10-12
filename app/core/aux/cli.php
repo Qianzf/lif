@@ -25,18 +25,19 @@ if (! fe('output')) {
             }
         }
 
-        echo $output, line_wrap();
+        echo $output, linewrap();
         exit;
     }
 }
 if (! fe('console')) {
     function console() {
+        $class = '\Lif\Core\Cli\Console';
         return (
-            isset($GLOBALS['LIF_CONSOLE'])
-            && is_object($GLOBALS['LIF_CONSOLE'])
-        ) ? $GLOBALS['LIF_CONSOLE']
+            isset($GLOBALS['LIF_CLI_CONSOLE'])
+            && ($GLOBALS['LIF_CLI_CONSOLE'] instanceof $class)
+        ) ? $GLOBALS['LIF_CLI_CONSOLE']
         : (
-            new \Lif\Core\Cli\Console
+            new $class
         );
     }
 }
@@ -49,7 +50,7 @@ if (! fe('color')) {
 }
 if (! fe('segstr')) {
     function segstr(string $string) : string {
-        return line_wrap().$string.line_wrap();
+        return linewrap().$string.linewrap();
     }
 }
 if (! fe('format_cmd')) {
@@ -80,8 +81,64 @@ if (! fe('cli_excp_output')) {
     function cli_excp($excp) {
         return output(segstr(
             color('Command execution error!', 'LIGHT_RED')
-            .line_wrap(2)
+            .linewrap(2)
             .color($excp->getMessage(), 'RED')
         ));
+    }
+}
+if (! fe('fname2cname')) {
+    function fname2cname(string $filename) {
+        $arr = explode('.', $filename);
+
+        if (! ($class = exists($arr, 0))) {
+            excp('Illegal filename.');
+        }
+
+        return $class;
+    }
+}
+if (! fe('get_cmd_attrs')) {
+    function get_cmd_attrs(string $cmdns) {
+        if (! class_exists($cmdns)) {
+            excp('Command class not exists.');
+        }
+
+        $cmd = new $cmdns;
+
+        if (!method_exists($cmd, 'cmdAndIntro')
+        || !method_exists($cmd, 'optionAndDesc')) {
+            excp('Illegal command class.');
+        }
+    }
+}
+if (! fe('get_cmds')) {
+    function get_cmds(string $path, string $ns) : array {
+        $escapeFiles = [
+            'Command.php',
+        ];
+
+        if (file_exists($path)) {
+            $fsi = new \FilesystemIterator($path);
+            foreach ($fsi as $file) {
+                if ($file->isFile()
+                    && ('php' == $file->getExtension())
+                    && ($fname = $file->getBasename())
+                    && !in_array($fname, $escapeFiles)
+                ) {
+                    $cmd = get_cmd_attrs($ns.fname2cname($fname));
+                    // array_group_key_by_value($cmd, ', ');
+               }
+            }
+            unset($fsi);
+        }
+        return [];
+    }
+}
+if (! fe('get_all_cmds')) {
+    function get_all_cmds() : array {
+        $userCmds = get_cmds(pathOf('cmd'), nsOf('cmd'));
+        $coreCmds = get_cmds(pathOf('_cmd'), nsOf('_cmd'));
+
+        return [];
     }
 }
