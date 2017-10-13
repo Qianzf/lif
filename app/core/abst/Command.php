@@ -36,11 +36,7 @@ abstract class Command implements CMD
     protected $optionAll = [];    // All command options
     protected $descAll   = [];    // All command option's desc
 
-    public function __construct()
-    {
-    }
-
-    public function fire(array $params)
+    public function fire(?array $params)
     {
     }
 
@@ -149,21 +145,40 @@ abstract class Command implements CMD
     protected function name() : string
     {
         if (! $this->name) {
-            $this->name = class_name($this);
+            $this->name = class2cmd(classname($this));
         }
 
         return $this->name;
     }
 
-    public function optionAndDesc() : string
+    protected function intro() : string
     {
+        if (! $this->intro) {
+            $this->intro = 'No introduction for this command';
+        }
+
+        return $this->intro;
     }
 
-    public function cmdAndIntro() : string
+    public function optionAndDesc() : string
     {
-        return segstr(
-            color($this->name())
-        );
+        return '';
+    }
+
+    public function withIntro(bool $string = false)
+    {
+        if_cmd_exists(classname($this));
+
+        return $string
+        ? segstr(
+            color($this->name(), 'LIGHT_BLUE')
+            .tab_indent()
+            .$this->intro()
+        )
+        : [
+            'name'  => $this->name(),
+            'intro' => $this->intro(),
+        ];
     }
 
     public function options() : string

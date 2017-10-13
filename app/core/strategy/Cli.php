@@ -11,11 +11,10 @@ use Lif\Core\Abst\{Container, Factory};
 
 class Cli extends Container implements Strategy
 {
-    protected $argvs   = null;    // Actual arguments of current command
-    protected $_argvs  = null;    // Raw arguments of current command
-    protected $cmd     = null;    // Command class of current command
-    protected $_cmd    = null;    // Command namespace of current command
-    protected $act     = null;    // Command class action of current command
+    protected $argvs  = null;    // Actual arguments of current command
+    protected $_argvs = null;    // Raw arguments of current command
+    protected $cmd    = null;    // Command class of current command
+    protected $_cmd   = null;    // Command namespace of current command
 
     public function fire() : Cli
     {
@@ -62,31 +61,41 @@ class Cli extends Container implements Strategy
         return $this;
     }
 
+    public function reset() : Cli
+    {
+        $this->argvs
+        = $this->_argvs
+        = $this->cmd
+        = $this->_cmd
+        = null;
+
+        return $this;
+    }
+
     protected function resetArgvs() : array
     {
         unset($this->argvs[0]);
-        return $this->argvs = array_values($this->argvs);        
+
+        return $this->argvs = array_values($this->argvs);
     }
 
     protected function parse() : Cli
     {
-        $this->_cmd = $this->getDefaultCommand();
-        $this->act  = $this->getDefaultAction();
+        $_cmd = $this->getDefaultCommand();
 
         if ($this->argvs) {
             // Find out command and it's action
             if (! is_cmd_option($this->argvs[0])) {
-                $this->_cmd = $this->argvs[0];
+                $_cmd = $this->argvs[0];
                 if ($this->resetArgvs()) {
                     if (! is_cmd_option($this->argvs[0])) {
-                        $this->act = $this->legalAct($this->argvs[0]);
                         $this->resetArgvs();
                     }
                 }
             }
         }
 
-        $this->_cmd = $this->legalCmd($this->_cmd);
+        $this->_cmd = $this->legalCmd($_cmd);
 
         return $this;
     }
@@ -98,28 +107,15 @@ class Cli extends Container implements Strategy
 
     protected function getDefaultCommand() : string
     {
-        return 'lif';
-    }
-
-    protected function legalAct(string $act) : string
-    {
-        if (! preg_match('/^\w*$/u', $act)) {
-            excp('Illegal command action name.');
-        }
-
-        return $act;
+        return 'cli';
     }
 
     protected function legalCmd(string $cmd) : string
     {
-        if (! preg_match('/^[a-z_]*$/u', $cmd)) {
-            excp('Illegal command name.');
-        }
-
-        $ns = get_core_cmd_class($cmd, $this->act);
-
-        if (! class_exists($ns)) {
-            excp('Command class not exists: '.$ns);
+        if (! preg_match('/^[a-z\.]*$/u', $cmd)) {
+            excp('Illegal command name: '.$cmd);
+        } elseif (false === ($ns = if_cmd_exists(cmd2class($cmd)))) {
+            excp('Command not exists: '.$cmd);
         }
 
         return $ns;
@@ -127,19 +123,20 @@ class Cli extends Container implements Strategy
 
     protected function run()
     {
+        $handler   = $this->getDefaultAction();
         $this->cmd = Factory::make($this->_cmd);
 
         if (!$this->cmd
             || !($this->cmd instanceof \Lif\Core\Abst\Command)
         ) {
             excp('Illegal command: '.$this->_cmd);
-        } elseif (! method_exists($this->cmd, $this->act)) {
-            excp('Command handler not exists: '.$this->act);
+        } elseif (! method_exists($this->cmd, $handler)) {
+            excp('Command handler not exists');
         }
 
         return call_user_func_array([
                 $this->cmd,
-                $this->act
+                $handler
             ], [
                 $this->argvs
             ]

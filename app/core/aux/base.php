@@ -694,13 +694,40 @@ if (! fe('escape_fields')) {
         return '`'.$raw.'`';
     }
 }
-if (! fe('class_name')) {
-    function class_name($obj) {
+if (! fe('decode_classname')) {
+    function decode_classname(
+        string $classname,
+        string $implode = '.',
+        string $replace = 'strtolower'
+    ) : string {
+        $res = preg_replace_callback(
+            '/([A-Z][a-z]*)/u',
+            function ($matches) use ($implode, $replace) {
+                if (! function_exists($replace)) {
+                    excp('Function not defined: '.$replace);
+                }
+                return $replace($matches[0]).$implode;
+        }, $classname);
+
+        return implode($implode, array_filter(explode($implode, $res)));
+    }
+}
+if (! fe('classname')) {
+    function classname($obj) {
         if (!is_object($obj)) {
             return false;
         }
 
         return (new \ReflectionClass(get_class($obj)))->getShortName();
+    }
+}
+if (! fe('classns')) {
+    function classns($obj) {
+        if (!is_object($obj)) {
+            return false;
+        }
+
+        return get_class($obj);
     }
 }
 if (! fe('class_attrs')) {
@@ -1222,7 +1249,8 @@ if (! fe('iteratable')) {
     }
 }
 if (! fe('cli')) {
-    function cli(array $argv) {
+    // !!! You can not use `cli()` in \Lif\Core\Strategy\Cli@fire()
+    function cli(array $argv = []) {
         $class = 'Lif\Core\Strategy\Cli';
         if (
             isset($GLOBALS['LIF_CLI'])
@@ -1234,6 +1262,7 @@ if (! fe('cli')) {
         }
 
         return $cli
+        ->reset()
         ->setArgvs($argv)
         ->fire();
     }
@@ -1255,6 +1284,21 @@ if (! fe('linewrap')) {
 
         for ($i=0; $i<$cnt; ++$i) {
             $str .= $lineWrap;
+        }
+
+        return $str;
+    }
+}
+if (! fe('space_indent')) {
+    function space_indent(int $cnt = 1) : string {
+        $tabIndent = ('web' == context())
+        ? '&nbsp;' : " ";
+
+        $cnt = ($cnt < 0) ? 1 : $cnt;
+        $str = '';
+
+        for ($i=0; $i<$cnt; ++$i) {
+            $str .= $tabIndent;
         }
 
         return $str;

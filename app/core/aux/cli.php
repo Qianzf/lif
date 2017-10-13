@@ -53,23 +53,36 @@ if (! fe('segstr')) {
         return linewrap().$string.linewrap();
     }
 }
-if (! fe('format_cmd')) {
+if (! fe('classname2ns')) {
+    function classname2ns(string $classname) : string {
+        return decode_classname($classname, '\\', 'ucfirst');
+    }
+}
+if (! fe('class2cmd')) {
     // !!! Case-sensitive
-    function format_cmd(string $cmd) : string {
-        $arr = explode('_', $cmd);
+    function class2cmd(string $classname, string $implode = '.') : string {
+        return decode_classname($classname, $implode, 'strtolower');
+    }
+}
+if (! fe('cmd2class')) {
+    function cmd2class(string $cmd) {
+        $arr = explode('.', $cmd);
 
         array_walk($arr, function (&$item, $key) {
-            $item = ucfirst($item);
+            $item = ucfirst(strtolower($item));
         });
 
         return implode('', $arr);
     }
 }
-if (! fe('get_core_cmd_class')) {
-    function get_core_cmd_class(string $cmd, string $act) : string {
-        return nsOf('_cmd')
-        .format_cmd($cmd)
-        .format_cmd($act);
+if (! fe('user_cmd_class')) {
+    function usercmd_class(string $cmd) : string {
+        return nsOf('cmd').cmd2class($cmd);
+    }
+}
+if (! fe('core_cmd_class')) {
+    function corecmd_class(string $cmd) : string {
+        return nsOf('_cmd').cmd2class($cmd);
     }
 }
 if (! fe('is_cmd_option')) {
@@ -90,32 +103,48 @@ if (! fe('fname2cname')) {
     function fname2cname(string $filename) {
         $arr = explode('.', $filename);
 
-        if (! ($class = exists($arr, 0))) {
+        if (! ($class = exists($arr, 0))
+            || !is_string($class)
+        ) {
             excp('Illegal filename.');
         }
 
-        return $class;
+        return ucfirst($class);
     }
 }
-if (! fe('get_cmd_attrs')) {
-    function get_cmd_attrs(string $cmdns) {
+if (! fe('cmdintro')) {
+    function cmdintro(string $cmdns, bool $string = false) {
         if (! class_exists($cmdns)) {
             excp('Command class not exists.');
         }
 
         $cmd = new $cmdns;
 
-        if (!method_exists($cmd, 'cmdAndIntro')
-        || !method_exists($cmd, 'optionAndDesc')) {
+        if (!($cmd instanceof \Lif\Core\Abst\Command)
+            || !method_exists($cmd, 'withIntro')
+        ) {
             excp('Illegal command class.');
         }
+
+        $withIntro = $cmd->withIntro($string);
+
+        unset($cmd);
+
+        return $withIntro;
     }
 }
 if (! fe('get_cmds')) {
-    function get_cmds(string $path, string $ns) : array {
+    function get_cmds(
+        string $path,
+        string $ns,
+        bool $string = false
+    ) {
         $escapeFiles = [
             'Command.php',
         ];
+
+        $cmds = [];
+        $str  = '';
 
         if (file_exists($path)) {
             $fsi = new \FilesystemIterator($path);
@@ -125,20 +154,84 @@ if (! fe('get_cmds')) {
                     && ($fname = $file->getBasename())
                     && !in_array($fname, $escapeFiles)
                 ) {
-                    $cmd = get_cmd_attrs($ns.fname2cname($fname));
-                    // array_group_key_by_value($cmd, ', ');
+                    $cmd = cmdintro($ns.fname2cname($fname), $string);
+
+                    $string
+                    ? ($str .= $cmd)
+                    : ($cmds[$cmd['name']] = $cmd['intro']);
                }
             }
             unset($fsi);
         }
-        return [];
+
+        return $string ? $str : $cmds;
+    }
+}
+if (! fe('get_cmds_text')) {
+    function get_cmds_text(array $cmds) : string {
+        $text = '';
+        $tmp  = [];
+        ksort($cmds);
+        foreach ($cmds as $name => $intro) {
+            $arr = explode('.', $name);
+            if (! ($cate = exists($arr, 0))) {
+                excp('Illegal command name: '.$name);
+            }
+            if (! isset($tmp[$cate])) {
+                $tmp[$cate] = true;
+                $text .= segstr(color(ucfirst($cate), 'LIGHT_GREEN')
+                    .linewrap()
+                );
+            }
+
+            $text .= space_indent()
+            .color($name, 'GREEN')
+            .tab_indent()
+            .$intro
+            .linewrap();
+        }
+
+        return $text;
     }
 }
 if (! fe('get_all_cmds')) {
-    function get_all_cmds() : array {
-        $userCmds = get_cmds(pathOf('cmd'), nsOf('cmd'));
+    function get_all_cmds(bool $string = false) {
         $coreCmds = get_cmds(pathOf('_cmd'), nsOf('_cmd'));
+        $userCmds = get_cmds(pathOf('cmd'), nsOf('cmd'));
 
-        return [];
+        $cmds = array_merge($coreCmds, $userCmds);
+        return $string ? get_cmds_text($cmds) : $cmds;
+    }
+}
+if (! fe('cmd_classns')) {
+    function cmd_classns(string $classname) {
+        $_ns = nsOf('_cmd').$classname;
+        $ns  = nsOf('cmd').$classname;
+        $_nsExists = class_exists($_ns);
+        $nsExists  = class_exists($ns);
+        if ($_nsExists && $nsExists) {
+            excp(
+                'Command class `'.$classname.'` already exists in: '.$_ns
+            );
+        } elseif (!$_nsExists && !$nsExists) {
+            return false;
+        }
+
+        return $_nsExists ? $_ns : $ns;
+    }
+}
+if (! fe('if_cmd_exists')) {
+    function if_cmd_exists(string $classname) {
+        if (false === ($firstTry = cmd_classns($classname))) {
+            if (false === ($secondTry = cmd_classns(
+                cmd2class($classname)
+            ))) {
+                return false;
+            }
+
+            return $secondTry;
+        }
+
+        return $firstTry;
     }
 }

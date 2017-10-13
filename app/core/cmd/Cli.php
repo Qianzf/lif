@@ -2,9 +2,9 @@
 
 namespace Lif\Core\Cmd;
 
-class LifFire extends Command
+class Cli extends Command
 {
-    protected $intro  = 'LiF Default command action';
+    protected $intro  = 'LiF Default command';
     protected $option = [
         '-V'        => 'version',
         '--version' => 'version',
@@ -13,7 +13,7 @@ class LifFire extends Command
         'version' => 'Get version of LiF application',
     ];
 
-    public function fire(array $params)
+    public function fire(?array $params)
     {
         if (! $params) {
             return output(
@@ -62,14 +62,9 @@ class LifFire extends Command
         );
     }
 
-    protected function getColoredCmdsText(array $cmds) : string
-    {
-        return segstr(color('help', 'LIGHT_GREEN'));
-    }
-
     protected function cmds() : string
     {
         return segstr(color('Commands: ', 'LIGHT_PURPLE'))
-        .$this->getColoredCmdsText(get_all_cmds());
+        .get_all_cmds(true);
     }
 }

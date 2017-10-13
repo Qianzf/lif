@@ -9,7 +9,7 @@ namespace Lif\Core\Intf;
 interface CMD
 {
     // Execute main logic
-    public function fire(array $params);
+    public function fire(?array $params);
     
     // Parase out command's options and arguments
     public function parse(
@@ -31,7 +31,7 @@ interface CMD
     public function optionAndDesc() : string;
 
     // Intro messages of current command
-    public function cmdAndIntro() : string;
+    public function withIntro(bool $string = false);
 
     // Execute option's actions of current command
     public function withOptions(array $options);
