@@ -116,7 +116,7 @@ if (! fe('core_cmd_class')) {
 }
 if (! fe('is_cmd_option')) {
     function is_cmd_option(string $option) : bool {
-        return preg_match('/^--?\w*$/u', $option);
+        return preg_match('/^(--?[\w\-]*)(\=.*)?$/u', $option);
     }
 }
 if (! fe('cli_excp_output')) {
@@ -172,6 +172,7 @@ if (!fe ('get_cmds_main')) {
     ) {
         $escapeFiles = [
             'Command.php',
+            'CMD.php',
         ];
         if (file_exists($path)) {
             $fsi = new \FilesystemIterator($path);
@@ -236,6 +237,20 @@ if (! fe('get_cmds_text')) {
         }
 
         return $text;
+    }
+}
+if (! fe('get_core_cmds')) {
+    function get_core_cmds(bool $string = false) {
+        $coreCmds = get_cmds(pathOf('_cmd'), nsOf('_cmd'));
+
+        return $string ? get_cmds_text($coreCmds) : $coreCmds;
+    }
+}
+if (! fe('get_user_cmds')) {
+    function get_user_cmds(bool $string = false) {
+        $userCmds = get_cmds(pathOf('cmd'), nsOf('cmd'));
+
+        return $string ? get_cmds_text($userCmds) : $userCmds;
     }
 }
 if (! fe('get_all_cmds')) {

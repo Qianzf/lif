@@ -26,7 +26,7 @@ class Console
     public function render(string $text, string $color) : string
     {
         if (! isset($this->colors[$color])) {
-            excp('Console color not found.');
+            excp('Console color not found: '.$color);
         }
 
         $_color = $this->colors[$color];

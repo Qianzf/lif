@@ -2,16 +2,12 @@
 
 namespace Lif\Cmd;
 
-class Patch extends Command
+class Patch extends CMD
 {
     protected $intro = 'Patch command';
 
-    public function fire(?array $params)
+    public function fire()
     {
-        dd(subsets([
-            'Help',
-            'Test',
-            'Demo',
-        ]));
+        echo __CLASS__;
     }
 }

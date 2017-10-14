@@ -259,6 +259,17 @@ if (! fe('pathOf')) {
        );
     }
 }
+if (! fe('_json_decode')) {
+    function _json_decode(string $json) {
+        $res = is_json($json);
+
+        if (is_integer($res)) {
+            excp(get_json_err_msg($res));
+        }
+
+        return $res;
+    }
+}
 if (! fe('_json_encode')) {
     function _json_encode($arr) {
         return json_encode(
@@ -911,6 +922,7 @@ if (! fe('lang')) {
 }
 if (! fe('xml2arr')) {
     function xml2arr($xml, $loaded = false) {
+        libxml_use_internal_errors(true);
         $xml = $loaded
         ? $xml
         : simplexml_load_string(
@@ -918,6 +930,13 @@ if (! fe('xml2arr')) {
             'SimpleXMLElement',
             LIBXML_NOCDATA
        );
+
+        if (($error = libxml_get_last_error())
+            && isset($error->message)
+        ) {
+            libxml_clear_errors();
+            excp('Wrong XML format: '.$error->message);
+        }
 
         return json_decode(json_encode($xml), true);
     }

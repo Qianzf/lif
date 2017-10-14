@@ -11,10 +11,12 @@ use Lif\Core\Abst\{Container, Factory};
 
 class Cli extends Container implements Strategy
 {
-    protected $argvs  = null;    // Actual arguments of current command
-    protected $_argvs = null;    // Raw arguments of current command
-    protected $cmd    = null;    // Command class of current command
-    protected $_cmd   = null;    // Command namespace of current command
+    protected $argvs    = [];      // Actual arguments of current command
+    protected $_argvs   = [];      // Raw arguments of current command
+    protected $options  = [];      // Options from current command
+    protected $unknowns = [];      // Unknown strings from current command
+    protected $cmd      = null;    // Command class of current command
+    protected $_cmd     = null;    // Command namespace of current command
 
     public function fire() : Cli
     {
@@ -84,15 +86,27 @@ class Cli extends Container implements Strategy
         $_cmd = $this->getDefaultCommand();
 
         if ($this->argvs) {
-            // Find out command and it's action
+            // Find out first argv as command name
             if (! is_cmd_option($this->argvs[0])) {
                 $_cmd = $this->argvs[0];
-                if ($this->resetArgvs()) {
-                    if (! is_cmd_option($this->argvs[0])) {
-                        $this->resetArgvs();
-                    }
-                }
+                $this->resetArgvs();
             }
+
+            // Parse out command options
+            array_walk($this->argvs, function (string $item, int $key) {
+                $arr = explode('=', $item);
+                if (isset($arr[1]) && $arr[1]) {
+                    $item = $arr[0];
+                    $optionVal = $arr[1];
+                } else {
+                    $optionVal = $this->argvs[++$key] ?? null;
+                }
+                if (is_cmd_option($item)) {
+                    $this->options[$item]  = $optionVal;
+                } else {
+                    $this->unknowns[$item] = $optionVal;
+                }
+            });
         }
 
         $this->_cmd = $this->legalCmd($_cmd);
@@ -107,7 +121,7 @@ class Cli extends Container implements Strategy
 
     protected function getDefaultCommand() : string
     {
-        return 'cli';
+        return 'command';
     }
 
     protected function legalCmd(string $cmd) : string
@@ -132,19 +146,22 @@ class Cli extends Container implements Strategy
             excp('Illegal command: '.$this->_cmd);
         } elseif (! method_exists($this->cmd, $handler)) {
             excp('Command handler not exists');
+        } elseif (!method_exists($this->cmd, 'withOptions')
+            || !method_exists($this->cmd, 'setUnknown')
+        ) {
+            excp('Illegal command class: '.$this->_cmd);
         }
+
+        $this->cmd
+        ->withOptions($this->options)
+        ->setUnknown($this->unknowns);
 
         return call_user_func_array([
                 $this->cmd,
                 $handler
             ], [
-                $this->argvs
+                $this->unknowns
             ]
         );
-    }
-
-    public function __destruct()
-    {
-        unset($GLOBALS);
     }
 }

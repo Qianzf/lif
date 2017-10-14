@@ -12,10 +12,19 @@ php lif user.email.notify --debug --query is_new_user=true
 
 ``` shell
 php lif -V
-php lif help
-php lif cmd.list --all
-php lif cmd.list --core
-php lif cmd.list --user
+php lif -vvv
+php lif --list
+php lif --list-all
+php lif --list-core
+php lif --list-user
+php lif --cmds
+php lif --cmds=all
+php lif --cmds=core
+php lif --cmds=user
+php lif -L
+php lif -L=core
+php lif -L=user
+# ...
 ```
 
 ## With parameters
@@ -23,15 +32,15 @@ php lif cmd.list --user
 - JSON
 
 ``` shell
-php lif db.cache.clear --json-file p.json
-php lif db.cache.clear --json {"a":"1"}
+php lif test.cmd --json-file p.json
+php lif test.cmd --json {"a":"1"}
 ```
 
 - XML
 
 ``` shell
 php lif route.cache.clear --xml-file p.xml
-php lif route.cache.clear --xml-file <xml><a>1</a></xml>
+php lif route.cache.clear --xml-file '<xml><a>1</a></xml>'
 ```
 
 - URL query string
@@ -47,7 +56,8 @@ php lif view.cache.clear --query 'a=1&b=2'
 
 - **Command class routing rules**:
 
-> The relationship between command and it's class is very flexible, For example, class of command `test.demo.foo.bar` can be whichever below (with namespace):
+> The relationship between command and it's class is very flexible.
+> For example, class of command `test.demo.foo.bar` can be whichever below (with namespace):
 
 ``` php
 TestDemoFooBar
@@ -62,6 +72,8 @@ Test\Demo\Foo\Bar
 
 > Besides, command will find it's class in core namespace `Lif\Core\Cmd` first, and then user namespace `Lif\Cmd` if not found before.
 
-> That is to say, in most bad situation, `8*2=16` possibilities of command class name will be checked to find command `test.demo.foo.bar`.
+> That is to say, to find command `test.demo.foo.bar`, in the worst situation, `8*2=16` possibilities of command-class-finding progress will be processed.
 
-- If command parameters have shell-unsafe characters, like `&`/`"`/`/`, etc, quote and escape them manually please.
+> It is recommended that using first level class (here is `TestDemoFooBar`) to fast locate command class(one time).
+
+- If command parameters have shell-unsafe special characters, quote and escape them manually please.

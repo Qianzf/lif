@@ -293,9 +293,4 @@ class Web extends Container implements Observer, Strategy
     {
         return $this->routeVars;
     }
-
-    public function __destruct()
-    {
-        $GLOBALS = [];
-    }
 }

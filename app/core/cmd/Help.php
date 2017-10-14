@@ -2,7 +2,12 @@
 
 namespace Lif\Core\Cmd;
 
-class Help extends Cli
+class Help extends Command
 {
-    protected $intro = 'Output CLI LiF help messages';
+    protected $intro = 'Output help messages of CLI LiF';
+
+    public function fire()
+    {
+        return $this->help();
+    }
 }
