@@ -114,7 +114,7 @@ class Cli extends Container implements Strategy
     {
         if (! preg_match('/^[a-z\.]*$/u', $cmd)) {
             excp('Illegal command name: '.$cmd);
-        } elseif (false === ($ns = if_cmd_exists(cmd2class($cmd)))) {
+        } elseif (false === ($ns = if_cmd_exists($cmd))) {
             excp('Command not exists: '.$cmd);
         }
 

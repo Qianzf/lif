@@ -377,6 +377,29 @@ if (! fe('subsets')) {
         return $result; 
     }
 }
+if (! fe('array_partition')) {
+    function array_partition(array $arr, string $by = '\\') : array {
+        $keys   = array_keys($arr);
+        unset($keys[0]);
+        $keys   = array_values($keys);
+        $_keys  = subsets($keys);
+        $_arr[] = implode('', $arr);    // Or: array_unshift($_keys, []);
+
+        foreach ($_keys as $_key) {
+            $tmp = $arr;
+            foreach ($_key as $key) {
+                if (! is_string($arr[$key])) {
+                    excp('Illegal partition array.');
+                }
+                $tmp[$key] = $by.$arr[$key];
+            }
+
+            $_arr[] = implode('', $tmp);
+        }
+
+        return $_arr;
+    }
+}
 if (! fe('array_stringify')) {
     function array_stringify($arr) {
         $level = 1;
@@ -694,6 +717,27 @@ if (! fe('escape_fields')) {
         return '`'.$raw.'`';
     }
 }
+if (! fe('classname_split')) {
+    function classname_split($classname) : array {
+        if (is_object($classname)) {
+            $classname = classname($classname);
+        }
+        if (! is_string($classname)) {
+            excp('Illegal class name.');
+        }
+
+        $arr = [];
+        preg_replace_callback(
+            '/[A-Z][a-z]*/u',
+            function ($matches) use (&$arr) {
+                $arr[] = ucfirst(strtolower($matches[0]));
+            },
+            $classname
+        );
+
+        return $arr;
+    }
+}
 if (! fe('decode_classname')) {
     function decode_classname(
         string $classname,
@@ -701,7 +745,7 @@ if (! fe('decode_classname')) {
         string $replace = 'strtolower'
     ) : string {
         $res = preg_replace_callback(
-            '/([A-Z][a-z]*)/u',
+            '/[A-Z][a-z]*/u',
             function ($matches) use ($implode, $replace) {
                 if (! function_exists($replace)) {
                     excp('Function not defined: '.$replace);
@@ -710,6 +754,11 @@ if (! fe('decode_classname')) {
         }, $classname);
 
         return implode($implode, array_filter(explode($implode, $res)));
+    }
+}
+if (! fe('ns2classname')) {
+    function ns2classname(string $ns) {
+        return str_replace('\\', '', $ns);
     }
 }
 if (! fe('classname')) {
@@ -727,7 +776,7 @@ if (! fe('classns')) {
             return false;
         }
 
-        return get_class($obj);
+        return (new \ReflectionClass(get_class($obj)))->getNamespaceName();
     }
 }
 if (! fe('class_attrs')) {

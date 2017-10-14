@@ -43,6 +43,25 @@ php lif view.cache.clear --query 'a=1&b=2'
 
 ## Notice
 
-- Core command class can not be overide by user command class.
+- Core command class can not be overrode by user command class.
 
-- If query string has shell-unsafe characters, like `&`/`"`/`/`, quote or escape them  please.
+- **Command class routing rules**:
+
+> The relationship between command and it's class is very flexible, For example, class of command `test.demo.foo.bar` can be whichever below (with namespace):
+
+``` php
+TestDemoFooBar
+Test\DemoFooBar
+TestDemo\FooBar
+Test\Demo\FooBar
+TestDemoFoo\Bar
+Test\DemoFoo\Bar
+TestDemo\Foo\Bar
+Test\Demo\Foo\Bar
+```
+
+> Besides, command will find it's class in core namespace `Lif\Core\Cmd` first, and then user namespace `Lif\Cmd` if not found before.
+
+> That is to say, in most bad situation, `8*2=16` possibilities of command class name will be checked to find command `test.demo.foo.bar`.
+
+- If command parameters have shell-unsafe characters, like `&`/`"`/`/`, etc, quote and escape them manually please.

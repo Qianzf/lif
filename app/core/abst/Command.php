@@ -36,7 +36,7 @@ abstract class Command implements CMD
     protected $optionAll = [];    // All command options
     protected $descAll   = [];    // All command option's desc
 
-    public function fire(?array $params)
+    public function fire(? array $params)
     {
     }
 
@@ -145,7 +145,7 @@ abstract class Command implements CMD
     protected function name() : string
     {
         if (! $this->name) {
-            $this->name = class2cmd(classname($this));
+            $this->name = class2cmd($this);
         }
 
         return $this->name;
@@ -167,8 +167,6 @@ abstract class Command implements CMD
 
     public function withIntro(bool $string = false)
     {
-        if_cmd_exists(classname($this));
-
         return $string
         ? segstr(
             color($this->name(), 'LIGHT_BLUE')
