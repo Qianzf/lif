@@ -189,9 +189,9 @@ if (!fe ('get_cmds_main')) {
                     : ($cmds[$cmd['name']] = $cmd['intro']);
                } elseif ($file->isDir()) {
                     $dirname = $file->getBasename();
-                    $path .= $dirname;
-                    $ns   .= ucfirst($dirname).'\\';
-                    get_cmds_main($path, $ns, $string, $str, $cmds);
+                    $_path   = $path.$dirname;
+                    $_ns     = $ns.ucfirst($dirname).'\\';
+                    get_cmds_main($_path, $_ns, $string, $str, $cmds);
                }
             }
             unset($fsi);
@@ -320,5 +320,17 @@ if (! fe('if_cmd_exists')) {
         }
 
         return try_cmd_classes($cmds);
+    }
+}
+if (! fe('interval')) {
+    function interval(\Closure $callback, int $secs) {
+        // check if timer is running
+        $callback();
+    }
+}
+if (! fe('timeout')) {
+    function timeout(\Closure $callback, int $secs) {
+        // check if timer is running
+        $callback();
     }
 }

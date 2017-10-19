@@ -31,11 +31,8 @@ class Middleware extends Container implements Observable
         $this->middlewares = $middlewares;
 
         $mdwrNS = nsOf('mdwr');
-        foreach ($middlewares as $key => $middleware) {
-            if (is_string($key)) {
-                $ns = '';
-            } else {
-                $ns = $mdwrNS;
+        foreach ($middlewares as $middleware) {
+            if (is_string($middleware)) {
                 if (false !== mb_strpos($middleware, '.')) {
                     $nsArr = explode('.', $middleware);
                     array_walk($nsArr, function (&$item, $key) {
@@ -43,12 +40,14 @@ class Middleware extends Container implements Observable
                     });
 
                     $middleware = implode('\\', $nsArr);
+                } else {
+                    $middleware = ucfirst($middleware);
                 }
-            }
 
-            $this->argvs[$middleware][] = (
-                Factory::make($middleware, $ns)
-            )->handle($this->app);
+                $this->argvs[$middleware][] = (
+                    Factory::make($middleware, $mdwrNS)
+                )->handle($this->app);
+            }
         }
 
         return $this;

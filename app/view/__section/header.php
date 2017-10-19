@@ -14,6 +14,6 @@
                 
         </option>
         <option value="profile"><?= lang('USER_PROFILE') ?></option>
-        <option value="logout"><?= lang('USER_LOGOUT') ?></option>
+        <option value="logout"><?= lang('LOGOUT') ?></option>
     </select>
 </header>

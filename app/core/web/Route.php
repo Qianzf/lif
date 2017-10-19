@@ -100,7 +100,7 @@ class Route extends Container implements Observable
         // If current route hasn't prefix/middlewares/namespace/filters
         // We need a stub for current route anyway
 
-        $prefix = $namespace = $filter =  false;
+        $prefix = $namespace = false;
 
         if ($prefix = exists($attrs, 'prefix')) {
             if (! is_string($prefix)) {
@@ -109,6 +109,14 @@ class Route extends Container implements Observable
         }
 
         $prefixes[] = $prefix;
+
+        if ($namespace = exists($attrs, 'namespace')) {
+            if (!is_string($namespace)) {
+                excp('Route namespace type is not string.');
+            }
+        }
+
+        $namespaces[] = $namespace;
 
         if ($middleware = exists($attrs, 'middleware')) {
             $string = is_string($middleware);
@@ -125,28 +133,17 @@ class Route extends Container implements Observable
             $middleware = [];
         }
 
-        if ($middleware) {
-            $middlewares = array_unique(array_merge(
-                $middlewares,
-                $middleware
-            ));
-        }
+        $middlewares[] = $middleware;
 
         if ($filter = exists($attrs, 'filter')) {
             if (! is_array($filter)) {
                 excp('Route filter must be an array.');
             }
 
-            $filters = array_unique(array_merge($filters, $filter));
+            $filters[] = $filter;
+        } else {
+            $filter = [];
         }
-
-        if ($namespace = exists($attrs, 'namespace')) {
-            if (!is_string($namespace)) {
-                excp('Route namespace type is not string.');
-            }
-        }
-
-        $namespaces[] = $namespace;
 
         return $this;
     }
@@ -331,18 +328,18 @@ class Route extends Container implements Observable
 
         $middlewares = [];
         if ($this->middlewares || $this->_middlewares) {
-            $middlewares = array_unique(array_filter(array_merge(
+            $middlewares = array_merge(
                 $this->middlewares,
                 $this->_middlewares
-            )));
+            );
         }
 
         $filters = [];
         if ($this->filters || $this->_filters) {
-            $filters = array_unique(array_filter(array_merge(
+            $filters = array_merge(
                 $this->filters,
                 $this->_filters
-            )));
+            );
         }
         if (is_callable($route['bind'])) {
             $handle = $route['bind'];
@@ -400,6 +397,8 @@ class Route extends Container implements Observable
             );
         }
 
+        // pr($route['middlewares']);
+
         $alias = ($route['alias'] ? $route['alias'] : $name);
         $aliasArr = [
             'route' => $alias,
@@ -410,8 +409,8 @@ class Route extends Container implements Observable
             'handle'      => $route['handle'],
             'params'      => $this->extract($rawName),
             'alias'       => $aliasArr,
-            'middlewares' => $route['middlewares'],
-            'filters'     => $route['filters'],
+            'middlewares' => array_values_oned($route['middlewares']),
+            'filters'     => array_values_oned($route['filters']),
         ];
 
         return $this;

@@ -13,7 +13,7 @@ class ViewCacheClear extends CMD
         $unlink = false;
 
         $msg = $unlink
-        ? 'Route cache has been cleared.'
+        ? 'View cache has been cleared.'
         : 'No view cache, nothing happened.';
 
         $this->success($msg);

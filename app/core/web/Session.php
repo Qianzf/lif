@@ -11,6 +11,11 @@ class Session
     public function __construct()
     {
         if (! session_id()) {
+            if (headers_sent()) {
+                excp(
+                    'Session set failed coz HTTP header has been sent.'
+                );
+            }
             session_start();
         }
     }
@@ -33,7 +38,7 @@ class Session
 
     public function all()
     {
-        return $_SESSION;   
+        return $_SESSION;
     }
 
     public function destory()

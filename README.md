@@ -86,7 +86,7 @@ LiF-styled exception output.
 
 ### Libraries
 
-LiF re-packaged with some common used component's APIs in a more easier to use .
+LiF re-packaged with some common used component's APIs in a more easier way to use .
 
 #### Mail
 

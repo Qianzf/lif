@@ -66,7 +66,14 @@ if (! fe('init')) {
         mb_internal_encoding('UTF-8');
         mb_regex_encoding('UTF-8');
         mb_language('uni');
+        session_init();
+    }
+}
+if (! fe('session_init')) {
+    function session_init() : void {
         ini_set('session.name', 'LIFSESSID');
+        ini_set('session.cookie_lifetime', 3600);
+        ini_set('session.cookie_httponly', true);
     }
 }
 if (! fe('dd')) {
@@ -386,6 +393,33 @@ if (! fe('subsets')) {
         }
 
         return $result; 
+    }
+}
+if (! fe('empty_safe')) {
+    function empty_safe($var) {
+        if (is_numeric($var)) {
+            return false;
+        }
+        
+        return empty($var);
+    }
+}
+if (! fe('array_values_oned')) {
+    // Transform multilayers array un-empty values into one dimension
+    function array_values_oned(array $arr, array &$ret = []) : array {
+        foreach ($arr as $item) {
+            if (! empty_safe($item)) {
+                continue;
+            }
+            
+            if (is_array($item)) {
+                array_values_oned($item, $ret);
+            } elseif (is_scalar($item)) {
+                $ret[] = $item;
+            }
+        }
+
+        return $ret;
     }
 }
 if (! fe('array_partition')) {
@@ -1467,5 +1501,10 @@ if (! fe('camelcase2underline')) {
         }
 
         return implode('', $arr);
+    }
+}
+if (! fe('between')) {
+    function between(int $num, int $start, int $end) : bool {
+        return (($start <= $num) && ($num <= $end));
     }
 }

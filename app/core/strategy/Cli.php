@@ -7,7 +7,7 @@
 namespace Lif\Core\Strategy;
 
 use Lif\Core\Intf\Strategy;
-use Lif\Core\Abst\{Container, Factory};
+use Lif\Core\Abst\{Container, Factory, Command};
 
 class Cli extends Container implements Strategy
 {
@@ -95,9 +95,9 @@ class Cli extends Container implements Strategy
             // Parse out command options
             array_walk($this->argvs, function (string $item, int $key) {
                 $arr = explode('=', $item);
-                if (isset($arr[1]) && $arr[1]) {
+                if (isset($arr[1])) {
                     $item = $arr[0];
-                    $optionVal = $arr[1];
+                    $optionVal = $arr[1] ?: null;
                 } else {
                     $optionVal = $this->argvs[++$key] ?? null;
                 }
@@ -141,7 +141,7 @@ class Cli extends Container implements Strategy
         $this->cmd = Factory::make($this->_cmd);
 
         if (!$this->cmd
-            || !($this->cmd instanceof \Lif\Core\Abst\Command)
+            || !($this->cmd instanceof Command)
         ) {
             excp('Illegal command: '.$this->_cmd);
         } elseif (! method_exists($this->cmd, $handler)) {

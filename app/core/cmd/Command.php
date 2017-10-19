@@ -50,7 +50,7 @@ class Command extends CMD
 
     protected function cache()
     {
-        
+        dd(get_user_cmds());
     }
 
     protected function version()

@@ -4,11 +4,11 @@
 <br>
 
 <form method="POST" action="/dep/user/profile">
-    <label><?= lang('PASSWORD_OLD') ?>:
+    <label><?= lang('OLD_PASSWORD') ?>:
         <input type="password" name="passwordOld"
         placeholder="<?= lang('PROVIDE_OLD_PASSWD') ?>">
     </label> <br>
-    <label><?= lang('PASSWORD_NEW') ?>:
+    <label><?= lang('NEW_PASSWORD') ?>:
         <input type="password" name="passwordNew"
         placeholder="<?= lang('PROVIDE_NEW_PASSWD') ?>">
     </label> <br>

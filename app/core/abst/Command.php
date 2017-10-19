@@ -46,6 +46,7 @@ abstract class Command implements CMD
         'options' => 'Output options message for current command',
         'debug'   => 'Output detials of command execution',
         'verbose' => 'How many detials of command execution will be outputed',
+        'silence' => 'Execute command and no output',
         'json'  => 'Passing command parameters via JSON string or JSON file',
         'xml'   => 'Passing command parameters via XML string or JSON file',
         'query' => 'Passing command parameters via query string or query file',
@@ -283,6 +284,11 @@ abstract class Command implements CMD
 
     public function success(string $msg) : void
     {
-        output(color($msg, 'GREEN'));
+        output(segstr(color($msg, 'GREEN')));
+    }
+
+    public function fails(string $msg) : void
+    {
+        output(segstr(color($msg, 'RED')));
     }
 }
