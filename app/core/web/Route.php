@@ -206,6 +206,21 @@ class Route extends Container implements Observable
         return $this;
     }
 
+    private function resetStack() : void
+    {
+        $this->prefixes     = [];
+        $this->middlewares  = [];
+        $this->namespaces   = [];
+        $this->filters      = [];
+        $this->_prefixes    = [];
+        $this->_middlewares = [];
+        $this->_namespaces  = [];
+        $this->_filters     = [];
+        $this->type         = null;
+        $this->route        = null;
+        $this->groupDepth   = 0;
+    }
+
     // Cancel some middlewares for current single route
     public function cancel(...$middlewares): Route
     {
@@ -253,7 +268,7 @@ class Route extends Container implements Observable
 
             $alias = exists($args[0], 'as');
             $attrs = $args[0];
-            unset($attrs['name'], $attrs['as'], $attrs['bind']);
+            unset($attrs['name'], $attrs['as']);
             $args[0] = $name;
             $this->pushCurrentOne($attrs);
         } elseif (2 === $argCnt) {
@@ -351,9 +366,8 @@ class Route extends Container implements Observable
 
         $route['middlewares'] = $middlewares;
         $route['filters']     = $filters;
-        $route['handle']      = $handle;
+        $route['bind']        = $handle;
         $route['name']        = format_route_key($prefix.'/'.$route['name']);
-        unset($route['bind']);
 
         return $this;
     }
@@ -397,8 +411,6 @@ class Route extends Container implements Observable
             );
         }
 
-        // pr($route['middlewares']);
-
         $alias = ($route['alias'] ? $route['alias'] : $name);
         $aliasArr = [
             'route' => $alias,
@@ -406,7 +418,7 @@ class Route extends Container implements Observable
         ];
         $this->aliases[$alias] = $aliasArr;
         $this->routes[$name][$type] = [
-            'handle'      => $route['handle'],
+            'handle'      => $route['bind'],
             'params'      => $this->extract($rawName),
             'alias'       => $aliasArr,
             'middlewares' => array_values_oned($route['middlewares']),
@@ -469,7 +481,10 @@ class Route extends Container implements Observable
             }
 
             $this->files[] = $path;
+            
             include_once $path;
+
+            $this->resetStack();
         }
 
         $this->updated = true;

@@ -23,5 +23,6 @@ require_once __DIR__.'/../../vendor/autoload.php';
 // -------------------------------------------------------------
 
 ->withRoutes(
-    'api'
+    'api',
+    'ldtdf'
 );

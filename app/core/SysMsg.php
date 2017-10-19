@@ -18,9 +18,9 @@ class SysMsg implements \ArrayAccess
     {
         $path = pathOf('sysmsg');
 
-        if (! file_exists($path.$this->lang)) {
-            $path .= $this->getDefaultLang();
-        }
+        $path .= file_exists($path.$this->lang)
+        ? $this->lang
+        : $this->getDefaultLang();
 
         return $path;
     }
@@ -50,15 +50,17 @@ class SysMsg implements \ArrayAccess
 
     public function offsetGet($offset)
     {
-        return isset($this->text[$offset]) ?? $offset;
+        return $this->text[$offset] ?? null;
     }
 
     public function offsetSet($offset, $value): void
     {
+        $this->text[$offset] = $value;
     }
 
     public function offsetUnset($offset): void
     {
+        unset($this->text[$offset]);
     }
 
     public function msg($lang): self
@@ -70,9 +72,7 @@ class SysMsg implements \ArrayAccess
 
     public function load($lang = null)
     {
-        if (! $lang) {
-            $this->lang = $this->lang ?? $this->getDefaultLang();
-        }
+        $this->lang = $lang ?? ($this->lang ?? $this->getDefaultLang());
 
         return $this->text = load_array($this->path());
     }
@@ -80,16 +80,5 @@ class SysMsg implements \ArrayAccess
     protected function getDefaultLang(): string
     {
         return 'zh';
-    }
-
-    protected function getFilesystemIterator($path = null)
-    {
-        $path = $path ?? $this->path();
-
-        if (! file_exists($path)) {
-            return false;
-        }
-
-        return new \FilesystemIterator($path);
     }
 }

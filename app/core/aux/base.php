@@ -408,7 +408,7 @@ if (! fe('array_values_oned')) {
     // Transform multilayers array un-empty values into one dimension
     function array_values_oned(array $arr, array &$ret = []) : array {
         foreach ($arr as $item) {
-            if (! empty_safe($item)) {
+            if (empty_safe($item)) {
                 continue;
             }
             
@@ -881,16 +881,20 @@ if (! fe('load')) {
     }
 }
 if (! fe('load_array')) {
-    function load_array(string $path) : array {
-        $msg = [];
+    function load_array(string $path, array &$msg = []) : array {
         if (file_exists($path)) {
             $fsi = new \FilesystemIterator($path);
             foreach ($fsi as $file) {
-                if ($file->isFile() && 'php' == $file->getExtension()) {
-                    $_msg = include $file->getPathname();
-                    if ($_msg && is_array($_msg)) {
-                        $msg = array_merge($_msg, $msg);
+                if ($file->isFile()) {
+                    if ('php' == $file->getExtension()) {
+                        $_msg = include_once $file->getPathname();
+                        if ($_msg && is_array($_msg)) {
+                            $msg = array_merge($_msg, $msg);
+                        }
                     }
+                } elseif ($file->isDir()) {
+                    $_path = $path.$file->getBasename();
+                    load_array($_path, $msg);
                 }
             }
             unset($fsi);
