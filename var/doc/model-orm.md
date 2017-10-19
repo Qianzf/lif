@@ -74,8 +74,26 @@ class User extends Mdl
         return $this->hasMany(
             Trending::class,
             'id',
-            'uid'
+            'uid',
+            null,
+            0,
+            20, [
+                'at' => 'desc'
+            ]
         );
+
+        // Or:
+        return $this->hasMany([
+            'model' => Trending::class,
+            'lk'    => 'id',
+            'fk'    => 'uid',
+            // 'lv'    => null,
+            // 'take_from' => 0,
+            // 'take_to'   => 20,
+            'sort' => [
+                'at' => 'desc',
+            ],
+        ]);
     }   
 }
 class Trending extends Mdl
@@ -85,8 +103,17 @@ class Trending extends Mdl
         return $this->belongsTo(
             User::class,
             'uid',
-            'id'
+            'id',
+            null
         );
+
+        // Or:
+        return $this->hasMany([
+            'model' => Trending::class,
+            'lk'    => 'id',
+            'fk'    => 'uid',
+            // 'lv'    => null,
+        ]);
     }
 }
 ```

@@ -24,7 +24,11 @@ db()
     $table->where('id', '<', 3)
     ->orValBid('lif', 2);
 })
-->sort('aid asc', 'bid desc')
+->sort([
+    'aid asc',
+    'bid' => 'desc',
+])
+// ->sort('aid asc', 'bid desc')
 ->group('aid', 'bid')
 ->limit(1)
 ->get();

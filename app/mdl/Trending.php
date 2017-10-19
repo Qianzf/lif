@@ -6,14 +6,33 @@ class Trending extends Mdl
 {
     protected $table = 'trending';
 
-    public function list($uid = null)
+    public function list(int $uid = null)
     {
-        if (! $uid) {
-            return $this->all();
+        if (is_null($uid)) {
+            return $this
+            ->sort([
+                'at' => 'desc',
+            ])
+            ->limit(20)
+            ->get();
+        } elseif (1 > $uid) {
+            excp('ILLEGAL_USER_ID');
         }
 
-        return model(User::class, $uid)
-        ->hasMany(Trending::class, 'id', 'uid');
+        $user = model(User::class, $uid);
+
+        if (! $user->items()) {
+            excp('USER_NOT_FOUND');
+        }
+
+        return $user->hasMany([
+            'model' => Trending::class,
+            'lk'    => 'id',
+            'fk'    => 'uid',
+            'sort' => [
+                'at' => 'desc',
+            ],
+        ]);
     }
 
     public function user()

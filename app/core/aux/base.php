@@ -338,9 +338,6 @@ if (! fe('exception')) {
         // !!! Or infinite loop will occur when app conf file not exists
         if (('production' != app_env()) && app_debug()) {
             $trace         = $exObj->getTrace();
-            $info['File']  = $trace[0]['file'];
-            $info['Line']  = $trace[0]['line'];
-            unset($trace[0]);
             $info['Trace'] = $trace;
         }
 
@@ -640,7 +637,7 @@ if (! fe('db_conns')) {
     }
 }
 if (! fe('build_pdo_dsn')) {
-    // !!! $$conn => must `validate_db_conn` first
+    // !!! $conn => must `validate_db_conn` first
     function build_pdo_dsn($conn) {
         $dsn = $conn['driver'].':';
 

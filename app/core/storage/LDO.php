@@ -235,7 +235,7 @@ class LDO extends \PDO
 
         $table = $alias ? $name.' AS '.$alias : $name;
 
-        $this->table = $table;
+        $this->table = escape_fields($table);
 
         return $this;
     }
@@ -579,7 +579,7 @@ class LDO extends \PDO
         if (!is_string($fields) && !is_array($fields)) {
             return false;
         } elseif (! $fields) {
-            return '*';
+            return '`*`';
         }
 
         $selects    = (array) $fields;
@@ -594,8 +594,8 @@ class LDO extends \PDO
                     }
 
                     $select_str .= is_string($_alias)
-                    ? $_select.' AS '.$_alias
-                    : $_select;
+                    ? escape_fields($_select).' AS '.escape_fields($_alias)
+                    : escape_fields($_select);
 
                     $select_str .= (false === next($select))
                     ? '' : ', ';
@@ -643,13 +643,13 @@ class LDO extends \PDO
     {
         if ($this->table) {
             $this->table .= ' LEFT JOIN '
-            .$table
+            .escape_fields($table)
             .' ON '
-            .$fdLeft
+            .escape_fields($fdLeft)
             .' '
             .$cond
             .' '
-            .$fdRight;
+            .escape_fields($fdRight);
         }
 
         return $this;
@@ -701,15 +701,15 @@ class LDO extends \PDO
                         }
 
                         $sort .= (is_string($_field) && $_field)
-                        ? $_field.' '.$_order
-                        : $_order;
+                        ? escape_fields($_field).' '.$_order
+                        : escape_fields($_order);
 
                         if (false !== next($order)) {
                             $sort .= ', ';
                         }
                     }
                 } elseif (is_string($order)) {
-                    $sort .= $order;
+                    $sort .= escape_fields($order);
                 } else {
                     excp('Illgeal sort order.');
                 }

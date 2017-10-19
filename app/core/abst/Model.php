@@ -245,40 +245,38 @@ abstract class Model
     }
 
     // ---------------------------------------------------------------
-    //     $class => The model class belongs to this model
-    //     $type  => 1: has many; 2: belongs to
-    //     $lk    => Local key, primary key of this table
-    //     $fk    => Foreign key, primary key of join table
-    //     $cond  => Join string between foreign key and local key
-    //     $lv    => Local value mapping to locak key
+    //     $params:
+    //     model => The model class belongs to this model
+    //     type  => 1: has many; 2: belongs to
+    //     lk    => Local key, primary key of this table
+    //     fk    => Foreign key, primary key of join table
+    //     cond  => Join string between foreign key and local key
+    //     lv    => Local value mapping to loca key
     // ---------------------------------------------------------------
-    protected function join(
-        string $model,
-        int $type,
-        string $lk = null,
-        string $fk = null,
-        string $cond = '=',
-        $lv = null
-    ) {
-        $model   = model($model);
-        $selects = $model->table.'.*';
-        $lk = ($lk ?? 'id');
-        $fk = ($fk ?? 'id');
-        $fetch = (1 === $type) ? 'get' : 'first';
-        $where = $this->table.'.'.$lk;
-
-        if ($lv) {
-            if (is_array($lv)) {
-                $value = '('.implode(',', $lv).')';
-            } else {
-                $value = (string) $lv;
-            }
+    protected function join(array $params) {
+        $lk = $params['lk'] ?? 'id';
+        if (isset($params['lv'])) {
+            $value = is_array($params['lv'])
+            ? '('.implode(',', $params['lv']).')'
+            : ((string) ($params['lv']));
         } else {
             // Use local key mapped value of current model
-            $value = $this->fields[$lk] ?? null;
+            if (! isset($this->fields[$lk])) {
+                excp('Non-exists model can not has any relationship.');
+            }
+
+            $value = $this->fields[$lk];
         }
 
-        return $model
+        $model   = model($params['model']);
+        $fk      = $params['fk'] ?? 'id';
+        $cond    = $params['cond'] ?? '=';
+        $selects = $model->table.'.*';
+        $where   = $this->table.'.'.$lk;
+        $oneonly = isset($params['type']) && (1 === $params['type']);
+        $fetch   = $oneonly ? 'get' : 'first';
+
+        $model = $model
         ->select($selects)
         ->leftJoin(
             $this->table,
@@ -286,9 +284,30 @@ abstract class Model
             $cond,
             $where
         )
-        ->where($where, $value)
-        // ->_sql();
-        ->$fetch();
+        ->where($where, $value);
+
+        if (isset($params['sort'])
+            && is_array($params['sort'])
+            && $params['sort']
+        ) {
+            $model = call_user_func_array([$model, 'sort'], [$params['sort']]);
+        }
+
+        if (! $oneonly) {
+            $takeFrom = (isset($params['take_from'])
+                && is_integer($params['take_from'])
+                && ($params['take_from'] >= 0)
+            ) ? $params['take_from'] : 0;
+
+            $takeTo = (isset($params['take_to'])
+                && is_integer($params['take_to'])
+                && ($params['take_to'] >= 0)
+            ) ? $params['take_to'] : 20;
+
+            $model = $model->limit($takeFrom, $takeTo);
+        }
+        
+        return call_user_func_array([$model, $fetch], []);
     }
 
     // Get all associated models with current model
@@ -307,39 +326,70 @@ abstract class Model
 
     // Get all related models of current model
     // One-to-Many
-    public function hasMany(
-        string $model,
-        string $lk = null,
-        string $fk = null,
-        string $cond = '=',
-        $lv = null
-    ) {
-        return $this->join(
-            $model,
-            1,
-            $lk,
-            $fk,
-            $cond,
-            $lv
-        );
+    public function hasMany(...$params) {
+        if (isset($params[0])) {
+            if (is_array($params[0])) {
+                $params[0]['type'] = 1;
+
+                return $this->join($params[0]);
+            } elseif (is_string($params[0])) {
+                // !!! Parameter index order will affect result here
+                // 2 => Local key
+                $idxMap = [
+                    0 => 'model',    // Model class namespace
+                    1 => 'lk',       // Foreign key
+                    2 => 'fk',       // Local key
+                    3 => 'lv',       // Local value mapping to local key
+                    4 => 'take_from',    // Limit start
+                    5 => 'take_to',      // Limit offset
+                    6 => 'sort'          // Sort rules => array
+                ];
+                $_params['type'] = 1;
+                foreach ($params as $key => $value) {
+                    if (! isset($idxMap[$key])) {
+                        excp('Illegal has-many parameters.');
+                    }
+
+                    $_params[$idxMap[$key]] = $value;
+                }
+
+                return $this->join($_params);
+            }
+        }
+
+        excp('Illegal has-many params.');
     }
 
     // Get one specific model current model belongs to only
     // One-to-One
-    public function belongsTo(
-        string $model,
-        string $lk = null,
-        string $fk = null,
-        string $cond = '=',
-        $lv = null
-    ) {
-        return $this->join(
-            $model,
-            2,
-            $lk,
-            $fk,
-            $cond,
-            $lv
-        );
+    public function belongsTo(...$params) {
+        if (isset($params[0])) {
+            if (is_array($params[0])) {
+                $params[0]['type'] = 2;
+
+                return $this->join($params[0]);
+            } elseif (is_string($params[0])) {
+                // !!! Parameter index order will affect result here
+                // 2 => Local key
+                $idxMap = [
+                    0 => 'model',    // Model class namespace
+                    1 => 'lk',       // Foreign key
+                    2 => 'fk',       // Local key
+                    3 => 'lv',       // Local value mapping to local key
+                ];
+                $_params['type'] = 2;
+                foreach ($params as $key => $value) {
+                    if (! isset($idxMap[$key])) {
+                        excp('Illegal belongs-to parameters.');
+                    }
+
+                    $_params[$idxMap[$key]] = $value;
+                }
+
+                return $this->join($_params);
+            }
+        }
+
+        excp('Illegal belongs-to params.');
     }
 }

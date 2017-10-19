@@ -11,7 +11,7 @@ class User extends Ctl
         $data = ($admin = ('ADMIN' === share('__USER.role')))
         ? $trending->list()
         : $user->find(share('__USER.id'))->trendings();
-    
+
         view('ldtdf/user/trending')
         ->withAdminTrending($admin, $data);
     }
