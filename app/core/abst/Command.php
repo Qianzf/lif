@@ -178,8 +178,8 @@ abstract class Command implements CMD
             // If same option both in gloab and current
             // Then use current instead
             $this->optionAll = array_merge(
-                $this->option,
-                $this->_option
+                $this->_option,
+                $this->option
             );
         }
 

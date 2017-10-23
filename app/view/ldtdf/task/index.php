@@ -9,7 +9,7 @@
 
     <tr>
         <th><?= lang('ID') ?></th>
-        <th><?= lang('TITLE') ?></th>
+        <th><?= lang('URL') ?></th>
         <th><?= lang('OPERATIONS') ?></th>
     </tr>
 
@@ -17,7 +17,7 @@
     <?php foreach ($tasks as $task) { ?>
     <tr>
         <td><?= $task->id ?></td>
-        <td><?= $task->title ?></td>
+        <td><?= $task->url ?></td>
         <td>
             <a href="tasks/<?= $task->id ?>"><?= lang('DETAILS') ?></a>
         </td>

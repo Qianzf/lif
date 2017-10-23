@@ -8,12 +8,30 @@ class User extends Ctl
 {
     public function trending(UserModel $user, Trending $trending)
     {
-        $data = ($admin = ('ADMIN' === share('__USER.role')))
-        ? $trending->list()
+        $pageScale = 20;
+        $querys    = $this->request->all();
+        $pages     = ceil($trending->count() / $pageScale);
+
+        $errs = legal_or($querys, [
+            'page' => ['int|min:1|max:'.$pages, 1],
+        ]);
+
+        if (isset($errs['page']) && true !== $errs['page']) {
+            share_error_i18n($errs['page']);
+
+            return redirect($this->route);
+        }
+
+        $takeFrom  = ($querys['page'] - 1) * $pageScale;
+        $data      = ($admin = ('ADMIN' === share('__USER.role')))
+        ? $trending->list([
+            'take_from' => $takeFrom,
+            'take_cnt'  => $pageScale,
+        ])
         : $user->find(share('__USER.id'))->trendings();
 
         view('ldtdf/user/trending')
-        ->withAdminTrending($admin, $data);
+        ->withAdminTrendingPages($admin, $data, $pages);
     }
 
     public function profile($uid)

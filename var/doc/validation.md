@@ -72,13 +72,32 @@ The mainly difference between `validate()` and `legal_or()` is that `legal_or()`
 For example:
 
 ``` php
-legal_or($request, [
+$errs = legal_or($request, [
     'search' => ['string', ''],
     'role'   => ['in:ADMIN,DEVELOPER,TESTER', false],
     'page'   => ['int|min:1', 1],
 ]);
+
+dd($errs);
 ```
 
 In this case, if `$request['page']` is not an integer over 1, then `$request['page']` will be transformed into exactly integer `1`.
 
 It's useful in some scenarios like dynamic search query strings.
+
+Besides, `$errs` stores the validation results, it's an array with same keys of validating data (here's `$request`), and it's values are validation results for each item, which are compatible with `validate()`.
+
+For example, in this case, return value of `legal_or` will be like this:
+
+``` php
+// $errs
+
+Array
+(
+    search => true,
+    role   => true,
+    page   => ILLEGAL_PAGE,
+)
+```
+
+`$errs` is useful when you need to give some specific notice infos to client.

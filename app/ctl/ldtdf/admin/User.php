@@ -40,6 +40,8 @@ class User extends Ctl
         ->get();
         $pages = ceil(($user->count() / $offset));
 
+        dd($pages);
+
         view('ldtdf/admin/users')
         ->withUsers($users)
         ->withKeyword($keyword)

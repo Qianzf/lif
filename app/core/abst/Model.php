@@ -294,17 +294,15 @@ abstract class Model
         }
 
         if (! $oneonly) {
-            $takeFrom = (isset($params['take_from'])
-                && is_integer($params['take_from'])
-                && ($params['take_from'] >= 0)
-            ) ? $params['take_from'] : 0;
+            legal_or($params, [
+                'take_from' => ['int|min:1', 0],
+                'take_cnt'  => ['int|min:1', 20],
+            ]);
 
-            $takeTo = (isset($params['take_to'])
-                && is_integer($params['take_to'])
-                && ($params['take_to'] >= 0)
-            ) ? $params['take_to'] : 20;
-
-            $model = $model->limit($takeFrom, $takeTo);
+            $model = $model->limit(
+                $params['take_from'],
+                $params['take_cnt']
+            );
         }
         
         return call_user_func_array([$model, $fetch], []);
@@ -341,7 +339,7 @@ abstract class Model
                     2 => 'fk',       // Local key
                     3 => 'lv',       // Local value mapping to local key
                     4 => 'take_from',    // Limit start
-                    5 => 'take_to',      // Limit offset
+                    5 => 'take_cnt',     // Limit offset
                     6 => 'sort'          // Sort rules => array
                 ];
                 $_params['type'] = 1;

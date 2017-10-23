@@ -96,10 +96,9 @@ class Cli extends Container implements Strategy
             array_walk($this->argvs, function (string $item, int $key) {
                 $arr = explode('=', $item);
                 if (isset($arr[1])) {
-                    $item = $arr[0];
-                    $optionVal = $arr[1] ?: null;
+                    list($item, $optionVal) = $arr;
                 } else {
-                    $optionVal = $this->argvs[++$key] ?? null;
+                    $optionVal = $this->argvs[$key+1] ?? null;
                 }
                 if (is_cmd_option($item)) {
                     $this->options[$item]  = $optionVal;
@@ -144,9 +143,11 @@ class Cli extends Container implements Strategy
             || !($this->cmd instanceof Command)
         ) {
             excp('Illegal command: '.$this->_cmd);
-        } elseif (! method_exists($this->cmd, $handler)) {
+        }
+        if (! method_exists($this->cmd, $handler)) {
             excp('Command handler not exists');
-        } elseif (!method_exists($this->cmd, 'withOptions')
+        }
+        if (!method_exists($this->cmd, 'withOptions')
             || !method_exists($this->cmd, 'setUnknown')
         ) {
             excp('Illegal command class: '.$this->_cmd);

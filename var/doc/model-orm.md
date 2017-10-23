@@ -89,7 +89,7 @@ class User extends Mdl
             'fk'    => 'uid',
             // 'lv'    => null,
             // 'take_from' => 0,
-            // 'take_to'   => 20,
+            // 'take_cnt'  => 20,
             'sort' => [
                 'at' => 'desc',
             ],

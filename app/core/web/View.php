@@ -169,20 +169,21 @@ class View
                 }, $rest);
 
                 $vars   = array_values(array_filter(explode('.', $rest)));
-
                 $varCnt = count($vars);
                 $argCnt = count($args);
-                
+
                 if ($argCnt > $varCnt) {
                     excp(
                         'Arguments count can not greater than variable count.'
                     );
                 }
 
-                $lastArg = $args[--$argCnt];
+                $lastArg = $args[$argCnt-1];
                 $data = [];
                 foreach ($vars as $idx => $var) {
-                    $data[$var] = $args[$idx] ?? $lastArg;
+                    $data[$var] = ($argCnt < $varCnt)
+                    ? ($args[$idx] ?? $lastArg)
+                    : $args[$idx];
                 }
 
                 $this->data($data);

@@ -6,17 +6,24 @@ class Trending extends Mdl
 {
     protected $table = 'trending';
 
-    public function list(int $uid = null)
+    public function list(array $params)
     {
-        if (is_null($uid)) {
+        legal_or($params, [
+            'user_id'   => ['int|min:1', null],
+            'take_from' => ['int|min:0', 0],
+            'take_cnt'  => ['int|min:0', 20],
+        ]);
+
+        if (is_null($params['user_id'])) {
             return $this
             ->sort([
                 'at' => 'desc',
             ])
-            ->limit(20)
+            ->limit(
+                $params['take_from'],
+                $params['take_cnt']
+            )
             ->get();
-        } elseif (1 > $uid) {
-            excp('ILLEGAL_USER_ID');
         }
 
         $user = model(User::class, $uid);
@@ -29,7 +36,9 @@ class Trending extends Mdl
             'model' => Trending::class,
             'lk'    => 'id',
             'fk'    => 'uid',
-            'sort' => [
+            'take_from' => $taskFrom,
+            'take_cnt'   => $takeTo,
+            'sort'  => [
                 'at' => 'desc',
             ],
         ]);

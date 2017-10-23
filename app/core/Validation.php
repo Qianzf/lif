@@ -7,6 +7,9 @@ class Validation
     public function run(array $data, array $rules)
     {
         foreach ($rules as $key => $rule) {
+            if (! is_string($rule)) {
+                excp('Single validation rule must be a string.');
+            }
             $_rules = explode('|', $rule);
 
             foreach ($_rules as $_rule) {
