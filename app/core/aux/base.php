@@ -1573,3 +1573,17 @@ if (! fe('between')) {
         return (($start <= $num) && ($num <= $end));
     }
 }
+if (! fe('queue_default_defs_get')) {
+    function queue_default_defs_get() {
+        return [
+            'id',
+            'queue',
+            'detail',
+            'tried',
+            'create_at',
+            'finish_at',
+            'restart',
+            'retry',
+        ];
+    }
+}
