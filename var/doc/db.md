@@ -20,6 +20,10 @@ db()
 ->where('id', '>', 4)
 ->whereVal('like', '1%')
 ->whereAidBid(1, 2)
+->or([
+    'aid' => 11,
+    'bid' => 22,
+])
 ->or(function ($table) {
     $table->where('id', '<', 3)
     ->orValBid('lif', 2);
@@ -28,7 +32,7 @@ db()
     'aid asc',
     'bid' => 'desc',
 ])
-// ->sort('aid asc', 'bid desc')
+->sort('aid asc', 'bid desc')
 ->group('aid', 'bid')
 ->limit(1)
 ->get();

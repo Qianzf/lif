@@ -29,6 +29,8 @@ return [
     'PASSWD' => 'Password',
     'NEW' => 'New',
     'OLD' => 'Old',
+    'OR' => 'Or',
+    'CONFLICT' => 'Conflict',
     'PROVIDE' => 'Please input',
     'EMAIL' => 'Email',
     'ADMIN' => 'Admin',
@@ -72,4 +74,5 @@ return [
     'NUMBER' => 'Number',
     'PROVIDE_KEYWORDS' => 'Provide search keywords',
     'TRENDING' => 'Trending',
+    'USER_EMAIL_OR_ACCOUNT_CONFLICT' => 'Account or email already be used',
 ];

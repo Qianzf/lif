@@ -36,16 +36,15 @@ class User extends Ctl
 
     public function profile($uid)
     {
-        view('ldtdf/user/profile')->withUidEmail(
+        view('ldtdf/user/profile')->withUidEmailName(
             share('__USER.id'),
-            share('__USER.email')
+            share('__USER.email'),
+            share('__USER.name')
         );
     }
 
     public function update(UserModel $user)
     {
-        $request = $this->request->params;
-
         $user = $user->whereId(share('__USER.id'))->first();
 
         if (! $user) {
@@ -54,28 +53,42 @@ class User extends Ctl
             return redirect('/dep/user/login');
         }
 
+        $request    = $this->request->params;
+        $oldData    = $user->items();
         $needUpdate = false;
+        $conflict   = [];
 
-        // If pass password then update it
-        // If pass email and new email not equal to old email then update it
-        if ($request->passwordNew) {
-            if (! $request->passwordOld) {
-                return sysmsg('PROVIDE_OLD_PASSWD');
-            }
-            if (! password_verify($request->passwordOld, $user->passwd)) {
-                return sysmsg('ILLEGAL_OLD_PASSWD');
-            }
-            if (! password_verify($request->passwordNew, $user->passwd)) {
+        foreach ($request as $key => $value) {
+            if (isset($oldData[$key]) && ($user->$key != $value)) {
+                if ('passwordNew' == $key) {
+                    if (! $request->passwordOld) {
+                        return sysmsg('PROVIDE_OLD_PASSWD');
+                    }
+                    if (! password_verify($request->passwordOld, $user->passwd)) {
+                        return sysmsg('ILLEGAL_OLD_PASSWD');
+                    }
+                    if (! password_verify($request->passwordNew, $user->passwd)) {
+                        $needUpdate = true;
+                        $user->passwd = password_hash(
+                            $request->passwordNew,
+                            PASSWORD_DEFAULT
+                        );
+                    }
+                    continue;
+                }
+                if (in_array($key, ['account', 'email'])) {
+                    // check the unicity of user's unique attribution
+                    $conflict[] = [$key => $value];
+                }
+
                 $needUpdate = true;
-                $user->passwd = password_hash(
-                    $request->passwordNew,
-                    PASSWORD_DEFAULT
-                );
+                $user->$key = $value;
             }
         }
-        if ($request->email && ($user->email != $request->email)) {
-            $needUpdate = true;
-            $user->email = $request->email;
+
+        if ($conflict && $user->hasConflict($conflict)) {
+            share_error_i18n('USER_EMAIL_OR_ACCOUNT_CONFLICT');
+            return redirect($this->route);
         }
 
         $err = 'UPDATED_NOTHING';
@@ -85,7 +98,7 @@ class User extends Ctl
                 unset($user->passwd);
                 share('__USER', $user->items());
 
-                $err = 'UPDATED_OK';
+                $err = 'UPDATE_OK';
 
                 if ($request->passwordNew) {
                     session()->delete('__USER');

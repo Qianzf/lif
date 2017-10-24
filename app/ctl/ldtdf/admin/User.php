@@ -40,8 +40,6 @@ class User extends Ctl
         ->get();
         $pages = ceil(($user->count() / $offset));
 
-        dd($pages);
-
         view('ldtdf/admin/users')
         ->withUsers($users)
         ->withKeyword($keyword)
@@ -93,11 +91,11 @@ class User extends Ctl
     public function update(UserModel $user)
     {
         $needUpdate = false;
-
-        $oldData = $user->items();
+        $conflict   = [];
+        $oldData    = $user->items();
 
         foreach ($this->request->all() as $key => $value) {
-            if (isset($oldData[$key]) && $oldData[$key] != $value) {
+            if (isset($oldData[$key]) && ($oldData[$key] != $value)) {
                 if ('passwd' == $key) {
                     if ($value) {
                         $needUpdate = true;
@@ -106,11 +104,21 @@ class User extends Ctl
                             PASSWORD_DEFAULT
                         );
                     }
-                } else {
-                    $needUpdate = true;
-                    $user->$key = $value;
+                    continue;
                 }
+                if (in_array($key, ['account', 'email'])) {
+                    // check the unicity of user's unique attribution
+                    $conflict[] = [$key => $value];
+                }
+
+                $needUpdate = true;
+                $user->$key = $value;
             }
+        }
+
+        if ($conflict && $user->hasConflict($conflict)) {
+            share_error_i18n('USER_EMAIL_OR_ACCOUNT_CONFLICT');
+            return redirect($this->route);
         }
 
         $sysmsg = 'UPDATED_NOTHING';
@@ -129,7 +137,7 @@ class User extends Ctl
 
         share_error_i18n($sysmsg);
 
-        redirect(route('dep.admin.users'));
+        return redirect(route('dep.admin.users'));
     }
 
     public function delete(UserModel $user)

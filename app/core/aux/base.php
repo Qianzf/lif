@@ -150,7 +150,7 @@ if (! fe('context')) {
     }
 }
 if (! fe('legal_or')) {
-    function legal_or(&$data, array $rulesWithDefaults) {
+    function legal_or(&$data, array $rulesWithDefaults) : array {
         if (!is_array($data) && !is_object($data)) {
             excp('Validate source must be an arra or object.');
         }
@@ -161,8 +161,19 @@ if (! fe('legal_or')) {
             });
         } else {
             $validator = new \Lif\Core\Validation;
-            foreach ($rulesWithDefaults as $key => list($rules, $default)) {
+            foreach ($rulesWithDefaults as $key => $_rulesWithDefaults) {
+                $rules = $_rulesWithDefaults[0] ?? (
+                    $_rulesWithDefaults['rules'] ?? null
+                );
+                $default = $_rulesWithDefaults[1] ?? (
+                    $_rulesWithDefaults['default'] ?? null
+                );
+                if (! $rules) {
+                    excp('Missing validation rules.');
+                }
+
                 if (!isset($data[$key]) || is_null($data[$key])) {
+                    $err[$key]  = 'MISSING_'.strtoupper($key);
                     $data[$key] = $default;
                 } else {
                     if (! is_array($rules)) {
@@ -177,6 +188,52 @@ if (! fe('legal_or')) {
         }
 
         return $err;
+    }
+}
+if (! fe('legal_and')) {
+    function legal_and($data, array $rulesWithVars) {
+        if (!is_array($data) && !is_object($data)) {
+            excp('Validate source must be an arra or object.');
+        }
+
+        if ($rulesWithVars) {
+            $validator = new \Lif\Core\Validation;
+            foreach ($rulesWithVars as $key => $_rulesWithVars) {
+                $rules = is_string($_rulesWithVars)
+                ? $_rulesWithVars
+                : $_rulesWithVars[0] ?? (
+                    $_rulesWithVars['rules'] ?? null
+                );
+
+                if (! $rules) {
+                    excp('Missing validation rules.');
+                }
+
+                if (!isset($data[$key]) || is_null($data[$key])) {
+                    return 'MISSING_'.strtoupper($key);
+                } else {
+                    if (! is_array($rules)) {
+                        $rules = [$key => $rules];
+                    }
+
+                    if (true !== ($err = $validator->run($data, $rules))) {
+                        return $err;
+                    }
+
+                    if (isset($_rulesWithVars[1])
+                        || is_null($_rulesWithVars[1])
+                    ) {
+                        $_rulesWithVars[1] = $data[$key];
+                    } elseif (isset($_rulesWithVars['var'])
+                        || is_null($_rulesWithVars['var'])
+                    ) {
+                        $_rulesWithVars['var'] = $data[$key];
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 }
 if (! fe('exists')) {
@@ -231,6 +288,7 @@ if (! fe('nsOf')) {
                 '_cmd' => '\Lif\Core\Cmd\\',
                 'cmd'  => '\Lif\Cmd\\',
                 'lib'  => '\Lif\Core\Lib\\',
+                'queue'    => '\Lif\Core\queue\\',
                 'storage'  => '\Lif\Core\storage\\',
                 'strategy' => '\Lif\Core\strategy\\',
            ];

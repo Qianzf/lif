@@ -63,6 +63,7 @@ if (true !== $prepare && ('web' == context())) {
 
 dd($prepare);
 ```
+
 - `legal_or()`
 
 `legal_or()` can also be used to validate an given array data with given rules.
@@ -101,3 +102,30 @@ Array
 ```
 
 `$errs` is useful when you need to give some specific notice infos to client.
+
+- `legal_and`
+
+Basically, `legal_and()` do the same things that `validate()` can do, but one more thing than `validate()` is, `legal_and()` auto assigning validated legal value into given vars.
+
+For examples:
+
+``` php
+$name   = $table = null;
+$config = [
+    'name'  => 'sqlite'
+    'table' => 'lif',
+];
+
+if (true !== ($err = legal_and($config, [
+    'name'  => 'need|string',
+    'table' => ['need|string', &$table],
+]))) {
+    excp('Illegal config: '.$err);
+}
+
+dd($name, $table);    // Output: null, lif
+```
+
+In this case, `$config` is validate, so the value of `$table` turns into string `lif` after validation, but `$name` was not give into rules array, so `$name` still is `null`.
+
+**Well, of course, `&` is necessary before the value to be auto asisigned. Or they will not be asisigned with validated values.**

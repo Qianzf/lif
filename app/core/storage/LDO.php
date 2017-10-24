@@ -244,10 +244,25 @@ class LDO extends \PDO
     protected function whereConditionals(array $conds)
     {
         switch (count($conds)) {
+            // Assoc array
+            // Field name is array key, field value is array value
+            // Use default operator `=`
+            case 1: {
+                $keys    = array_keys($conds);
+                $values  = array_values($conds);
+                if (!isset($keys[0]) || !($condCol = $keys[0])) {
+                    excp('Illgeal where field name.');
+                }
+                if (! isset($values[0])) {
+                    excp('Missing where field value.');
+                }
+                $condVal = $values[0];
+                $condOp  = '=';
+            } break;
             // Only one condition, and use default specific operator `=`
             case 2: {
                 if (!($condCol = $conds[0]) || !is_string($condCol)) {
-                    excp('Expecting first field of condition a string.');
+                    excp('Expecting first field of condition a string(2).');
                 }
                 if (isset($conds[1])) {
                     if (!is_string($conds[1])
@@ -272,7 +287,7 @@ class LDO extends \PDO
             // Only one condition, and provide specific operator
             case 3: {
                 if (!($condCol = $conds[0]) || !is_string($condCol)) {
-                    excp('Expecting first field of condition a string.');
+                    excp('Expecting first field of condition a string(3).');
                 }
                 if (!($condOp = $conds[1]) || !is_string($condOp)
                 ) {
@@ -297,15 +312,17 @@ class LDO extends \PDO
             } break;
         }
 
-        if (is_array($condVal)) {
+        if (is_scalar($condVal)) {
+            $condOpWithVal      = ' '.$condOp.' ?';
+            $this->bindValues[] = $condVal;
+        } elseif (is_array($condVal)) {
             $condOpWithVal      = ' in (?)';
             $this->bindValues[] = implode(',', $condVal);
         } else {
-            $condOpWithVal      = ' '.$condOp.' ?';
-            $this->bindValues[] = $condVal;
+            excp('Illgeal where field value.');
         }
 
-        return '('.escape_fields($condCol).$condOpWithVal.')';
+        return '('.$condCol.$condOpWithVal.')';
     }
 
     public function or(...$conds): LDO
@@ -328,6 +345,19 @@ class LDO extends \PDO
         $this->bindValues = [];
     }
 
+    public function where(...$conds): LDO
+    {
+        $where = $this->__where($conds);
+
+        if ($where) {
+            $this->where = $this->where
+            ? $this->where.' AND ('.$where.')'
+            : $where;
+        }
+
+        return $this;
+    }
+
     protected function __where(array $conds): string
     {
         $where = '';
@@ -336,7 +366,7 @@ class LDO extends \PDO
                 // Conditions formatted with array
                 case 1: {
                     if (!$conds[0]
-                        || (! is_string($conds[0])
+                        || (! is_scalar($conds[0])
                             && !is_array($conds[0])
                             && !($conds[0] instanceof \Closure)
                         )
@@ -344,10 +374,11 @@ class LDO extends \PDO
                         excp('Illgeal conditions, expect an un-empty array or closure.');
                     }
 
-                    if (is_string($conds[0])) {
+                    if (is_scalar($conds[0])) {
                         $where = $conds[0];
                     } elseif (is_array($conds[0])) {
-                        if (! is_array($conds[0][array_keys($conds[0])[0]])) {
+                        $_conds = $conds[0][array_keys($conds[0])[0]];
+                        if (! is_array($_conds)) {
                             $where = $this->whereConditionals($conds[0]);
                         } else {
                             foreach ($conds[0] as $key => $cond) {
@@ -383,19 +414,6 @@ class LDO extends \PDO
         }
 
         return $where ? '('.$where.')' : '';
-    }
-
-    public function where(...$conds): LDO
-    {
-        $where = $this->__where($conds);
-
-        if ($where) {
-            $this->where = $this->where
-            ? $this->where.' AND ('.$where.')'
-            : $where;
-        }
-
-        return $this;
     }
 
     public function lastSql(): string
@@ -779,8 +797,13 @@ class LDO extends \PDO
                     4 => $this->_lastSql(),
                 ];
                 return $sqlArr[$sql] ?? $sqlArr[1];
-            } elseif ($exec) {
-                $this->statement = $this->prepare($this->sql());
+            }
+            if ($exec) {
+                $this->statement = $this->prepare(
+                    $this->sql(), [
+                        // self::ATTR_CURSOR => self::CURSOR_SCROLL
+                    ]
+                );
                 foreach ($this->bindValues as $idx => $value) {
                     $type = is_bool($value)
                     ? self::PARAM_BOOL : (
@@ -793,7 +816,6 @@ class LDO extends \PDO
                     
                     $this->statement->bindValue(++$idx, $value, $type);
                 }
-
                 $this->statement->execute();
 
                 if ('00000' !== ($this->status = $this->statement->errorCode())) {

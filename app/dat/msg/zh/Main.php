@@ -29,6 +29,8 @@ return [
     'PASSWD' => '密码',
     'NEW' => '新',
     'OLD' => '原',
+    'OR' => '或者',
+    'CONFLICT' => '冲突',
     'PROVIDE' => '请输入',
     'EMAIL' => '邮箱',
     'ADMIN' => '管理员',
@@ -72,4 +74,5 @@ return [
     'NUMBER' => '数',
     'PROVIDE_KEYWORDS' => '请提供搜索关键词',
     'TRENDING' => '历史动态',
+    'USER_EMAIL_OR_ACCOUNT_CONFLICT' => '账号或邮箱已被占用',
 ];

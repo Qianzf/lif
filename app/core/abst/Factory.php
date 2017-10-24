@@ -6,8 +6,11 @@ abstract class Factory
 {
     protected static $namespace = '';
 
-    public static function make($name, $namespace = '')
-    {
+    public static function make(
+        string $name,
+        string $namespace = '',
+        array $data = []
+    ) {
         if (!$name && !$namespace) {
             excp('Missing class name.');
         }
@@ -23,7 +26,7 @@ abstract class Factory
             excp('Class `'.$class.'` not exists.');
         }
 
-        return new $class;
+        return new $class($data);
     }
 
     public static function fetch($class, $method, $args = '')

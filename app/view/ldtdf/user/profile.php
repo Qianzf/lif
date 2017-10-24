@@ -4,6 +4,16 @@
 <br>
 
 <form method="POST" action="/dep/user/profile">
+    <label><?= lang('NAME') ?>:
+        <input type="text" name="name" value="<?= $name ?>" required>
+    </label> <br>
+
+    <label><?= lang('EMAIL') ?>:
+        <input type="email" name="email" value="<?= $email ?>" required>
+    </label> <br>
+
+    <br>
+
     <label><?= lang('OLD_PASSWORD') ?>:
         <input type="password" name="passwordOld"
         placeholder="<?= lang('PROVIDE_OLD_PASSWD') ?>">
@@ -11,12 +21,6 @@
     <label><?= lang('NEW_PASSWORD') ?>:
         <input type="password" name="passwordNew"
         placeholder="<?= lang('PROVIDE_NEW_PASSWD') ?>">
-    </label> <br>
-
-    <br>
-
-    <label><?= lang('EMAIL') ?>:
-        <input type="email" name="email" value="<?= $email ?>" required>
     </label> <br>
 
     <br>

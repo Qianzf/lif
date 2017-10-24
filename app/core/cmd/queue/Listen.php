@@ -20,15 +20,15 @@ class Listen extends Command
         'setName' => 'Specific queue name to listen',
     ];
 
-    private $daemon    = false;
+    private $daemon    = true;
     private $queueName = false;
 
     public function fire()
     {
         if ($this->daemon) {
             while (true) {
-                echo 1, PHP_EOL;
-                sleep(3);
+                echo date('Y-m-d H:i:s'), "\t";
+                sleep(5);
             }
         }
     }
