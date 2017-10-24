@@ -1,11 +1,15 @@
 <?php
 
+// -------------------------------------
+//     Queue related init operations
+// -------------------------------------
+
 namespace Lif\Core\Traits;
 
 use Lif\Core\Abst\Factory;
 use Lif\Core\Intf\Queue as QueueMedium;
 
-trait QueueConfig
+trait Queue
 {
     protected $config = [];
 

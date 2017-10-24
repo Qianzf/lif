@@ -1,5 +1,9 @@
 <?php
 
+// -----------------------------------
+//     LiF queue public interfaces
+// -----------------------------------
+
 namespace Lif\Core\Intf;
 
 use \Lif\Core\Intf\Job;
