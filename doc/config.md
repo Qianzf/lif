@@ -1,7 +1,26 @@
+## Explanation
+
+See all details in _doc/con-all-sample.md_.
+
+## Custom configuration files
+
+Syntax: `conf($filename)`.
+
+For example: `conf('custom')` means read configurations from _app/conf/custom.php_.
+
+## Read configurations
+
+- All: `conf_all()`
+
+- Single one of specific part: `config('app.route.cache')` means get this application's route cache configuration.
+
+## Configuration samples
+
 #### Configure Application
 
 ``` php
 <?php
+// app/conf/app.php
 
 return [
     'env'   => 'local',
@@ -20,6 +39,7 @@ return [
 
 ``` php
 <?php
+// app/conf/db.php
 
 return [
     'default' => 'local_sqlite',
@@ -41,14 +61,48 @@ return [
 ];
 ```
 
-#### Custom configuration files
+#### Custom Queue
 
-Syntax: `conf($filename)`.
+``` php
+<?php
+// app/conf/queue.php
 
-For example: `conf('custom')` means read configurations from app/conf/custom.php.
+return [
+    'default' => 'sqlite_queue',
 
-#### Read configurations
+    'conns' => [
+        'sqlite_queue' => [
+            'type'  => 'db',
+            'conn'  => 'local_sqlite',
+            'table' => 'queue_job',
+            'defs'  => [
+                // ...
+            ],
+        ],
+    ],
+];
+```
 
-- All: `conf_all()`
+#### Custom Mail
 
-- Single one of specific part: `config('app.route.cache')` means get this application's route cache configuration.
+``` php
+<?php
+// app/conf/mail.php
+
+return [
+    'default' => 'swiftmailer',
+
+    'senders' => [
+        'swiftmailer' => [
+            'driver'  => 'swift-omailer',
+            'host'  => 'smtp.example.com',
+            'port'  => 465,
+            'account' => 'user@example.com',
+            'credential' => '*******',
+            'sender_name' => 'User',
+            'sender_email' => 'user@example.com',
+            'encryption' => 'ssl',
+        ],
+    ],
+];
+```

@@ -7,11 +7,14 @@
 namespace Lif\Core\Traits;
 
 use Lif\Core\Abst\Factory;
-use Lif\Core\Intf\Queue as QueueMedium;
+use Lif\Core\Intf\{Queue as QueueMedium, Job};
 
 trait Queue
 {
-    protected $config = [];
+    private $config = [];
+    private $queues = [];
+    private $queue  = null;    // Queue engine object
+    private $queueConn = null;
 
     public function __construct()
     {
@@ -23,35 +26,120 @@ trait Queue
         $this->config = conf('queue');
 
         if (true !== ($err = validate($this->config, [
-            'type'  => 'need|string',
+            'default' => 'need|string',
+            'conns'   => 'need|array',
         ]))) {
-            excp(sysmsg($err));
+            excp('Illegal queue configs: '.sysmsg($err));
+        }
+        if (true !== ($err = validate($this->config['conns'], [
+            $this->config['default'] => 'need|array',
+        ]))) {
+            excp('Missing or empty queue connection configs: '.sysmsg($err));
+        }
+        $conn = &$this->config['conns'][$this->config['default']];
+        if (true !== ($err = validate($conn, [
+            'type'  => 'need|string',
+            'conn'  => 'need|string',
+            'table' => 'need|string',
+        ]))) {
+            excp('Illegal queue connection configs: '.sysmsg($err));
         }
 
-        switch ($this->config['type']) {
+        switch ($conn['type']) {
             case 'db':
                 break;
             default:
                 excp(
                     'Queue type not supported yet: '
-                    .$this->config['type']
+                    .$conn['type']
                 );
                 break;
         }
 
-        legal_or($this->config, [
+        legal_or($conn, [
             'defs' => ['need|array', queue_default_defs_get()],
         ]);
+
+        unset($conn);
 
         return $this;
     }
 
     protected function getQueue() : QueueMedium
     {
-        return Factory::make(
-            $this->config['type'],
+        if ($this->queue && ($this->queue instanceof QueueMedium)) {
+            return $this->queue;
+        }
+
+        $conn       = $this->queueConn ?? $this->config['default'];
+        $connConfig = $this->config['conns'][$conn];
+
+        return $this->queue = Factory::make(
+            $connConfig['type'],
             nsOf('queue'),
-            $this->config
+            $connConfig
         );
+    }
+
+    protected function getFirstJob()
+    {
+        return $this->getQueue()->pop($this->queues);
+    }
+
+    protected function holdCurrentJob()
+    {
+        return $this->getQueue()->hold();
+    }
+
+    protected function releaseCurrentJob()
+    {
+        return $this->getQueue()->release();
+    }
+
+    protected function restartFailedJobs()
+    {
+        return $this->getQueue()->restart($this->queues);
+    }
+
+    protected function outOfQueue(int $id = null) : bool
+    {
+        return $this->getQueue()->out($id);
+    }
+
+    // Push job into queue
+    protected function enqueue(Job $job) : QueueMedium
+    {
+        return $this->getQueue()->push($job);
+    }
+
+    protected function setQueues(string $queues = null, string $option) : void
+    {
+        if (! $queues) {
+            excp(
+                'Please specific the queue names for option '
+                .escape_fields($option)
+            );
+        }
+
+        $this->queues = array_filter(explode(',', $queues));
+    }
+
+    protected function setQueueConn(string $conn = null, string $option)
+    {
+        if (! $conn) {
+            excp(
+                'Please specific the queue connection name for option '
+                .escape_fields($option)
+            );
+        }
+
+        if (! isset($this->config['conns'][$conn])) {
+            excp(
+                'Queue connection not exists in configs: '
+                .$conn
+            );
+        }
+
+        $this->queueConn = $conn;
     }
 }

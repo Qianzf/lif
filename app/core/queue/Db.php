@@ -11,7 +11,8 @@ use \Lif\Core\Intf\{Queue, Job};
 class Db implements Queue
 {
     private $config = [];
-    private $queue  = null;
+    private $queue  = null;    // Queue engine object
+    private $job    = [];
 
     public function __construct(array $config)
     {
@@ -59,17 +60,242 @@ class Db implements Queue
         }
     }
 
-    public function in(Job $job)
+    public function push(Job $job) : Queue
+    {
+        $this->job = [
+            'queue'     => 'default',
+            'detail'    => serialize($job),
+            'try'       => 3,
+            'tried'     => 0,
+            'retried'   => 0,
+            'create_at' => time(),
+            'timeout'   => 0,
+            'restart'   => 0,
+            'lock'      => 0,
+        ];
+
+        $id = $this->queue()->insert($this->job);
+
+        if ($id < 1) {
+            excp('Enqueue job failed.');
+        }
+
+        $this->job['id'] = $id;
+
+        return $this;
+    }
+
+    public function pop(array $queues = [])
+    {
+        $job = $this->queue()
+        ->whereLock(0)
+        ->where(function ($db) {
+            $db->whereTried('<', $db->native('try'));
+        })
+        ->sort([
+            'create_at' => 'asc',
+        ])
+        ->first();
+
+        if (! $job) {
+            return false;
+        }
+
+        if (!isset($job['detail'])
+            || !($_job = unserialize($job['detail']))
+            || !($_job instanceof Job)
+        ) {
+            excp('Illegal queue job.');
+        }
+
+        $this->job = $job ?? null;
+
+        return $_job;
+    }
+
+    public function out(int $id = null) : bool
+    {
+        $id = $id ?? $this->requireJobId();
+
+        $status = $this
+        ->queue()
+        ->whereId($id)
+        ->delete();
+
+        if (0 > $status) {
+            excp('Delete queue job by job id failed: '.$id);
+        }
+
+        return ($status >= 0);
+    }
+
+    public function delete(array $queues = []) : bool
+    {
+        if (! $queues) {
+            $queues = 'default';
+        }
+
+        $status = $this->queue()
+        ->whereQueue($queues)
+        ->delete();
+
+        if (0 > $status) {
+            excp(
+                'Delete queue (with jobs) by queue names failed: '
+                .implode(', ', $queues)
+            );
+        }
+
+        return ($status >= 0);
+    }
+
+    public function getJobId()
+    {
+        return $this->job['id'] ?? null;
+    }
+
+    public function getJob()
+    {
+        return $this->job ? $this->job : [];
+    }
+
+    public function requireJob()
+    {
+        if ($job = $this->getJob()) {
+            return $job;
+        }
+
+        excp('Missing job.');
+    }
+
+    public function requireJobId()
+    {
+        if ($id = $this->getJobId()) {
+            return $id;
+        }
+
+        excp('Missing job id.');
+    }
+
+    public function setRestart(array $queues = [])
+    {
+        $queue = $this
+        ->queue()
+        ->whereTried('>=', db()->native('try'));
+
+        if ($queues) {
+            $queue = $queue->whereQueue($queues);
+        }
+        
+        $affected = $queue->update([
+            'restart' => 1,
+        ]);
+
+        return ($affected >= 0);
+    }
+
+    public function restart(array $queues = [])
+    {
+        $status  = $this->queue()
+        ->whereTried('>=', db()->native('try'))
+        ->whereRestart(1)
+        ->update([
+            'restart' => 0,
+            'tried'   => 0,
+            'lock'    => 0,
+            'retried' => db()->native('retried + 1'),
+        ]);
+
+        if ($status < 0) {
+            excp('Restart failed queue jobs failed.');
+        }
+
+        return ($status >= 0);
+    }
+
+    public function list(array $queues = []) : array
     {
     }
 
-    public function out()
+    public function on(string $queue = 'default') : Queue
     {
+        $status = $this->queue()
+        ->whereId($this->requireJobId())
+        ->update([
+            'queue' => $queue,
+        ]);
+
+        if ($status < 0) {
+            excp('Set job on queue '.$queue.' failed.');
+        }
+
+        return $this;
+    }
+
+    public function try(int $times = 3) : Queue
+    {
+        $status = $this->queue()
+        ->whereId($this->requireJobId())
+        ->update([
+            'try' => $times,
+        ]);
+
+        if ($status < 0) {
+            excp('Set job try times to '.$times.' failed.');
+        }
+
+        return $this;
+    }
+
+    public function timeout(int $secs = 0) : Queue
+    {
+        $status = $this->queue()
+        ->whereId($this->requireJobId())
+        ->update([
+            'timeout' => $secs,
+        ]);
+
+        if ($status < 0) {
+            excp('Set job timeout to '.$secs.'s failed.');
+        }
+
+        return $this;
+    }
+
+    public function hold()
+    {
+        $status = $this->queue()
+        ->whereId($this->requireJobId())
+        ->update([
+            'lock'  => 1,
+            'tried' => db()->native('`tried` + 1'),
+        ]);
+
+        if ($status < 0) {
+            excp('Hold current job status failed.');
+        }
+
+        return ($status >= 0);
+    }
+
+    public function release()
+    {
+        $status = $this->queue()
+        ->whereId($this->requireJobId())
+        ->update([
+            'lock' => 0,
+        ]);
+
+        if ($status < 0) {
+            excp('Release current job status failed.');
+        }
+
+        return ($status >= 0);
     }
 
     protected function queue()
     {
-        if ($this->queue) {
+        if (! $this->queue) {
             $this->queue = db($this->config['conn'])
             ->table($this->config['table']);
         }
@@ -82,7 +308,7 @@ class Db implements Queue
         $table = db($this->config['conn'])
         ->raw('DESC '.$this->config['table']);
 
-        return $this->checkIfQueueTableMissingFiedls(
+        return $this->checkIfQueueTableMissingFields(
             array_column($table, 'Field')
         );
     }
@@ -92,12 +318,12 @@ class Db implements Queue
         $table = db($this->config['conn'])
         ->raw("PRAGMA table_info({$this->config['table']})");
 
-        return $this->checkIfQueueTableMissingFiedls(
+        return $this->checkIfQueueTableMissingFields(
             array_column($table, 'name')
         );
     }
 
-    protected function checkIfQueueTableMissingFiedls(array $result) : bool
+    protected function checkIfQueueTableMissingFields(array $result) : bool
     {
         // $result count can more than $tbDefs
         // Otherwise not

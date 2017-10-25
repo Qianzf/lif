@@ -231,7 +231,7 @@ if (! fe('get_cmds_text')) {
 
             $text .= space_indent()
             .color($name, 'GREEN')
-            .tab_indent()
+            .tabdent()
             .$intro
             .linewrap();
         }

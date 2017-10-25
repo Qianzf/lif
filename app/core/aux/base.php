@@ -1471,8 +1471,8 @@ if (! fe('space_indent')) {
         return $str;
     }
 }
-if (! fe('tab_indent')) {
-    function tab_indent(int $cnt = 1) : string {
+if (! fe('tabdent')) {
+    function tabdent(int $cnt = 1) : string {
         $tabIndent = ('web' == context())
         ? '&nbsp;&nbsp;&nbsp;&nbsp;' : "\t";
 
@@ -1579,11 +1579,13 @@ if (! fe('queue_default_defs_get')) {
             'id',
             'queue',
             'detail',
+            'try',
             'tried',
+            'retried',
             'create_at',
-            'finish_at',
+            'timeout',
             'restart',
-            'retry',
+            'lock',
         ];
     }
 }

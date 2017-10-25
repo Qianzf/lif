@@ -1,15 +1,13 @@
-<?php
-
+``` php
 // ---------------------------------------------------------------------
-//     LiF will not read configurations from this sample file
-//     However it indicates how to configure each part in this way
-// ---------------------------------------------------------------------
+//     Indicates how to configure each part in the way below
+//     
 //     Every first level KEY of this array is one single part
 //     which can be configured in a standalone file in `/app/conf/`
 //     For exampe:
 //     `/app/conf/app.php` is mapping to this array's subarray `app`
 //     and should return the value of this subarray (only)
-// ---------------------------------------------------------------------
+//     
 //     Each configure with default value means it's not mandatory
 //     Otherwise, it is an requirement if you want that configuring
 //     part works correctly
@@ -123,6 +121,55 @@ return [
         ],
     ],
 
+    // ---------------------------------------------------
+    //     `queue` => Queue job related configurations
+    // ---------------------------------------------------
+    'queue' => [
+
+        // -----------------------------------------------------
+        //     *`default` => Default queue connection to use
+        //     (should in the list of `conns` below)
+        // -----------------------------------------------------
+        'default' => 'sqlite_queue',
+
+        // -------------------------------------------------
+        //     *`conns` => Queue medium connections list
+        // -------------------------------------------------
+        'conns' => [
+
+            // ------------------------------------------
+            //     *{sqlite_queue} => Connection name
+            // ------------------------------------------
+            'sqlite_queue' => [
+
+                // ------------------------------------
+                //     *`type` => Queue medium type
+                // ------------------------------------
+                'type'  => 'db',
+
+                // -----------------------------------------------
+                //     *`conn` => Queue medium connection name
+                // -----------------------------------------------
+                'conn'  => 'local_sqlite',
+
+                // ------------------------------------
+                //     *`table` => Queue table name
+                // ------------------------------------
+                'table' => 'queue_job',
+
+                // ---------------------------------------------
+                //     `defs` => Queue table definition
+                //     `queue_default_defs_get()` <= default
+                // ---------------------------------------------
+                'defs'  => [
+                    // ...
+                ],
+            ],
+
+            // ...
+        ],
+    ]
+
     // ----------------------------------------------
     //     `email` => Mail related configurations
     // ----------------------------------------------
@@ -190,3 +237,4 @@ return [
         ],
     ],
 ];
+```

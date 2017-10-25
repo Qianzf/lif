@@ -80,7 +80,7 @@ db()->start();
 if (...) {
     db()->commit();
 } else {
-    db()->rollback();   
+    db()->rollback();
 }
 ```
 
@@ -92,8 +92,27 @@ db()->table('cache')->truncate();
 
 - RAW
 
+Use `LDO::raw()` to execute a little bit more complicated SQL.
+
 ``` php
 db()->raw('show variables like ?', ['ver%']);
+```
+
+- Native
+
+Use `LDO::native()` to escape stringlified for given parameters, and be a part of native SQL statement.
+
+``` php
+db()
+->table('queue_job')
+->where(function ($db) {
+    $db->whereTried('<', $db->native('try'));
+})
+->update([
+    'restart' => 1,
+    'lock'    => 0,
+    'retried' => db()->native('`retried` + 1'),
+]);
 ```
 
 - GET RAW SQL

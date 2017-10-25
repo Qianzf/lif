@@ -121,8 +121,8 @@ abstract class Command implements CMD
 
     public function help($output = null)
     {
-        return output(
-            $this->usage()
+        return output($this->intro(true)
+            .$this->usage()
             .$this->options()
         );
     }
@@ -165,7 +165,7 @@ abstract class Command implements CMD
     {
         $usage = segstr(color('Usage: ', 'LIGHT_PURPLE')
             .linewrap()
-            .tab_indent()
+            .tabdent()
             .color($this->name().' [options] [arguments]', 'BROWN')
         );
 
@@ -230,10 +230,18 @@ abstract class Command implements CMD
         return $this->name;
     }
 
-    protected function intro() : string
+    protected function intro(bool $format = false) : string
     {
         if (! $this->intro) {
             $this->intro = 'No introduction for this command';
+        }
+
+        if ($format) {
+            return segstr(color('Description:', 'LIGHT_PURPLE')
+                .linewrap(2)
+                .tabdent()
+                .$this->intro
+            );
         }
 
         return $this->intro;
@@ -244,7 +252,7 @@ abstract class Command implements CMD
         return $string
         ? segstr(
             color($this->name(), 'LIGHT_BLUE')
-            .tab_indent()
+            .tabdent()
             .$this->intro()
         )
         : [
@@ -272,7 +280,7 @@ abstract class Command implements CMD
             ? $descAll[$key]
             : color('No description for this option', 'LIGHT_GRAY');
 
-            $text .= tab_indent().color($option, 'BROWN').tab_indent().$desc;
+            $text .= tabdent().color($option, 'BROWN').tabdent().$desc;
 
             if (false !== next($options)) {
                 $text .= linewrap();
@@ -280,6 +288,11 @@ abstract class Command implements CMD
         }
 
         return segstr($text);
+    }
+
+    public function info(string $msg) : void
+    {
+        echo segstr(color($msg, 'CYAN')), linewrap();
     }
 
     public function success(string $msg) : void

@@ -76,6 +76,10 @@ Support the transformation between array and collection class.
 
 Support custom validation and keep an uniform return values: false or language key.
 
+### Queue
+
+Support basic queue and queue jobs functionalities.
+
 ### I18N
 
 Use `sysmsg()`/`lang()` and dynamic language packages, LiF can easily achieve i18n.
@@ -94,15 +98,13 @@ Use `email()` to send an email is very simple, see more details in doc.
 
 ## Documentations
 
-See: _var/doc_.
+See: _doc/*_.
 
 > TODO (It's not full-finished yet, but in my active development)
 
 > - Log
 
 > - Enable or disable some time-wasting but will still be used features via Core configurations
-
-> - Queue
 
 > - Version control database
 

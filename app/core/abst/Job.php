@@ -27,7 +27,7 @@ abstract class Job implements JobContract
         $this->$detail[$key] = $data;
     }
 
-    public function run()
+    public function run() : bool
     {
     }
 }

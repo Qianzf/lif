@@ -1,5 +1,9 @@
 <?php
 
+// ----------------------------------------
+//     LiF command job public interface
+// ----------------------------------------
+
 namespace Lif\Core\Intf;
 
 interface Job
@@ -10,5 +14,5 @@ interface Job
 
     public function set(string $key, $data) : void;
 
-    public function run();
+    public function run() : bool;
 }

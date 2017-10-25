@@ -156,6 +156,7 @@ class LDO extends \PDO
     {
         if ('where' === mb_substr($name, 0, 5)) {
             if (! $args) {
+                dd($name, $args);
                 excp('Missing conditions values.');
             }
             $rest = mb_substr($name, 5);
@@ -188,7 +189,7 @@ class LDO extends \PDO
             $fields   = array_values(array_filter(explode('.', $conds)));
             $fieldCnt = count($fields);
             $argCnt   = count($args);
-            
+
             if ($argCnt > $fieldCnt) {
                 if (1 === $argCnt) {
                     $args = ['=', $args[0]];
@@ -268,13 +269,11 @@ class LDO extends \PDO
                     if (!is_string($conds[1])
                         && !is_numeric($conds[1])
                         && !is_array($conds[1])
+                        && !is_callable($conds[1])
                     ) {
                         excp(
-                            'Expecting second field of condition a string or array.'
+                            'Expecting second field of condition (string/array/closure).'
                         );
-                    }
-                    if (! $conds[1]) {
-                        $conds[1] = '';    
                     }
                 } else {
                     $conds[1] = null;
@@ -297,6 +296,7 @@ class LDO extends \PDO
                     if (!is_string($conds[2])
                         && !is_numeric($conds[2])
                         && !is_array($conds[2])
+                        && !is_callable($conds[2])
                     ) {
                         excp('Expecting third field of condition.');
                     }
@@ -316,8 +316,20 @@ class LDO extends \PDO
             $condOpWithVal      = ' '.$condOp.' ?';
             $this->bindValues[] = $condVal;
         } elseif (is_array($condVal)) {
-            $condOpWithVal      = ' in (?)';
-            $this->bindValues[] = implode(',', $condVal);
+            $stubs = '';
+            foreach ($condVal as $key => $val) {
+                $item   = escape_fields($val);
+                $this->bindValues[] = $val;
+                $stubs .= '?';
+                if (false !== next($condVal)) {
+                    $stubs .= ',';
+                }
+            }
+            $condOpWithVal = ' in ('.$stubs.')';
+        } elseif (is_null($condVal)) {
+            $condOpWithVal = ' is null';
+        } elseif (is_callable($condVal)) {
+            $condOpWithVal = ' '.$condOp.' '.$condVal();
         } else {
             excp('Illgeal where field value.');
         }
@@ -884,8 +896,12 @@ class LDO extends \PDO
         $bindValues    = [];
         
         foreach ($updates as $key => $newVal) {
-            $this->updates .= $key.' = ? ';
-            $bindValues[]   = $newVal;
+            if (is_callable($newVal)) {
+                $this->updates .= $key.' = ('.$newVal().')';
+            } else {
+                $this->updates .= $key.' = ? ';
+                $bindValues[]   = $newVal;
+            }
 
             if (false !== next($updates)) {
                 $this->updates .= ',';
@@ -925,5 +941,12 @@ class LDO extends \PDO
         $this->bindValues = $values;
 
         return $this->execute($exec, $sql);
+    }
+
+    public function native(string $native)
+    {
+        return function () use ($native) : string {
+            return $native;
+        };
     }
 }
