@@ -384,6 +384,16 @@ if (! fe('exception')) {
     //     Debug model and environment will effect exception output
     // ----------------------------------------------------------------------
     function exception($exObj, $format = 'json') {
+        // Kill child process if exists
+        $children = $GLOBALS['LIF_CHILD_PROCESSES'] ?? false;
+        if ($children && is_array($children)) {
+            foreach ($children as $child) {
+                if (is_integer($child)) {
+                    posix_kill($child, SIGKILL);
+                }
+            }
+        }
+        
         if ('cli' === context()) {
             return cli_excp($exObj);
         }
@@ -691,12 +701,15 @@ if (! fe('config')) {
     }
 }
 if (! fe('db')) {
-    function db($conn = null) {
-        return \Lif\Core\Factory\Storage::fetch('db', 'pdo', $conn);
+    function db(string $conn = null, bool $flush = false) {
+        return \Lif\Core\Factory\Storage::fetch('db', 'pdo', [
+            'conn'  => $conn,
+            'flush' => $flush,
+        ]);
     }
 }
 if (! fe('db_conns')) {
-    function db_conns($conn = null) {
+    function db_conns(string $conn = null) {
         return \Lif\Core\Factory\Storage::fetch('db', 'conns', $conn);
     }
 }
@@ -788,11 +801,17 @@ if (! fe('validate_db_conn')) {
 if (! fe('create_ldo')) {
     function create_ldo($conn) {
         $dsn  = build_pdo_dsn(validate_db_conn($conn));
+        $opts = ('cli' == context())
+        ? []
+        : [
+            PDO::ATTR_PERSISTENT => true,
+        ];
         return (
             new \Lif\Core\Storage\LDO(
                 $dsn,
                 $conn['user'],
-                $conn['passwd']
+                $conn['passwd'],
+                $opts
            )
        )
         ->__conn($conn['name'])
@@ -811,6 +830,10 @@ if (! fe('model')) {
 if (! fe('escape_fields')) {
     function escape_fields(string $raw) : string
     {
+        if (! $raw) {
+            return '';
+        }
+
         if (false !== mb_strpos($raw, '.')) {
             $arr = explode('.', $raw);
             array_walk($arr, function (&$item, $key) {

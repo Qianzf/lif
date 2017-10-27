@@ -27,9 +27,13 @@ class Db
         );
     }
 
-    public static function pdo($conn = null)
+    public static function pdo(array $params = [])
     {
         $db = conf('db');
+        // string $conn = null, bool $force = false
+        $conn  = $params['conn'] ?? null;
+        $flush = $params['conn'] ?? false;
+        
         if (!$conn
             && (
                 !($defaultConn = exists($db, 'default'))
@@ -41,8 +45,9 @@ class Db
         $connName = ($conn && is_string($conn)) ? $conn : $defaultConn;
 
         $new = (
-            !exists(self::$conns, $connName) ||
-            !is_object(self::$conns[$connName])
+            $flush
+            || !exists(self::$conns, $connName)
+            || !is_object(self::$conns[$connName])
         );
 
         if ($new) {

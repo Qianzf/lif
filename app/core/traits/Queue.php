@@ -11,10 +11,11 @@ use Lif\Core\Intf\{Queue as QueueMedium, Job};
 
 trait Queue
 {
-    private $config = [];
-    private $queues = [];
-    private $queue  = null;    // Queue engine object
+    private $config    = [];
+    private $queues    = [];
+    private $queue     = null;    // Queue engine object
     private $queueConn = null;
+    private $job       = null;
 
     public function __construct()
     {
@@ -81,9 +82,27 @@ trait Queue
         );
     }
 
+    protected function getJob()
+    {
+        if (! $this->job) {
+            $this->job = $this->getQueue()->requireJob();
+        }
+
+        return $this->job;
+    }
+
+    protected function getJobTimeout() : int
+    {
+        return intval($this->getJob()['timeout'] ?? 0);
+    }
+
     protected function getFirstJob()
     {
-        return $this->getQueue()->pop($this->queues);
+        $job = $this->getQueue()->pop($this->queues);
+
+        $this->job = $this->getQueue()->getJob();
+
+        return $job;
     }
 
     protected function holdCurrentJob()

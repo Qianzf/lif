@@ -29,8 +29,11 @@ abstract class Factory
         return new $class($data);
     }
 
-    public static function fetch($class, $method, $args = '')
-    {
+    public static function fetch(
+        string $class,
+        string $method,
+        array $args = []
+    ) {
         return (static::$namespace.ucfirst($class))::$method($args);
     }
 }

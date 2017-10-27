@@ -3,6 +3,7 @@
 namespace Lif\Core\Cmd\Queue;
 
 use Lif\Core\Abst\Command;
+use Lif\Core\Cli\Timeout;
 
 class Run extends Command
 {
@@ -60,19 +61,20 @@ class Run extends Command
     // -------------------------------------------------------------
     private $startSecs = 5;
     // -------------------------------------------------------------
+    
+    private $timer = null;
 
     public function fire()
     {
         // sleep($this->startSecs);
 
         while (true) {
+            sleep(1);
             if (is_null($this->run())
                 && !$this->daemon
             ) {
                 exit(0);
             }
-
-            usleep(42);
         }
     }
 
@@ -82,25 +84,80 @@ class Run extends Command
             return null;
         }
 
-        $success = true;
         try {
             $this->restartFailedJobs();
             $this->holdCurrentJob();
 
-            // Run queue job
-            $success = call_user_func([$job, 'run']);
+            if (0 < ($timeout = $this->getJobTimeout())) {
+                if (! fe('pcntl_fork')) {
+                    excp('Install PCNTL first.');
+                }
 
-            if ($success) {
-                // Delete current job from queue
-                $success = $this->outOfQueue();
+                // Create share memory and signal
+                if (! defined('JOB_STATUS')) {
+                    define('JOB_STATUS', 0);
+                }
+
+                $shm     = shm_attach(ftok(__FILE__, 'm'));
+                $signal  = sem_get(ftok(__FILE__, 's'));
+                $success = false;
+                $pid     = pcntl_fork();
+                $expire  = time()+$timeout;
+
+                if (-1 === $pid) {
+                    excp('Fork failed.');
+                }
+
+                if (0 === $pid) {
+                    // Do queue job in child process
+                    $status = call_user_func([$job, 'run']);
+                    @sem_acquire($signal);
+                    shm_put_var($shm, JOB_STATUS, intval($status));
+                    @sem_release($signal);
+                    // Exit child process and let master process return result
+                    exit(posix_kill(posix_getpid(), SIGKILL));
+                } else {
+                    $GLOBALS['LIF_CHILD_PROCESSES'][] = $pid;
+                    // Timeout check in master process
+                    pcntl_signal(SIGCHLD, SIG_IGN);
+                    do {
+                        // check if child process exists now
+                        if (shm_has_var($shm, JOB_STATUS)
+                            && (shm_get_var($shm, JOB_STATUS) == 1)
+                        ) {
+                            $success = true;
+                            break;
+                        }
+
+                        sleep(1);
+                    } while (time() < $expire);
+
+                    posix_kill($pid, SIGKILL);
+
+                    if ($success) {
+                        $this->outOfQueue();
+                    } else {
+                        $this->releaseCurrentJob();
+                    }
+                }
+
+                shm_remove($shm);
+                sem_remove($signal);
+
+                return $success;
             } else {
+                $status = call_user_func([$job, 'run']);
+                if ($status) {
+                    return $this->outOfQueue();
+                }
+
                 $this->releaseCurrentJob();
+
+                return false;
             }
         } catch (\Exception $e) {
             exception($e);
         }
-
-        return $success;
     }
 
     protected function once($value = null)
@@ -144,5 +201,14 @@ class Run extends Command
     protected function setStartSecs(int $secs)
     {
         $this->startSecs = $secs;
+    }
+
+    protected function getTimer(int $pid = null)
+    {
+        if (!$this->timer || !($this->timer instanceof Timeout)) {
+            $this->timer = new Timeout($pid);
+        }
+
+        return $this->timer->resetPid();
     }
 }

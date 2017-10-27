@@ -128,7 +128,7 @@ class LDO extends \PDO
         return $this;
     }
 
-    public function reset()
+    public function reset() : LDO
     {
         $this->lastWhere      = $this->where;
         $this->lastBindValues = $this->bindValues;
@@ -145,6 +145,8 @@ class LDO extends \PDO
         $this->insertVals = null;
         $this->statement  = null;
         $this->bindValues = [];
+
+        return $this;
     }
 
     public function __get($name)
@@ -334,7 +336,7 @@ class LDO extends \PDO
             excp('Illgeal where field value.');
         }
 
-        return '('.$condCol.$condOpWithVal.')';
+        return '('.escape_fields($condCol).$condOpWithVal.')';
     }
 
     public function or(...$conds): LDO
@@ -577,7 +579,7 @@ class LDO extends \PDO
                     ++$_times;
                     $_hasNext = (false === next($val)) ? false : true;
                     if (1 === $times) {
-                        $this->insertKeys .= $_key;
+                        $this->insertKeys .= escape_fields($_key);
                         $this->insertKeys .= $_hasNext ? ',' : '';
                     }
                     $this->insertVals .= (1 === $_times) ? '(?' : '?';
@@ -588,7 +590,7 @@ class LDO extends \PDO
                 }
                 $_times = 0;
             } else {
-                $this->insertKeys .= $key;
+                $this->insertKeys .= escape_fields($key);
                 $this->insertKeys .= $hasNext ? ',' : '';
                 $this->insertVals .= (1 === $times) ? '(?' : '?';
                 $this->insertVals .= $hasNext ? ',' : ')';
@@ -813,7 +815,7 @@ class LDO extends \PDO
             if ($exec) {
                 $this->statement = $this->prepare(
                     $this->sql(), [
-                        // self::ATTR_CURSOR => self::CURSOR_SCROLL
+                        self::ATTR_CURSOR => self::CURSOR_SCROLL
                     ]
                 );
                 foreach ($this->bindValues as $idx => $value) {
@@ -828,6 +830,7 @@ class LDO extends \PDO
                     
                     $this->statement->bindValue(++$idx, $value, $type);
                 }
+
                 $this->statement->execute();
 
                 if ('00000' !== ($this->status = $this->statement->errorCode())) {
@@ -870,6 +873,11 @@ class LDO extends \PDO
                 $pdoe->getMessage()
                 .' ( '.$this->sql.' )'
             );
+        } catch (\Error $e) {
+            excp(
+                $e->getMessage()
+                .' ( '.$this->sql.' )'
+            );
         }
     }
 
@@ -896,10 +904,11 @@ class LDO extends \PDO
         $bindValues    = [];
         
         foreach ($updates as $key => $newVal) {
+            $_key = escape_fields($key);
             if (is_callable($newVal)) {
-                $this->updates .= $key.' = ('.$newVal().')';
+                $this->updates .= $_key.' = ('.$newVal().')';
             } else {
-                $this->updates .= $key.' = ? ';
+                $this->updates .= $_key.' = ? ';
                 $bindValues[]   = $newVal;
             }
 

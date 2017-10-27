@@ -12,7 +12,7 @@ class Db implements Queue
 {
     private $config = [];
     private $queue  = null;    // Queue engine object
-    private $job    = [];
+    private $job    = [];      // Queue job record, not Job class
 
     public function __construct(array $config)
     {
@@ -87,7 +87,7 @@ class Db implements Queue
 
     public function pop(array $queues = [])
     {
-        $job = $this->queue()
+        $job = $this->queue(true)
         ->whereLock(0)
         ->where(function ($db) {
             $db->whereTried('<', $db->native('try'));
@@ -117,8 +117,7 @@ class Db implements Queue
     {
         $id = $id ?? $this->requireJobId();
 
-        $status = $this
-        ->queue()
+        $status = $this->queue(true)
         ->whereId($id)
         ->delete();
 
@@ -135,7 +134,7 @@ class Db implements Queue
             $queues = 'default';
         }
 
-        $status = $this->queue()
+        $status = $this->queue()->reset()
         ->whereQueue($queues)
         ->delete();
 
@@ -154,12 +153,12 @@ class Db implements Queue
         return $this->job['id'] ?? null;
     }
 
-    public function getJob()
+    public function getJob() : array
     {
         return $this->job ? $this->job : [];
     }
 
-    public function requireJob()
+    public function requireJob() : array
     {
         if ($job = $this->getJob()) {
             return $job;
@@ -293,10 +292,13 @@ class Db implements Queue
         return ($status >= 0);
     }
 
-    protected function queue()
+    protected function queue(bool $flushConn = false)
     {
-        if (! $this->queue) {
-            $this->queue = db($this->config['conn'])
+        if (!$this->queue || $flushConn) {
+            $this->queue = db(
+                $this->config['conn'],
+                $flushConn
+            )
             ->table($this->config['table']);
         }
 
