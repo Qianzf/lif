@@ -158,11 +158,8 @@ class Cli extends Container implements Strategy
         ->setUnknown($this->unknowns);
 
         return call_user_func_array([
-                $this->cmd,
-                $handler
-            ], [
-                $this->unknowns
-            ]
-        );
+            $this->cmd,
+            '__lif__'
+        ], [$this, $handler, $this->unknowns]);
     }
 }

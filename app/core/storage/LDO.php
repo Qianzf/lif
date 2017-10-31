@@ -815,7 +815,7 @@ class LDO extends \PDO
             if ($exec) {
                 $this->statement = $this->prepare(
                     $this->sql(), [
-                        self::ATTR_CURSOR => self::CURSOR_SCROLL
+                        // self::ATTR_CURSOR => self::CURSOR_SCROLL
                     ]
                 );
                 foreach ($this->bindValues as $idx => $value) {

@@ -207,7 +207,7 @@ class Web extends Container implements Observer, Strategy
 
             return call_user_func_array([
                 $ctl,
-                'NONEXISTENTMETHODOFCONTROLLER'
+                '__lif__'
             ], [$this, $act, $this->routeVars]);
         } else {
             throw new \Lif\Core\Excp\IllegalRouteDefinition(1);

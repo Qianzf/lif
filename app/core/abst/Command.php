@@ -7,8 +7,9 @@
 namespace Lif\Core\Abst;
 
 use \Lif\Core\Intf\CMD;
+use \Lif\Core\Abst\Container;
 
-abstract class Command implements CMD
+abstract class Command extends Container implements CMD
 {
     use \Lif\Core\Traits\MethodNotExists;
     

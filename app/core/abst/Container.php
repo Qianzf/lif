@@ -1,5 +1,9 @@
 <?php
 
+// --------------------------
+//     LiF base container
+// --------------------------
+
 namespace Lif\Core\Abst;
 
 abstract class Container
@@ -31,16 +35,16 @@ abstract class Container
         }
     }
 
-    public function NONEXISTENTMETHODOFCONTROLLER($obj, $method, $params)
+    public function __lif__($obj, $method, array $params = [])
     {
         if (!isset($obj) || !is_object($obj)) {
             excp(
-                'Missing strategy object in params pass to controller.'
+                'Missing strategy object.'
             );
         }
         if (!isset($method) || !$method || !is_string($method)) {
             excp(
-                'Missing action in params pass to controller.'
+                'Missing or bad action.'
             );
         }
 
@@ -87,6 +91,10 @@ abstract class Container
                 $this->handleTypeError($e, $params)
             );
         } catch (\Error $e) {
+            exception($e);
+        } catch (\Exception $e) {
+            exception($e);
+        } catch (\Throwable $e) {
             exception($e);
         } finally {
         }

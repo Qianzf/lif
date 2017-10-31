@@ -9,11 +9,13 @@ return [
         // 'id',
         // 'queue',
         // 'detail',
+        // 'try',
         // 'tried',
+        // 'retried',
         // 'create_at',
-        // 'finish_at',
+        // 'timeout',
         // 'restart',
-        // 'retry',
+        // 'lock',
     ],
 ];    
 ```
@@ -64,7 +66,7 @@ php lif queue.restart --name=test,demo,bar
 
 ###### Notices
 
-- When using SQLite as queue Medium
+- When using SQLite as queue medium
  
 SQLite is not used for many concurrent writers scenario.
 

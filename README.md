@@ -48,7 +48,7 @@ LiF is an API-based web framework, so I didn't waste time to design a specialize
 
 - Reuse with template layouts and sections
 
-- Cache or not can be confinable
+- Cache or not can be configurable
 
 - Data share between templates
 
@@ -104,6 +104,10 @@ See: _doc/*_.
 
 > - Log
 
+> - Facade
+
+> - Middleware `terminable()` method
+
 > - Enable or disable some time-wasting but will still be used features via Core configurations
 
 > - Version control database
@@ -112,6 +116,7 @@ See: _doc/*_.
 
 > - Self-test, self-deploy, shell-based tasks handle
 > 
+> - GraphQL support
 
 ## LICENSE
 

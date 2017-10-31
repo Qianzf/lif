@@ -1,9 +1,14 @@
 <?php
 
+// -----------------------------------------
+//     LiF CLI console related behaviors
+// -----------------------------------------
+
 namespace Lif\Core\Cli;
 
 class Console
 {
+    // <http://blog.lenss.nl/2012/05/adding-colors-to-php-cli-script-output>
     protected $colors = [
         'BLACK'  => '0;30',
         'BLUE'   => '0;34',
@@ -23,6 +28,7 @@ class Console
         'LIGHT_PURPLE' => '1;35',
     ];
 
+    // <https://misc.flogisoft.com/bash/tip_colors_and_formatting>
     public function render(string $text, string $color) : string
     {
         if (! isset($this->colors[$color])) {

@@ -162,6 +162,10 @@ class Run extends Command
 
     protected function once($value = null)
     {
+        dd(logging('User {user} logged in.', [
+            'user' => 'cjli',
+        ]));
+
         if (in_array($value, [
             '0',
             'false'

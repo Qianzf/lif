@@ -52,6 +52,12 @@ if (! fe('get_lif_ver')) {
 }
 if (! fe('init')) {
     function init() {
+        // register_shutdown_function(function () {
+        //     if ($error = error_get_last()) {
+        //         // Log error info
+        //     }
+        // });
+
         $debugNonProd = !('production' == app_env()) && app_debug();
 
         $display_startup_errors = $debugNonProd ? 1 : 0;
@@ -342,7 +348,7 @@ if (! fe('_json_decode')) {
     }
 }
 if (! fe('_json_encode')) {
-    function _json_encode($arr) {
+    function _json_encode(array $arr) {
         return json_encode(
             $arr,
             JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
@@ -1610,5 +1616,74 @@ if (! fe('queue_default_defs_get')) {
             'restart',
             'lock',
         ];
+    }
+}
+if (! fe('logging')) {
+    function logging(
+        $message,
+        array $context = [],
+        $level = 'info',
+        \Lif\Core\Intf\Logger $logger = null
+    ) : void {
+        $str = str_with_context($message, $context);
+
+        dd($str);
+    }
+}
+if (! fe('str_with_context')) {
+    function str_with_context(
+        $message,
+        array $context = []
+    ) : string {
+        $string = stringify($message);
+        if (! $context) {
+            return $string;
+        }
+        foreach ($context as $key => $val) {
+            if (! safe_string($key)) {
+                excp('String value is unsafe: '.$key);
+            }
+
+            $ptn = '/\{'.$key.'\}/u';
+            $string = preg_replace_callback(
+                $ptn,
+                function ($matches) use ($val) : string {
+                    return stringify($val);
+                },
+                $string
+            );
+        }
+
+        return $string;
+    }
+}
+if (! fe('safe_string')) {
+    function safe_string($str) {
+    }
+}
+if (! fe('stringify')) {
+    function stringify($origin) : string {
+        if (is_scalar($origin)) {
+            return ((string) $origin);
+        }
+        if (is_array($origin)) {
+            return $origin ? _json_encode($origin) : '';
+        }
+        if (is_object($origin)) {
+            $class = get_class($origin);
+            if (! method_exists($origin, '__toString')) {
+                excp(
+                    'Object of '
+                    .$class
+                    .' is unstringable.'
+                );
+            }
+
+            if (! is_string($ret = call_user_func([$origin, '__toString']))) {
+                excp('Bad __toString() definition of class: '.$class);
+            }
+
+            return $ret;
+        }
     }
 }
