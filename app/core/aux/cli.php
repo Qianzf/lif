@@ -48,11 +48,6 @@ if (! fe('color')) {
         : $text;
     }
 }
-if (! fe('segstr')) {
-    function segstr(string $string) : string {
-        return linewrap().$string.linewrap();
-    }
-}
 if (! fe('classname2ns')) {
     function classname2ns(string $classname) : string {
         return decode_classname($classname, '\\', 'ucfirst');
@@ -119,7 +114,7 @@ if (! fe('is_cmd_option')) {
         return preg_match('/^(--?[\w\-]*)(\=.*)?$/u', $option);
     }
 }
-if (! fe('cli_excp_output')) {
+if (! fe('cli_excp')) {
     function cli_excp($excp) {
         return output(segstr(
             color('Command execution error!', 'LIGHT_RED')

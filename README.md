@@ -76,6 +76,10 @@ Support the transformation between array and collection class.
 
 Support custom validation and keep an uniform return values: false or language key.
 
+### Log
+
+Support common used loggers follows PSR-3, and in a more flexible way.
+
 ### Queue
 
 Support basic queue and queue jobs functionalities.
@@ -101,8 +105,6 @@ Use `email()` to send an email is very simple, see more details in doc.
 See: _doc/*_.
 
 > TODO (It's not full-finished yet, but in my active development)
-
-> - Log
 
 > - Facade
 

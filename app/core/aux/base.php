@@ -52,11 +52,15 @@ if (! fe('get_lif_ver')) {
 }
 if (! fe('init')) {
     function init() {
-        // register_shutdown_function(function () {
-        //     if ($error = error_get_last()) {
-        //         // Log error info
-        //     }
-        // });
+        register_shutdown_function(function () {
+            if ($error = error_get_last()) {
+                logger()->error($error);
+            }
+        });
+        
+        set_exception_handler(function ($excp) {
+            exception($excp);
+        });
 
         $debugNonProd = !('production' == app_env()) && app_debug();
 
@@ -270,7 +274,7 @@ if (! fe('exists')) {
     }
 }
 if (! fe('nsOf')) {
-    function nsOf($of = null) {
+    function nsOf(string $of = null, string $class = '') {
         if (! $of) {
             return '\\';
         }
@@ -294,16 +298,17 @@ if (! fe('nsOf')) {
                 '_cmd' => '\Lif\Core\Cmd\\',
                 'cmd'  => '\Lif\Cmd\\',
                 'lib'  => '\Lif\Core\Lib\\',
-                'queue'    => '\Lif\Core\queue\\',
+                'queue'    => '\Lif\Core\Queue\\',
+                'logger'   => '\Lif\Core\Logger\\',
                 'storage'  => '\Lif\Core\storage\\',
                 'strategy' => '\Lif\Core\strategy\\',
            ];
-            return $nsArr[$of] ?? '\\';
+            return ($nsArr[$of] ?? '\\').ucfirst($class);
         }
     }
 }
 if (! fe('pathOf')) {
-    function pathOf($of = null) {
+    function pathOf(string $of = null, string $file = '') {
         $root  = realpath(__DIR__.'/../../../');
         $paths = [
             'root'   => $root.'/',
@@ -329,11 +334,19 @@ if (! fe('pathOf')) {
             'upload' => $root.'/var/upload/',
             'web'    => $root.'/web/',
             'static' => $root.'/web/assets/',
-       ];
+        ];
 
-        return is_null($of) ? $paths : (
-            isset($paths[$of]) ? $paths[$of] : null
-       );
+        $path = is_null($of) ? $paths : (
+            isset($paths[$of]) ? $paths[$of].$file : null
+        );
+
+        if (! file_exists($path)) {
+            $arr = explode('/', $path);
+            unset($arr[count($arr)-1]);
+            @mkdir(implode('/', $arr));
+        }
+
+        return $path;
     }
 }
 if (! fe('_json_decode')) {
@@ -348,11 +361,11 @@ if (! fe('_json_decode')) {
     }
 }
 if (! fe('_json_encode')) {
-    function _json_encode(array $arr) {
-        return json_encode(
+    function _json_encode(array $arr) : string {
+        return ($json = json_encode(
             $arr,
             JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
-       );
+        )) ? $json : '';
     }
 }
 if (! fe('xml_http_response')) {
@@ -381,6 +394,15 @@ if (! fe('json_http_response')) {
         exit;
     }
 }
+if (! fe('put2file')) {
+    function put2file(string $path, $data) {
+        file_put_contents(
+            $path,
+            PHP_EOL.stringify($data).PHP_EOL,
+            FILE_APPEND | LOCK_EX
+        );
+    }
+}
 if (! fe('exception')) {
     // ----------------------------------------------------------------------
     //     Errors caused by behaviours inside framework called exceptions
@@ -390,6 +412,8 @@ if (! fe('exception')) {
     //     Debug model and environment will effect exception output
     // ----------------------------------------------------------------------
     function exception($exObj, $format = 'json') {
+        $GLOBALS['LIF_EXCP'] = true;
+
         // Kill child process if exists
         $children = $GLOBALS['LIF_CHILD_PROCESSES'] ?? false;
         if ($children && is_array($children)) {
@@ -399,31 +423,46 @@ if (! fe('exception')) {
                 }
             }
         }
-        
-        if ('cli' === context()) {
-            return cli_excp($exObj);
-        }
 
         $response = $format.'_http_response';
         if (! function_exists($response)) {
             $response = 'json_http_response';
         }
 
-        $info  = [
-            'Exception' => $exObj->getMessage(),
-            'Code'      => $exObj->getCode(),
-       ];
+        $info = $_info = [
+            'msg' => $exObj->getMessage(),
+            'err' => $exObj->getCode(),
+        ];
+        $_info['trace'] = $exObj->getTrace();
 
         // !!! Make sure check app conf path first
         // !!! Or infinite loop will occur when app conf file not exists
         if (('production' != app_env()) && app_debug()) {
-            $trace         = $exObj->getTrace();
-            $info['Trace'] = $trace;
+            $info['Trace'] = $_info['trace'];
         }
 
-        $GLOBALS['LIF_EXCP'] = true;
+        put2file(
+            pathOf('log', 'exceptions/'.date('Y-m-d').'.log'),
+            build_log_str($_info, 'exception')
+        );
         
-        return $response($info);
+        return ('cli' === context())
+        ? cli_excp($exObj)
+        : $response($info);
+    }
+}
+if (! fe('build_log_str')) {
+    function build_log_str($data, string $level = 'log') : string {
+        $timestamp = time();
+        $content   = [
+            'tdt' => date('H:i:s Y-m-d', $timestamp),
+            'tzn' => date_default_timezone_get(),
+            'lvl' => $level,
+            'tsp' => $timestamp,
+            'dat' => $data,
+        ];
+
+        return stringify($content);
     }
 }
 if (! fe('excp')) {
@@ -674,7 +713,11 @@ if (! fe('conf_all')) {
     }
 }
 if (! fe('conf')) {
-    function conf($name = null, $cfgPath = null) : array{
+    function conf(
+        string $name = null,
+        string $cfgPath = null,
+        bool $excp = true
+    ) : array {
         $cfgPath = $cfgPath ?? pathOf('conf');
 
         if (! $name) {
@@ -692,7 +735,9 @@ if (! fe('conf')) {
         $cfgFile = $cfgPath.$name.'.php';
 
         if (! file_exists($cfgFile)) {
-            excp('Configure File '.$cfgFile.' not exists');
+            return $excp
+            ? excp('Configure File '.$cfgFile.' not exists')
+            : [];
         }
 
         $cfg = include $cfgFile;
@@ -1470,6 +1515,11 @@ if (! fe('to_arr')) {
         : [$var];
     }
 }
+if (! fe('segstr')) {
+    function segstr(string $string) : string {
+        return linewrap().$string.linewrap();
+    }
+}
 if (! fe('linewrap')) {
     function linewrap(int $cnt = 1) : string {
         $lineWrap = ('web' == context())
@@ -1618,16 +1668,90 @@ if (! fe('queue_default_defs_get')) {
         ];
     }
 }
+if (! fe('logger_conf')) {
+    function logger_conf(string $logger = null) {
+        $conf = conf('log', null, false);
+
+        if ($conf) {
+            if (true !== ($err = validate($conf, [
+                'default' => 'need|string',
+                'loggers' => 'need|array',
+            ]))) {
+                excp('Illegal log configurations: '.$err);
+            }
+
+            $logger = $logger ?? $conf['default'];
+
+            if (true !== ($err = validate($conf['loggers'], [
+                $logger => 'need|array',
+            ]))) {
+                excp('Illegal or missing default logger configurations.');
+            }
+
+            return $conf['loggers'][$logger];
+        }
+
+        return $conf;
+    }
+}
+if (! fe('logger')) {
+    // String => logger key in app/conf/log.php
+    // Array  => dynamic logger configs
+    function logger($log = null) {
+        if (! $log) {
+            $config = ($conf = logger_conf())
+            ? $conf : [
+                'driver' => 'file',
+                'path'   => 'lif.log',
+            ];
+        } elseif (is_string($log)) {
+            $config = logger_conf($log);
+        } elseif (is_array($log)) {
+            $config = $log;
+        } elseif ($log instanceof \Lif\Core\Intf\Logger) {
+            return $log;
+        }
+        
+        if (true !== ($err = validate($config, [
+            'driver' => 'need|in:file,db'
+        ]))) {
+            excp('Missing or un-supported logger type: '.$err);
+        }
+
+        $class = nsOf('logger', $config['driver']);
+
+        if (! class_exists($class)) {
+            excp('Logger class not exists: '.$class);
+        }
+
+        if (isset($GLOBALS['LIF_LOGGER'][$config['driver']])
+            && ($_logger = $GLOBALS['LIF_LOGGER'][$config['driver']])
+            && ($_logger instanceof \Lif\Core\Intf\Logger)
+        ) {
+            $logger = $_logger;
+        } else {
+           $logger
+           = $GLOBALS['LIF_LOGGER'][$config['driver']]
+           = new $class($config);
+        }
+
+        return $logger;
+    }
+}
 if (! fe('logging')) {
     function logging(
-        $message,
+        $message = null,
         array $context = [],
-        $level = 'info',
-        \Lif\Core\Intf\Logger $logger = null
-    ) : void {
-        $str = str_with_context($message, $context);
+        string $level = 'log',
+        $logger = null
+    ) {
+        $logger = logger($logger);
 
-        dd($str);
+        if (0 === func_num_args()) {
+            return $logger;
+        }
+
+        $logger->log($level, $message, $context);
     }
 }
 if (! fe('str_with_context')) {
@@ -1658,7 +1782,8 @@ if (! fe('str_with_context')) {
     }
 }
 if (! fe('safe_string')) {
-    function safe_string($str) {
+    function safe_string(string $str) {
+        return preg_match('/\w+/u', $str);
     }
 }
 if (! fe('stringify')) {
@@ -1667,7 +1792,7 @@ if (! fe('stringify')) {
             return ((string) $origin);
         }
         if (is_array($origin)) {
-            return $origin ? _json_encode($origin) : '';
+            return _json_encode($origin);
         }
         if (is_object($origin)) {
             $class = get_class($origin);

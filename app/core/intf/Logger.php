@@ -46,5 +46,15 @@ interface Logger
     // as calling the level-specifc method
     // And throw an `InvalidLogArgument` excption
     // when $level is not exist in definition
-    public function log($level = 'info', $log, array $context = []) : void;
+    public function log(
+        $level,
+        $log,
+        array $context = []
+    ) : void;
+
+    // LiF added methods
+    public function __construct(array $config = []);
+    public function validate();
+    public function prepare($log, array $context = [], string $level = 'log');
+    public function write();
 }

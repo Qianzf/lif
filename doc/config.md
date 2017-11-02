@@ -61,7 +61,7 @@ return [
 ];
 ```
 
-#### Custom Queue
+#### Configure Queue
 
 ``` php
 <?php
@@ -83,7 +83,25 @@ return [
 ];
 ```
 
-#### Custom Mail
+#### Configure Log
+
+``` php
+// app/conf/log.php
+
+return [
+    'default' => 'file_log',
+
+    'loggers' => [
+        'file_log' => [
+            'driver' => 'file',
+            'path' => 'lif.log',
+        ],
+    ],
+];
+
+```
+
+#### Configure Mail
 
 ``` php
 <?php
