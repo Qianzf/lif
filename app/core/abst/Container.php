@@ -11,6 +11,7 @@ abstract class Container
     use \Lif\Core\Traits\MethodNotExists;
     
     protected $app = null;
+    private $recursion = 0;
 
     public function __construct()
     {
@@ -102,7 +103,8 @@ abstract class Container
 
     protected function handleArgumentCountError(\ArgumentCountError $e) : array
     {
-        if (!preg_match(
+        if ((3 < ++$this->recursion)
+        || !preg_match(
             '/^Too\ few\ arguments\ to\ function ([\\\\\w]+)::.*and\ exactly\ (\d)+\ expected$/u',
             $e->getMessage(),
             $matches
@@ -121,7 +123,8 @@ abstract class Container
 
     protected function handleTypeError(\TypeError $e, array $params) : array
     {
-        if (!preg_match(
+        if ((3 < ++$this->recursion)
+        || !preg_match(
             '/Argument\ (\d+) passed to ([\\\\\w]+)::.*must\ be\ an?\ (.*)\ of\ ([\w\\\\]*),/u',
             $e->getMessage(),
             $matches
@@ -132,24 +135,21 @@ abstract class Container
             exists($matches, 3) &&
             exists($matches, 4)
         ) ||
-            ('instance' != $matches[3]) ||
-            !(($argOrder = intval($matches[1])) == $matches[1])
+            ('instance' != $matches[3])
+            || !(($argOrder = intval($matches[1])) == $matches[1])
         ) {
             excp($e->getMessage());
         }
 
-        if (!class_exists($matches[4])) {
+        if (! class_exists($matches[4])) {
             excp(
                 'Class `'.$matches[4].'` not exists.'
             );
         }
 
         // !!! `isset(false)` is true
-        if (!isset($params[--$argOrder])) {
+        if (! isset($params[--$argOrder])) {
             exception($e);
-            excp(
-                'Missing params from route definition.'
-            );
         }
 
         // repalace the type error arg with object

@@ -62,6 +62,37 @@ if (true !== $prepare && ('web' == context())) {
 }
 
 dd($prepare);
+
+// With default and condition
+$config = [
+    'host' => '127.0.0.1',
+    'ras'  => '/path/to/rsa',
+];
+if (true !== ($err = validate($config, [
+    'host' => 'need|host',
+
+    // if valition `int|min:1` fails
+    // `$config['port']` will be set to 22
+    // (except `need` validator is given)
+    'port' => ['int|min:1', 22],
+
+    // if valition `in:pswd,ssh` fails
+    // `$config['auth']` will be set to 'ssh'
+    // (except `need` validator is given)
+    'auth' => [
+        'rule'    => 'in:pswd,ssh',
+        'default' => 'ssh'
+    ],
+
+    // when `$config['auth']` exists and equals to 'pswd'
+    // then `$config['user']` is necessary and will be validated by given rules
+    // else skip the validation for `user` field
+    'user' => 'when:auth=pswd|string',
+    'pswd' => 'when:auth=pswd|string',
+    'rsa'  => 'when:auth=ssh|string'
+]))) {
+    excp('Illegal server configs: '.$err);
+}
 ```
 
 - `legal_or()`

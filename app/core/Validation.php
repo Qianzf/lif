@@ -4,16 +4,29 @@ namespace Lif\Core;
 
 class Validation
 {
-    public function run(array $data, array $rules)
+    public function run(array &$data, array $rules)
     {
-        foreach ($rules as $key => $rule) {
-            if (! is_string($rule)) {
-                excp('Single validation rule must be a string.');
+        foreach ($rules as $key => $item) {
+            unset($hasDefault);
+            if (is_string($item)) {
+                $rule = $item;
+            } elseif (is_array($item)) {
+                if (!isset($item[0]) && !isset($item['rule'])) {
+                    excp('Missing validation rule.');
+                }
+                $rule = $item[0] ?? $item['rule'];
+                if (isset($item[1]) || isset($item['default'])) {
+                    $hasDefault = $item[1] ?? $item['default'];
+                }
+            } else {
+                excp('Single validation rule must be a string or array.');
             }
+
             $_rules = explode('|', $rule);
 
             foreach ($_rules as $_rule) {
                 $_ruleArr = explode(':', $_rule);
+
                 if (!isset($_ruleArr[0])
                     || !method_exists($this, $_ruleArr[0])
                 ) {
@@ -25,13 +38,26 @@ class Validation
 
                 if (('need' != $validator)) {
                     if (! isset($data[$key])) {
-                        continue;
+                        if (isset($hasDefault)) {
+                            $data[$key] = $hasDefault;
+                        }
+
+                        if ('when' != $validator) {
+                            break;
+                        }
                     }
 
                     if (true !== ($err = $this->$validator(
-                        $data[$key],
-                        $extra
+                        ($data[$key] ?? null),
+                        $extra,
+                        $data,
+                        $key
                     ))) {
+                        if (isset($hasDefault)) {
+                            $data[$key] = $hasDefault;
+                            break;
+                        }
+
                         return is_string($err)
                         ? $err
                         : 'ILLEGAL_'.strtoupper($key);
@@ -101,12 +127,9 @@ class Validation
             return 'ILLEGAL_MAX_VALUE';
         }
 
-        if (is_numeric($value)) {
-            return ($value <= $max);
-        } else {
-            // TODO
-            return true;
-        }
+        return is_numeric($value)
+        ? ($value <= $max)
+        : 'ILLEGAL_VALUE';
     }
 
     public function in($value, $in)
@@ -122,9 +145,26 @@ class Validation
         return in_array($value, $in);
     }
 
-    public function domain()
+    public function when($value, $extra, array $data, string $key)
     {
-        // TODO
+        $cond = explode('=', $extra);
+
+        if (! isset($cond[0]) || !is_string($cond[0])) {
+            return 'MISSING_OR_ILLEGAL_WHEN_FIELD';
+        }
+
+        $val = $cond[1] ?? '';
+
+        if (isset($data[$cond[0]])
+            && ($data[$cond[0]] == $val)
+            && (
+                !isset($data[$key])
+                || !$value
+            )
+        ) {
+            return 'MISSING_'.strtoupper($key);
+        }
+
         return true;
     }
 
@@ -134,5 +174,20 @@ class Validation
         $regex = '/'.$regex.'/u';
         
         return (0 < preg_match($regex, $value));
+    }
+
+    public function domain($value)
+    {
+        return (false !== filter_var($value, FILTER_VALIDATE_DOMAIN));
+    }
+
+    public function ip($value)
+    {
+        return (false !== filter_var($value, FILTER_VALIDATE_IP));
+    }
+
+    public function host($value)
+    {
+        return ($this->ip($value) || $this->domain($value));
     }
 }
