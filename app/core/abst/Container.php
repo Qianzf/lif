@@ -11,7 +11,7 @@ abstract class Container
     use \Lif\Core\Traits\MethodNotExists;
     
     protected $app = null;
-    private $recursion = 0;
+    private $__recursion__ = 0;    // Avoid infinite recursion call
 
     public function __construct()
     {
@@ -103,7 +103,7 @@ abstract class Container
 
     protected function handleArgumentCountError(\ArgumentCountError $e) : array
     {
-        if ((3 < ++$this->recursion)
+        if ((3 < ++$this->__recursion__)
         || !preg_match(
             '/^Too\ few\ arguments\ to\ function ([\\\\\w]+)::.*and\ exactly\ (\d)+\ expected$/u',
             $e->getMessage(),
@@ -123,7 +123,7 @@ abstract class Container
 
     protected function handleTypeError(\TypeError $e, array $params) : array
     {
-        if ((3 < ++$this->recursion)
+        if ((3 < ++$this->__recursion__)
         || !preg_match(
             '/Argument\ (\d+) passed to ([\\\\\w]+)::.*must\ be\ an?\ (.*)\ of\ ([\w\\\\]*),/u',
             $e->getMessage(),
