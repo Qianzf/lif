@@ -124,3 +124,25 @@ return [
     ],
 ];
 ```
+
+#### Configure SSH Server
+
+``` php
+<?php
+// app/conf/ssh.php
+
+return [
+    'default' => 'example',
+
+    'servers' => [
+        'example' => [
+            'host' => 'example.hcmchi.com',
+            // 'port' => 22,
+            // 'auth' => 'ssh',
+            // 'user' => 'root',
+            // 'pswd' => 'lif',
+            'rsa'  => '/home/www/.ssh/id_rsa',
+        ],
+    ],
+];
+```

@@ -8,42 +8,51 @@ class SSH
 
     public function __construct(array $config = [])
     {
-        $this->setConfig($config);
+        $this
+        ->prepare()
+        ->setConfig($config);
     }
 
-    public function setConfig(array $config)
+    public function setConfig(array $config) : SSH
     {
-        $this->config = $config;
-
-        $this->prepare()->validate();
-    }
-
-    // Runtime requirements pre-check
-    private function prepare() : SSH
-    {
-        if (! fe('exec')) {
-            excp('PHP function `exec()` was disabled.');
+        if (legal_server($config)) {
+            $this->config = $config;
         }
 
         return $this;
     }
 
-    // Validate SSH server configs
-    private function validate()
+    // Runtime requirements pre-check
+    private function prepare() : SSH
     {
-        if (true !== ($err = validate($this->config, [
-            'host' => 'need|host',
-            'port' => ['int|min:1', 22],
-            'auth' => ['in:pswd,ssh', 'ssh'],
-            'user' => 'when:auth=pswd|string',
-            'pswd' => 'when:auth=pswd|string',
-            'rsa'  => 'when:auth=ssh|string'
-        ]))) {
-            excp('Illegal SSH server configs: '.$err);
-        }
+        // if (! fe('exec')) {
+        //     excp('PHP function `exec()` was disabled.');
+        // }
+
+        return $this;
     }
 
-    public function exec()
-    {
+    public function exec($cmds) {
+        $cmds = build_cmds_with_env($cmds);
+        
+        $passwdStr = ('pswd' == $this->config['auth'])
+        ? ':'.$this->config['pswd']
+        : '';
+
+        $privateKeyFile = ('ssh' == $this->config['auth'])
+        ? '-i '.$this->config['rsa'].' '
+        : '';
+
+        $sshWithCmds = 'ssh -o StrictHostKeyChecking=no '
+        .$privateKeyFile
+        .$this->config['user']
+        .$passwdStr
+        .'@'
+        .$this->config['host']
+        .' -p '
+        .$this->config['port']
+        ." '{$cmds}'";
+
+        return proc_exec($sshWithCmds);
     }
 }

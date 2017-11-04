@@ -83,11 +83,11 @@ if (true !== ($err = validate($config, [
         'rule'    => 'in:pswd,ssh',
         'default' => 'ssh'
     ],
+    'user' => ['string', 'root'],
 
-    // when `$config['auth']` exists and equals to 'pswd'
-    // then `$config['user']` is necessary and will be validated by given rules
-    // else skip the validation for `user` field
-    'user' => 'when:auth=pswd|string',
+    // when `$config['pswd']` exists and equals to 'pswd'
+    // then `$config['pswd']` is necessary and will be validated by given rules
+    // else skip the validation for `pswd` field
     'pswd' => 'when:auth=pswd|string',
     'rsa'  => 'when:auth=ssh|string'
 ]))) {

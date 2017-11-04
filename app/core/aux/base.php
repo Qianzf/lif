@@ -1685,7 +1685,9 @@ if (! fe('logger_conf')) {
             if (true !== ($err = validate($conf['loggers'], [
                 $logger => 'need|array',
             ]))) {
-                excp('Illegal or missing default logger configurations.');
+                excp('Illegal or missing logger configurations: '
+                    .$err
+                );
             }
 
             return $conf['loggers'][$logger];
@@ -1810,5 +1812,151 @@ if (! fe('stringify')) {
 
             return $ret;
         }
+    }
+}
+if (! fe('build_cmds_with_env')) {
+    function build_cmds_with_env($cmds) : string {
+        $_cmds = build_cmds($cmds);
+        return 'export PATH='
+        .implode(':', [
+            '/bin',
+            '/sbin',
+            '/usr/bin',
+            '/usr/sbin',
+            '/usr/local/bin',
+            '/usr/local/sbin',
+            '/usr/local/php/bin',
+            '~/bin',
+        ])
+        .' && '
+        .$_cmds;
+    }
+}
+if (! fe('build_cmds')) {
+    function build_cmds($cmds) {
+        if (! $cmds) {
+            excp('No commands to execute.');            
+        }
+        if (is_string($cmds)) {
+            return '('.$cmds.')';
+        }
+
+        if (is_array($cmds)) {
+            return '('.implode(' && ', $cmds).')';
+        }
+
+        excp('Illegal commands type, require string or array');
+    }
+}
+if (! fe('proc_exec')) {
+    function proc_exec($cmds, string $workdir = null) {
+        if (!fe('proc_open') || !fe('proc_close')) {
+            excp(
+                'PHP function `proc_open()` was disabled'
+            );
+        }
+
+        if (is_null($workdir)) {
+            $workdir = __DIR__;
+        }
+
+        $descriptorspec = [
+            0 => ['pipe', 'r'],  // std-in
+            1 => ['pipe', 'w'],  // std-out
+            2 => ['pipe', 'w'],  // std-err
+        ];
+
+        $process = proc_open(
+            build_cmds($cmds),
+            $descriptorspec,
+            $pipes,
+            $workdir,
+            null
+        );
+
+        $stdout = stream_get_contents($pipes[1]);
+        fclose($pipes[1]);
+        $stderr = stream_get_contents($pipes[2]);
+        fclose($pipes[2]);
+
+        return [
+            'num' => proc_close($process),
+            'out' => trim($stdout),
+            'err' => trim($stderr),
+        ];
+    }
+}
+if (! fe('legal_server')) {
+    // Validate SSH server configs
+    function legal_server(array $config) {
+        if (true !== ($err = validate($config, [
+            'host' => 'need|host',
+            'port' => ['int|min:1', 22],
+            'auth' => ['in:pswd,ssh', 'ssh'],
+            'user' => ['string', 'root'],
+            'pswd' => 'when:auth=pswd|string',
+            'rsa'  => 'when:auth=ssh|string'
+        ]))) {
+            excp('Illegal SSH server configs: '.$err);
+        }
+
+        return true;
+    }
+}
+if (! fe('ssh_conf')) {
+    function ssh_conf($server = null) {
+        if ($server && is_array($server)) {
+            return $server;
+        }
+
+        $conf = conf('ssh', null, false);
+
+        if ($conf) {
+            if (true !== ($err = validate($conf, [
+                'default' => 'need|string',
+                'servers' => 'need|array',
+            ]))) {
+                excp('Illegal SSH servers configurations: '.$err);
+            }
+
+            $server = is_string($server) && $server
+            ? $server
+            : $conf['default'];
+
+            if (true !== ($err = validate($conf['servers'], [
+                $server => 'need|array',
+            ]))) {
+                excp('Illegal or missing SSH server configurations: '
+                    .$err
+                );
+            }
+
+            return $conf['servers'][$server];
+        }
+
+        return $conf;
+    }
+}
+if (! fe('ssh_exec')) {
+    function ssh_exec($cmds, $config = null) {
+        return (
+            new \Lif\Core\Cli\SSH(ssh_conf($config))
+        )->exec($cmds);
+    }
+}
+if (! fe('ssh_exec_array')) {
+    function ssh_exec_array(array $cmds, $config = null) {
+       $ssh = new \Lif\Core\Cli\SSH(ssh_conf($config));
+
+       foreach ($cmds as $key => $cmd) {
+            $ret          = $ssh->exec($cmd);
+            $ret['cmd']   = $cmd;
+            
+            if ($ret['num'] != 0) {
+                return $ret;
+            }
+       }
+
+       return true;
     }
 }
