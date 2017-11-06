@@ -62,7 +62,7 @@ if (! fe('legal_route_binding')) {
             return true;
         }
         if (is_string($routeBind)) {
-            return preg_match('/^((\\\\)*[A-Z]\w*)*\@\w+$/u', $routeBind);
+            return preg_match('/^((\\\\)*[A-Z]\w*)*\@?\w+$/u', $routeBind);
         }
 
         return false;

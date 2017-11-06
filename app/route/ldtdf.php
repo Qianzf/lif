@@ -22,14 +22,15 @@ $this->group([
 
     $this->group([
         'prefix' => 'tasks',
+        'ctl' => 'Task',
         'filter' => [
             'id' => 'int|min:1',
         ],
     ], function () {
-        $this->get('/', 'Task@index');
-        $this->get('{id}', 'Task@detail');
-        $this->post('{id}', 'Task@update');
-        $this->post('edit', 'Task@edit');
+        $this->get('/', 'index');
+        $this->get('{id}', 'detail');
+        $this->post('{id}', 'update');
+        $this->post('edit', 'edit');
     });
 
     $this->group([
@@ -42,25 +43,26 @@ $this->group([
         $this->get('/', 'Admin@index');
         $this->group([
             'prefix' => 'users',
+            'ctl' => 'User',
         ], function () {
-            $this->get('/', 'User@index');
-            $this->get('new', 'User@info');
-            $this->post('new', 'User@add');
-            $this->get('edit/{id}', 'User@info');
-            $this->get('delete/{id}', 'User@delete');
-            $this->post('edit/{id}', 'User@update');
+            $this->get('/', 'index');
+            $this->get('new', 'info');
+            $this->post('new', 'add');
+            $this->get('edit/{id}', 'info');
+            $this->get('delete/{id}', 'delete');
+            $this->post('edit/{id}', 'update');
         });
 
         $this->group([
             'prefix' => 'projects',
             'ctl'    => 'Project',
         ], function () {
-            $this->get('/', 'Project@index');
-            $this->get('new', 'Project@add');
-            $this->post('new', 'Project@create');
-            $this->get('edit/{id}', 'Project@edit');
-            $this->post('edit/{id}', 'Project@update');
-            $this->get('delete/{id}', 'Project@delete');
+            $this->get('/', 'index');
+            $this->get('new', 'edit');
+            $this->post('new', 'create');
+            $this->get('edit/{id}', 'edit');
+            $this->post('edit/{id}', 'update');
+            $this->get('delete/{id}', 'delete');
         });
 
         $this->group([

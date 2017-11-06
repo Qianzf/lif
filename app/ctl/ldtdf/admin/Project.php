@@ -11,11 +11,6 @@ class Project extends Ctl
         view('ldtdf/project/index')->withProjects($project->all());
     }
 
-    public function add(ProjectModel $project)
-    {
-        view('ldtdf/project/edit')->withProject($project);
-    }
-
     public function create(ProjectModel $project)
     {
         $id = $project->create($this->request->all());
@@ -42,6 +37,7 @@ class Project extends Ctl
         redirect($this->route);
     }
 
+    // method edit() add project too
     public function edit(ProjectModel $project)
     {
         view('ldtdf/project/edit')->withProject($project);

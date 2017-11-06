@@ -27,10 +27,12 @@ class Route extends Container implements Observable
     private $middlewares  = [];
     private $namespaces   = [];
     private $filters      = [];
+    private $ctl          = [];
     private $_prefixes    = [];
     private $_middlewares = [];
     private $_namespaces  = [];
     private $_filters     = [];
+    private $_ctl         = [];
     private $type         = null;    // Current single route type
     private $route        = null;    // Current single route name
     private $groupDepth   = 0;       // Nest group routes depth
@@ -84,7 +86,8 @@ class Route extends Container implements Observable
             $this->prefixes,
             $this->middlewares,
             $this->namespaces,
-            $this->filters
+            $this->filters,
+            $this->ctl
         );
 
         return $this;
@@ -95,9 +98,10 @@ class Route extends Container implements Observable
         &$prefixes,
         &$middlewares,
         &$namespaces,
-        &$filters
+        &$filters,
+        &$ctl
     ): Route {
-        // If current route hasn't prefix/middlewares/namespace/filters
+        // If current route hasn't prefix/middlewares/namespace/filters/ctl
         // We need a stub for current route anyway
 
         $prefix = $namespace = false;
@@ -139,11 +143,21 @@ class Route extends Container implements Observable
             if (! is_array($filter)) {
                 excp('Route filter must be an array.');
             }
-
-            $filters[] = $filter;
         } else {
             $filter = [];
         }
+
+        $filters[] = $filter;
+
+        if ($controller = exists($attrs, 'ctl')) {
+            if (! is_string($controller)) {
+                excp('Controller name must be a string.');
+            }
+        } else {
+            $controller = null;
+        }
+
+        $ctl[] = $controller;
 
         return $this;
     }
@@ -156,7 +170,8 @@ class Route extends Container implements Observable
             $this->_prefixes,
             $this->_middlewares,
             $this->_namespaces,
-            $this->_filters
+            $this->_filters,
+            $this->_ctl
         );
 
         return $this;
@@ -192,6 +207,7 @@ class Route extends Container implements Observable
         array_pop($this->_middlewares);
         array_pop($this->_namespaces);
         array_pop($this->_filters);
+        array_pop($this->_ctl);
 
         return $this;
     }
@@ -202,6 +218,7 @@ class Route extends Container implements Observable
         array_pop($this->middlewares);
         array_pop($this->namespaces);
         array_pop($this->filters);
+        array_pop($this->ctl);
 
         return $this;
     }
@@ -212,10 +229,12 @@ class Route extends Container implements Observable
         $this->middlewares  = [];
         $this->namespaces   = [];
         $this->filters      = [];
+        $this->ctl          = [];
         $this->_prefixes    = [];
         $this->_middlewares = [];
         $this->_namespaces  = [];
         $this->_filters     = [];
+        $this->_ctl         = [];
         $this->type         = null;
         $this->route        = null;
         $this->groupDepth   = 0;
@@ -359,7 +378,24 @@ class Route extends Container implements Observable
         if (is_callable($route['bind'])) {
             $handle = $route['bind'];
         } elseif (is_string($route['bind'])) {
-            $handle = format_namespace($namespaces).'\\'.$route['bind'];
+            $_handle = $route['bind'];
+            // Here always use the latest item of tmp stack
+            // Single route controller can replace group controller
+            $ctl = end($this->_ctl) ?: end($this->ctl) ?: null;
+
+            if ($ctl) {
+                // check action name legality when controller is given
+                if (! preg_match('/^\w+$/u', $route['bind'])) {
+                    excp(
+                        'Illegal action name when controller was given: '
+                        .$route['bind']
+                    );
+                }
+
+                $_handle = $ctl.'@'.$route['bind'];
+            }
+
+            $handle = format_namespace($namespaces).'\\'.$_handle;
         } else {
             throw new \Lif\Core\Excp\IllegalRouteDefinition(1);
         }

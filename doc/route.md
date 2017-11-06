@@ -136,3 +136,16 @@ $this->group([
     $this->get('{id}', 'User@detail');
 });
 ```
+
+- Specific controller
+
+``` php
+$this->group([
+    'prefix' => 'users',
+    'ctl' => 'User',
+], function () {
+    $this->get('/', 'index');
+    $this->get('new', 'edit');
+    $this->post('new', 'add');
+});
+```
