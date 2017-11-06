@@ -38,13 +38,22 @@ if (! fe('response')) {
     }
 }
 if (! fe('abort')) {
-    function abort($status = 403, $msg = '') {
+    function abort(int $status = 403, string $msg = '') {
         ob_start();
         ob_end_clean();
         header('HTTP/1.1 '.$status);
-        exit(json_http_response([
-            'Warning' => $msg.' ('.$status.')'
-        ]));
+
+        $data = [
+            'err' => $status,
+            'msg' => $msg
+        ];
+        
+        put2file(
+            pathOf('log', 'errors/'.date('Y-m-d').'.log'),
+            build_log_str($data, 'error')
+        );
+
+        json_http_response($data);
     }
 }
 if (! fe('legal_route_binding')) {

@@ -53,8 +53,20 @@ $this->group([
 
         $this->group([
             'prefix' => 'projects',
+            'ctl'    => 'Project',
         ], function () {
             $this->get('/', 'Project@index');
+            $this->get('new', 'Project@add');
+            $this->post('new', 'Project@create');
+            $this->get('edit/{id}', 'Project@edit');
+            $this->post('edit/{id}', 'Project@update');
+            $this->get('delete/{id}', 'Project@delete');
+        });
+
+        $this->group([
+            'prefix' => 'envs',
+        ], function () {
+            $this->get('/', 'Environment@index');
         });
     });
 

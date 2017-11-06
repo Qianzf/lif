@@ -166,7 +166,7 @@ abstract class Container
 
         if (true !== $prepare && ('web' == context())) {
             share('__error', sysmsg($prepare));
-            redirect('/'.$this->route);
+            redirect($this->route);
         }
 
         return $prepare;

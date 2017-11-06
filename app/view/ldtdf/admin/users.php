@@ -1,12 +1,13 @@
 <?= $this->layout('main') ?>
 <?= $this->title([lang('USER_MANAGE'), lang('LDTDFMS')]) ?>
-<?= $this->section('search') ?>
 
 <ul>
     <li>
         <a href="users/new"><?= lang('ADD_USER') ?></a>
     </li>
 </ul>
+
+<?= $this->section('search') ?>
 
 <table>
     <caption><?= lang('USER_LIST') ?></caption>

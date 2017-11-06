@@ -849,9 +849,9 @@ class LDO extends \PDO
                 ])) {
                     // Always return last insert ID when insert
                     // Number of rows affected by the last SQL statement
-                    $this->result = ('INSERT' === $this->crud)
+                    $this->result = intval(('INSERT' === $this->crud)
                     ? $this->lastInsertId()
-                    : $this->statement->rowCount();
+                    : $this->statement->rowCount());
 
                     $this->transRes = $this->transRes && ($this->result >= 0);
                 } else {

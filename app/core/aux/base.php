@@ -1045,7 +1045,7 @@ if (! fe('load_array')) {
     }
 }
 if (! fe('sysmsg')) {
-    function sysmsg($key, string $lang = null) {
+    function sysmsg($key, string $lang = null) : string {
         $key = strtoupper($key);
         if (! $lang || !is_string($lang)) {
             $lang = $_REQUEST['lang'] ?? null;
@@ -1094,9 +1094,11 @@ if (! fe('sysmsg')) {
     }
 }
 if (! fe('lang')) {
-    function lang($key, $lang = null)
+    function lang($key, $msg = null, $lang = null)
     {
-        return sysmsg($key, $lang);
+        return ($_msg = stringify($msg))
+        ? sysmsg($key, $lang).': '.$_msg
+        : sysmsg($key, $lang);
     }
 }
 if (! fe('xml2arr')) {
@@ -1796,6 +1798,9 @@ if (! fe('safe_string')) {
 }
 if (! fe('stringify')) {
     function stringify($origin) : string {
+        if (! $origin) {
+            return '';
+        }
         if (is_scalar($origin)) {
             return ((string) $origin);
         }

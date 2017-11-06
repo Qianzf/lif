@@ -19,6 +19,7 @@ abstract class Model
     // Stack of current query result
     protected $fields = [];
     protected $attrs  = [];
+    protected $rules  = [];
 
     public function __construct($id = null)
     {
@@ -157,9 +158,25 @@ abstract class Model
         return $res;
     }
 
-    // If record exists then update or create
-    public function save(array $data = [])
+    public function create(array $data, array $rules = [])
     {
+        return $this->save($data, $rules);
+    }
+
+
+    // If record exists then update or create
+    // @return:
+    // - string => validation error
+    // - integer over 0 => success
+    // - other => failed
+    public function save(array $data = [], array $rules = [])
+    {
+        if ($rules = ($rules ?: ($this->rules ?: []))) {
+            if (true !== ($err = validate($data, $rules))) {
+                return $err;
+            }
+        }
+
         if (! $data) {
             $data = $this->fields;
         }

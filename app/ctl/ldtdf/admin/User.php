@@ -85,7 +85,7 @@ class User extends Ctl
 
         share_error_i18n('CREATE_FAILED');
 
-        return redirect('/'.$this->route);
+        return redirect($this->route);
     }
 
     public function update(UserModel $user)

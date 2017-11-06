@@ -48,6 +48,7 @@ return [
     'PAGE' => 'Page',
     'ALL_ROLES' => 'All Roles',
     'CREATE' => 'Create',
+    'CREATED' => 'Created',
     'UPDATE' => 'Update',
     'OPERATIONS' => 'Operations',
     'DETAILS' => 'Details',
@@ -76,4 +77,5 @@ return [
     'TRENDING' => 'Trending',
     'USER_EMAIL_OR_ACCOUNT_CONFLICT' => 'Account or email already be used',
     'ENVIRONMENT' => 'Environment',
+    'DESCRIPTION' => 'Description',
 ];

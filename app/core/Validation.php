@@ -190,4 +190,9 @@ class Validation
     {
         return ($this->ip($value) || $this->domain($value));
     }
+
+    public function url($value)
+    {
+        return (false !== filter_var($value, FILTER_VALIDATE_URL));
+    }
 }

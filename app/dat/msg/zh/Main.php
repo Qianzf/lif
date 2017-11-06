@@ -48,6 +48,7 @@ return [
     'PAGE' => '页',
     'ALL_ROLES' => '所有角色',
     'CREATE' => '创建',
+    'CREATED' => '创建',
     'UPDATE' => '更新',
     'OPERATIONS' => '操作',
     'DETAILS' => '详情',
@@ -76,4 +77,5 @@ return [
     'TRENDING' => '历史动态',
     'USER_EMAIL_OR_ACCOUNT_CONFLICT' => '账号或邮箱已被占用',
     'ENVIRONMENT' => '环境',
+    'DESCRIPTION' => '描述',
 ];
