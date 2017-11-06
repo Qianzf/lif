@@ -75,4 +75,5 @@ return [
     'PROVIDE_KEYWORDS' => 'Provide search keywords',
     'TRENDING' => 'Trending',
     'USER_EMAIL_OR_ACCOUNT_CONFLICT' => 'Account or email already be used',
+    'ENVIRONMENT' => 'Environment',
 ];

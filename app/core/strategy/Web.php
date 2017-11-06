@@ -134,12 +134,7 @@ class Web extends Container implements Observer, Strategy
         // !!! Hander must set before middlewares be executed
         $this->handler   = $this->routes[$key][$type]['handle'];
         $this->routeVars = $this->assign($this->routes[$key][$type]['params']);
-
-        if ($middlewares = exists($this->routes[$key][$type], 'middlewares')) {
-            $this->mdwr($middlewares);
-        }
-
-        $this->execute();
+        $this->mdwr(exists($this->routes[$key][$type], 'middlewares'));
 
         return $this;
     }
@@ -168,15 +163,14 @@ class Web extends Container implements Observer, Strategy
         return $this;
     }
 
-    protected function mdwr($middlewares)
+    protected function mdwr(array $middlewares = [])
     {
-        if ($this->globalMiddlewares) {
-            // !!! Make sure global middlewares be executed first
-            $middlewares = array_merge($this->globalMiddlewares, $middlewares);
-        }
-
+        // !!! Make sure global middlewares be executed first
         ($this->middleware = Factory::make('middleware', nsOf('web')))
-        ->run($this, $middlewares);
+        ->run($this, array_merge(
+            $this->globalMiddlewares,
+            $middlewares
+        ));
 
         return $this;
     }

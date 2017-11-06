@@ -50,6 +50,12 @@ $this->group([
             $this->get('delete/{id}', 'User@delete');
             $this->post('edit/{id}', 'User@update');
         });
+
+        $this->group([
+            'prefix' => 'projects',
+        ], function () {
+            $this->get('/', 'Project@index');
+        });
     });
 
     $this->group([

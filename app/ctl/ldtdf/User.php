@@ -16,12 +16,6 @@ class User extends Ctl
             'page' => ['int|min:1|max:'.$pages, 1],
         ]);
 
-        if (isset($errs['page']) && true !== $errs['page']) {
-            share_error_i18n($errs['page']);
-
-            return redirect($this->route);
-        }
-
         $takeFrom  = ($querys['page'] - 1) * $pageScale;
         $data      = ($admin = ('ADMIN' === share('__USER.role')))
         ? $trending->list([

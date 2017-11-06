@@ -22,11 +22,11 @@ class Middleware extends Container implements Observable
     {
         return $this
         ->addObserver($observer)
-        ->execute($middlewares)
+        ->through($middlewares)
         ->done();
     }
 
-    public function execute($middlewares): Middleware
+    public function through($middlewares): Middleware
     {
         $this->middlewares = $middlewares;
 
