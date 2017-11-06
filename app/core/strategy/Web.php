@@ -159,10 +159,9 @@ class Web extends Container implements Observer, Strategy
             excp('Illegal route params count.');
         }
 
-        if (true !== ($err = validate(
-            array_combine($params, $this->vars),
-            $filters
-        ))) {
+        $_params = array_combine($params, $this->vars);
+        
+        if (true !== ($err = validate($_params, $filters))) {
             excp('Route parameter validation failed: '.$err);
         }
 

@@ -13,7 +13,7 @@ class Session
         if (! session_id()) {
             if (headers_sent()) {
                 excp(
-                    'Session set failed coz HTTP header has been sent.'
+                    'Session starting failed: HTTP headers sent already.'
                 );
             }
             session_start();

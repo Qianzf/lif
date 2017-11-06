@@ -52,6 +52,11 @@ if (! fe('get_lif_ver')) {
 }
 if (! fe('init')) {
     function init() {
+        // ini_set('log_errors', 1);
+        // ini_set('error_log', pathOf('log', 'php-errors.log'));
+        // set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+        // });
+
         register_shutdown_function(function () {
             if ($error = error_get_last()) {
                 logger()->error($error);
@@ -63,7 +68,6 @@ if (! fe('init')) {
         });
 
         $debugNonProd = !('production' == app_env()) && app_debug();
-
         $display_startup_errors = $debugNonProd ? 1 : 0;
         $display_errors  = $debugNonProd ? 'On' : 'Off';
         $error_reporting = $debugNonProd ? E_ALL : 0;
@@ -343,7 +347,9 @@ if (! fe('pathOf')) {
         if (! file_exists($path)) {
             $arr = explode('/', $path);
             unset($arr[count($arr)-1]);
-            @mkdir(implode('/', $arr));
+            if (! file_exists(implode('/', $arr))) {
+                @mkdir(implode('/', $arr));
+            }
         }
 
         return $path;

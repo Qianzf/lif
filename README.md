@@ -58,6 +58,8 @@ LiF is an API-based web framework, so I didn't waste time to design a specialize
 
 - Support user-customized command class
 
+- Suppert unified outer commands executing locally and remotely(via SSH)
+
 ### Configuration
 
 - Custom configuration
@@ -86,7 +88,7 @@ Support basic queue and queue jobs functionalities.
 
 ### I18N
 
-Use `sysmsg()`/`lang()` and dynamic language packages, LiF can easily achieve i18n.
+Use `sysmsg()`/`lang()` and dynamic language packages, LiF can easily achieve simple i18n.
 
 ### Exception
 
