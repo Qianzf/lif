@@ -89,7 +89,7 @@ if (! fe('client_error')) {
     //     Client error is used to tell cllient what's going wrong
     //     Debug model or environment will not effect client error output
     // ----------------------------------------------------------------------
-    function client_error($msg, $err) {
+    function client_error($msg, int $err = 403) {
         abort($err, $msg);
     }
 }

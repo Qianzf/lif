@@ -444,7 +444,7 @@ if (! fe('exception')) {
         // !!! Make sure check app conf path first
         // !!! Or infinite loop will occur when app conf file not exists
         if (('production' != app_env()) && app_debug()) {
-            $info['Trace'] = $_info['trace'];
+            $info['dat']['trace'] = $_info['trace'];
         }
 
         put2file(
@@ -529,7 +529,7 @@ if (! fe('empty_safe')) {
 if (! fe('array_values_oned')) {
     // Transform multilayers array un-empty values into one dimension
     function array_values_oned(array $arr, array &$ret = []) : array {
-        foreach ($arr as $item) {
+        foreach ($arr as $key => $item) {
             if (empty_safe($item)) {
                 continue;
             }
@@ -537,7 +537,11 @@ if (! fe('array_values_oned')) {
             if (is_array($item)) {
                 array_values_oned($item, $ret);
             } elseif (is_scalar($item)) {
-                $ret[] = $item;
+                if (isset($ret[$key])) {
+                    $ret[] = $item;
+                } else {
+                    $ret[$key] = $item;
+                }
             }
         }
 

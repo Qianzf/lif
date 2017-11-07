@@ -155,9 +155,9 @@ class Web extends Container implements Observer, Strategy
         }
 
         $_params = array_combine($params, $this->vars);
-        
+
         if (true !== ($err = validate($_params, $filters))) {
-            excp('Route parameter validation failed: '.$err);
+            client_error('Route parameter validation failed: '.$err);
         }
 
         return $this;

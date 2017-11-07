@@ -375,6 +375,7 @@ class Route extends Container implements Observable
                 $this->_filters
             );
         }
+
         if (is_callable($route['bind'])) {
             $handle = $route['bind'];
         } elseif (is_string($route['bind'])) {
