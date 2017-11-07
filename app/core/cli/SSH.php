@@ -39,8 +39,8 @@ class SSH
         ? ':'.$this->config['pswd']
         : '';
 
-        $privateKeyFile = ('ssh' == $this->config['auth'])
-        ? '-i '.$this->config['rsa'].' '
+        $privateKeyFile = ('pki' == $this->config['auth'])
+        ? '-i '.$this->config['prik'].' '
         : '';
 
         $sshWithCmds = 'ssh -o StrictHostKeyChecking=no '

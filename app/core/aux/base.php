@@ -589,7 +589,7 @@ if (! fe('array_stringify_main')) {
                 $str .= $margin."],\n";
                 --$level;
             } else {
-                $str .= "'".$val."',\n";
+                $str .= "'".stringify($val)."',\n";
             }
         }
         return $str;
@@ -674,16 +674,30 @@ if (! fe('array_group_key_by_value')) {
         ? $_tmp : $tmp;
     }
 }
+if (! fe('arr2code')) {
+    function arr2code(array $data, $path) {
+        $code = array_stringify($data);
+        $code = <<< ARR
+<?php
+
+return {$code};\n
+ARR;
+        file_put_contents($path, $code);
+    }
+}
 if (! fe('cfg')) {
+    // Update config file
     function cfg($name, $keyStr, $data) {
-        if (!$name || !is_string($name) ||
-            !$keyStr || !is_string($keyStr) ||
-            !$data
-       ) {
+        if (!$name
+            || !is_string($name)
+            || !$keyStr
+            || !is_string($keyStr)
+            || !$data
+        ) {
             throw new \Lif\Core\Excp\Lif('Missing config params');
         }
 
-        $cfgFile = pathOf('conf').$name.'.php';
+        $cfgFile = pathOf('conf', $name.'.php');
         $config  = array_update_by_coherent_keys(
             $keyStr,
             conf($name),
@@ -1809,19 +1823,19 @@ if (! fe('stringify')) {
         }
         if (is_object($origin)) {
             $class = get_class($origin);
-            if (! method_exists($origin, '__toString')) {
-                excp(
-                    'Object of '
-                    .$class
-                    .' is unstringable.'
-                );
+            if (method_exists($origin, '__toString')) {
+                if (! is_string($ret = call_user_func([$origin, '__toString']))) {
+                    excp('Bad __toString() definition of class: '.$class);
+                }
+
+                return $ret;
             }
 
-            if (! is_string($ret = call_user_func([$origin, '__toString']))) {
-                excp('Bad __toString() definition of class: '.$class);
-            }
-
-            return $ret;
+            excp(
+                'Object of '
+                .$class
+                .' is unstringable.'
+            );
         }
     }
 }
@@ -1899,14 +1913,15 @@ if (! fe('proc_exec')) {
 }
 if (! fe('legal_server')) {
     // Validate SSH server configs
-    function legal_server(array $config) {
+    function legal_server(array &$config) {
         if (true !== ($err = validate($config, [
             'host' => 'need|host',
             'port' => ['int|min:1', 22],
-            'auth' => ['in:pswd,ssh', 'ssh'],
+            'auth' => ['in:pswd,pki', 'pki'],
             'user' => ['string', 'root'],
             'pswd' => 'when:auth=pswd|string',
-            'rsa'  => 'when:auth=ssh|string'
+            'pubk' => 'when:auth=pki|string',
+            'prik' => 'when:auth=pki|string',
         ]))) {
             excp('Illegal SSH server configs: '.$err);
         }

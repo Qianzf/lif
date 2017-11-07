@@ -78,4 +78,9 @@ return [
     'USER_EMAIL_OR_ACCOUNT_CONFLICT' => 'Account or email already be used',
     'ENVIRONMENT' => 'Environment',
     'DESCRIPTION' => 'Description',
+    'SERVER' => 'Server',
+    'SERVERS' => 'Servers',
+    'HOST' => 'Host',
+    'ADDR' => 'Address',
+    'PORT' => 'Port',
 ];

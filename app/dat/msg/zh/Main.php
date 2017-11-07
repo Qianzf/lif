@@ -78,4 +78,9 @@ return [
     'USER_EMAIL_OR_ACCOUNT_CONFLICT' => '账号或邮箱已被占用',
     'ENVIRONMENT' => '环境',
     'DESCRIPTION' => '描述',
+    'SERVER' => '服务器',
+    'SERVERS' => '服务器',
+    'HOST' => '主机',
+    'ADDR' => '地址',
+    'PORT' => '端口',
 ];

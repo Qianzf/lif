@@ -250,7 +250,7 @@ abstract class Model
                 new \ReflectionClass($this)
             )->getShortName();
 
-            return $this->table = defaultTableName;
+            return $this->table = strtolower($defaultTableName);
         }
 
         return $this->table;

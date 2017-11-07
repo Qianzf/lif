@@ -3,6 +3,9 @@
 $this->group([
     'prefix'    => 'dep',
     'namespace' => 'Ldtdf',
+    'filter' => [
+        'id' => 'int|min:1'
+    ],
     'middleware' => [
         'auth.web',
     ],
@@ -23,9 +26,6 @@ $this->group([
     $this->group([
         'prefix' => 'tasks',
         'ctl' => 'Task',
-        'filter' => [
-            'id' => 'int|min:1',
-        ],
     ], function () {
         $this->get('/', 'index');
         $this->get('{id}', 'detail');
@@ -67,8 +67,13 @@ $this->group([
 
         $this->group([
             'prefix' => 'envs',
+            'ctl' => 'Environment',
         ], function () {
-            $this->get('/', 'Environment@index');
+            $this->get('/', 'list');
+            $this->get('new', 'edit');
+            $this->post('new', 'create');
+            $this->get('{id}', 'edit');
+            $this->post('{id}', 'update');
         });
     });
 

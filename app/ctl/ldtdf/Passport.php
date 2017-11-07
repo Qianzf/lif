@@ -9,7 +9,7 @@ class Passport extends Ctl
     public function login()
     {
         if (share('__USER')) {
-            redirect(route('dep'));
+            redirect('/dep');
         }
 
         view('ldtdf/user/login');
@@ -57,7 +57,7 @@ class Passport extends Ctl
             share('__lang', $lang);
         }
 
-        redirect(route('dep'));
+        redirect('/dep');
     }
 
     public function logout()

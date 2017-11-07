@@ -297,7 +297,7 @@ return [
                 //     *`host` => SSH server host
                 //     (IP or domain)
                 // ----------------------------------
-                'host' => 'test.hcmchi.com',
+                'host' => 'example.com',
 
                 // ----------------------------------
                 //     `port` => SSH server port
@@ -307,9 +307,9 @@ return [
 
                 // --------------------------------------
                 //     `auth` => SSH server auth type
-                //     (ssh <= default)
+                //     (pki <= default)
                 // --------------------------------------
-                'auth' => 'ssh',
+                'auth' => 'pki',
 
                 // -------------------------------------
                 //     `user` => SSH server username
@@ -324,10 +324,16 @@ return [
                 'pswd' => 'lif',
 
                 // -------------------------------------------------
-                //     `user` => SSH server ssh auth private key
-                //     (required when `auth` => ssh)
+                //     `pubk` => SSH server ssh auth public key
+                //     (required when `auth` => pki)
                 // -------------------------------------------------
-                'rsa'  => '/home/www/.ssh/id_rsa',
+                'pubk'  => '/home/www/.ssh/id_rsa.pub',
+
+                // -------------------------------------------------
+                //     `prik` => SSH server ssh auth private key
+                //     (required when `auth` => pki)
+                // -------------------------------------------------
+                'prik'  => '/home/www/.ssh/id_rsa',
             ],
         ],
     ],

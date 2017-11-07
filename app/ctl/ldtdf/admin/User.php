@@ -80,7 +80,7 @@ class User extends Ctl
         if ($user->save()) {
             share_error_i18n('CREATED_SUCCESS');
 
-            redirect(route('dep.admin.users'));
+            redirect('/dep/admin/users');
         }
 
         share_error_i18n('CREATE_FAILED');
@@ -137,7 +137,7 @@ class User extends Ctl
 
         share_error_i18n($sysmsg);
 
-        return redirect(route('dep.admin.users'));
+        return redirect('/dep/admin/users');
     }
 
     public function delete(UserModel $user)
@@ -155,6 +155,6 @@ class User extends Ctl
 
         share_error_i18n($err);
 
-        redirect(route('dep.admin.users'));
+        redirect('/dep/admin/users');
     }
 }

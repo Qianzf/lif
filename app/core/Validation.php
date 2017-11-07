@@ -178,7 +178,10 @@ class Validation
 
     public function domain($value)
     {
-        return (false !== filter_var($value, FILTER_VALIDATE_DOMAIN));
+        return (
+            (false !== filter_var($value, FILTER_VALIDATE_DOMAIN))
+            // && ($value !== gethostbyname($value))
+        );
     }
 
     public function ip($value)

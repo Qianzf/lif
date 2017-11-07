@@ -1,5 +1,9 @@
 <?= $this->layout('main') ?>
-<?= $this->title([lang('ADD_PROJECT'), lang('LDTDFMS')]) ?>
+<?= $this->title([
+        lang(($project->id ? 'EDIT' : 'ADD').'_PROJECT'),
+        lang('LDTDFMS')
+    ])
+?>
 
 <br>
 

@@ -10,10 +10,11 @@ return [
         'example' => [
             'host' => 'example.com',
             // 'port' => 22,
-            // 'auth' => 'ssh',
+            // 'auth' => 'pki',
             // 'user' => 'root',
             // 'pswd' => 'lif',
-            'rsa'  => '/home/www/.ssh/id_rsa',
+            'pubk'  => '/home/www/.ssh/id_rsa.pub',
+            'prik'  => '/home/www/.ssh/id_rsa',
         ],
     ],
 ];

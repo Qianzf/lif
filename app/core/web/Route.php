@@ -436,20 +436,24 @@ class Route extends Container implements Observable
                 '` of `'.$type.'`.'
             );
         }
-        if (in_array($route['alias'], array_keys($this->aliases))) {
+
+        $alias = $route['alias']
+        ? $route['alias']
+        : $this->type.':'.$name;
+
+        if (in_array($alias, array_keys($this->aliases))) {
             excp(
                 'Duplicate route alias `'.
-                $route['alias'].
+                $alias.
                 '` for `'.
                 get_raw_route($name).
                 '`, already set for route `'.
-                get_raw_route($this->aliases[$route['alias']]).'`.'
+                get_raw_route($alias).'`.'
             );
         }
 
-        $alias = ($route['alias'] ? $route['alias'] : $name);
         $aliasArr = [
-            'route' => $alias,
+            'route' => $route['name'],
             'type'  => $type,
         ];
         $this->aliases[$alias] = $aliasArr;
@@ -469,36 +473,25 @@ class Route extends Container implements Observable
     {
         $this->cache = config('app.route.cache') ?? false;
 
-        if ($this->cache) {
-            $_routes  = pathOf('cache').'route/';
-            $_aliases = pathOf('cache').'route/';
+        if ($this->cache) {            
+            $this->_routes  = pathOf('cache', 'route/routes.json');
+            $this->_aliases = pathOf('cache').'route/aliases.json';
         
-            if (file_exists($_routes) && file_exists($_aliases)) {
-                $this->_routes  = $_routes.'routes.json';
-                $this->_aliases = $_aliases.'aliases.json';
+            if (file_exists($this->_routes) && file_exists($this->_aliases)) {
+                $routes  = json_decode(
+                    file_get_contents($this->_routes),
+                    true
+                );
+                $aliases = json_decode(
+                    file_get_contents($this->_aliases),
+                    true
+                );
 
-                if (file_exists($this->_routes)
-                    && file_exists($this->_aliases)
-                ) {
-                    $_routes   = json_decode(
-                        file_get_contents($this->_routes),
-                        true
-                    );
-                    $_aliases  = json_decode(
-                        file_get_contents($this->_aliases),
-                        true
-                    );
+                if ($routes && $aliases) {
+                    $this->routes  = $routes;
+                    $this->aliases = $aliases;
 
-                    if ($_routes
-                        && $_aliases
-                        && is_array($_routes)
-                        && is_array($_aliases)
-                    ) {
-                        $this->routes  = $_routes;
-                        $this->aliases = $_aliases;
-
-                        return $this;
-                    }
+                    return $this;
                 }
             }
         }
@@ -536,6 +529,8 @@ class Route extends Container implements Observable
             }
 
             if ($this->routes && $this->aliases) {
+                // arr2code($this->routes, pathOf('cache', 'route/routes.php'))
+                // arr2code($this->aliases, pathOf('cache', 'route/aliases.php'))
                 file_put_contents($this->_routes, json_encode(
                     $this->routes
                 ));
