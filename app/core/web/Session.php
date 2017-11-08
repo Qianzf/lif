@@ -31,6 +31,15 @@ class Session
         return true;
     }
 
+    public function sets(array $data = [])
+    {
+        if ($data) {
+            foreach ($data as $key => $val) {
+                $this->set($key, $val);
+            }
+        }
+    }
+
     public function get($key)
     {
         return array_query_by_coherent_keys($_SESSION, $key);
@@ -66,5 +75,16 @@ class Session
         $this->delete($key);
 
         return $value;
+    }
+
+    public function update()
+    {
+        if (headers_sent()) {
+            excp(
+                'Update session failed: HTTP headers sent already.'
+            );
+        }
+
+        session_regenerate_id();
     }
 }

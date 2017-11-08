@@ -2,23 +2,58 @@
 
 namespace Lif\Ctl\Ldtdf\Admin;
 
+use Lif\Mdl\Environment as Env;
 use Lif\Mdl\Server;
 
 class Environment extends Ctl
 {
-    public function list(Server $server)
+    private $types = [
+        'test',
+        'stage',
+        'prod',
+    ];
+
+    public function __construct()
     {
-        view('ldtdf/env/index')->withServers($server->all());
+        share('env-types', $this->types);
     }
 
-    public function edit(Server $server)
+    public function list(Env $env)
     {
-        view('ldtdf/env/edit')->withServer($server);
+        if (($type = $this->request->get('type'))
+            && in_array($type, $this->types)
+        ) {
+            $_type = $type;
+        } else {
+            $_type = [
+                'test',
+                'stage',
+                'prod',
+            ];
+        }
+
+        $env     = $env->whereType($_type);
+        $keyword = $this->request->get('search') ?? null;
+
+        if ($keyword) {
+            $env = $env->whereName('like', "%{$keyword}%");
+        }
+
+        $envs = $env->get();
+
+        view('ldtdf/env/index')->withEnvsTypeKeyword($envs, $type, $keyword);
     }
 
-    public function create(Server $server)
+    public function edit(Env $env, Server $server)
     {
-        if (($id = $server->create($this->request->all())) > 0) {
+        $servers = $server->all();
+
+        view('ldtdf/env/edit')->withEnvServers($env, $servers);
+    }
+
+    public function create(Env $env)
+    {
+        if (($id = $env->create($this->request->all())) > 0) {
             share_error_i18n('CREATED_SUCCESS');
             $redirect = '/dep/admin/envs/'.$id;
         } else {
@@ -29,9 +64,9 @@ class Environment extends Ctl
         redirect($redirect);
     }
 
-    public function update(Server $server)
+    public function update(Env $env)
     {
-        $status = (($err = $server->save($this->request->all())) > 0)
+        $status = (($err = $env->save($this->request->all())) > 0)
         ? 'UPDATE_OK'
         : 'UPDATE_FAILED';
 

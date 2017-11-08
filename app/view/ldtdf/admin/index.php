@@ -12,4 +12,7 @@
     <li>
         <a href="admin/envs"><?= lang('ENVIRONMENT_MANAGE') ?></a>
     </li>
+    <li>
+        <a href="admin/servers"><?= lang('SERVER_MANAGE') ?></a>
+    </li>
 </ul>

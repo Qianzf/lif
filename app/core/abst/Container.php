@@ -11,7 +11,8 @@ abstract class Container
     use \Lif\Core\Traits\MethodNotExists;
     
     protected $app = null;
-    private $__recursion__ = 0;    // Avoid infinite recursion call
+    private $__recursion_ace = 0;    // Avoid infinite recursion call
+    private $__recursion_te  = 0;    // Avoid infinite recursion call
 
     public function __construct()
     {
@@ -57,11 +58,14 @@ abstract class Container
     public function __closureSafe(\Closure $handle, array $params = [])
     {
         try {
-            return call_user_func_array($handle, $params);
+            $result = call_user_func_array($handle, $params);
+            $this->__recursion_ace = $this->__recursion_te = 0;
+
+            return $result;
         } catch (\ArgumentCountError $e) {
             return $this->__closureSafe(
                 $handle,
-                $this->handleArgumentCountError($e)
+                $this->handleArgumentCountError($e, $params)
             );
         } catch (\TypeError $e) {
             return $this->__closureSafe(
@@ -77,14 +81,17 @@ abstract class Container
     public function __callSafe($method, array $params)
     {
         try {
-            return call_user_func_array([
+            $result = call_user_func_array([
                 $this,
                 $method
             ], $params);
+            $this->__recursion_ace = $this->__recursion_te = 0;
+
+            return $result;
         } catch (\ArgumentCountError $e) {
             return $this->__callSafe(
                 $method,
-                $this->handleArgumentCountError($e)
+                $this->handleArgumentCountError($e, $params)
             );
         } catch (\TypeError $e) {
             return $this->__callSafe(
@@ -101,16 +108,19 @@ abstract class Container
         }
     }
 
-    protected function handleArgumentCountError(\ArgumentCountError $e) : array
-    {
-        if ((3 < ++$this->__recursion__)
+    protected function handleArgumentCountError(
+        \ArgumentCountError $e,
+        array $params
+    ) : array {
+        if ((3 < ++$this->__recursion_ace)
         || !preg_match(
-            '/^Too\ few\ arguments\ to\ function ([\\\\\w]+)::.*and\ exactly\ (\d)+\ expected$/u',
+            '/^Too\ few\ arguments\ to\ function ([\\\\\w]+)::.* (\d)+\ passed and\ exactly\ (\d)+\ expected$/u',
             $e->getMessage(),
             $matches
         )
         // || (exists($matches, 1) != get_class($this))
-        || (intval($missingArgsCnt = exists($matches, 2)) < 1)
+        || (($missingArgsCnt  = intval(exists($matches, 2))) < 0)
+        || (($expectedArgsCnt = intval(exists($matches, 3))) < 1)
         ) {
             excp($e->getMessage());
         }
@@ -118,25 +128,28 @@ abstract class Container
         // !!! Do not forge `null`, because `isset(null)` is false
         $forgeArgs = array_fill(0, $missingArgsCnt, false);
 
-        return $forgeArgs;
+        // Avoid replace passed parameters
+        array_push($params, ...$forgeArgs);    // use `...` to extract array
+        
+        return $params;
     }
 
-    protected function handleTypeError(\TypeError $e, array $params) : array
-    {
-        if ((3 < ++$this->__recursion__)
+    protected function handleTypeError(
+        \TypeError $e,
+        array $params
+    ) : array {
+        if ((3 < ++$this->__recursion_te)
         || !preg_match(
             '/Argument\ (\d+) passed to ([\\\\\w]+)::.*must\ be\ an?\ (.*)\ of\ ([\w\\\\]*),/u',
             $e->getMessage(),
             $matches
         )
-        || !(true &&
-            exists($matches, 1) &&
-            exists($matches, 2) &&
-            exists($matches, 3) &&
-            exists($matches, 4)
-        ) ||
-            ('instance' != $matches[3])
-            || !(($argOrder = intval($matches[1])) == $matches[1])
+        || !exists($matches, 1)
+        || !exists($matches, 2)
+        || !exists($matches, 3)
+        || !exists($matches, 4)
+        || ('instance' != $matches[3])
+        || (($argOrder = intval($matches[1])) != $matches[1])
         ) {
             excp($e->getMessage());
         }

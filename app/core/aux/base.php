@@ -807,7 +807,7 @@ if (! fe('build_pdo_dsn')) {
                     $dsn .= ':memory:';
                 } else {
                     $dsn .= $path = pathOf('root').$conn['path'];
-                    if (!file_exists($path)) {
+                    if (! file_exists($path)) {
                         excp(
                             'Missing sqlite source file.'
                        );

@@ -200,6 +200,11 @@ if (! fe('share')) {
         }
     }
 }
+if (! fe('shares')) {
+    function shares(array $data = []) {
+        return session()->sets($data);
+    }
+}
 if (! fe('share_error')) {
     function share_error($data) {
         share('__error', $data);

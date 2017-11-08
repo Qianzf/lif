@@ -6,6 +6,8 @@ use Lif\Mdl\{User, Trending};
 
 class Passport extends Ctl
 {
+    private $timeout = 3600;
+
     public function login()
     {
         if (share('__USER')) {
@@ -15,19 +17,13 @@ class Passport extends Ctl
         view('ldtdf/user/login');
     }
 
-    public function loginAction(User $u, Trending $trend)
+    public function auth(User $user, Trending $trend)
     {
-        $lang    = $this->request->get('lang');
-        $account = $this->request->get('account');
-        $passwd  = $this->request->get('passwd');
-        $user    = $u
-        ->whereStatus(1)
-        ->where(function ($user) use ($account) {
-            $user
-            ->whereAccount($account)
-            ->orEmail($account);
-        })
-        ->first();
+        $lang     = $this->request->get('lang');
+        $account  = $this->request->get('account');
+        $passwd   = $this->request->get('passwd');
+        $remember = $this->request->get('remember') ?? false;
+        $user     = $user->login($account);
 
         if (! $user || !is_object($user)) {
             share('__error', sysmsg('NO_USER'));
@@ -38,24 +34,32 @@ class Passport extends Ctl
         }
 
         unset($user->passwd);
-
-        share('__USER', $user->items());
+        $timestamp = time();
 
         // Save login event to trending
-        $trend->at     = date('Y-m-d H:i:s');
+        $trend->at     = date('Y-m-d H:i:s', $timestamp);
         $trend->uid    = $user->id;
         $trend->event  = 'LOGGEDIN';
         $trend->save();
-
-        share('system-roles', [
-            'ADMIN',
-            'DEVELOPER',
-            'TESTER',
-        ]);
         
+        $shares = [
+            '__USER'    => $user->items(),
+            '__timeout' => $this->timeout,
+            'system-roles' => [
+                'ADMIN',
+                'DEVELOPER',
+                'TESTER',
+            ],
+        ];
+
         if ($lang) {
-            share('__lang', $lang);
+            $shares['__lang'] = $lang;
         }
+        if ($remember) {
+            $shares['__remember'] = $timestamp;
+        }
+
+        shares($shares);
 
         redirect('/dep');
     }

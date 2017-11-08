@@ -10,6 +10,18 @@ class User extends Mdl
         'passwd',
     ];
 
+    public function login(string $account)
+    {
+        return $this
+        ->whereStatus(1)
+        ->where(function ($user) use ($account) {
+            $user
+            ->whereAccount($account)
+            ->orEmail($account);
+        })
+        ->first();
+    }
+
     public function trendings()
     {
         return $this->hasMany(

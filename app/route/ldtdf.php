@@ -17,10 +17,10 @@ $this->group([
         'prefix' => 'user',
     ], function () {
         $this->get('login', 'Passport@login')->cancel('auth.web');
-        $this->post('login', 'Passport@loginAction')->cancel('auth.web');
+        $this->post('login', 'Passport@auth')->cancel('auth.web');
+        $this->get('logout', 'Passport@logout');
         $this->get('profile', 'User@profile');
         $this->post('profile', 'User@update');
-        $this->get('logout', 'Passport@logout');
     });
 
     $this->group([
@@ -68,6 +68,17 @@ $this->group([
         $this->group([
             'prefix' => 'envs',
             'ctl' => 'Environment',
+        ], function () {
+            $this->get('/', 'list');
+            $this->get('new', 'edit');
+            $this->post('new', 'create');
+            $this->get('{id}', 'edit');
+            $this->post('{id}', 'update');
+        });
+
+        $this->group([
+            'prefix' => 'servers',
+            'ctl' => 'Server',
         ], function () {
             $this->get('/', 'list');
             $this->get('new', 'edit');

@@ -52,6 +52,9 @@ $(window).ready(function () {
             tryReloadWithNewPage(this.value)
         }
     })
+    $('#env-types-filter').change(function () {
+        reloadWithQuery('type', this.value)
+    })
 
     hasErrorOrNot()
 })
