@@ -119,8 +119,10 @@ abstract class Container
             $matches
         )
         // || (exists($matches, 1) != get_class($this))
-        || (($missingArgsCnt  = intval(exists($matches, 2))) < 0)
         || (($expectedArgsCnt = intval(exists($matches, 3))) < 1)
+        || (($missingArgsCnt  = (
+            $expectedArgsCnt - intval(exists($matches, 2)))
+            ) < 1)
         ) {
             excp($e->getMessage());
         }
