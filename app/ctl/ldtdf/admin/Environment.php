@@ -21,6 +21,12 @@ class Environment extends Ctl
 
     public function index(Env $env)
     {
+        $request = $this->request->all();
+
+        legal_or($request, [
+            'page' => ['int|min:1', 1],
+        ]);
+
         if (($type = $this->request->get('type'))
             && in_array($type, $this->types)
         ) {
@@ -36,10 +42,23 @@ class Environment extends Ctl
             $env = $env->whereName('like', "%{$keyword}%");
         }
 
-        $envs = $env->get();
+        $offset  = 16;
+        $start   = ($request['page'] - 1) * $offset;
+        $records = $env->count();
+        $envs    = $env
+        ->limit($start, $offset)
+        ->get();
+        $pages   = ceil(($records / $offset));
 
         view('ldtdf/admin/env/index')
-        ->withEnvsTypeKeyword($envs, $type, $keyword);
+        ->withEnvsTypeKeywordRecordsPagesOffset(
+            $envs,
+            $type,
+            $keyword,
+            $records,
+            $pages,
+            $offset
+        );
     }
 
     public function edit(Env $env, Server $server, Project $project)

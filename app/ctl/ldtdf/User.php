@@ -8,7 +8,7 @@ class User extends Ctl
 {
     public function trending(UserModel $user, Trending $trending)
     {
-        $pageScale = 20;
+        $pageScale = 16;
         $querys    = $this->request->all();
         $pages     = ceil($trending->count() / $pageScale);
 
@@ -23,9 +23,15 @@ class User extends Ctl
             'take_cnt'  => $pageScale,
         ])
         : $user->find(share('__USER.id'))->trendings();
+        $records = count($data);
 
         view('ldtdf/user/trending')
-        ->withAdminTrendingPages($admin, $data, $pages);
+        ->withAdminTrendingPagesRecords(
+            $admin,
+            $data,
+            $pages,
+            $records
+        );
     }
 
     public function profile($uid)

@@ -1114,7 +1114,7 @@ if (! fe('sysmsg')) {
 if (! fe('lang')) {
     function lang($key, $msg = null, $lang = null)
     {
-        return ($_msg = stringify($msg))
+        return (mb_strlen(($_msg = stringify($msg))) > 0)
         ? sysmsg($key, $lang).': '.$_msg
         : sysmsg($key, $lang);
     }
@@ -1821,7 +1821,7 @@ if (! fe('safe_string')) {
 }
 if (! fe('stringify')) {
     function stringify($origin) : string {
-        if (! $origin) {
+        if ('' === $origin || is_null($origin)) {
             return '';
         }
         if (is_scalar($origin)) {

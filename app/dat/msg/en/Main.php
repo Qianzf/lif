@@ -105,4 +105,11 @@ return [
     'WHETHER' => 'Whether',
     'YES' => 'Yes',
     'NO' => 'No',
+    'BUG' => 'Bug',
+    'COMMON' => 'Common',
+    'TODO_LIST' => 'TODO List',
+    'TOTAL_RECORDS' => 'Total Records',
+    'TOTAL_PAGES' => 'Total Pages',
+    'PAGE_SIZE' => 'Page size',
+    'PAGE_NOW' => 'Current Page',
 ];

@@ -2,14 +2,25 @@
 <?= $this->title([lang('TASK_LIST'), lang('LDTDFMS')]) ?>
 <?= $this->section('search') ?>
 
-<br>
+<ul>
+    <li>
+        <a href="/dep/tasks/new">
+            <?= lang('ADD_TASK') ?>
+        </a>
+    </li>
+    <li>
+        <a href="/dep/bugs/new">
+            <?= lang('ADD_BUG') ?>
+        </a>
+    </li>
+</ul>
 
 <table>
     <caption><?= lang('TASK_LIST') ?></caption>
 
     <tr>
         <th><?= lang('ID') ?></th>
-        <th><?= lang('URL') ?></th>
+        <th><?= lang('TITLE') ?></th>
         <th><?= lang('OPERATIONS') ?></th>
     </tr>
 
@@ -17,7 +28,7 @@
     <?php foreach ($tasks as $task) { ?>
     <tr>
         <td><?= $task->id ?></td>
-        <td><?= $task->url ?></td>
+        <td><?= $task->title ?></td>
         <td>
             <a href="tasks/<?= $task->id ?>"><?= lang('DETAILS') ?></a>
         </td>

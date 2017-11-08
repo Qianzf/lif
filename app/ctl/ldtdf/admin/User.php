@@ -32,18 +32,19 @@ class User extends Ctl
             });
         }
 
-        $offset = 16;
-        $start  = ($request['page'] - 1) * $offset;
-        
-        $users = $user
+        $offset  = 16;
+        $start   = ($request['page'] - 1) * $offset;
+        $records = $user->count();
+        $users   = $user
         ->limit($start, $offset)
         ->get();
-        $pages = ceil(($user->count() / $offset));
+        $pages   = ceil(($records / $offset));
 
         view('ldtdf/admin/users/index')
         ->withUsers($users)
         ->withKeyword($keyword)
         ->withSearchrole($request['role'])
+        ->withRecords($records)
         ->withPages($pages);
     }
 

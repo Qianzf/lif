@@ -28,23 +28,13 @@ class Task extends Ctl
             redirect('/dep/tasks');
         }
 
-        $params = $this->request->all();
+        $status = (($err = $task->save($this->request->all())) > 0)
+        ? 'UPDATE_OK'
+        : 'UPDATE_FAILED';
 
-        if (true === ($err = validate($params, [
-            'title'  => 'string',
-            'status' => 'int|min:1|max:3',
-        ]))) {
-            $task->title  = $params['title'];
-            $task->status = $params['status'];
+        $err = !is_integer($err) ? lang($err) : null;
 
-            if ($task->save()) {
-                share_error_i18n('UPDATE_SUCCESS');
-            } else {
-                share_error_i18n('UPDATE_FAILED');
-            }
-        } else {
-            share_error_i18n('CLIENT_DATA_ILLEGAL');
-        }
+        share_error(lang($status, $err));
 
         redirect($this->route);
     }

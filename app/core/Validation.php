@@ -153,8 +153,6 @@ class Validation
             return 'MISSING_OR_ILLEGAL_WHEN_FIELD';
         }
 
-        dd($data, $value, $cond, $key);
-
         $val = $cond[1] ?? '';
 
         if (isset($data[$cond[0]])

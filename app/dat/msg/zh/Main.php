@@ -105,4 +105,13 @@ return [
     'WHETHER' => '是否',
     'YES' => '是',
     'NO' => '否',
+    'BUG' => 'Bug',
+    'COMMON' => '普通',
+    'TODO_LIST' => '待办事项',
+    'TOTAL_RECORDS' => '记录总数',
+    'TOTAL_PAGES' => '分页总数',
+    'PAGE_SIZE' => '分页大小',
+    'PAGE_NOW' => '当前页数',
+    'FIRST_PAGE' => '首页',
+    'LAST_PAGE' => '尾页',
 ];

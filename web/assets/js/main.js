@@ -56,6 +56,16 @@ $(window).ready(function () {
         reloadWithQuery('type', this.value)
     })
 
+    $('input[name="custom"]').click(function () {
+        if ('no' == this.value) {
+            $('.custom-task-attr').hide();
+            $('.outer-task-detail').show();
+        } else {
+            $('.custom-task-attr').show();
+            $('.outer-task-detail').hide();
+        }
+    })
+
     hasErrorOrNot()
 })
 function tryReloadWithNewPage(page)

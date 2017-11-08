@@ -8,7 +8,12 @@
 
 <?php if (isset($task) && is_object($task)) { ?>
 <form method="POST">
-    <?= lang('WHETHER_CUSTOM') ?>
+    <label><?= lang('TITLE') ?>
+        <input type="text" name="title" value="<?= $task->title ?>">
+        <br><br>
+    </label>
+
+    <?= lang('WHETHER_CUSTOM_TASK_DETAILS') ?>
     <label>
         <input type="radio" name="custom" value="no" checked>
         <?= lang('NO') ?>
@@ -16,16 +21,20 @@
     <label>
         <input type="radio" name="custom" value="yes">
         <?= lang('YES') ?>
-    </label><br>
-
-    <label class="custom-task-attr invisible-default"><?= lang('TITLE') ?>
-        <input type="text" name="title" value="<?= $task->title ?>">
-    </label><br>
+    </label>
+    <br><br>
 
     <label class="custom-task-attr invisible-default"><?= lang('STATUS') ?>
         <input type="text" name="status" value="<?= $task->status ?>">
-    </label><br><br>
+        <br>
+    </label>
 
+    <label class="outer-task-detail"><?= lang('URL') ?>
+        <input type="text" name="url" value="<?= $task->url ?>">
+        <br>
+    </label>
+
+    <br>
     <input type="submit"
     value="<?= lang($task->id ? 'UPDATE' : 'CREATE') ?>">
 </form>

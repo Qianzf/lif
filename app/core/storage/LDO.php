@@ -158,7 +158,6 @@ class LDO extends \PDO
     {
         if ('where' === mb_substr($name, 0, 5)) {
             if (! $args) {
-                dd($name, $args);
                 excp('Missing conditions values.');
             }
             $rest = mb_substr($name, 5);
