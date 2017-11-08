@@ -53,12 +53,18 @@ class Environment extends Ctl
 
     public function create(Env $env)
     {
-        if (($id = $env->create($this->request->all())) > 0) {
-            share_error_i18n('CREATED_SUCCESS');
-            $redirect = '/dep/admin/envs/'.$id;
+        $redirect = $this->route;
+
+        // check if exists in code level
+        if ($env->whereHost($this->request->get('host'))->count()) {
+            share_error(lang('CREATE_FAILED', lang('HOST_ALREADY_EXISTS')));
         } else {
-            share_error(lang('CREATE_FAILED', $id));
-            $redirect = $this->route;
+            if (($id = $env->create($this->request->all())) > 0) {
+                share_error_i18n('CREATED_SUCCESS');
+                $redirect = '/dep/admin/envs/'.$id;
+            } else {
+                share_error(lang('CREATE_FAILED', $id));
+            }
         }
 
         redirect($redirect);

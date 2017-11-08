@@ -92,4 +92,10 @@ return [
     'PROD' => 'production',
     'BACK_TO_LIST' => 'Back to list',
     'RELATED' => 'Related',
+    'PLEASE' => 'Please',
+    'SELECT' => 'Select',
+    'SAME' => 'Same',
+    'EXIST' => 'Exist',
+    'EXISTS' => 'Exists',
+    'ALREADY' => 'Already',
 ];

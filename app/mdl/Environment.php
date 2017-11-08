@@ -6,8 +6,9 @@ class Environment extends Mdl
 {
     protected $table = 'environment';
     protected $rules = [
-        'name' => 'string',
+        'name' => 'need|string',
         'host' => 'need|host',
         'type' => ['need|in:test,stage,prod', 'test'],
+        'server' => 'need|int|min:1',
     ];
 }

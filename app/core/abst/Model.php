@@ -160,7 +160,7 @@ abstract class Model
 
     public function create(array $data, array $rules = [])
     {
-        return $this->save($data, $rules);
+        return $this->reset()->save($data, $rules);
     }
 
 

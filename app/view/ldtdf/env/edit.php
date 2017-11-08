@@ -47,6 +47,7 @@
     <label>
         <?= lang('RELATED_SERVER') ?>
         <select name="server" required>
+            <option>--<?= lang('PLEASE_SELECT_SERVER') ?>--</option>
             <?php if (isset($servers) && iteratable($servers)) { ?>
             <?php foreach ($servers as $server) { ?>
             <option

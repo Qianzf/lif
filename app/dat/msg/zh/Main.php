@@ -92,4 +92,10 @@ return [
     'PROD' => '生产',
     'BACK_TO_LIST' => '返回列表',
     'RELATED' => '关联',
+    'PLEASE' => '请',
+    'SELECT' => '选择',
+    'SAME' => '相同',
+    'EXIST' => '存在',
+    'EXISTS' => '存在',
+    'ALREADY' => '已经',
 ];
