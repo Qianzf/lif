@@ -30,7 +30,7 @@
         <td><?= $user->email ?></td>
         <td><?= lang($user->role) ?></td>
         <td>
-            <a href="users/edit/<?= $user->id ?>"><?= lang('EDIT') ?></a>
+            <a href="users/<?= $user->id ?>"><?= lang('EDIT') ?></a>
             <a href="users/delete/<?= $user->id ?>"><?= lang('DELETE') ?></a>
         </td>
     </tr>

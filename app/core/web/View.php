@@ -113,12 +113,14 @@ class View
         $this->layout = $path;
     }
 
-    public function section($section): string
+    public function section($section, array $data = []): string
     {
-        $path = pathOf('view').'__section/'.$section.'.php';
+        $path = pathOf('view', '__section/'.$section.'.php');
         if (! file_exists($path)) {
             excp('Section `'.$section.'` not exists.');
         }
+
+        $this->data($data);
 
         return $this->include($path);
     }
@@ -138,9 +140,11 @@ class View
         return _js($js);
     }
 
-    protected function data($data): View
+    protected function data(array $data = []): View
     {
-        $this->data = array_merge($this->data, $data);
+        if ($data) {
+            $this->data = array_merge($this->data, $data);
+        }
 
         return $this;
     }

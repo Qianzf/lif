@@ -7,3 +7,6 @@ table, tr, td, th {
 .search-res {
     color: green;
 }
+.invisible-default {
+    display: none;
+}

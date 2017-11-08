@@ -1,20 +1,10 @@
-<?php $action = lang(($env->id ? 'EDIT' : 'ADD').'_ENV') ?>
-
 <?= $this->layout('main') ?>
-<?= $this->title([
-        $action,
-        lang('LDTDFMS')
-    ])
-?>
 
-<h4>
-    <?= $action ?>
-    <sup>
-        <small>
-            <a href="/dep/admin/envs"><?= lang('BACK_TO_LIST') ?></a>
-        </small>
-    </sup>
-</h4>
+<?= $this->section('back2list', [
+    'model' => $env,
+    'key'   => 'ENV',
+    'route' => '/dep/admin/envs',
+]) ?>
 
 <form method="POST">
     <label>
@@ -38,6 +28,25 @@
             <?php } ?>
             value="<?= $type ?>">
                 <?= lang($type) ?>
+            </option>
+            <?php } ?>
+            <?php } ?>
+        </select>
+    </label><br>
+
+    <label>
+        <?= lang('RELATED_PROJECT') ?>
+        <select name="project" required>
+            <option>--<?= lang('PLEASE_SELECT_PROJECT') ?>--</option>
+            <?php if (isset($projects) && iteratable($projects)) { ?>
+            <?php foreach ($projects as $project) { ?>
+            <option
+            <?php if ($project->id == $env->project) { ?>
+            selected
+            <?php } ?>
+            value="<?= $project->id ?>">
+                <?= $project->name ?>
+                (<?= $project->url ?>)
             </option>
             <?php } ?>
             <?php } ?>

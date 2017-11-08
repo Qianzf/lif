@@ -103,6 +103,33 @@ db()->raw('show variables like ?', ['ver%']);
 Use `LDO::native()` to escape stringlified for given parameters, and be a part of native SQL statement.
 
 ``` php
+// Be a part of field of where condition
+$attrs = [
+    [
+        'email' => 'master@cjli.info',
+    ],
+];
+db()
+->table('user')
+->where(function ($query) use ($attrs) {
+    $_attr = [];
+    foreach ($attrs as $attr) {
+        array_walk($attr, function ($item, $key) use (&$_attr) {
+            $_attr[] = [
+                'col' => db()->native(
+                    'lower('.escape_fields($key).')'
+                ),
+                'val' => strtolower($item),
+            ];
+        });
+
+        $query = $query->or($_attr);
+
+        unset($_attr);
+    }
+})->count();
+
+// Be a part of value of where condition
 db()
 ->table('queue_job')
 ->where(function ($db) {

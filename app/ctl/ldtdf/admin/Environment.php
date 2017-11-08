@@ -3,12 +3,13 @@
 namespace Lif\Ctl\Ldtdf\Admin;
 
 use Lif\Mdl\Environment as Env;
-use Lif\Mdl\Server;
+use Lif\Mdl\{Server, Project};
 
 class Environment extends Ctl
 {
     private $types = [
         'test',
+        'emrg',
         'stage',
         'prod',
     ];
@@ -18,18 +19,14 @@ class Environment extends Ctl
         share('env-types', $this->types);
     }
 
-    public function list(Env $env)
+    public function index(Env $env)
     {
         if (($type = $this->request->get('type'))
             && in_array($type, $this->types)
         ) {
             $_type = $type;
         } else {
-            $_type = [
-                'test',
-                'stage',
-                'prod',
-            ];
+            $_type = $this->types;
         }
 
         $env     = $env->whereType($_type);
@@ -41,14 +38,17 @@ class Environment extends Ctl
 
         $envs = $env->get();
 
-        view('ldtdf/env/index')->withEnvsTypeKeyword($envs, $type, $keyword);
+        view('ldtdf/admin/env/index')
+        ->withEnvsTypeKeyword($envs, $type, $keyword);
     }
 
-    public function edit(Env $env, Server $server)
+    public function edit(Env $env, Server $server, Project $project)
     {
-        $servers = $server->all();
+        $servers  = $server->all();
+        $projects = $project->all();
 
-        view('ldtdf/env/edit')->withEnvServers($env, $servers);
+        view('ldtdf/admin/env/edit')
+        ->withEnvServersProjects($env, $servers, $projects);
     }
 
     public function create(Env $env)

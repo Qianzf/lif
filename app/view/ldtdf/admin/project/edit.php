@@ -1,11 +1,10 @@
 <?= $this->layout('main') ?>
-<?= $this->title([
-        lang(($project->id ? 'EDIT' : 'ADD').'_PROJECT'),
-        lang('LDTDFMS')
-    ])
-?>
 
-<br>
+<?= $this->section('back2list', [
+    'model' => $project,
+    'key'   => 'PROJECT',
+    'route' => '/dep/admin/projects',
+]) ?>
 
 <form method="POST" autocomplete="off">
     <label>
@@ -34,5 +33,3 @@
     value="<?= $project->id ? lang('UPDATE') : lang('CREATE') ?>">
 
 </form>
-
-<br>

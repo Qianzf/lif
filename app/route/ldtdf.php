@@ -28,9 +28,10 @@ $this->group([
         'ctl' => 'Task',
     ], function () {
         $this->get('/', 'index');
-        $this->get('{id}', 'detail');
+        $this->get('new', 'edit');
+        $this->post('new', 'create');
+        $this->get('{id}', 'edit');
         $this->post('{id}', 'update');
-        $this->post('edit', 'edit');
     });
 
     $this->group([
@@ -48,9 +49,9 @@ $this->group([
             $this->get('/', 'index');
             $this->get('new', 'info');
             $this->post('new', 'add');
-            $this->get('edit/{id}', 'info');
+            $this->get('{id}', 'info');
+            $this->post('{id}', 'update');
             $this->get('delete/{id}', 'delete');
-            $this->post('edit/{id}', 'update');
         });
 
         $this->group([
@@ -60,8 +61,8 @@ $this->group([
             $this->get('/', 'index');
             $this->get('new', 'edit');
             $this->post('new', 'create');
-            $this->get('edit/{id}', 'edit');
-            $this->post('edit/{id}', 'update');
+            $this->get('{id}', 'edit');
+            $this->post('{id}', 'update');
             $this->get('delete/{id}', 'delete');
         });
 
@@ -69,7 +70,7 @@ $this->group([
             'prefix' => 'envs',
             'ctl' => 'Environment',
         ], function () {
-            $this->get('/', 'list');
+            $this->get('/', 'index');
             $this->get('new', 'edit');
             $this->post('new', 'create');
             $this->get('{id}', 'edit');
@@ -80,7 +81,7 @@ $this->group([
             'prefix' => 'servers',
             'ctl' => 'Server',
         ], function () {
-            $this->get('/', 'list');
+            $this->get('/', 'index');
             $this->get('new', 'edit');
             $this->post('new', 'create');
             $this->get('{id}', 'edit');

@@ -8,7 +8,7 @@ class Project extends Ctl
 {
     public function index(ProjectModel $project)
     {
-        view('ldtdf/project/index')->withProjects($project->all());
+        view('ldtdf/admin/project/index')->withProjects($project->all());
     }
 
     public function create(ProjectModel $project)
@@ -40,6 +40,6 @@ class Project extends Ctl
     // method edit() add project too
     public function edit(ProjectModel $project)
     {
-        view('ldtdf/project/edit')->withProject($project);
+        view('ldtdf/admin/project/edit')->withProject($project);
     }
 }

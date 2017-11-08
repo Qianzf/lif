@@ -264,55 +264,59 @@ class LDO extends \PDO
             } break;
             // Only one condition, and use default specific operator `=`
             case 2: {
-                if (!($condCol = $conds[0]) || !is_string($condCol)) {
-                    excp('Expecting first field of condition a string(2).');
+                $condCol = $conds[0] ?? ($conds['col'] ?? null);
+                if (!$condCol
+                    || !(is_string($condCol) || is_closure($condCol))
+                ) {
+                    excp(
+                        'Expecting first field of condition a un-empty string or closure(1).'
+                    );
                 }
-                if (isset($conds[1])) {
-                    if (!is_string($conds[1])
-                        && !is_numeric($conds[1])
-                        && !is_array($conds[1])
-                        && !is_callable($conds[1])
-                    ) {
-                        excp(
-                            'Expecting second field of condition (string/array/closure).'
-                        );
-                    }
-                } else {
-                    $conds[1] = null;
+                $condVal = $conds[1] ?? ($conds['val'] ?? null);
+                if (!is_null($condVal)
+                    && !is_scalar($condVal)
+                    && !is_array($condVal)
+                    && !is_closure($condVal)
+                ) {
+                    excp(
+                        'Expecting second field of condition (string/array/closure).'
+                    );
                 }
-
-                $condVal = $conds[1];
                 $condOp  = '=';
             } break;
 
             // Only one condition, and provide specific operator
             case 3: {
-                if (!($condCol = $conds[0]) || !is_string($condCol)) {
-                    excp('Expecting first field of condition a string(3).');
-                }
-                if (!($condOp = $conds[1]) || !is_string($condOp)
+                $condCol = $conds[0] ?? ($conds['col'] ?? null);
+                if (!$condCol
+                    || !(is_string($condCol) || is_closure($condCol))
                 ) {
+                    excp(
+                        'Expecting first field of condition a un-empty string or closure(2).'
+                    );
+                }
+                $condOp = $conds[1] ?? ($conds['op'] ?? null);
+                if (!$condOp || !is_string($condOp)) {
                     excp('Expecting second field of condition a string.');
                 }
-                if (isset($conds[2])) {
-                    if (!is_string($conds[2])
-                        && !is_numeric($conds[2])
-                        && !is_array($conds[2])
-                        && !is_callable($conds[2])
-                    ) {
-                        excp('Expecting third field of condition.');
-                    }
-                } else {
-                    $conds[2] = null;
+                $condVal = $conds[2] ?? ($conds['val'] ?? null);
+                if (!is_null($condVal)
+                    && !is_scalar($condVal)
+                    && !is_array($condVal)
+                    && !is_closure($condVal)
+                ) {
+                    excp('Expecting third field of condition.');
                 }
-
-                $condVal = $conds[2];
             } break;
             
             default: {
                 excp('Illgeal where conditions.');
             } break;
         }
+
+        $condCol = is_closure($condCol)
+        ? $condCol()
+        : escape_fields($condCol);
 
         if (is_scalar($condVal)) {
             $condOpWithVal      = ' '.$condOp.' ?';
@@ -330,13 +334,13 @@ class LDO extends \PDO
             $condOpWithVal = ' in ('.$stubs.')';
         } elseif (is_null($condVal)) {
             $condOpWithVal = ' is null';
-        } elseif (is_callable($condVal)) {
+        } elseif (is_closure($condVal)) {
             $condOpWithVal = ' '.$condOp.' '.$condVal();
         } else {
             excp('Illgeal where field value.');
         }
 
-        return '('.escape_fields($condCol).$condOpWithVal.')';
+        return '('.$condCol.$condOpWithVal.')';
     }
 
     public function or(...$conds): LDO
@@ -402,7 +406,7 @@ class LDO extends \PDO
                                 }
                             }
                         }
-                    } elseif (is_callable($conds[0])) {
+                    } elseif (is_closure($conds[0])) {
                         $table = clone $this;
                         $conds[0]($table);
                         $where = $table->where ? '('.$table->where.')' : null;
@@ -905,7 +909,7 @@ class LDO extends \PDO
         
         foreach ($updates as $key => $newVal) {
             $_key = escape_fields($key);
-            if (is_callable($newVal)) {
+            if (is_closure($newVal)) {
                 $this->updates .= $_key.' = ('.$newVal().')';
             } else {
                 $this->updates .= $_key.' = ? ';

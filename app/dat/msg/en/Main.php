@@ -50,6 +50,7 @@ return [
     'CREATE' => 'Create',
     'CREATED' => 'Created',
     'UPDATE' => 'Update',
+    'UPDATED' => 'Updated',
     'OPERATIONS' => 'Operations',
     'DETAILS' => 'Details',
     'SERVICE_BUSY' => 'Service is busy or temporarily unavailable',
@@ -98,4 +99,10 @@ return [
     'EXIST' => 'Exist',
     'EXISTS' => 'Exists',
     'ALREADY' => 'Already',
+    'EMRG' => 'Emergence',
+    'EMERGENCY' => 'Emergence',
+    'CUSTOM' => 'Custom',
+    'WHETHER' => 'Whether',
+    'YES' => 'Yes',
+    'NO' => 'No',
 ];

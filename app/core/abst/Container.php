@@ -52,23 +52,27 @@ abstract class Container
 
         $this->app = $obj;
 
-        return $this->__callSafe($method, $params);
+        return $this->__methodSafe($method, $params);
     }
 
-    public function __closureSafe(\Closure $handle, array $params = [])
+    public function __callableSafe($handle, array $params = [])
     {
+        if (! is_callable($handle)) {
+            excp('Un-callable handler.');
+        }
+
         try {
             $result = call_user_func_array($handle, $params);
             $this->__recursion_ace = $this->__recursion_te = 0;
 
             return $result;
         } catch (\ArgumentCountError $e) {
-            return $this->__closureSafe(
+            return $this->__callableSafe(
                 $handle,
                 $this->handleArgumentCountError($e, $params)
             );
         } catch (\TypeError $e) {
-            return $this->__closureSafe(
+            return $this->__callableSafe(
                 $handle,
                 $this->handleTypeError($e, $params)
             );
@@ -78,7 +82,7 @@ abstract class Container
         }
     }
 
-    public function __callSafe($method, array $params)
+    public function __methodSafe($method, array $params)
     {
         try {
             $result = call_user_func_array([
@@ -89,12 +93,12 @@ abstract class Container
 
             return $result;
         } catch (\ArgumentCountError $e) {
-            return $this->__callSafe(
+            return $this->__methodSafe(
                 $method,
                 $this->handleArgumentCountError($e, $params)
             );
         } catch (\TypeError $e) {
-            return $this->__callSafe(
+            return $this->__methodSafe(
                 $method,
                 $this->handleTypeError($e, $params)
             );

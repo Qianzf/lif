@@ -1,20 +1,10 @@
-<?php $action = lang(($server->id ? 'EDIT' : 'ADD').'_SERVER') ?>
-
 <?= $this->layout('main') ?>
-<?= $this->title([
-        $action,
-        lang('LDTDFMS')
-    ])
-?>
 
-<h4>
-    <?= $action ?>
-    <sup>
-        <small>
-            <a href="/dep/admin/servers"><?= lang('BACK_TO_LIST') ?></a>
-        </small>
-    </sup>
-</h4>
+<?= $this->section('back2list', [
+    'model' => $server,
+    'key'   => 'SERVER',
+    'route' => '/dep/admin/servers',
+]) ?>
 
 <form method="POST">
     <label>

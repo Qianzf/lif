@@ -40,9 +40,12 @@ class User extends Mdl
                 $_attr = [];
                 foreach ($attrs as $attr) {
                     array_walk($attr, function ($item, $key) use (&$_attr) {
-                        $_attr[][
-                            'lower('.escape_fields($key).')'
-                        ] = strtolower($item);
+                        $_attr[] = [
+                            'col' => db()->native(
+                                'lower('.escape_fields($key).')'
+                            ),
+                            'val' => strtolower($item),
+                        ];
                     });
 
                     $query = $query->or($_attr);

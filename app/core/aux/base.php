@@ -1420,6 +1420,11 @@ if (! fe('is_timestamp')) {
        );
     }
 }
+if (! fe('is_closure')) {
+    function is_closure($var) {
+        return is_object($var) && ($var instanceof \Closure);
+    }
+}
 if (! fe('validate')) {
     function validate(array &$data, array $rules) {
         return (new \Lif\Core\Validation)->run(

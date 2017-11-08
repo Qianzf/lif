@@ -6,9 +6,7 @@
 //     (Route groups needn't `use ($app)` any more)
 // -----------------------------------------------------
 
-$this->get('/', function () {
-    lif();
-});
+$this->get('/', 'lif');
 
 $this->any('/sys_msg', function () {
     response(sysmsgs());

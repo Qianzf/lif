@@ -8,7 +8,8 @@ class Environment extends Mdl
     protected $rules = [
         'name' => 'need|string',
         'host' => 'need|host',
-        'type' => ['need|in:test,stage,prod', 'test'],
-        'server' => 'need|int|min:1',
+        'type' => ['need|in:test,emrg,stage,prod', 'test'],
+        'project' => 'need|int|min:1',
+        'server'  => 'need|int|min:1',
     ];
 }

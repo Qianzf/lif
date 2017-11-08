@@ -29,9 +29,10 @@
         <td><?= $project->name ?></td>
         <td><?= $project->url ?></td>
         <td>
-            <a href="/dep/admin/projects/edit/<?= $project->id ?>">
+            <a href="/dep/admin/projects/<?= $project->id ?>">
                 <?= lang('DETAILS') ?>
             </a>
+            <a href="/dep/admin/envs?type="></a>
         </td>
     </tr>
     <?php } ?>

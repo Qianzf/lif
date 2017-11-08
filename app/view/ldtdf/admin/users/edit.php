@@ -1,7 +1,11 @@
 <?= $this->layout('main') ?>
-<?= $this->title([lang('USER_EDIT'), lang('LDTDFMS')]) ?>
 
-<br>
+<?= $this->section('back2list', [
+    'model' => $user,
+    'key'   => 'USER',
+    'route' => '/dep/admin/users',
+]) ?>
+
 
 <form method="POST" autocomplete="off">
     <label><?= lang('ACCOUNT') ?>：

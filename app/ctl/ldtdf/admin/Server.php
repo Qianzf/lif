@@ -6,14 +6,16 @@ use Lif\Mdl\Server as ServerModel;
 
 class Server extends Ctl
 {
-    public function list(ServerModel $server)
+    public function index(ServerModel $server)
     {
-        view('ldtdf/server/index')->withServers($server->all());
+        view('ldtdf/admin/server/index')
+        ->withServers($server->all());
     }
 
     public function edit(ServerModel $server)
     {
-        view('ldtdf/server/edit')->withServer($server);
+        view('ldtdf/admin/server/edit')
+        ->withServer($server);
     }
 
     public function create(ServerModel $server)

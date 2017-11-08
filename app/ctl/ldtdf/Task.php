@@ -11,14 +11,14 @@ class Task extends Ctl
         view('ldtdf/task/index')->withTasks($task->all());
     }
 
-    public function detail(TaskModel $task)
+    public function edit(TaskModel $task)
     {
-        if (! $task->items()) {
-            share_error_i18n('TASK_NOT_FOUND');
-            redirect('/dep/tasks');
-        }
+        view('ldtdf/task/edit')->withTask($task);
+    }
 
-        view('ldtdf/task/detail')->withTask($task);
+    public function create(TaskModel $task)
+    {
+        dd($task->create($this->request->all()));
     }
 
     public function update(TaskModel $task)
@@ -29,6 +29,7 @@ class Task extends Ctl
         }
 
         $params = $this->request->all();
+
         if (true === ($err = validate($params, [
             'title'  => 'string',
             'status' => 'int|min:1|max:3',

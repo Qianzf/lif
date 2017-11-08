@@ -50,6 +50,7 @@ return [
     'CREATE' => '创建',
     'CREATED' => '创建',
     'UPDATE' => '更新',
+    'UPDATED' => '更新',
     'OPERATIONS' => '操作',
     'DETAILS' => '详情',
     'SERVICE_BUSY' => '服务繁忙，请稍后再试',
@@ -98,4 +99,10 @@ return [
     'EXIST' => '存在',
     'EXISTS' => '存在',
     'ALREADY' => '已经',
+    'EMRG' => '紧急',
+    'EMERGENCY' => '紧急',
+    'CUSTOM' => '自定义',
+    'WHETHER' => '是否',
+    'YES' => '是',
+    'NO' => '否',
 ];
