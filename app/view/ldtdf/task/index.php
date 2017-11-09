@@ -10,13 +10,6 @@
             </a>
         </button>
     </dd>
-    <dd>
-        <button>
-            <a href="/dep/bugs/new">
-                <?= lang('ADD_BUG') ?>
-            </a>
-        </button>
-    </dd>
 </dl>
 
 <table>

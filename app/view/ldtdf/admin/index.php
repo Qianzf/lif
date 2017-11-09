@@ -1,4 +1,3 @@
-<?php share('hidden-search-bar', true) ?>
 <?= $this->layout('main') ?>
 <?= $this->title([lang('HOMEPAGE'), lang('LDTDFMS')]) ?>
 <?= $this->section('common') ?>

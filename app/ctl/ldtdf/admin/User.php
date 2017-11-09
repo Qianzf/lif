@@ -128,8 +128,8 @@ class User extends Ctl
             if ($user->save()) {
                 $sysmsg =  'UPDATED_OK';
                 // Check if update self
-                if ($user->id == share('__USER.id')) {
-                    share('__USER', $user->data());
+                if ($user->id == share('user.id')) {
+                    share('user', $user->data());
                 }
             } else {
                 $sysmsg =  'UPDATE_FAILED';
@@ -149,8 +149,8 @@ class User extends Ctl
         if ($user->save()) {
             $err = 'DELETED_OK';
             // Check if delete self
-            if ($user->id == share('__USER.id')) {
-                session()->delete('__USER');
+            if ($user->id == share('user.id')) {
+                session()->delete('user');
             }
         }
 

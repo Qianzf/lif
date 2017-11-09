@@ -8,6 +8,9 @@ class Trending extends Mdl
 
     public function list(array $params)
     {
+        $role = (share('user.role') == 'ADMIN')
+        ? -1 : 'ADMIN';
+
         legal_or($params, [
             'user_id'   => ['int|min:1', null],
             'take_from' => ['int|min:0', 0],
@@ -16,9 +19,11 @@ class Trending extends Mdl
 
         if (is_null($params['user_id'])) {
             return $this
+            ->leftJoin('user', 'user.id', 'trending.uid')
             ->sort([
-                'at' => 'desc',
+                'trending.at' => 'desc',
             ])
+            ->where('user.role', '!=', $role)
             ->limit(
                 $params['take_from'],
                 $params['take_cnt']
@@ -26,22 +31,16 @@ class Trending extends Mdl
             ->get();
         }
 
-        $user = model(User::class, $uid);
+        $user = model(User::class, $params['user_id']);
 
         if (! $user->items()) {
-            excp('USER_NOT_FOUND');
+            client_error('USER_NOT_FOUND', 404);
+        }
+        if (($user->role == 'ADMIN') && (share('user.role') != 'ADMIN')) {
+            return [];
         }
 
-        return $user->hasMany([
-            'model' => Trending::class,
-            'lk'    => 'id',
-            'fk'    => 'uid',
-            'take_from' => $taskFrom,
-            'take_cnt'   => $takeTo,
-            'sort'  => [
-                'at' => 'desc',
-            ],
-        ]);
+        return $user->trendings($params['take_from'], $params['take_cnt']);
     }
 
     public function user()

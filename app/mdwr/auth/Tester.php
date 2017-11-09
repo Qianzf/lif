@@ -6,10 +6,10 @@ class Tester
 {
     public function handle($app)
     {
-        if ('TESTER' !== strtoupper(share('__USER.role'))) {
+        if ('TESTER' !== strtoupper(share('user.role'))) {
             share_error_i18n('VIEW_PERMISSION_DENIED');
             
-            session()->delete('__USER');
+            session()->delete('user');
 
             return redirect('/dep/user/login');
         }

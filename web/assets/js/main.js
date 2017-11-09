@@ -1,6 +1,6 @@
 $(window).ready(function () {
     $('select[name="system-lang"]').change(function () {
-        reloadWithQuery('lang', this.value)
+        reloadWithQuerys('lang', this.value)
     })
     $('select[name="loggedin"]').change(function () {
         let aTag = getATag(location.href)
@@ -10,7 +10,7 @@ $(window).ready(function () {
         + window.location.search
     })
     $('select[name="system-roles"]').change(function () {
-        reloadWithQuery('role', this.value)
+        reloadWithQuerys('role', this.value)
     })
     $('button[name="search-btn"]').click(function () {
         search()
@@ -46,16 +46,18 @@ $(window).ready(function () {
 
         tryReloadWithNewPage(page)
     })
-    $('input[name="pagination-number"]').on('input', function (e) {
+    $('input[name="pagination-number"]').on('input', function () {
         let goTo = parseInt(this.value)
         let pageCount = parseInt($('input[name="pagination-count"]').val())
         if ((1 <= goTo) && (goTo <= pageCount)) {
             $('input[name="goto-page"]').attr('disabled', false)
             this.style.color = 'green'
-            if (e.which == 13) {
-                e.preventDefault()
-                tryReloadWithNewPage(this.value)
-            }
+            $(this).keydown(function (e) {
+                if (e.which == 13) {
+                    e.preventDefault()
+                    tryReloadWithNewPage(this.value)
+                }
+            })
         } else {
             if (! isNaN(goTo)) {
                 $('input[name="goto-page"]').attr('disabled', true)
@@ -64,7 +66,13 @@ $(window).ready(function () {
         }
     })
     $('#env-types-filter').change(function () {
-        reloadWithQuery('type', this.value)
+        location.href = ('type', this.value)
+    })
+    $('.query-filters').change(function () {
+        console.log(this.value)
+        if (this.value) {
+            reloadUseQuery(this.name, this.value)
+        }
     })
 
     $('input[name="custom"]').click(function () {
@@ -123,7 +131,7 @@ function tryReloadWithNewPage(page)
     }
 
     if (canReload) {
-        reloadWithQuery('page', page)
+        reloadWithQuerys('page', page)
     }
 }
 function getCurrentQueryPage() {
@@ -147,7 +155,7 @@ function getCurrentQueryPage() {
 function search() {
     let search = $('input[name="search"]').val()
     if (search.length > 0) {
-        reloadWithQuery('search', search)
+        reloadWithQuerys('search', search)
     }
 }
 function hasErrorOrNot() {
@@ -156,7 +164,22 @@ function hasErrorOrNot() {
         alert(error)
     }
 }
-function reloadWithQuery(key, val) {
+function getHost() {
+    let aTag = getATag(window.location.href)
+    return (aTag.scheme + aTag.hostname + aTag.pathname)
+}
+function reload(queryString) {
+    let url = getHost()
+    if (('undefined' != (typeof queryString)) && queryString) {
+        url += ('?' + queryString)
+    }
+
+    window.location = url
+}
+function reloadUseQuery(key, val) {
+     reload(key + '=' + val)
+}
+function reloadWithQuerys(key, val) {
     let queryStringBefore = window.location.search
 
     if (queryStringBefore) {
@@ -171,10 +194,7 @@ function reloadWithQuery(key, val) {
         val
     )
 
-    let aTag = getATag(window.location.href)
-    let url  = aTag.scheme + aTag.hostname + aTag.pathname
-
-    window.location = url + '?' + newQueryString
+    reload(newQueryString)
 }
 function updatequeryStringBefore(queryStringBefore, key, val) {
     let newQueryString = []

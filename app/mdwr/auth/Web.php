@@ -8,16 +8,16 @@ class Web
 
     public function handle($app)
     {
-        if (($this->auth = share('__USER'))
+        if (($this->auth = share('user'))
             && (false !== exists($this->auth, 'id'))
             && (false !== exists($this->auth, 'role'))
         ) {
             $timestamp = time();
             // Update new session if 'remember me' is checked
-            if (($remember = share('__remember'))
+            if (($remember = share('remember'))
                 && (($remember + 60) < $timestamp)
             ) {
-                share('__remember', $timestamp);
+                share('remember', $timestamp);
                 session()->update();
             }
 

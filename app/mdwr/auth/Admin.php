@@ -6,10 +6,10 @@ class Admin
 {
     public function handle($app)
     {
-        if ('ADMIN' !== strtoupper(share('__USER.role'))) {
+        if ('ADMIN' !== strtoupper(share('user.role'))) {
             share_error_i18n('VIEW_PERMISSION_DENIED');
             
-            session()->delete('__USER');
+            session()->delete('user');
 
             return redirect('/dep/user/login');
         }

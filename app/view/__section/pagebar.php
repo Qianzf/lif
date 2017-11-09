@@ -13,13 +13,14 @@
     <input <?= ($page <= 1) ? 'disabled' : '' ?>
     type="button" data-page="_prior" value="<?= lang('PRIOR_PAGE') ?>">
 
-    <input <?= ($page == $pages) ? 'disabled' : '' ?>
+    <input <?= ($page >= $pages) ? 'disabled' : '' ?>
     type="button" data-page="_end" value="<?= lang('LAST_PAGE') ?>">
 
     <input type="number" name="pagination-number"
     placeholder="<?= lang('INPUT_LEGAL_PAGE_NUMBER') ?>">
 
-    <input type="button" name="goto-page" value="<?= lang('GOTO') ?>">
+    <input <?= ($pages <= 1) ? 'disabled' : '' ?>
+    type="button" name="goto-page" value="<?= lang('GOTO') ?>">
     <input type="hidden" name="records-count" value="<?= $records ?>">
     <input type="hidden" name="pagination-count" value="<?= $pages ?>">
 

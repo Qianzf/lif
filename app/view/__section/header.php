@@ -10,9 +10,12 @@
     <select name="loggedin">
         <option>
             <?=
-                lang(share('__USER.role'))
-                .': '.
-                share('__USER.account')
+                lang(share('user.role'))
+                .': '
+                .share('user.name')
+                .' ('
+                .share('user.account')
+                .')'
             ?>
         </option>
         <option value="profile"><?= lang('USER_PROFILE') ?></option>

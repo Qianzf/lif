@@ -10,6 +10,18 @@ class User extends Mdl
         'passwd',
     ];
 
+    public function listNonAdminUsers()
+    {
+        $role = (share('user.role') == 'ADMIN')
+        ? -1 : 'ADMIN';
+
+        return $this
+        ->select('id', 'name')
+        ->whereStatus(1)
+        ->whereRole('!=', $role)
+        ->all();
+    }
+
     public function login(string $account)
     {
         return $this
@@ -22,13 +34,18 @@ class User extends Mdl
         ->first();
     }
 
-    public function trendings()
+    public function trendings(int $start = 0, int $offset = 16)
     {
-        return $this->hasMany(
-            Trending::class,
-            'id',
-            'uid'
-        );
+        return $this->hasMany([
+            'model' => Trending::class,
+            'lk' => 'id',
+            'fk' => 'uid',
+            'take_from' => $start,
+            'take_cnt'  => $offset,
+            'sort' => [
+                'at' => 'desc',
+            ],
+        ]);
     }
 
     public function hasConflict($attrs) : bool

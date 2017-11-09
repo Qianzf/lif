@@ -119,4 +119,9 @@ return [
     'WORKSPACE' => '工作区',
     'URL' => '链接',
     'REPO' => '代码库',
+    'ONLY' => '只',
+    'ONLY_ME' => '只看我的',
+    'CHOOSE' => '选择',
+    'FILTER' => '过滤',
+    'SPECIFIC' => '指定',
 ];

@@ -6,28 +6,39 @@ use Lif\Mdl\{User as UserModel, Trending};
 
 class User extends Ctl
 {
+    public function todo()
+    {
+        view('ldtdf/user/todo');
+    }
+
     public function trending(UserModel $user, Trending $trending)
     {
         $pageScale = 16;
         $querys    = $this->request->all();
-        $pages     = ceil($trending->count() / $pageScale);
-
         $errs = legal_or($querys, [
             'page' => ['int|min:1', 1],
+            'user' => ['int|min:0', 0],
+            'search' => ['string', null],
         ]);
 
+        $uid = (0 == $querys['user']) ? null : $querys['user'];
+
         $takeFrom  = ($querys['page'] - 1) * $pageScale;
-        $data      = ($admin = ('ADMIN' === share('__USER.role')))
-        ? $trending->list([
+        if ($uid > 0) {
+            $trending = $trending->whereUid($uid);
+        }
+        $records = $trending->count();
+        $pages   = ceil($records / $pageScale);
+        $data    = $trending->list([
+            'user_id'   => $uid,
             'take_from' => $takeFrom,
             'take_cnt'  => $pageScale,
-        ])
-        : $user->find(share('__USER.id'))->trendings();
-        $records = $trending->count();
+        ]);
+        $users   = $user->listNonAdminUsers();
 
         view('ldtdf/user/trending')
-        ->withAdminTrendingPagesRecords(
-            $admin,
+        ->withUsersTrendingPagesRecords(
+            $users,
             $data,
             $pages,
             $records
@@ -39,18 +50,18 @@ class User extends Ctl
         share('hidden-search-bar', true);
         
         view('ldtdf/user/profile')->withUidEmailName(
-            share('__USER.id'),
-            share('__USER.email'),
-            share('__USER.name')
+            share('user.id'),
+            share('user.email'),
+            share('user.name')
         );
     }
 
     public function update(UserModel $user)
     {
-        $user = $user->whereId(share('__USER.id'))->first();
+        $user = $user->whereId(share('user.id'))->first();
 
         if (! $user) {
-            session()->delete('__USER');
+            session()->delete('user');
             share_error_i18n('NO_USER');
             return redirect('/dep/user/login');
         }
@@ -98,12 +109,12 @@ class User extends Ctl
         if ($needUpdate) {
             if ($user->save()) {
                 unset($user->passwd);
-                share('__USER', $user->items());
+                share('user', $user->items());
 
                 $err = 'UPDATE_OK';
 
                 if ($request->passwordNew) {
-                    session()->delete('__USER');
+                    session()->delete('user');
 
                     redirect('/dep/user/login');
                 }

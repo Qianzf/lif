@@ -116,4 +116,9 @@ return [
     'WORKSPACE' => 'Workspace',
     'URL' => 'URL',
     'REPO' => 'Code repo',
+    'ONLY' => 'Only',
+    'ONLY_ME' => 'Only me',
+    'CHOOSE' => 'Choose',
+    'FILTER' => 'Filter',
+    'SPECIFIC' => 'Specific',
 ];

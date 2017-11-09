@@ -673,9 +673,14 @@ class LDO extends \PDO
         string $table,
         string $fdLeft,
         string $cond,
-        string $fdRight
+        string $fdRight = null
     ): LDO
     {
+        if (is_null($fdRight)) {
+            $fdRight = $cond;
+            $cond = '=';
+        }
+
         if ($this->table) {
             $this->table .= ' LEFT JOIN '
             .escape_fields($table)

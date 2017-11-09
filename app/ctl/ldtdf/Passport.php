@@ -10,7 +10,7 @@ class Passport extends Ctl
 
     public function login()
     {
-        if (share('__USER')) {
+        if (share('user')) {
             redirect('/dep');
         }
 
@@ -43,8 +43,8 @@ class Passport extends Ctl
         $trend->save();
         
         $shares = [
-            '__USER'    => $user->items(),
-            '__timeout' => $this->timeout,
+            'user'    => $user->items(),
+            'timeout' => $this->timeout,
             'system-roles' => [
                 'ADMIN',
                 'DEVELOPER',
@@ -56,7 +56,7 @@ class Passport extends Ctl
             $shares['__lang'] = $lang;
         }
         if ($remember) {
-            $shares['__remember'] = $timestamp;
+            $shares['remember'] = $timestamp;
         }
 
         shares($shares);

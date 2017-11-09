@@ -24,6 +24,23 @@ $this->group([
     });
 
     $this->group([
+        'prefix' => 'todo',
+    ], function () {
+        $this->get('/', 'User@todo');
+    });
+
+    $this->group([
+        'prefix' => 'bugs',
+        'ctl' => 'Bug',
+    ], function () {
+        $this->get('/', 'index');
+        $this->get('new', 'edit');
+        $this->post('new', 'create');
+        $this->get('{id}', 'edit');
+        $this->post('{id}', 'update');
+    });
+
+    $this->group([
         'prefix' => 'tasks',
         'ctl' => 'Task',
     ], function () {
