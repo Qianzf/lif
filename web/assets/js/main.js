@@ -46,10 +46,21 @@ $(window).ready(function () {
 
         tryReloadWithNewPage(page)
     })
-    $('input[name="pagination-number"]').on('keydown', function (e) {
-        if (e.which == 13) {
-            e.preventDefault()
-            tryReloadWithNewPage(this.value)
+    $('input[name="pagination-number"]').on('input', function (e) {
+        let goTo = parseInt(this.value)
+        let pageCount = parseInt($('input[name="pagination-count"]').val())
+        if ((1 <= goTo) && (goTo <= pageCount)) {
+            $('input[name="goto-page"]').attr('disabled', false)
+            this.style.color = 'green'
+            if (e.which == 13) {
+                e.preventDefault()
+                tryReloadWithNewPage(this.value)
+            }
+        } else {
+            if (! isNaN(goTo)) {
+                $('input[name="goto-page"]').attr('disabled', true)
+                this.style.color = 'red'
+            }
         }
     })
     $('#env-types-filter').change(function () {

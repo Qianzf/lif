@@ -13,7 +13,7 @@ class User extends Ctl
         $pages     = ceil($trending->count() / $pageScale);
 
         $errs = legal_or($querys, [
-            'page' => ['int|min:1|max:'.$pages, 1],
+            'page' => ['int|min:1', 1],
         ]);
 
         $takeFrom  = ($querys['page'] - 1) * $pageScale;
@@ -23,7 +23,7 @@ class User extends Ctl
             'take_cnt'  => $pageScale,
         ])
         : $user->find(share('__USER.id'))->trendings();
-        $records = count($data);
+        $records = $trending->count();
 
         view('ldtdf/user/trending')
         ->withAdminTrendingPagesRecords(

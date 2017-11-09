@@ -17,6 +17,7 @@ return [
     'CLIENT' => '客户端',
     'DATA' => '数据',
     'ILLEGAL' => '非法',
+    'LEGAL' => '合法',
     'TASK' => '任务',
     'TITLE' => '标题',
     'STATUS' => '状态',
@@ -117,4 +118,5 @@ return [
     'LAST_PAGE' => '尾页',
     'WORKSPACE' => '工作区',
     'URL' => '链接',
+    'REPO' => '代码库',
 ];

@@ -17,6 +17,7 @@ return [
     'CLIENT' => 'Client',
     'DATA' => 'Data',
     'ILLEGAL' => 'Illegal',
+    'LEGAL' => 'Legal',
     'TASK' => 'Task',
     'TITLE' => 'Title',
     'STATUS' => 'Status',
@@ -113,4 +114,6 @@ return [
     'PAGE_SIZE' => 'Page size',
     'PAGE_NOW' => 'Current Page',
     'WORKSPACE' => 'Workspace',
+    'URL' => 'URL',
+    'REPO' => 'Code repo',
 ];

@@ -1,15 +1,25 @@
 a {
     text-decoration: none;
 }
-table, tr, td, th {
+table {
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+td, th {
     border: 1px solid grey;
     padding: 5px;
+    margin: 0;
+}
+caption {
+    border-collapse: collapse;
+    border: 1px solid grey;
+    border-bottom-width: 0;
+    padding: 5px;
+    font-weight: bold;
+    /*letter-spacing: 5px;*/
 }
 code {
     color: maroon;
-}
-table caption {
-    margin-bottom: 10px;
 }
 header {
     margin-top: 10px;
@@ -28,8 +38,28 @@ input {
 input:focus {
     outline: 1px solid #000000;
 }
+.stub-1 {
+    display: inline-block;
+    width: 10px;
+}
+.stub-2 {
+    display: inline-block;
+    width: 20px;
+}
+.stub-3 {
+    display: inline-block;
+    width: 30px;
+}
+.stub-4 {
+    display: inline-block;
+    width: 40px;
+}
+.stub-5 {
+    display: inline-block;
+    width: 50px;
+}
 .search-bar {
-    margin-left: 50px;
+    display: inline-block;
 }
 .search-bar input {
     width: 200px;
@@ -63,6 +93,14 @@ input:focus {
 }
 .btn-shadow {
     color: lightslategray;
+}
+.btn-logo {
+    background-color: lightgreen;
+    padding: 10px;
+    font-weight: bold;
+}
+.btn-logo {
+    color: black;
 }
 .btn-default a,
 .btn-alert a,

@@ -4,20 +4,29 @@
 <?php $offset  = $offset ?? 16; ?>
 
 <p class="pagination-bar">
-    <input type="button" data-page="_start" value="<?= lang('FIRST_PAGE') ?>">
-    <input type="button" data-page="_next" value="<?= lang('NEXT_PAGE') ?>">
-    <input type="button" data-page="_prior" value="<?= lang('PRIOR_PAGE') ?>">
-    <input type="button" data-page="_end" value="<?= lang('LAST_PAGE') ?>">
+    <input <?= ($page == 1) ? 'disabled' : '' ?>
+    type="button" data-page="_start" value="<?= lang('FIRST_PAGE') ?>">
+
+    <input <?= ($page >= $pages) ? 'disabled' : '' ?>
+    type="button" data-page="_next" value="<?= lang('NEXT_PAGE') ?>">
+
+    <input <?= ($page <= 1) ? 'disabled' : '' ?>
+    type="button" data-page="_prior" value="<?= lang('PRIOR_PAGE') ?>">
+
+    <input <?= ($page == $pages) ? 'disabled' : '' ?>
+    type="button" data-page="_end" value="<?= lang('LAST_PAGE') ?>">
+
     <input type="number" name="pagination-number"
-    placeholder="<?= lang('INPUT_PAGE_NUMBER') ?>">
-    <input type="button" data-page="" value="<?= lang('GOTO') ?>">
+    placeholder="<?= lang('INPUT_LEGAL_PAGE_NUMBER') ?>">
+
+    <input type="button" name="goto-page" value="<?= lang('GOTO') ?>">
     <input type="hidden" name="records-count" value="<?= $records ?>">
     <input type="hidden" name="pagination-count" value="<?= $pages ?>">
 
-    <p><i><code>
+    <p><i><code>(
         <?= lang('PAGE_NOW', $page) ?>;
         <?= lang('TOTAL_RECORDS', $records) ?>;
         <?= lang('TOTAL_PAGES', $pages) ?>;
         <?= lang('PAGE_SIZE', $offset) ?>
-    </code></i></p>
+    )</code></i></p>
 </p>

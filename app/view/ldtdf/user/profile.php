@@ -8,7 +8,7 @@
     'route' => '/dep',
 ]) ?>
 
-<form method="POST" action="/dep/user/profile">
+<form method="POST">
     <label><?= lang('NAME') ?>
         <input type="text" name="name" value="<?= $name ?>" required>
     </label> 
