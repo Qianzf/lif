@@ -27,14 +27,16 @@ class User extends Ctl
         if ($uid > 0) {
             $trending = $trending->whereUid($uid);
         }
-        $records = $trending->count();
-        $pages   = ceil($records / $pageScale);
+        
         $data    = $trending->list([
             'user_id'   => $uid,
             'take_from' => $takeFrom,
             'take_cnt'  => $pageScale,
         ]);
+
         $users   = $user->listNonAdminUsers();
+        $records = $trending->count();
+        $pages   = ceil($records / $pageScale);
 
         view('ldtdf/user/trending')
         ->withUsersTrendingPagesRecords(

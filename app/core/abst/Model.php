@@ -25,7 +25,7 @@ abstract class Model
     {
         if ($id) {
             $this->pk     = $this->pk ?? 'id';
-            $this->fields = $this->query()->where(
+            $this->fields = $this->query()->reset()->where(
                 $this->pk,
                 $id
             )->first();
@@ -36,6 +36,15 @@ abstract class Model
                 $this->attrs['where'] = '((`'.$this->pk.'` = ?))';
             }
         }
+    }
+
+    public function count()
+    {
+        return $this
+        ->query()
+        ->reset()
+        ->table($this->table)
+        ->count();
     }
 
     // Find model via primary key
@@ -224,7 +233,7 @@ abstract class Model
         return $this;
     }
 
-    protected function query()
+    public function query()
     {
         if (! $this->query || !is_object($this->query)) {
             $this->query = db($this->conn)
