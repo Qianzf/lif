@@ -3,13 +3,77 @@ a {
 }
 table, tr, td, th {
     border: 1px solid grey;
+    padding: 5px;
 }
 code {
     color: maroon;
+}
+table caption {
+    margin-bottom: 10px;
+}
+header {
+    margin-top: 10px;
+}
+form, section {
+    margin: 10px;
+}
+form label {
+    display: block;
+    margin: 5px;
+    padding: 5px;
+}
+input {
+    padding: 5px;
+}
+input:focus {
+    outline: 1px solid #000000;
+}
+.search-bar {
+    margin-left: 50px;
+}
+.search-bar input {
+    width: 200px;
 }
 .search-res {
     color: green;
 }
 .invisible-default {
     display: none;
+}
+.btn-default {
+    background-color: forestgreen;
+}
+.btn-alert {
+    background-color: cornflowerblue;
+}
+.btn-emergency {
+    background-color: crimson;
+}
+.btn-todo {
+    background-color: coral;
+}
+.btn-info {
+    background-color: lightseagreen;   
+}
+.btn-edit {
+    background-color: lavender;
+}
+.btn-delete {
+    background-color: indianred;
+}
+.btn-shadow {
+    color: lightslategray;
+}
+.btn-default a,
+.btn-alert a,
+.btn-emergency a,
+.btn-info a,
+.btn-edit a,
+.btn-delete a,
+.btn-todo a {
+    color: gainsboro;
+}
+.list dd,
+.list li {
+    padding: 5px;
 }

@@ -75,7 +75,7 @@ return [
     'INPUT' => '请输入',
     'NUMBER' => '数',
     'PROVIDE_KEYWORDS' => '请提供搜索关键词',
-    'TRENDING' => '历史动态',
+    'TRENDING' => '动态',
     'USER_EMAIL_OR_ACCOUNT_CONFLICT' => '账号或邮箱已被占用',
     'ENVIRONMENT' => '环境',
     'ENV' => '环境',
@@ -107,6 +107,7 @@ return [
     'NO' => '否',
     'BUG' => 'Bug',
     'COMMON' => '普通',
+    'TODO' => '待办',
     'TODO_LIST' => '待办事项',
     'TOTAL_RECORDS' => '记录总数',
     'TOTAL_PAGES' => '分页总数',
@@ -114,4 +115,6 @@ return [
     'PAGE_NOW' => '当前页数',
     'FIRST_PAGE' => '首页',
     'LAST_PAGE' => '尾页',
+    'WORKSPACE' => '工作区',
+    'URL' => '链接',
 ];

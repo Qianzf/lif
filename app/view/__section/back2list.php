@@ -5,7 +5,7 @@
         lang('LDTDFMS')
     ])
 ?>
-
+<?= $this->section('common') ?>
 <h4>
     <?= $action ?>
     <sup>

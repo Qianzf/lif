@@ -20,7 +20,7 @@ if (! fe('lif')) {
         ('cli' === context())
         ? exit(_json_encode(array_merge([
             'msg' => $msg,
-       ], $lif)))
+        ], $lif)))
         : response($lif, $msg);
     }
 }
@@ -253,7 +253,16 @@ if (! fe('legal_and')) {
 if (! fe('exists')) {
     // !!! Be careful to check bool value like false
     function exists($var, $idx = null) {
-        // !!! Be carefurl if `$var` is not an assoc array
+        // !!! Be carefurl if `$var` is array but not an assoc array
+        if (is_null($var)) {
+            return false;
+        }
+        if (is_bool($var)) {
+            return true;
+        }
+        if (is_scalar($var)) {
+            return $var;
+        }
         if (is_array($var) && !is_null($idx)) {
             $idxes = is_array($idx) ? $idx : [$idx];
             foreach ($idxes as $_idx) {

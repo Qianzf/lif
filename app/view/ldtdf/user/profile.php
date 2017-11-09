@@ -1,29 +1,32 @@
 <?= $this->layout('main') ?>
 <?= $this->title([lang('USER_PROFILE'), lang('LDTDFMS')]) ?>
-
-<br>
+<?= $this->section('back2list', [
+    'model' => collect([
+        'id' => true,
+    ]),
+    'key'   => 'PROFILE',
+    'route' => '/dep',
+]) ?>
 
 <form method="POST" action="/dep/user/profile">
-    <label><?= lang('NAME') ?>:
+    <label><?= lang('NAME') ?>
         <input type="text" name="name" value="<?= $name ?>" required>
-    </label> <br>
+    </label> 
 
-    <label><?= lang('EMAIL') ?>:
+    <label><?= lang('EMAIL') ?>
         <input type="email" name="email" value="<?= $email ?>" required>
-    </label> <br>
+    </label> 
 
-    <br>
-
-    <label><?= lang('OLD_PASSWORD') ?>:
+    <label><?= lang('OLD_PASSWORD') ?>
         <input type="password" name="passwordOld"
         placeholder="<?= lang('PROVIDE_OLD_PASSWD') ?>">
-    </label> <br>
-    <label><?= lang('NEW_PASSWORD') ?>:
+    </label> 
+    <label><?= lang('NEW_PASSWORD') ?>
         <input type="password" name="passwordNew"
         placeholder="<?= lang('PROVIDE_NEW_PASSWD') ?>">
-    </label> <br>
+    </label> 
 
-    <br>
-
-    <input type="submit" value="<?= lang('UPDATE') ?>">
+    <label>
+        <input type="submit" value="<?= lang('UPDATE') ?>">
+    </label>
 </form>

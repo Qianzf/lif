@@ -1,8 +1,8 @@
 <?= $this->layout('main') ?>
 <?= $this->title([lang('TRENDING'), lang('LDTDFMS')]) ?>
-<?= $this->section('search') ?>
+<?= $this->section('common') ?>
 
-<?php if (isset($trending) && $trending) { ?>
+<?php if (isset($trending) && iteratable($trending)) { ?>
 <?php foreach ($trending as $log) { ?>
 <ul>
     <li>

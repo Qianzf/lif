@@ -185,7 +185,7 @@ class Web extends Container implements Observer, Strategy
     public function execute()
     {
         if (is_callable($this->handler)) {
-            return $this->__closureSafe($this->handler, $this->vars);
+            return $this->__callableSafe($this->handler, $this->vars);
         } elseif (is_string($this->handler)) {
             $args = explode('@', $this->handler);
             if ((count($args) !== 2)

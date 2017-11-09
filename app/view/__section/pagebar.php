@@ -14,18 +14,10 @@
     <input type="hidden" name="records-count" value="<?= $records ?>">
     <input type="hidden" name="pagination-count" value="<?= $pages ?>">
 
-    <dl>
-        <dd><code>
-            <?= lang('PAGE_NOW', $page) ?>
-        </code></dd>
-        <dd><code>
-            <?= lang('TOTAL_RECORDS', $records) ?>
-        </code></dd>
-        <dd><code>
-            <?= lang('TOTAL_PAGES', $pages) ?>
-        </code></dd>
-        <dd><code>
-            <?= lang('PAGE_SIZE', $offset) ?>
-        </code></dd>
-    </dl>
+    <p><i><code>
+        <?= lang('PAGE_NOW', $page) ?>;
+        <?= lang('TOTAL_RECORDS', $records) ?>;
+        <?= lang('TOTAL_PAGES', $pages) ?>;
+        <?= lang('PAGE_SIZE', $offset) ?>
+    </code></i></p>
 </p>

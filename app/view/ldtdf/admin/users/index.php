@@ -1,13 +1,14 @@
 <?= $this->layout('main') ?>
 <?= $this->title([lang('USER_MANAGE'), lang('LDTDFMS')]) ?>
+<?= $this->section('common') ?>
 
-<ul>
-    <li>
-        <a href="users/new"><?= lang('ADD_USER') ?></a>
-    </li>
-</ul>
-
-<?= $this->section('search') ?>
+<dl>
+    <dd>
+        <button>
+            <a href="users/new"><?= lang('ADD_USER') ?></a>
+        </button>
+    </dd>
+</dl>
 
 <table>
     <caption><?= lang('USER_LIST') ?></caption>
@@ -30,8 +31,16 @@
         <td><?= $user->email ?></td>
         <td><?= lang($user->role) ?></td>
         <td>
-            <a href="users/<?= $user->id ?>"><?= lang('EDIT') ?></a>
-            <a href="users/delete/<?= $user->id ?>"><?= lang('DELETE') ?></a>
+            <button>
+                <a href="users/<?= $user->id ?>">
+                    <?= lang('EDIT') ?>
+                </a>
+            </button>
+            <button class="btn-delete">
+                <a href="users/delete/<?= $user->id ?>">
+                    <?= lang('DELETE') ?>
+                </a>
+            </button>
         </td>
     </tr>
     <?php } ?>

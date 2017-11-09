@@ -112,4 +112,5 @@ return [
     'TOTAL_PAGES' => 'Total Pages',
     'PAGE_SIZE' => 'Page size',
     'PAGE_NOW' => 'Current Page',
+    'WORKSPACE' => 'Workspace',
 ];

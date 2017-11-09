@@ -14,7 +14,7 @@ A simple, quick, lightweight, API-based modern PHP Framework.
 
 - Support route parameters filtering
 
-- Support routes cache (Colsure not supported)
+- Support routes cache (Closure not supported)
 
 ### Request
 
@@ -42,11 +42,11 @@ Support basic Model/ORM functionalities.
 
 ### Views
 
-LiF is an API-based web framework, so I didn't waste time to design a specialized view template engine. So LiF use plain PHP grammars to write view template. It's has these features:
+LiF is an API-based web framework, I didn't waste time to design a specialized view template engine. So LiF use plain PHP grammars to write view template, which has these features:
 
 - Native PHP code, no new syntax to learn
 
-- Reuse with template layouts and sections
+- Code reuse via template layouts and sections
 
 - Cache or not can be configurable
 
@@ -76,7 +76,7 @@ Support the transformation between array and collection class.
 
 ### Validation
 
-Support custom validation and keep an uniform return values: false or language key.
+Support custom validation and keep an uniform return values: `false` or language key.
 
 ### Log
 
@@ -96,7 +96,7 @@ LiF-styled exception output.
 
 ### Libraries
 
-LiF re-packaged with some common used component's APIs in a more easier way to use .
+LiF re-packaged with some common used component's APIs in a more easier way to use.
 
 #### Mail
 
@@ -112,7 +112,7 @@ See: _doc/*_.
 
 > - Middleware `terminable()` method
 
-> - Enable or disable some time-wasting but will still be used features via Core configurations
+> - Enable or disable some time-wasting but will still be used features via core configurations
 
 > - Version control database
 

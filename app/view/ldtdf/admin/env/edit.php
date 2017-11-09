@@ -1,5 +1,4 @@
 <?= $this->layout('main') ?>
-
 <?= $this->section('back2list', [
     'model' => $env,
     'key'   => 'ENV',
@@ -10,12 +9,12 @@
     <label>
         <?= lang('TITLE') ?>
         <input type="text" name="name" value="<?= $env->name ?>" required>
-    </label><br>
+    </label>
 
     <label>
         <?= lang('HOST_ADDR') ?>
         <input type="text" name="host" value="<?= $env->host ?>" required>
-    </label><br>
+    </label>
 
     <label>
         <?= lang('ENV_TYPE') ?>
@@ -32,7 +31,7 @@
             <?php } ?>
             <?php } ?>
         </select>
-    </label><br>
+    </label>
 
     <label>
         <?= lang('RELATED_PROJECT') ?>
@@ -51,7 +50,7 @@
             <?php } ?>
             <?php } ?>
         </select>
-    </label><br>
+    </label>
 
     <label>
         <?= lang('RELATED_SERVER') ?>
@@ -70,9 +69,9 @@
             <?php } ?>
             <?php } ?>
         </select>
-    </label><br>
+    </label>
 
-    <br>
-    <input value="<?= lang($env->id ? 'UPDATE' : 'CREATE') ?>"
-    type="submit">
+    <?= $this->section('submit', [
+        'model' => $env,
+    ]) ?>
 </form>

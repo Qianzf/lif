@@ -12,7 +12,7 @@ $(window).ready(function () {
     $('select[name="system-roles"]').change(function () {
         reloadWithQuery('role', this.value)
     })
-    $('input[name="search-btn"]').click(function () {
+    $('button[name="search-btn"]').click(function () {
         search()
     })
     $('input[name="search"]').on('keydown', function (e) {
@@ -21,10 +21,10 @@ $(window).ready(function () {
             search()
         }
     })
-    $('input[name="clear-search-btn"]').click(function () {
+    $('button[name="clear-search-btn"]').click(function () {
         $('input[name="search"]').val('')
     })
-    $('input[name="reset-all-btn"]').click(function () {
+    $('button[name="reset-all-btn"]').click(function () {
         $('input[name="search"]').val('')
         if (window.location.search) {
             let aTag = getATag(window.location.href)

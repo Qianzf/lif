@@ -1,5 +1,4 @@
 <?= $this->layout('main') ?>
-
 <?= $this->section('back2list', [
     'model' => $server,
     'key'   => 'SERVER',
@@ -10,19 +9,19 @@
     <label>
         <?= lang('TITLE') ?>
         <input type="text" name="name" value="<?= $server->name ?>" required>
-    </label><br>
+    </label>
 
     <label>
         <?= lang('HOST_ADDR') ?>
         <input type="text" name="host" value="<?= $server->host ?>" required>
-    </label><br>
+    </label>
 
     <label>
         <?= lang('PORT') ?>
         <input type="number" name="port" value="<?= $server->port ?>" required>
-    </label><br>
+    </label>
 
-    <br>
-    <input value="<?= lang($server->id ? 'UPDATE' : 'CREATE') ?>"
-    type="submit">
+    <?= $this->section('submit', [
+        'model' => $server,
+    ]) ?>
 </form>

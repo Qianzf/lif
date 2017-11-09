@@ -1,14 +1,13 @@
-<p>
-    <input type="button" name="clear-search-btn"
-    value="<?= lang('CLEAR') ?>">
+<?php $display = share_flush('hidden-search-bar') ? 'invisible-default' : ''?>
 
-    <input type="button" name="reset-all-btn"
-    value="<?= lang('RESET_ALL') ?>">
-    
-    <input type="text" name="search"
-    value="<?= ($keyword ?? '') ?>" required
-    placeholder="<?= lang('PROVIDE_KEYWORDS') ?>">
+<span class="search-bar <?= $display ?>">
+    <label>
+        <input type="text" name="search"
+        value="<?= ($keyword ?? '') ?>" required
+        placeholder="<?= lang('PROVIDE_KEYWORDS') ?>">
+    </label>
 
-    <input type="button" name="search-btn"
-    value="<?= lang('SEARCH') ?>">
-</p>
+    <button name="search-btn"><?= lang('SEARCH') ?></button>
+    <button name="clear-search-btn"><?= lang('CLEAR') ?></button>
+    <button name="reset-all-btn"><?= lang('RESET_ALL') ?></button>
+</span>

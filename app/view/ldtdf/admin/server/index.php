@@ -2,11 +2,13 @@
 <?= $this->title([lang('SERVER_MANAGE'), lang('LDTDFMS')]) ?>
 <?= $this->section('common') ?>
 
-<ul>
-    <li>
-        <a href="/dep/admin/servers/new"><?= lang('ADD_SERVER') ?></a>
-    </li>
-</ul>
+<dl class="list">
+    <dd>
+        <button>
+            <a href="/dep/admin/servers/new"><?= lang('ADD_SERVER') ?></a>
+        </button>
+    </dd>
+</dl>
 
 <table>
     <caption>
@@ -27,9 +29,11 @@
         <td><?= $server->host ?></td>
         <td><?= $server->port ?></td>
         <td>
-            <a href="/dep/admin/servers/<?= $server->id ?>">
-                <?= lang('MANAGE') ?>
-            </a>
+            <button>
+                <a href="/dep/admin/servers/<?= $server->id ?>">
+                    <?= lang('MANAGE') ?>
+                </a>
+            </button>
         </td>
     </tr>
     <?php } ?>

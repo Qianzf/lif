@@ -1,6 +1,8 @@
-<br>
 <footer>
-    <em><?= sysmsg('SWITCH_LANG') ?></em>
+    <button class="btn-shadow" disabled><i>
+        <?= sysmsg('SWITCH_LANG') ?>
+    </i></button>
+
     <select name="system-lang">
     
         <?php foreach (share('languages') as $key => $lang) { ?>

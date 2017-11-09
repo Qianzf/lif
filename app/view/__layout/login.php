@@ -8,6 +8,9 @@
     <?= js([
         'js/jquery.min'
     ]) ?>
+    <?= css([
+        'css/main'
+    ]) ?>
 </head>
 
 <body>

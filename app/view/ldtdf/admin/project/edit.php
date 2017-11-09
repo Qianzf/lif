@@ -1,5 +1,4 @@
 <?= $this->layout('main') ?>
-
 <?= $this->section('back2list', [
     'model' => $project,
     'key'   => 'PROJECT',
@@ -10,26 +9,26 @@
     <label>
         <?= lang('TITLE') ?>
         <input type="text" name="name" required value="<?= $project->name ?>">
-    </label><br>
+    </label>
 
     <label>
         <?= 'URL' ?>
          <input type="text" name="url" required value="<?= $project->url ?>">
-    </label><br>
+    </label>
 
     <label>
         <?= 'VCS' ?>
         <select name="vcs" required>
             <option value="git">git</option>
         </select>
-    </label><br>
+    </label>
 
     <label>
         <?= lang('DESCRIPTION') ?>
         <textarea name="desc"><?= $project->desc ?></textarea>
-    </label><br><br>
+    </label>
 
-    <input type="submit"
-    value="<?= $project->id ? lang('UPDATE') : lang('CREATE') ?>">
-
+    <?= $this->section('submit', [
+        'model' => $project,
+    ]) ?>
 </form>

@@ -70,3 +70,21 @@ For example:
 ```
 
 Well, if frontend developers don't familiar with PHP, the better way is to build web app via HTTP API.
+
+- Share data between views
+
+``` php
+// app/view/index.php
+<?php share('hidden-search-bar', true) ?>
+<?= $this->layout('main') ?>
+<?= $this->title([lang('HOMEPAGE'), lang('LiF')]) ?>
+<?= $this->section('search') ?>
+<!-- ... -->
+
+// app/view/__section/search.php
+<?php $display = share_flush('hidden-search-bar') ? 'invisible-default' : ''?>
+
+<span class="search-bar <?= $display ?>">
+<!-- ... -->
+</span>
+```

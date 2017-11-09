@@ -1,4 +1,3 @@
-<br>
 <header>
     <a href="/dep">
         <em><?= lang('LDTDFMS') ?></em>
@@ -11,9 +10,10 @@
                 .': '.
                 share('__USER.account')
             ?>
-                
         </option>
         <option value="profile"><?= lang('USER_PROFILE') ?></option>
         <option value="logout"><?= lang('LOGOUT') ?></option>
     </select>
+
+    <?= $this->section('search') ?>
 </header>

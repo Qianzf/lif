@@ -2,15 +2,13 @@
 <?= $this->title([lang('PROJECT_MANAGE'), lang('LDTDFMS')]) ?>
 <?= $this->section('common') ?>
 
-<ul>
-    <li>
-        <a href="/dep/admin/projects/new"><?= lang('ADD_PROJECT') ?></a>
-    </li>
-</ul>
-
-<?= $this->section('search') ?>
-
-<br>
+<dl class="list">
+    <dd>
+        <button>
+            <a href="/dep/admin/projects/new"><?= lang('ADD_PROJECT') ?></a>
+        </button>
+    </dd>
+</dl>
 
 <table>
     <caption>
@@ -29,17 +27,16 @@
         <td><?= $project->name ?></td>
         <td><?= $project->url ?></td>
         <td>
-            <a href="/dep/admin/projects/<?= $project->id ?>">
-                <?= lang('DETAILS') ?>
-            </a>
-            <a href="/dep/admin/envs?type="></a>
+            <button>
+                <a href="/dep/admin/projects/<?= $project->id ?>">
+                    <?= lang('DETAILS') ?>
+                </a>
+            </button>
         </td>
     </tr>
     <?php } ?>
     <?php } ?>
 
 </table>
-
-<br>
 
 <?= $this->section('pagebar') ?>

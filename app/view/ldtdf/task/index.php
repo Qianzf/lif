@@ -1,19 +1,23 @@
 <?= $this->layout('main') ?>
 <?= $this->title([lang('TASK_LIST'), lang('LDTDFMS')]) ?>
-<?= $this->section('search') ?>
+<?= $this->section('common') ?>
 
-<ul>
-    <li>
-        <a href="/dep/tasks/new">
-            <?= lang('ADD_TASK') ?>
-        </a>
-    </li>
-    <li>
-        <a href="/dep/bugs/new">
-            <?= lang('ADD_BUG') ?>
-        </a>
-    </li>
-</ul>
+<dl class="list">
+    <dd>
+        <button>
+            <a href="/dep/tasks/new">
+                <?= lang('ADD_TASK') ?>
+            </a>
+        </button>
+    </dd>
+    <dd>
+        <button>
+            <a href="/dep/bugs/new">
+                <?= lang('ADD_BUG') ?>
+            </a>
+        </button>
+    </dd>
+</dl>
 
 <table>
     <caption><?= lang('TASK_LIST') ?></caption>
@@ -30,7 +34,9 @@
         <td><?= $task->id ?></td>
         <td><?= $task->title ?></td>
         <td>
-            <a href="tasks/<?= $task->id ?>"><?= lang('DETAILS') ?></a>
+            <button>
+                <a href="tasks/<?= $task->id ?>"><?= lang('DETAILS') ?></a>
+            </button>
         </td>
     </tr>
     <?php } ?>
