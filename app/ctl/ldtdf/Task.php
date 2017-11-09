@@ -13,6 +13,8 @@ class Task extends Ctl
 
     public function edit(TaskModel $task)
     {
+        share('hidden-search-bar', true);
+        
         view('ldtdf/task/edit')->withTask($task);
     }
 

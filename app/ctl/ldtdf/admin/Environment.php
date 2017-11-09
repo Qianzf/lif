@@ -63,6 +63,8 @@ class Environment extends Ctl
 
     public function edit(Env $env, Server $server, Project $project)
     {
+        share('hidden-search-bar', true);
+        
         $servers  = $server->all();
         $projects = $project->all();
 

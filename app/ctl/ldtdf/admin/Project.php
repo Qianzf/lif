@@ -40,6 +40,8 @@ class Project extends Ctl
     // method edit() add project too
     public function edit(ProjectModel $project)
     {
+        share('hidden-search-bar', true);
+        
         view('ldtdf/admin/project/edit')->withProject($project);
     }
 }

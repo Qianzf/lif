@@ -36,6 +36,8 @@ class User extends Ctl
 
     public function profile($uid)
     {
+        share('hidden-search-bar', true);
+        
         view('ldtdf/user/profile')->withUidEmailName(
             share('__USER.id'),
             share('__USER.email'),

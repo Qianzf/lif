@@ -14,6 +14,8 @@ class Server extends Ctl
 
     public function edit(ServerModel $server)
     {
+        share('hidden-search-bar', true);
+        
         view('ldtdf/admin/server/edit')
         ->withServer($server);
     }
