@@ -258,10 +258,10 @@ if (! fe('exists')) {
             return false;
         }
         if (is_bool($var)) {
-            return true;
+            return is_null($idx) ? true : false;
         }
         if (is_scalar($var)) {
-            return $var;
+            return is_null($idx) ? $var : false;
         }
         if (is_array($var) && !is_null($idx)) {
             $idxes = is_array($idx) ? $idx : [$idx];

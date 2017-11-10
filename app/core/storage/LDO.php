@@ -654,7 +654,9 @@ class LDO extends \PDO
 
         $res = $this->execute($exec, $sql);
 
-        return intval($res[0]['count'] ?? 0);
+        return (exists($res, 0) && ($count = exists($res[0], 'count')))
+        ? intval($count)
+        : $res;
     }
 
     public function select(...$fields): LDO
