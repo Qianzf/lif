@@ -1,5 +1,9 @@
 <?php
 
+$this->any('/sys_msg', function () {
+    response(sysmsgs());
+});
+
 $this->group([
     'prefix'    => 'dep',
     'namespace' => 'Ldtdf',
