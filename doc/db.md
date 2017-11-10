@@ -69,9 +69,9 @@ db()->table('lif')->whereId(1)->delete();
 - Trasaction
 
 ``` php
-db()->trans(function ($table) {
-    $table->table('a')->whereId(1)->update(['val' => 2]);
-    $table->table('b')->whereId(2)->delete();
+db()->trans(function ($db) {
+    $db->table('a')->whereId(1)->update(['val' => 2]);
+    $db->table('b')->whereId(2)->delete();
 });
 
 // Or

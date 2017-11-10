@@ -11,6 +11,13 @@ class User extends Ctl
         view('ldtdf/user/todo');
     }
 
+    public function info(UserModel $user)
+    {
+        share('hidden-search-bar', true);
+        
+        view('ldtdf/user/info')->withUser($user);
+    }
+
     public function trending(UserModel $user, Trending $trending)
     {
         $pageScale = 16;
@@ -22,13 +29,12 @@ class User extends Ctl
         ]);
 
         $uid = (0 == $querys['user']) ? null : $querys['user'];
-
-        $takeFrom  = ($querys['page'] - 1) * $pageScale;
         if ($uid > 0) {
             $trending = $trending->whereUid($uid);
         }
-        
-        $data    = $trending->list([
+
+        $takeFrom = ($querys['page'] - 1) * $pageScale;
+        $data     = $trending->list([
             'user_id'   => $uid,
             'take_from' => $takeFrom,
             'take_cnt'  => $pageScale,

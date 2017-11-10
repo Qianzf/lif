@@ -124,4 +124,6 @@ return [
     'CHOOSE' => '选择',
     'FILTER' => '过滤',
     'SPECIFIC' => '指定',
+    'INFORMATION' => '信息',
+    'INFO' => '信息',
 ];

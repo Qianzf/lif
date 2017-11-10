@@ -20,6 +20,7 @@ caption {
 }
 code {
     color: maroon;
+    background-color: #eeeeee;
 }
 header {
     margin-top: 10px;
@@ -27,18 +28,40 @@ header {
 form, section {
     margin: 10px;
 }
+.form label,
 form label {
     display: block;
     margin: 5px;
     padding: 5px;
 }
+
 input {
     padding: 5px;
 }
 input:focus {
     outline: 1px solid #000000;
 }
-.stub-1 {
+.vertical {
+    display: block;
+    height: 10px
+}
+.vertical-2 {
+    display: block;
+    height: 20px
+}
+.vertical-3 {
+    display: block;
+    height: 30px
+}
+.vertical-4 {
+    display: block;
+    height: 40px
+}
+.vertical-5 {
+    display: block;
+    height: 50px
+}
+.stub {
     display: inline-block;
     width: 10px;
 }

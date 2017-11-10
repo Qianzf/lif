@@ -34,7 +34,7 @@ Well, I think you will like them, all in _app/core/aux/_.
 
 ### DB SQL builder
 
-LiF has it's own database SQL query builder, it's simple, and extends functionalities from base PDO class, which handles all the SQL things.
+LiF has it's own database SQL query builder, it's simple but handles all the SQL things.
 
 ### Model/ORM
 

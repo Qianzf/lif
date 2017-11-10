@@ -121,4 +121,6 @@ return [
     'CHOOSE' => 'Choose',
     'FILTER' => 'Filter',
     'SPECIFIC' => 'Specific',
+    'INFORMATION' => 'Information',
+    'INFO' => 'Information',
 ];

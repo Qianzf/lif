@@ -25,7 +25,7 @@ class Passport extends Ctl
         $remember = $this->request->get('remember') ?? false;
         $user     = $user->login($account);
 
-        if (! $user || !is_object($user)) {
+        if (!$user || !is_object($user)) {
             share('__error', sysmsg('NO_USER'));
             redirect('/dep/user/login');
         } elseif (! password_verify($passwd, $user->passwd)) {

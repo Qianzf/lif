@@ -271,9 +271,11 @@ if (! fe('exists')) {
                 }
             }
             return (1 === count($idxes)) ? $var[$_idx] : true;
-        } elseif (is_callable($var) || ($var instanceof \Closure)) {
+        }
+        if (is_callable($var) || ($var instanceof \Closure)) {
             return $idx ? false : ($var ?? false);
-        } elseif (is_object($var) && $idx) {
+        }
+        if (is_object($var) && $idx) {
             $attrs = is_array($idx) ? $idx : [$idx];
             foreach ($attrs as $attr) {
                 if (! isset($var->$attr)) {
@@ -448,7 +450,7 @@ if (! fe('exception')) {
             'msg' => $exObj->getMessage(),
             'err' => $exObj->getCode(),
         ];
-        $_info['trace'] = $exObj->getTrace();
+        $_info['trace'] = explode("\n", $exObj->getTraceAsString());
 
         // !!! Make sure check app conf path first
         // !!! Or infinite loop will occur when app conf file not exists
@@ -784,19 +786,6 @@ if (! fe('config')) {
         return array_query_by_coherent_keys(conf_all(), $key);
     }
 }
-if (! fe('db')) {
-    function db(string $conn = null, bool $flush = false) {
-        return \Lif\Core\Factory\Storage::fetch('db', 'pdo', [
-            'conn'  => $conn,
-            'flush' => $flush,
-        ]);
-    }
-}
-if (! fe('db_conns')) {
-    function db_conns(string $conn = null) {
-        return \Lif\Core\Factory\Storage::fetch('db', 'conns', $conn);
-    }
-}
 if (! fe('build_pdo_dsn')) {
     // !!! $conn => must `validate_db_conn` first
     function build_pdo_dsn($conn) {
@@ -806,8 +795,10 @@ if (! fe('build_pdo_dsn')) {
             case 'mysql':
                 $dsn .= 'host='
                 .$conn['host'];
-                $dsn .= exists($conn, 'charset')
-                ? ';charset='.$conn['charset'] : '';
+                $dsn .= ';charset='.(exists($conn, 'charset')
+                    ? $conn['charset']
+                    : 'utf8'
+                );
                 $dsn .= exists($conn, 'dbname')
                 ? ';dbname='.$conn['dbname'] : '';
                 break;
@@ -882,24 +873,76 @@ if (! fe('validate_db_conn')) {
         return $conn;
     }
 }
-if (! fe('create_ldo')) {
-    function create_ldo($conn) {
+if (! fe('create_dbconn')) {
+    function create_dbconn(&$conn) {
         $dsn  = build_pdo_dsn(validate_db_conn($conn));
         $opts = ('cli' == context())
         ? []
         : [
-            PDO::ATTR_PERSISTENT => true,
+            \PDO::ATTR_PERSISTENT => true,
         ];
+
+        return [$dsn, $opts];
+    }
+}
+if (! fe('create_ldo')) {
+    function create_ldo($conn) {
+        list($dsn, $opts) = create_dbconn($conn);
+        $ldo = new \Lif\Core\Storage\LDO(
+            $dsn,
+            $conn['user'],
+            $conn['passwd'],
+            $opts
+        );
+
+        $ldo
+        ->setConn($conn['name'])
+        ->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+
+        return $ldo;
+    }
+}
+if (! fe('create_pdo')) {
+    function create_pdo($conn) {
+        list($dsn, $opts) = create_dbconn($conn);
+        $pdo = new \PDO(
+            $dsn,
+            $conn['user'],
+            $conn['passwd'],
+            $opts
+        );
+
+        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+
+        return $pdo;
+    }
+}
+if (! fe('pdo')) {
+    function pdo(string $conn = null, bool $flush = null) {
+        return \Lif\Core\Factory\Storage::fetch('db', 'pdo', [
+            'conn'  => $conn,
+            'flush' => $flush,
+        ]);
+    }
+}
+if (! fe('ldo')) {
+    function ldo(string $conn = null, bool $flush = null) {
+        return \Lif\Core\Factory\Storage::fetch('db', 'ldo', [
+            'conn'  => $conn,
+            'flush' => $flush,
+        ]);
+    }
+}
+if (! fe('db')) {
+    function db(string $conn = null, bool $flush = false) {
         return (
-            new \Lif\Core\Storage\LDO(
-                $dsn,
-                $conn['user'],
-                $conn['passwd'],
-                $opts
-           )
-       )
-        ->__conn($conn['name'])
-        ->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            new \Lif\Core\Storage\SQLBuilder($conn, $flush)
+        );
+    }
+}
+if (! fe('db_conns')) {
+    function db_conns() {
+        return \Lif\Core\Factory\Storage::fetch('db', 'conns');
     }
 }
 if (! fe('model')) {

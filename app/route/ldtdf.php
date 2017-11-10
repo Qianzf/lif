@@ -12,6 +12,7 @@ $this->group([
 ], function () {
     $this->get('/', 'LDTDF@index');
     $this->get('trending', 'User@trending');
+    $this->get('todo', 'User@todo');
 
     $this->group([
         'prefix' => 'user',
@@ -19,14 +20,9 @@ $this->group([
         $this->get('login', 'Passport@login')->cancel('auth.web');
         $this->post('login', 'Passport@auth')->cancel('auth.web');
         $this->get('logout', 'Passport@logout');
+        $this->get('{id}', 'User@info');
         $this->get('profile', 'User@profile');
         $this->post('profile', 'User@update');
-    });
-
-    $this->group([
-        'prefix' => 'todo',
-    ], function () {
-        $this->get('/', 'User@todo');
     });
 
     $this->group([

@@ -5,7 +5,7 @@
         </a>
     </button>
 
-    <span class="stub-1"></span>
+    <span class="stub"></span>
 
     <select name="loggedin">
         <option>

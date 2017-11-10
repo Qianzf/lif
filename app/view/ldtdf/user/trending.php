@@ -36,18 +36,16 @@
             ? lang('YOU') : (
                 $user->name ?? lang('UNKNOWN_USER')
             );
-
         ?>
-        <?= $log->at
-            .' , '
-            .$name
-            .'('
-            .lang($user->role)
-            .') '
-            .lang($log->event)
-            .' '
-            .$log->detail
-        ?>
+        <?= $log->at ,' , ' ,lang($user->role) ?>
+        <a href="/dep/user/<?= $user->id ?>">
+            <?= $user->name ?>
+        </a>
+        <?= lang($log->event), (
+            $log->detail
+            ? (': '.$log->detail)
+            : ''
+        )?>
     </li>
 </ul>
 <?php } ?>

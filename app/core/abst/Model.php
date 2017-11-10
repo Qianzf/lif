@@ -6,116 +6,129 @@
 
 namespace Lif\Core\Abst;
 
+use Lif\Core\Storage\SQLBuilder;
+
 abstract class Model
 {
-    protected $table  = null;    // table name
-    protected $_tbx   = null;    // table prefix
-    protected $_fdx   = null;    // field prefix
-    protected $pk     = null;    // primary key
-    protected $query  = null;    // LDO query object
-    protected $unwriteable = [];    // protected fields that cann't update
-    protected $unreadable  = [];    // protected fields that cann't read
+    // Child class confinable
+    protected $table  = null;       // table name
+    protected $alias  = null;       // table alias
+    protected $_tbx   = null;       // table prefix
+    protected $_fdx   = null;       // field prefix
+    protected $pk     = null;       // primary key
+    protected $rules  = [];         // validation rules for items
+    protected $unwriteable = [];    // protected items that cann't update
+    protected $unreadable  = [];    // protected items that cann't read
 
-    // Stack of current query result
-    protected $fields = [];
-    protected $attrs  = [];
-    protected $rules  = [];
+    // Stacks for current query
+    private $items  = [];
+    private $query  = null;
+    private $alive  = false;
 
-    public function __construct($id = null)
+    public function __construct(int $id = null, string $pk = null)
     {
-        if ($id) {
-            $this->pk     = $this->pk ?? 'id';
-            $this->fields = $this->query()->reset()->where(
-                $this->pk,
-                $id
-            )->first();
-
-            if (! $this->fields) {
-                $this->reset();
-            } else {
-                $this->attrs['where'] = '((`'.$this->pk.'` = ?))';
-            }
+        $this->pk = $pk ?? ($this->pk ?? 'id');
+        if ($this->id = $id) {
+            $this->find($this->id);
         }
     }
 
-    public function count()
-    {
-        return $this
-        ->query()
-        ->reset()
-        ->table($this->table)
-        ->count();
-    }
-
     // Find model via primary key
-    public function find($pk)
+    public function find($pk = null)
     {
-        $this->fields = $this
+        $_pk = $this->pk();
+
+        if (!is_scalar($pk) || is_null($pk)) {
+            excp('Con not find model without legal primary key.');
+        }
+
+        if ($this->alive) {
+            $__pk = $this->items[$_pk] ?? false;
+            if ($pk == $__pk) {
+                return $this;
+            }
+            $model = clone $this;
+        } else {
+            $model = $this;
+        }
+
+        $model->items = $model
         ->query()
-        ->where($this->pk(), $pk)
+        ->where($_pk, $pk)
         ->first();
 
-        return $this->fields ? $this : null;
+        if ($model->items) {
+            $model->alive = true;
+
+            return $model;
+        }
     }
 
-    public function __get($key)
+    public function query(string $conn = null) : SQLBuilder
     {
-        return $this->$key ?? (
-            $this->fields[$key] ?? null
-        );
+        if (!$this->query || !($this->query instanceof SQLBuilder)) {
+            $this->query = db($conn)
+            ->table(
+                $this->getTable(),
+                $this->getAlias()
+            );
+        }
+
+        return $this->query;
+    }
+
+    public function pk()
+    {
+        return $this->pk ?? 'id';
+    }
+
+    public function __get(string $key)
+    {
+        return $this->items[$key] ?? null;
     }
 
     public function __unset($key): void
     {
-        if (isset($this->fields[$key])) {
-            unset($this->fields[$key]);
+        if (isset($this->items[$key])) {
+            unset($this->items[$key]);
         }
     }
 
-    public function __set($field, $value)
+    public function __set($item, $value)
     {
-        $this->fields[$field] = $value;
-
-        return $this;
-    }
-
-    public function __clone()
-    {
-        $this->reset();
+        $this->items[$item] = $value;
 
         return $this;
     }
 
     public function __call($name, $args)
     {
-        $res = call_user_func_array(
-            [
+        $res = call_user_func_array([
                 $this->query(),
                 $name
             ],
             $args
         );
 
-        if (is_object($res)) {
-            if (method_exists($res, 'getAttrsForModel')) {
-                $this->attrs = $res->getAttrsForModel();
-            }
-
+        if ($res instanceof SQLBuilder) {
             $this->query = $res;
 
             return $this;
-        } elseif (is_array($res)) {
+        }
+
+        if (is_array($res)) {
             if (! $res) {
                 return null;
-            } elseif (! isset($res[0])) {
+            }
+            if (! isset($res[0])) {
                 // If only one result
                 // Then return current model instance itself
-                $this->fields = $res;
+                $this->items = $res;
+
                 return $this;
-            } else {
-                $this->__toModel($res);
-                return $res;
             }
+
+            $this->__toModel($res);
         }
 
         if (('delete' == $name) && $res) {
@@ -125,37 +138,34 @@ abstract class Model
         return $res;
     }
 
-    // Get public user data
-    public function data(): array
-    {
-        $data = $this->fields;
-
-        foreach ($this->unreadable as $key) {
-            if (isset($data[$key]) || is_null($data[$key])) {
-                unset($data[$key]);
-            }
-        }
-
-        return $data;
-    }
-
-    // Get all user data
+    // Get readable model data
     public function items() : array
     {
-        return $this->fields;
+        $items = $this->items;
+
+        foreach ($this->unreadable as $unreadable) {
+            unset($items[$unreadable]);
+        }
+
+        return $items;
     }
 
     protected function __toModel(array &$data) : Model
     {
         array_walk($data, function (&$item, $key) {
             $model = clone $this;
-            $model->fields = $item;
+            $model->items = $item;
             $item = $model;
         });
 
         unset($item);
 
         return $this;
+    }
+
+    public function __toString()
+    {
+        return _json_encode($this->items());
     }
 
     public function all()
@@ -172,12 +182,12 @@ abstract class Model
         return $this->reset()->save($data, $rules);
     }
 
-
     // If record exists then update or create
     // @return:
     // - string => validation error
     // - integer over 0 => success
-    // - other => failed
+    // - other  => failed
+    // - null   => nothing happend
     public function save(array $data = [], array $rules = [])
     {
         if ($rules = ($rules ?: ($this->rules ?: []))) {
@@ -186,42 +196,35 @@ abstract class Model
             }
         }
 
-        if (! $data) {
-            $data = $this->fields;
+        if ($data = ($data ? $data : $this->items)) {
+            unset($data[$this->pk()]);    // Protected primary key
+
+            return $this->alive
+            ? $this->query()->update($data)
+            : $this->query()->insert($data);
         }
-
-        if (isset($this->pk) && $this->pk) {
-            unset($data[$this->pk]);
-        } else {
-            unset($data['id']);
-        }
-
-        if (isset($this->attrs['where'])) {
-            return $this->query()->update($data);
-        }
-
-        $lastInserstId = $this->query()->insert($data);
-
-        return $this->fields[$this->pk] = $lastInserstId;
     }
 
+    // Empty model items
     public function empty() : Model
     {
-        $this->fields = [];
+        $this->items = [];
 
         return $this;
     }
 
-    public function clear() : Model
-    {
-        $this->attrs = [];
-
-        return $this;
-    }
-
+    // Clean references
     public function clean() : Model
     {
         $this->query = null;
+
+        return $this;
+    }
+
+    // Clear status
+    public function clear() : Model
+    {
+        $this->alive = null;
 
         return $this;
     }
@@ -233,41 +236,48 @@ abstract class Model
         return $this;
     }
 
-    public function query()
+    public function __clone()
     {
-        if (! $this->query || !is_object($this->query)) {
-            $this->query = db($this->conn)
-            ->table(
-                $this->__table()
-            );
-        }
+        $this->reset();
 
-        if (isset($this->fields[$this->pk])) {
-            $this->query = $this->query->where(
-                $this->pk,
-                $this->fields[$this->pk]
-            );
-        }
-
-        return $this->query->setAttrsForModel($this->attrs);
+        return $this;
     }
 
-    protected function __table()
+    public function setAlias(string $alias) : Model
     {
-        if (! $this->table) {
+        if (is_numeric($alias)) {
+            excp('Table alias can not be a numberic.');
+        }
+
+        $this->alias = $alias ?: null;
+
+        return $this;
+    }
+
+    public function getAlias()
+    {
+        $alias = empty_safe($this->alias)
+        ? null
+        : $this->alias;
+
+        if (is_numeric($alias)) {
+            excp('Table alias can not be a numberic.');
+        }
+
+        return $alias;
+    }
+
+    public function getTable()
+    {
+        if (empty_safe($this->table)) {
             $defaultTableName   = (
                 new \ReflectionClass($this)
             )->getShortName();
 
-            return $this->table = strtolower($defaultTableName);
+            $this->table = strtolower($defaultTableName);
         }
 
         return $this->table;
-    }
-
-    public function pk()
-    {
-        return $this->pk ?? 'id';
     }
 
     // ---------------------------------------------------------------
@@ -287,26 +297,26 @@ abstract class Model
             : ((string) ($params['lv']));
         } else {
             // Use local key mapped value of current model
-            if (! isset($this->fields[$lk])) {
-                excp('Non-exists model can not has any relationship.');
+            if (! isset($this->items[$lk])) {
+                excp('Non-exists model can not has any rel`ionship.');
             }
 
-            $value = $this->fields[$lk];
+            $value = $this->items[$lk];
         }
 
         $model   = model($params['model']);
         $fk      = $params['fk'] ?? 'id';
         $cond    = $params['cond'] ?? '=';
-        $selects = $model->table.'.*';
-        $where   = $this->table.'.'.$lk;
+        $selects = $model->getTable().'.*';
+        $where   = $this->getTable().'.'.$lk;
         $oneonly = isset($params['type']) && (1 === $params['type']);
         $fetch   = $oneonly ? 'get' : 'first';
 
         $model = $model
         ->select($selects)
         ->leftJoin(
-            $this->table,
-            $model->table.'.'.$fk,
+            $this->getTable(),
+            $model->getTable().'.'.$fk,
             $cond,
             $where
         )

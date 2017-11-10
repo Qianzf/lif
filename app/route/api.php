@@ -11,3 +11,6 @@ $this->get('/', 'lif');
 $this->any('/sys_msg', function () {
     response(sysmsgs());
 });
+
+$this->get('test', function () {
+});

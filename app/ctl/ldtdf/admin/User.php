@@ -40,7 +40,7 @@ class User extends Ctl
         ->get();
         $pages   = ceil(($records / $offset));
 
-        view('ldtdf/admin/users/index')
+        view('ldtdf/admin/user/index')
         ->withUsers($users)
         ->withKeyword($keyword)
         ->withSearchrole($request['role'])
@@ -50,14 +50,14 @@ class User extends Ctl
 
     public function info(UserModel $user)
     {
-        view('ldtdf/admin/users/edit')->withUser($user);
+        view('ldtdf/admin/user/edit')->withUser($user);
     }
 
     public function add(UserModel $user)
     {
         // PRG: POST - Redirect - GET
         if (is_object($user) && $user->id) {
-            return redirect('/dep/admin/users/'.$user->id);
+            return redirect('/dep/admin/user/'.$user->id);
         }
 
         $request = $this->request->all();
