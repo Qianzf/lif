@@ -13,13 +13,13 @@ class Stop extends Command
         $lock = pathOf('app', '.lock');
 
         if (file_exists($lock)) {
-            $this->info('Web application is stopped, nothing happend.');
+            $this->info('Application was stopped, nothing happened.');
         }
 
         if (touch($lock)) {
-            $this->success('Web Application is stopped.');
+            $this->success('Application is stopped.');
         }
 
-        $this->fails('Stopping web application failed.');
+        $this->fails('Stopping application failed.');
     }
 }

@@ -13,13 +13,13 @@ class Start extends Command
         $lock = pathOf('app', '.lock');
 
         if (! file_exists($lock)) {
-            $this->info('Web application is running, nothing happend.');
+            $this->info('Application is running, nothing happened.');
         }
 
         if (unlink($lock)) {
-            $this->success('Web Application started successfully.');
+            $this->success('Application started successfully.');
         }
 
-        $this->fails('Starting web application failed.');
+        $this->fails('Starting application failed.');
     }
 }

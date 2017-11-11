@@ -172,7 +172,7 @@ class Run extends Command
         $status = $this->run();
 
         if (is_null($status)) {
-            exit($this->info('No queue jobs now.'));
+            $this->info('No queue jobs now.');
         } elseif ($status) {
             $this->success(
                 'One queue job has been executed successfully.'

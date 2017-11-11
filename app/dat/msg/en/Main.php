@@ -123,4 +123,5 @@ return [
     'SPECIFIC' => 'Specific',
     'INFORMATION' => 'Information',
     'INFO' => 'Information',
+    'SERVICE_IS_STOPPED' => 'Service is stopped, please try out later.',
 ];

@@ -126,4 +126,5 @@ return [
     'SPECIFIC' => '指定',
     'INFORMATION' => '信息',
     'INFO' => '信息',
+    'SERVICE_IS_STOPPED' => '服务暂停，请稍后再试',
 ];

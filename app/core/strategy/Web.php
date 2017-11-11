@@ -32,7 +32,7 @@ class Web extends Container implements Observer, Strategy
         $this->load();
 
         if (file_exists(pathOf('app', '.lock'))) {
-            abort(423, 'Service is locked.');
+            abort(423, sysmsg('SERVICE_IS_STOPPED'));
         }
     }
 
