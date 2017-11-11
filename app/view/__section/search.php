@@ -7,7 +7,13 @@
         placeholder="<?= lang('PROVIDE_KEYWORDS') ?>">
     </label>
 
-    <button name="search-btn"><?= lang('SEARCH') ?></button>
-    <button name="clear-search-btn"><?= lang('CLEAR') ?></button>
-    <button name="reset-all-btn"><?= lang('RESET_ALL') ?></button>
+    <button name="search-btn">
+        <?= lang('SEARCH') ?>
+    </button>
+    <button name="clear-search-btn">
+        <?= lang('CLEAR') ?>
+    </button>
+    <button name="reset-all-btn">
+        <?= lang('RESET_ALL') ?>
+    </button>
 </span>

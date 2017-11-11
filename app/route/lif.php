@@ -9,5 +9,4 @@
 $this->get('/', 'lif');
 
 $this->get('test', function () {
-    // 
 });

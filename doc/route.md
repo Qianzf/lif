@@ -9,6 +9,9 @@ $this->get('/', function () {
 });
 
 // CASE-2
+$this->get('/lif', 'lif');     // callable are supported
+
+// CASE-3
 $this->get([
     'name' => '/test',
     'as'   => 't.e.s.t',
@@ -25,7 +28,7 @@ $this->get([
 
 #### NOTICE
 
-In `CASE-2`, if the value of `bind` key is an anonymous function or a closure, then the codes in it will be executed twice.
+In `CASE-3`, if the value of `bind` key is an anonymous function or a closure, then the codes in it will be executed twice, which is not recommended to specific route handler in that way.
 
 - Nested Group
 
@@ -67,6 +70,23 @@ $this->match([
 });
 ```
 
+- Controller option
+
+``` php
+// route handler => `Bar@action()`
+
+$this->get('foo/bar', [
+    'ctl' => 'Bar',
+], 'action'); 
+
+$this->group([
+    'prefix' => 'foo',
+    'ctl' => 'Bar',
+], function () {
+    $this->get('bar', 'action');
+});
+```
+
 - Middlewares, alias, route params
 
 ``` php
@@ -92,17 +112,39 @@ $this->group([
 
 #### NOTICE
 
-`alias` is mainly used for getting its raw route:
-
-``` php
-$alias = 'user_login';
-$route = route($alias);
-redirect($route);
-```
-
 __`alias` has a default value if no `alias` explicit indicated in that route.__
 
 And naming style like this: for route `a/b/c`, its alias will be `a.b.c`.
+
+- Use `route()`
+
+Route alias is mainly used for getting its raw route:
+
+``` php
+// 1.Basic usage
+$alias = 'user_login';
+$route = route($alias);
+redirect($route);
+
+// 2.Pass parameters into route definition
+$this->get('demo/{id}/{a}/{b}/{c}', [
+    'alias' => 'demo',
+], function () {
+    // ...
+});
+
+// 2.1 by dynamic parameters
+dd(route('demo', 1，2，3，4);
+// 2.2 by assoc array
+dd(route('demo', [
+    'id' => 1,
+    'a'  => 2,
+    'b'  => 3,
+    'c'  => 4,
+]));
+
+// Output => /demo/1/2/3/4
+```
 
 - Variables assignment
 

@@ -127,14 +127,46 @@ if (! fe('escape_route_name')) {
     }
 }
 if (! fe('route')) {
-    function route($alias) : string {
-        $route = $GLOBALS['LIF_ROUTES_ALIASES'][$alias] ?? false;
+    function route(string $alias, ...$params) : string {
+        $route = $GLOBALS['LIF_ROUTES_ALIASES'][$alias]['route'] ?? false;
 
         if (false === $route) {
-            excp('Route alias not found for `'.$alias.'`');
+            excp('Route alias not found: '.$alias);
         }
 
-        return get_raw_route($route['route']);
+        $assoc = (1 === count($params)
+            && ($params = ($params[0] ?? null))
+            && is_array($params)
+        );
+
+        // check if route has parameters
+        $idx = 0;
+        $route = preg_replace_callback(
+            '/\{(\w+)\}/u',
+            function ($matches) use ($alias, $assoc, $params, &$idx) {
+                if ($key = ($matches[1] ?? null)) {
+                    if (($assoc && (
+                        !isset($params[$key]) || !($value = $params[$key])
+                    )) || (!$assoc && (
+                        !isset($params[$idx]) || !($value = $params[$idx++])
+                    ))) {
+                        excp(
+                            'Missing route parameter for alias: '
+                            .$alias
+                        );
+                    }
+
+                    return $value;
+                } else {
+                    excp('Illegal route parameter definition.');
+                }
+            },
+            $route
+        );
+
+        unset($idx);
+
+        return get_raw_route($route);
     }
 }
 if (! fe('get_raw_route')) {

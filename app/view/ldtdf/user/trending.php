@@ -4,9 +4,9 @@
 <?php $uid = intval($_GET['user'] ?? 0); ?>
 
 <p>
-    <label>
+    <button class="btn-info">
         <?= lang('SPECIFIC_USER') ?>
-    </label>
+    </button>
     <select name="user" class="query-filters">
         <option value="0" <?= (-1 === $uid) ? 'selected' : '' ?>>
             <?= lang('ALL') ?>

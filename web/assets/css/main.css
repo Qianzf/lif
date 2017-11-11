@@ -34,7 +34,6 @@ form label {
     margin: 5px;
     padding: 5px;
 }
-
 input {
     padding: 5px;
 }
@@ -95,6 +94,7 @@ input:focus {
 }
 .btn-default {
     background-color: forestgreen;
+    color: #eeeeee;
 }
 .btn-alert {
     background-color: cornflowerblue;
@@ -106,13 +106,17 @@ input:focus {
     background-color: coral;
 }
 .btn-info {
-    background-color: lightseagreen;   
+    background-color: lightseagreen;
+    pointer-events: none;
+    color: #eeeeee;
+    border: none;
 }
 .btn-edit {
     background-color: lavender;
 }
 .btn-delete {
     background-color: indianred;
+    color: #eeeeee;
 }
 .btn-shadow {
     color: lightslategray;

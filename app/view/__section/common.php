@@ -11,7 +11,7 @@
         <a href="/dep/bugs"><?= lang('BUG') ?></a>
     </button>
 
-    <button class="btn-info">
+    <button>
         <a href="/dep/trending"><?= lang('TRENDING') ?></a>
     </button>
 </h4>
