@@ -44,9 +44,9 @@ class Db
         $conn  = $params['conn']  ?? null;
         $flush = $params['flush'] ?? false;
         
-        if (!$conn
-            && (!($defaultConn = exists($db, 'default'))
-                || !is_string($defaultConn)
+        if (!$conn && (
+            !($defaultConn = exists($db, 'default'))
+            || !is_string($defaultConn)
         )) {
             excp('Default database connection not set.');
         }

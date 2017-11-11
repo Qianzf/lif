@@ -258,7 +258,8 @@ class Route extends Container implements Observable
                 }
             }
 
-            $this->routes[$this->route][$this->type]['middlewares'] = $tmpRoutes;
+            $this->routes
+            [$this->route][$this->type]['middlewares'] = $tmpRoutes;
         }
 
         return $this;

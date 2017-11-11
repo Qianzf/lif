@@ -4,17 +4,13 @@
 //     Basic database query builder of LiF
 // -------------------------------------------
 
-namespace Lif\Core\Storage;
+namespace Lif\Core\Storage\SQL;
 
-class SQLBuilder
+class Builder implements \Lif\Core\Intf\DBConn
 {
     use \Lif\Core\Traits\MethodNotExists;
+    use \Lif\Core\Traits\WithDB;
 
-    protected $conn     = null;    // Database connection
-    protected $db       = null;    // Default db object
-    protected $ldo      = null;    // LDO object
-    protected $pdo      = null;    // PDO object
-    protected $flush    = null;    // Flush database connection flag
     protected $transRes = true;    // Transaction result
     protected $sql      = null;    // Used for prepare statement
     protected $_sql     = null;    // Used for debug
@@ -24,7 +20,7 @@ class SQLBuilder
 
     // SQL parts
     protected $table   = null;
-    protected $selects = null;   
+    protected $selects = null;
     protected $where   = null;
     protected $sort    = null;
     protected $group   = null;
@@ -34,12 +30,6 @@ class SQLBuilder
     protected $insertVals = null;
     protected $statement  = null;
     protected $bindValues = [];
-
-    public function __construct(string $conn = null, string $flush = null)
-    {
-        $this->conn  = $conn;
-        $this->flush = $flush;
-    }
 
     public function trans(\Closure $trans)
     {
@@ -79,69 +69,6 @@ class SQLBuilder
         }
     }
 
-    public function setLDO(LDO $ldo)
-    {
-        $this->ldo = $ldo;
-    }
-
-    public function setPDO(\PDO $pdo)
-    {
-        $this->pdo = $pdo;
-    }
-
-    public function getPDO() : \PDO
-    {
-        if (!$this->pdo || !($this->pdo instanceof \PDO)) {
-            $this->pdo = pdo($this->conn, $this->flush);
-        }
-
-        return $this->pdo;
-    }
-
-    public function getLDO() : LDO
-    {
-        if (!$this->ldo || !($this->ldo instanceof LDO)) {
-            $this->ldo = ldo($this->conn, $this->flush);
-        }
-
-        return $this->ldo;
-    }
-
-    public function db(\PDO $db = null) : \PDO
-    {
-        if ($db) {
-            $this->db = $db;
-        }
-        
-        return $this->db
-        ?? $this->getLDO()
-        ?? $this->getPDO();
-    }
-
-    public function setConn(string $conn): SQLBuilder
-    {
-        $this->conn = $conn;
-
-        return $this;
-    }
-
-    public function setFlush(bool $flush) : SQLBuilder
-    {
-        $this->flush = $flush;
-
-        return $this;
-    }
-
-    public function getFlush()
-    {
-        return $this->flush;
-    }
-    
-    public function getConn()
-    {
-        return $this->conn;
-    }
-
     public function getTable()
     {
         return $this->table;
@@ -152,14 +79,14 @@ class SQLBuilder
         return $this->transRes;
     }
 
-    protected function crud($value = null): SQLBuilder
+    protected function crud($value = null): Builder
     {
         $this->crud = strtoupper($value ?? $this->crud);
 
         return $this;
     }
 
-    public function reset() : SQLBuilder
+    public function reset() : Builder
     {
         $this->sql     = null;
         $this->_sql    = null;
@@ -187,7 +114,7 @@ class SQLBuilder
         return $this->$name();
     }
 
-    public function __call($name, $args): SQLBuilder
+    public function __call($name, $args): Builder
     {
         if ('where' === mb_substr($name, 0, 5)) {
             if (! $args) {
@@ -260,7 +187,7 @@ class SQLBuilder
         return false;
     }
 
-    public function table(string $name, string $alias = null): SQLBuilder
+    public function table(string $name, string $alias = null): Builder
     {
         if (empty_safe($name) || is_numeric($name)) {
             excp('Table name only support un-empty, un-numeric string.');
@@ -377,7 +304,7 @@ class SQLBuilder
         return '('.$condCol.$condOpWithVal.')';
     }
 
-    public function or(...$conds): SQLBuilder
+    public function or(...$conds): Builder
     {
         $where = $this->__where($conds);
 
@@ -397,7 +324,7 @@ class SQLBuilder
         $this->bindValues = [];
     }
 
-    public function where(...$conds): SQLBuilder
+    public function where(...$conds): Builder
     {
         $where = $this->__where($conds);
 
@@ -514,13 +441,13 @@ class SQLBuilder
             excp('Missing or wrong SQL manipulation.');
         }
 
-        $sqlBuilder = 'sql'.ucfirst(strtolower($this->crud));
+        $Builder = 'sql'.ucfirst(strtolower($this->crud));
 
-        if (! method_exists($this, $sqlBuilder)) {
-            excp('SQL handler not exists: ', $sqlBuilder);
+        if (! method_exists($this, $Builder)) {
+            excp('SQL handler not exists: ', $Builder);
         }
 
-        return $this->sql = call_user_func([$this, $sqlBuilder]);
+        return $this->sql = call_user_func([$this, $Builder]);
     }
 
     protected function sqlInsert(): string
@@ -678,7 +605,7 @@ class SQLBuilder
         : $res;
     }
 
-    public function select(...$fields): SQLBuilder
+    public function select(...$fields): Builder
     {
         if (false === ($selects = $this->legalSqlSelects($fields))) {
             excp('Illgeal select values.');
@@ -695,7 +622,7 @@ class SQLBuilder
         string $fdLeft,
         string $cond,
         string $fdRight = null
-    ): SQLBuilder
+    ): Builder
     {
         if (is_null($fdRight)) {
             $fdRight = $cond;
@@ -716,7 +643,7 @@ class SQLBuilder
         return $this;
     }
 
-    public function limit($start = null, $offset = null): SQLBuilder
+    public function limit($start = null, $offset = null): Builder
     {
         $this->crud('READ');
 
@@ -745,7 +672,7 @@ class SQLBuilder
         return $this;
     }
 
-    public function sort(...$fields): SQLBuilder
+    public function sort(...$fields): Builder
     {
         $this->crud('READ');
 
@@ -786,7 +713,7 @@ class SQLBuilder
         return $this;
     }
 
-    public function group(...$fields): SQLBuilder
+    public function group(...$fields): Builder
     {
         $this->crud('READ');
 

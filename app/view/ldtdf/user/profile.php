@@ -9,6 +9,8 @@
 ]) ?>
 
 <form method="POST">
+    <?= csrf_feild() ?>
+    
     <label><?= lang('NAME') ?>
         <input type="text" name="name" value="<?= $name ?>" required>
     </label> 

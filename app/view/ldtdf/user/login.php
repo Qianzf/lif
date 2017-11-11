@@ -6,7 +6,9 @@
     <?= $title ?>
 </h4>
 
-<form action="/dep/user/login" method="POST">
+<form method="POST">
+    <?= csrf_feild() ?>
+    
     <input value="<?= ($_REQUEST['lang'] ?? null) ?>"
     type="hidden" name="lang">
 

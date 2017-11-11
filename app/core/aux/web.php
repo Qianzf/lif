@@ -4,6 +4,29 @@
 //     Helper Functions for Web Scenarios
 // ------------------------------------------
 
+if (! fe('csrf_token')) {
+    function csrf_token() {
+        $key  = stringify(config('app.csrf.key') ?? '');
+        $data = time().':'.uniqid(getmypid());
+
+        return $data.'.'.sha1($data.'$'.$key);
+    }
+}
+if (! fe('csrf_feild')) {
+    function csrf_feild() {
+        $token = csrf_token();
+        $input = "<input type='hidden' name='__rftkn__' value='{$token}'>";
+
+        return $input;
+    }
+}
+if (! fe('server')) {
+    function server(string $key = null) {
+        return $key
+        ? ($_SERVER[$key] ?? null)
+        : collect($_SERVER);
+    }
+}
 if (! fe('getallheaders')) {
     // For nginx, compatible with apache format
     function getallheaders() {

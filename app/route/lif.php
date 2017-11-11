@@ -9,4 +9,7 @@
 $this->get('/', 'lif');
 
 $this->get('test', function () {
+    $dit = new \Lif\Core\Storage\Dit;
+
+    dd($dit->execute());
 });

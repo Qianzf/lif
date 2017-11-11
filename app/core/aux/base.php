@@ -315,8 +315,8 @@ if (! fe('nsOf')) {
                 'lib'  => '\Lif\Core\Lib\\',
                 'queue'    => '\Lif\Core\Queue\\',
                 'logger'   => '\Lif\Core\Logger\\',
-                'storage'  => '\Lif\Core\storage\\',
-                'strategy' => '\Lif\Core\strategy\\',
+                'storage'  => '\Lif\Core\Storage\\',
+                'strategy' => '\Lif\Core\Strategy\\',
            ];
             return ($nsArr[$of] ?? '\\').ucfirst($class);
         }
@@ -936,7 +936,7 @@ if (! fe('ldo')) {
 if (! fe('db')) {
     function db(string $conn = null, bool $flush = false) {
         return (
-            new \Lif\Core\Storage\SQLBuilder($conn, $flush)
+            new \Lif\Core\Storage\SQL\Builder($conn, $flush)
         );
     }
 }

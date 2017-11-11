@@ -6,7 +6,7 @@
 
 namespace Lif\Core\Abst;
 
-use Lif\Core\Storage\SQLBuilder;
+use Lif\Core\Storage\SQL\Builder;
 
 abstract class Model
 {
@@ -64,9 +64,9 @@ abstract class Model
         }
     }
 
-    public function query(string $conn = null) : SQLBuilder
+    public function query(string $conn = null) : Builder
     {
-        if (!$this->query || !($this->query instanceof SQLBuilder)) {
+        if (!$this->query || !($this->query instanceof Builder)) {
             $this->query = db($conn)
             ->table(
                 $this->getTable(),
@@ -110,7 +110,7 @@ abstract class Model
             $args
         );
 
-        if ($res instanceof SQLBuilder) {
+        if ($res instanceof Builder) {
             $this->query = $res;
 
             return $this;

@@ -96,6 +96,10 @@ input:focus {
     background-color: forestgreen;
     color: #eeeeee;
 }
+.btn-trending {
+    background-color: darkseagreen;
+    color: white;
+}
 .btn-alert {
     background-color: cornflowerblue;
 }
