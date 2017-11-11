@@ -293,7 +293,7 @@ abstract class Command extends Container implements CMD
 
     public function info(string $msg) : void
     {
-        echo segstr(color($msg, 'CYAN')), linewrap();
+        output(segstr(color($msg, 'CYAN')), linewrap());
     }
 
     public function success(string $msg) : void

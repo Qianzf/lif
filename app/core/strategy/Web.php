@@ -30,6 +30,10 @@ class Web extends Container implements Observer, Strategy
     {
         $this->app = &$this;
         $this->load();
+
+        if (file_exists(pathOf('app', '.lock'))) {
+            abort(423, 'Service is locked.');
+        }
     }
 
     // Load web helpers

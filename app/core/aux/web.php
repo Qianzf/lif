@@ -70,11 +70,6 @@ if (! fe('abort')) {
             'err' => $status,
             'msg' => $msg
         ];
-        
-        put2file(
-            pathOf('log', 'errors/'.date('Y-m-d').'.log'),
-            build_log_str($data, 'error')
-        );
 
         json_http_response($data);
     }
@@ -113,6 +108,14 @@ if (! fe('client_error')) {
     //     Debug model or environment will not effect client error output
     // ----------------------------------------------------------------------
     function client_error($msg, int $err = 403) {
+        put2file(
+            pathOf('log', 'errors/'.date('Y-m-d').'.log'),
+            build_log_str([
+                'err' => $err,
+                'msg' => $msg,
+            ], 'error')
+        );
+
         abort($err, $msg);
     }
 }
