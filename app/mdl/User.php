@@ -12,8 +12,8 @@ class User extends Mdl
 
     public function listNonAdminUsers()
     {
-        $role = (share('user.role') == 'ADMIN')
-        ? -1 : 'ADMIN';
+        $role = (share('user.role') == 'admin')
+        ? -1 : 'admin';
 
         return $this
         ->select('id', 'name')
@@ -38,11 +38,11 @@ class User extends Mdl
     {
         return $this->hasMany([
             'model' => Trending::class,
-            'lk' => 'id',
-            'fk' => 'uid',
-            'take_from' => $start,
-            'take_cnt'  => $offset,
-            'sort' => [
+            'lk'    => 'id',
+            'fk'    => 'uid',
+            'from'  => $start,
+            'take'  => $offset,
+            'sort'  => [
                 'at' => 'desc',
             ],
         ]);

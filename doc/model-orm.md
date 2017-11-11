@@ -1,4 +1,4 @@
-Basic DI/`find()/save()/delete()` examples:
+Basic DI /`find()/save()/delete()` examples:
 
 ``` php
 use Lif\Mdl\User;
@@ -7,30 +7,30 @@ class Test extends Ctl
 {
     public function (User $user)
     {
-        $user = $user->find(share('__USER.id'));
+        $user = $user->find(share('user.id'));
     }
 
     public function create(User $user)
     {
         $user->name = 'cjli';
-        $user->role = 'ADMIN';
+        $user->role = 'admin';
 
         return $user->save();    // > 0 => success
     }
 
     public function update(User $user)
     {
-        $user = $user->whereId(share('__USER.id'))->first();
+        $user = $user->whereId(share('user.id'))->first();
 
-        $user->name = 'cjli2';
-        $user->role = 'TESTER';
+        $user->name = 'lcj';
+        $user->role = 'tester';
 
         return $user->save();    // > 0 => success
     }
 
     public function delete(User $user)
     {
-        $user = $user->whereId(share('__USER.id'))->first();
+        $user = $user->whereId(share('user.id'))->first();
 
         return $user->delete();    // > 0 => success
     }
@@ -87,9 +87,9 @@ class User extends Mdl
             'model' => Trending::class,
             'lk'    => 'id',
             'fk'    => 'uid',
-            // 'lv'    => null,
-            // 'take_from' => 0,
-            // 'take_cnt'  => 20,
+            // 'lv'   => null,
+            // 'from' => 0,
+            // 'take' => 20,
             'sort' => [
                 'at' => 'desc',
             ],
@@ -108,10 +108,10 @@ class Trending extends Mdl
         );
 
         // Or:
-        return $this->hasMany([
-            'model' => Trending::class,
-            'lk'    => 'id',
-            'fk'    => 'uid',
+        return $this->belongsTo([
+            'model' => User::class,
+            'lk'    => 'uid',
+            'fk'    => 'id',
             // 'lv'    => null,
         ]);
     }

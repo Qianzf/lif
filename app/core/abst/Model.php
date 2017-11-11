@@ -331,13 +331,13 @@ abstract class Model
 
         if (! $oneonly) {
             legal_or($params, [
-                'take_from' => ['int|min:1', 0],
-                'take_cnt'  => ['int|min:1', 20],
+                'from' => ['int|min:1', 0],
+                'take' => ['int|min:1', 20],
             ]);
 
             $model = $model->limit(
-                $params['take_from'],
-                $params['take_cnt']
+                $params['from'],
+                $params['take']
             );
         }
         
@@ -374,9 +374,9 @@ abstract class Model
                     1 => 'lk',       // Foreign key
                     2 => 'fk',       // Local key
                     3 => 'lv',       // Local value mapping to local key
-                    4 => 'take_from',    // Limit start
-                    5 => 'take_cnt',     // Limit offset
-                    6 => 'sort'          // Sort rules => array
+                    4 => 'from',     // Limit start
+                    5 => 'take',     // Limit offset
+                    6 => 'sort'      // Sort rules => array
                 ];
                 $_params['type'] = 1;
                 foreach ($params as $key => $value) {

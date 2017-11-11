@@ -32,7 +32,7 @@ class User extends Ctl
             'account' => 'need',
             'name'    => 'need',
             'passwd'  => 'need',
-            'role'    => 'need|in:ADMIN,TESTER,DEVELOPER',
+            'role'    => 'need|in:admin,tester,developer',
         ]);
 
         // do sth more ...
@@ -106,7 +106,7 @@ For example:
 ``` php
 $errs = legal_or($request, [
     'search' => ['string', ''],
-    'role'   => ['in:ADMIN,DEVELOPER,TESTER', false],
+    'role'   => ['in:admin,developer,tester', false],
     'page'   => ['int|min:1', 1],
 ]);
 

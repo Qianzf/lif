@@ -33,11 +33,11 @@ class User extends Ctl
             $trending = $trending->whereUid($uid);
         }
 
-        $takeFrom = ($querys['page'] - 1) * $pageScale;
-        $data     = $trending->list([
-            'user_id'   => $uid,
-            'take_from' => $takeFrom,
-            'take_cnt'  => $pageScale,
+        $from = ($querys['page'] - 1) * $pageScale;
+        $data = $trending->list([
+            'uid'  => $uid,
+            'from' => $from,
+            'take' => $pageScale,
         ]);
 
         $users   = $user->listNonAdminUsers();

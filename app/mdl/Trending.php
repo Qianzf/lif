@@ -8,16 +8,16 @@ class Trending extends Mdl
 
     public function list(array $params)
     {
-        $role = (share('user.role') == 'ADMIN')
-        ? -1 : 'ADMIN';
+        $role = (share('user.role') == 'admin')
+        ? -1 : 'admin';
 
         legal_or($params, [
-            'user_id'   => ['int|min:1', null],
-            'take_from' => ['int|min:0', 0],
-            'take_cnt'  => ['int|min:0', 20],
+            'uid'  => ['int|min:1', null],
+            'from' => ['int|min:0', 0],
+            'take' => ['int|min:0', 20],
         ]);
 
-        if (is_null($params['user_id'])) {
+        if (is_null($params['uid'])) {
             return $this
             ->leftJoin('user', 'user.id', 'trending.uid')
             ->sort([
@@ -25,22 +25,22 @@ class Trending extends Mdl
             ])
             ->where('user.role', '!=', $role)
             ->limit(
-                $params['take_from'],
-                $params['take_cnt']
+                $params['from'],
+                $params['take']
             )
             ->get();
         }
 
-        $user = model(User::class, $params['user_id']);
+        $user = model(User::class, $params['uid']);
 
         if (! $user->items()) {
             client_error('USER_NOT_FOUND', 404);
         }
-        if (($user->role == 'ADMIN') && (share('user.role') != 'ADMIN')) {
+        if (($user->role == 'admin') && (share('user.role') != 'admin')) {
             return [];
         }
 
-        return $user->trendings($params['take_from'], $params['take_cnt']);
+        return $user->trendings($params['from'], $params['take']);
     }
 
     public function user()

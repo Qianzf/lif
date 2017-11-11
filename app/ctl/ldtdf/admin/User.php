@@ -12,7 +12,7 @@ class User extends Ctl
 
         legal_or($request, [
             'search' => ['string', ''],
-            'role'   => ['in:ADMIN,DEVELOPER,TESTER', false],
+            'role'   => ['in:admin,developer,tester', false],
             'page'   => ['int|min:1', 1],
         ]);
 
@@ -67,7 +67,7 @@ class User extends Ctl
             'name'    => 'need',
             'email'   => 'need|email',
             'passwd'  => 'need',
-            'role'    => 'need|in:ADMIN,TESTER,DEVELOPER',
+            'role'    => 'need|in:admin,tester,developer',
         ]);
 
         foreach ($request as $key => $value) {
@@ -132,7 +132,7 @@ class User extends Ctl
                     share('user', $user->data());
                 }
             } else {
-                $sysmsg =  'UPDATE_FAILED';
+                $sysmsg = 'UPDATE_FAILED';
             }
         }
 
