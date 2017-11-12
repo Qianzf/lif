@@ -97,7 +97,9 @@ class Table
         \Closure $ddl
     )
     {
-        $schema = '';
+        $definitions = $this->definitions($table, $ddl);
+        $schema  = "ALTER TABLE `{$this->name}` ";
+        $schema .= $definitions;
 
         return $schema;
     }

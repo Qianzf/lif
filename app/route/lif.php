@@ -29,13 +29,21 @@ $this->get('test', function () {
     // });
 
     $schema->alter('user', function ($table) {
-        $table
-        ->tinyint('group')
-        ->nullable()
-        ->comment('User group ID');
+        // $table
+        // ->dropColumn('group');
+
+        // $table
+        // ->addColumn('group')
+        // ->after('role')
+        // ->tinyint()
+        // ->nullable()
+        // ->comment('User group ID');
 
         $table
-        ->char('email', 64)
+        ->modifyColumn('email')
+        // ->first()
+        ->char(128)
+        ->after('role')
         ->unique();
     });
 });

@@ -6,6 +6,10 @@ use Lif\Core\Storage\SQL\Mysql\ConcreteColumn;
 
 trait Numberics
 {
+    private $decimal   = null;
+    private $unsigned  = null;
+    private $zerofill  = null;
+    
     public function integer(
         string $col = null,
         int $length = 11

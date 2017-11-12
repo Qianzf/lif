@@ -12,6 +12,7 @@ class ConcreteColumn
 {
     use \Lif\Core\Traits\MethodNotExists;
     use Grammers;
+    use Alter;
     use DataType\Numberics;
     use DataType\Strings;
     use DataType\Times;
@@ -21,21 +22,25 @@ class ConcreteColumn
     private $name      = null;
     private $type      = null;
     private $length    = null;
-    private $decimal   = null;
     private $nullable  = null;
     private $increable = null;
     private $default   = null;
     private $unique    = null;
     private $primary   = null;
     private $comment   = null;
-    private $unsigned  = null;
-    private $zerofill  = null;
     private $format    = null;
     private $storage   = null;
 
     public function ofCreator(AbstractColumn $creator) : ConcreteColumn
     {
         $this->creator = $creator;
+
+        return $this;
+    }
+
+    public function setName(string $name = null) : ConcreteColumn
+    {
+        $this->name = $name;
 
         return $this;
     }
@@ -94,12 +99,24 @@ class ConcreteColumn
         $suffix .= $this->getFormat();
         $suffix .= $this->getStorage();
 
+        if ($this->alter) {
+            $suffix .= (
+                $this->first ? ' FIRST ' : ''
+            ) ?: (
+                $this->after ? " AFTER `{$this->after}` " : ''
+            );
+        }
+
         return $suffix;
     }
 
     public function commonPrefix()
     {
-        $prefix  = "`{$this->name}` ";
+        $prefix  = $this->alter
+        ? strtoupper($this->alter).' '
+        : '';
+
+        $prefix .= "`{$this->name}` ";
         $prefix .= "{$this->type}";
 
         return $prefix;

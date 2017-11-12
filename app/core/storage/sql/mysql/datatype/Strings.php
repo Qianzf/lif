@@ -129,14 +129,19 @@ trait Strings
     ) : ConcreteColumn
     {
         if ($col) {
-            $this->conflict('name', $col);
-            $this->name = $col;
+            if (($col == intval($col)) && ($col > 0)) {
+                $this->length = $col;
+                // dd($this->length);
+            } else {
+                $this->conflict('name', $col);
+                $this->name = $col;
+            }
         }
 
         $this->conflict('type', $type);
         $this->type   = $type;
 
-        if (! is_null($length)) {
+        if (!is_null($length) && !$this->length) {
             $this->length = $length;
         }
 

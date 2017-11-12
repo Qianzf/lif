@@ -34,13 +34,25 @@ $schema->createIfNotExists('table', function ($table) {
 
 ``` php
 $schema->alter('user', function ($table) {
+    // Drop column
     $table
-    ->tinyint('group')
+    ->dropColumn('group');
+
+    // Add column
+    $table
+    ->addColumn('group')
+    //->first()
+    ->after('role')
+    ->tinyint()
     ->nullable()
     ->comment('User group ID');
 
+    // Modfiy column
     $table
-    ->string('email', 128)
+    ->modifyColumn('email')
+    ->first()
+    ->char(128)
+    //->after('role')
     ->unique();
 });
 ```
