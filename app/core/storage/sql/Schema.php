@@ -66,7 +66,6 @@ class Schema implements \Lif\Core\Intf\DBConn
     public function commit()
     {
         foreach ($this->statements as $statement) {
-            // dd($statement);
             try {
                 $this->db()->exec($statement);
             } catch (\PDOException $pdoe) {

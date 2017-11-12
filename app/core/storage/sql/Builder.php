@@ -856,7 +856,7 @@ class Builder implements \Lif\Core\Intf\DBConn
 
     public function truncate()
     {
-        return $this->crud('DELETE')->raw('TRUNCATE TABLE '.$this->table);
+        return $this->crud('DELETE')->raw("TRUNCATE TABLE `{$this->table}`");
     }
 
     public function raw($raw, array $values = [], $exec = true, $sql = false)
@@ -967,10 +967,10 @@ class Builder implements \Lif\Core\Intf\DBConn
                     'UPDATE',
                     'DELETE'
                 ])) {
-                    // Always return last insert ID when insert
-                    // Number of rows affected by the last SQL statement
                     $this->result = intval(('INSERT' === $this->crud)
+                    // Always return last insert ID when inserting
                     ? $this->db()->lastInsertId()
+                    // Or number of rows affected by the last SQL statement
                     : $this->statement->rowCount());
 
                     $this->transRes = $this->transRes && ($this->result >= 0);
@@ -989,15 +989,9 @@ class Builder implements \Lif\Core\Intf\DBConn
 
             return $this;
         } catch (\PDOException $pdoe) {
-            excp(
-                $pdoe->getMessage()
-                .' ( '.$this->sql.' )'
-            );
+            excp($pdoe->getMessage()."({$this->sql})");
         } catch (\Error $e) {
-            excp(
-                $e->getMessage()
-                .' ( '.$this->sql.' )'
-            );
+            excp($e->getMessage()."({$this->sql})");
         }
     }
 }

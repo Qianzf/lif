@@ -116,6 +116,7 @@ class ConcreteColumn
         ? strtoupper($this->alter).' '
         : '';
 
+        $prefix .= $this->old ? "`{$this->old}` " : '';
         $prefix .= "`{$this->name}` ";
         $prefix .= "{$this->type}";
 

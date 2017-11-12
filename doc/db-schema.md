@@ -54,6 +54,20 @@ $schema->alter('user', function ($table) {
     ->char(128)
     //->after('role')
     ->unique();
+
+    // Change column
+    $table->changeColumn('group', 'group2')
+    ->after('name')
+    ->tinyint();
+
+    // Rename table
+    $table->renameTableTo('user2');
+    $table->renameTableAs('user3');
+
+    // Set column default
+    $table->setDefault('group', 1);
+    // Drop column default
+    $table->dropDefault('group');
 });
 ```
 

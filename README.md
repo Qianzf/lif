@@ -40,7 +40,7 @@ LiF has it's own database SQL query builder, it's simple but handles all the SQL
 
 - Schema builder
 
-LiF has it's own schema creator, which mainly handles the SQL database definition and schema management.
+LiF has it's own schema creator, which handles the SQL database definition and schema management.
 
 ### Model/ORM
 

@@ -225,6 +225,11 @@ class Table
         }
     }
 
+    public function getName()
+    {
+        return $this->name;
+    }
+
     private function getAutoincre() : string
     {
         return $this->autoincre
