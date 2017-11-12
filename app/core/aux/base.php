@@ -877,10 +877,8 @@ if (! fe('create_dbconn')) {
     function create_dbconn(&$conn) {
         $dsn  = build_pdo_dsn(validate_db_conn($conn));
         $opts = ('cli' == context())
-        ? []
-        : [
-            \PDO::ATTR_PERSISTENT => true,
-        ];
+        ? [\PDO::ATTR_PERSISTENT => true]
+        : [];
 
         return [$dsn, $opts];
     }
@@ -895,9 +893,8 @@ if (! fe('create_ldo')) {
             $opts
         );
 
-        $ldo
-        ->setConn($conn['name'])
-        ->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $ldo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $ldo->setConn($conn['name']);
 
         return $ldo;
     }

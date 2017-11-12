@@ -58,6 +58,9 @@ db()->table('lif')->insert([
 db()->table('lif')->whereId(1)->update([
     'val' => 'lif',
 ]);
+
+// Or when update one column only
+db()->table('lif')->whereId(1)->update('val', 'lif');
 ```
 
 - Delete

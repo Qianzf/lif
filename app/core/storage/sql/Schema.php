@@ -8,43 +8,73 @@ namespace Lif\Core\Storage\SQL;
 
 class Schema implements \Lif\Core\Intf\DBConn
 {
-    use \Lif\Core\Traits\MethodNotExists;
     use \Lif\Core\Traits\WithDB;
 
-    private $driver    = null;
     private $supported = [
         'mysql',
         'sqlite',
     ];
-
-    // Rewrite constructor in trait WithDB
-    public function __construct(string $conn = null, string $flush = null)
-    {
-        $this->setConn($conn);
-
-        $this->flush = $flush;
-
-        $this->db();
-
-        if (!($this->driver = $this->_conn['driver'] ?? null)
-            || !in_array($this->driver, $this->getSupportedDrivers())
-        ) {
-            excp(
-                'Database schema of driver not supported yet: '
-                .$this->driver
-            );
-        }
-    }
+    private $statements = [];
+    private $autocommit = true;
 
     public function __call($name, $args)
     {
-        if (!($class = nsOf('storage', 'SQL\\'.ucfirst($this->driver)))
+        if (! ($this->getDriver())) {
+            excp(
+                'Missing database driver in current connection: '
+                .($this->getConn() ?? '(empty)')
+            );
+        }
+
+        if (! in_array($this->getDriver(), $this->getSupportedDrivers())) {
+            excp(
+                'Database schema of driver not supported yet: '
+                .($this->getDriver() ?? '(empty)')
+            );
+        }
+
+        if (!($class = nsOf('storage', 'SQL\\'.ucfirst($this->getDriver())))
             || !class_exists($class)
         ) {
             excp('Schema class not exists: '.$class);
         }
 
-        return call_user_func_array([(new $class), $name], $args);
+        $statement = call_user_func_array(
+            [(new $class), $name], $args
+        );
+
+        if ($statement) {
+            $this->statements[] = $statement;
+        }
+    }
+
+    public function commitAllOnce()
+    {
+        try {
+            if ($this->statements) {
+                $this->db()->exec(
+                    implode(";\n", $this->statements)
+                );
+            }
+        } catch (\PDOException $pdoe) {
+            excp($pdoe->getMessage()."({$statement})");
+        } catch (\Error $e) {
+            excp($e->getMessage()."({$statement})");
+        }
+    }
+
+    public function commit()
+    {
+        foreach ($this->statements as $statement) {
+            // dd($statement);
+            try {
+                $this->db()->exec($statement);
+            } catch (\PDOException $pdoe) {
+                excp($pdoe->getMessage()."({$statement})");
+            } catch (\Error $e) {
+                excp($e->getMessage()."({$statement})");
+            }
+        }
     }
 
     private function addSupportDriver(string $driver) : Schema
@@ -56,8 +86,22 @@ class Schema implements \Lif\Core\Intf\DBConn
         return $this;
     }
 
+    public function setAutocommit(bool $auto) : Schema
+    {
+        $this->autocommit = $auto;
+
+        return $this;
+    }
+
     private function getSupportedDrivers() : array
     {
         return $this->supported;
+    }
+
+    public function __destruct()
+    {
+        if ($this->autocommit) {
+            $this->commit();
+        }
     }
 }

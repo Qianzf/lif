@@ -14,7 +14,7 @@ trait WithDB
     protected $db       = null;    // Database connection object
     protected $flush    = null;    // Flush database connection flag
     protected $conn     = null;    // Database connection name
-    protected $_conn    = [];      // Database connection configs
+    protected $driver   = null;    // Database driver 
 
     public function __construct(string $conn = null, string $flush = null)
     {
@@ -45,9 +45,7 @@ trait WithDB
 
     public function setConn(string $conn = null): DBConn
     {
-        $this->_conn = ($this->conn = $conn)
-        ? (conf('db')['conns'][$conn] ?? [])
-        : [];
+        $this->conn = $conn;
 
         return $this;
     }
@@ -67,5 +65,14 @@ trait WithDB
     public function getConn() : string
     {
         return $this->conn;
+    }
+
+    public function getDriver() : string
+    {
+        return $this->driver
+        ?? (
+            ($this->driver = conf('db')['conns'][$this->conn]['driver'])
+            ?? null
+        );
     }
 }

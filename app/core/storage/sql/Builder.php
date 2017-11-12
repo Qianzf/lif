@@ -48,24 +48,29 @@ class Builder implements \Lif\Core\Intf\DBConn
         return is_null($transRes) ? $status : $transRes;
     }
 
+    public function inTrans()
+    {
+        return $this->db()->inTransaction();
+    }
+
     public function start(): void
     {
-        if (! $this->db()->inTransaction()) {
+        if (! $this->inTrans()) {
             $this->db()->beginTransaction();
         }
     }
 
     public function commit(): void
     {
-        if ($this->db()->inTransaction()) {
+        if ($this->inTrans()) {
             $this->db()->commit();
         }
     }
 
     public function rollback(): void
     {
-        if ($this->db()->inTransaction()) {
-            $this->db()->rollback();
+        if ($this->inTrans()) {
+            $this->db()->rollBack();    // !!! `B` is uppercase
         }
     }
 
@@ -223,7 +228,7 @@ class Builder implements \Lif\Core\Intf\DBConn
                 $condVal = $values[0];
                 $condOp  = '=';
             } break;
-            // Only one condition, and use default specific operator `=`
+            // Only one condition, and use default operator `=`
             case 2: {
                 $condCol = $conds[0] ?? ($conds['col'] ?? null);
                 if (!$condCol
@@ -280,7 +285,7 @@ class Builder implements \Lif\Core\Intf\DBConn
         : escape_fields($condCol);
 
         if (is_scalar($condVal)) {
-            $condOpWithVal      = ' '.$condOp.' ?';
+            $condOpWithVal      = " $condOp ?";
             $this->bindValues[] = $condVal;
         } elseif (is_array($condVal)) {
             $stubs = '';
@@ -292,16 +297,16 @@ class Builder implements \Lif\Core\Intf\DBConn
                     $stubs .= ',';
                 }
             }
-            $condOpWithVal = ' in ('.$stubs.')';
+            $condOpWithVal = "in ($stubs)";
         } elseif (is_null($condVal)) {
             $condOpWithVal = ' is null';
         } elseif (is_closure($condVal)) {
-            $condOpWithVal = ' '.$condOp.' '.$condVal();
+            $condOpWithVal = " $condOp ".$condVal();
         } else {
             excp('Illgeal where field value.');
         }
 
-        return '('.$condCol.$condOpWithVal.')';
+        return "({$condCol}{$condOpWithVal})";
     }
 
     public function or(...$conds): Builder
@@ -350,7 +355,9 @@ class Builder implements \Lif\Core\Intf\DBConn
                             && !($conds[0] instanceof \Closure)
                         )
                     ) {
-                        excp('Illgeal conditions, expect an un-empty array or closure.');
+                        excp(
+                            'Illgeal conditions, expect an un-empty array or closure.'
+                        );
                     }
 
                     if (is_scalar($conds[0])) {
@@ -370,7 +377,7 @@ class Builder implements \Lif\Core\Intf\DBConn
                     } elseif (is_closure($conds[0])) {
                         $table = clone $this;
                         $conds[0]($table);
-                        $where = $table->where ? '('.$table->where.')' : null;
+                        $where = $table->where ? "({$table->where})" : null;
 
                         if ($table->bindValues) {
                             $this->bindValues = array_merge(
@@ -392,7 +399,7 @@ class Builder implements \Lif\Core\Intf\DBConn
             }
         }
 
-        return $where ? '('.$where.')' : '';
+        return $where ? "({$where})" : '';
     }
 
     public function _sql(): string
@@ -441,13 +448,13 @@ class Builder implements \Lif\Core\Intf\DBConn
             excp('Missing or wrong SQL manipulation.');
         }
 
-        $Builder = 'sql'.ucfirst(strtolower($this->crud));
+        $builder = 'sql'.ucfirst(strtolower($this->crud));
 
-        if (! method_exists($this, $Builder)) {
-            excp('SQL handler not exists: ', $Builder);
+        if (! method_exists($this, $builder)) {
+            excp('SQL handler not exists: ', $builder);
         }
 
-        return $this->sql = call_user_func([$this, $Builder]);
+        return $this->sql = call_user_func([$this, $builder]);
     }
 
     protected function sqlInsert(): string
@@ -769,8 +776,54 @@ class Builder implements \Lif\Core\Intf\DBConn
     // --------------
     //     Update
     // --------------
-    public function update(array $updates, $exec = true, $sql = false)
+    public function update(...$updates)
     {
+        $exec = true;
+        $sql  = false;
+        switch (count($updates)) {
+            case 1: {
+                if (!isset($updates[0])
+                    || !is_array($updates[0])
+                    || !($updates = $updates[0])
+                ) {
+                    excp('Illgeal updates parameters (1)');
+                }
+            } break;
+            case 2: {
+                if (!isset($updates[0])
+                    || !is_string($updates[0])
+                    || !$updates[0]
+                ) {
+                    excp('Illgeal updates parameters (2)');
+                }
+
+                $updates = [$updates[0] => $updates[1]];
+            } break;
+            case 3: {
+                if (is_array($updates[0]) && $updates[0]) {
+                    $exec    = (bool) $updates[1];
+                    $sql     = (bool) $updates[2];
+                    $updates = $updates[0];
+                } elseif (is_string($updates[0]) && $updates[0]) {
+                    $exec    = (bool) $updates[2];
+                    $updates = [$updates[0] => $updates[1]];
+                } else {
+                    excp('Illgeal updates parameters (3)');
+                }
+            } break;
+            case 4: {
+                if (is_string($updates[0])) {
+                    $exec = (bool) $updates[2];
+                    $sql  = (bool) $updates[3];
+                }
+
+                excp('Illgeal updates parameters (4)');
+            } break;
+            default: {
+                excp('Illgeal updates parameters (5)');
+            } break;
+        }
+
         $this->updates = '';
         $bindValues    = [];
         
@@ -810,10 +863,11 @@ class Builder implements \Lif\Core\Intf\DBConn
     {
         if (! $this->crud) {
             $sqlArr  = explode(' ', $raw);
+
             if (! isset($sqlArr[0])) {
                 excp('Illgeal SQL statement.');
             } else {
-                $this->curd = strtoupper($sqlArr[0]);
+                $this->crud = strtoupper(trim($sqlArr[0]));
             }
         }
 
@@ -828,6 +882,28 @@ class Builder implements \Lif\Core\Intf\DBConn
         return function () use ($native) : string {
             return $native;
         };
+    }
+
+    public function exec(string $sql)
+    {
+        try {
+            return $this->db()->exec($sql);
+        } catch (\PDOException $pdoe) {
+            excp($pdoe->getMessage()."({$sql})");
+        } catch (\Error $e) {
+            excp($e->getMessage()."({$sql})");
+        }
+    }
+
+    public function query(string $sql)
+    {
+        try {
+            return $this->db()->query($sql);
+        } catch (\PDOException $pdoe) {
+            excp($pdoe->getMessage()."({$sql})");
+        } catch (\Error $e) {
+            excp($e->getMessage()."({$sql})");
+        }
     }
 
     // $exec => If execute SQL immediately

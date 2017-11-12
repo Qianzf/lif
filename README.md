@@ -32,13 +32,19 @@ Support object auto injection in controller/container.
 
 Well, I think you will like them, all in _app/core/aux/_.
 
-### DB SQL builder
+### Storage Layer
 
-LiF has it's own database SQL query builder, it's simple but handles all the SQL things.
+- Query builder
+
+LiF has it's own database SQL query builder, it's simple but handles all the SQL query things.
+
+- Schema builder
+
+LiF has it's own schema creator, which mainly handles the SQL database definition and schema management.
 
 ### Model/ORM
 
-Support basic Model/ORM functionalities.
+Support basic and flexible Model/ORM functionalities.
 
 ### Views
 

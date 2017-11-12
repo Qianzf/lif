@@ -17,7 +17,7 @@ class LDO extends \PDO
         return $this;
     }
 
-    public function getConn()
+    public function getConn() : string
     {
         return $this->conn;
     }

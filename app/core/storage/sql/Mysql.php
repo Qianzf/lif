@@ -6,34 +6,16 @@
 
 namespace Lif\Core\Storage\SQL;
 
+use Lif\Core\Storage\SQL\Mysql\Table;
+
 class Mysql
 {
-    use \Lif\Core\Traits\MethodNotExists;
-
-    private $sql = [];
-
-    public function create(string $table, \Closure $ddl)
+    // @return fluent SQL
+    public function __call($name, $params)
     {
-        call_user_func($ddl, $this);
-    }
-
-    public function col(string $col) : Mysql
-    {
-        return $this;
-    }
-
-    public function int(string $col = null) : Mysql
-    {
-        return $this;
-    }
-
-    public function pk(string $col = null) : Mysql
-    {
-        return $this;
-    }
-
-    public function autoi(string $col = null) : Mysql
-    {
-        return $this;
+        return call_user_func_array(
+            [(new Table), $name],
+            $params
+        );
     }
 }
