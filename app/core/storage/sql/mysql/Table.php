@@ -98,107 +98,142 @@ class Table
     )
     {
         $schema = '';
-        
+
         return $schema;
     }
 
     public function dropIfExists(...$tables)
     {
-        if ($tables) {
-            $tables = implode(',', $tables);
-
-            return "DROP TABLE IF EXISTS {$tables}";
-        }
+        return $this->__drop($tables, true);
     }
 
     public function drop(...$tables)
     {
+        return $this->__drop($tables);
+    }
+
+    private function __drop(
+        array $tables = null,
+        bool $exists = null
+    ) : string
+    {
         if ($tables) {
+            array_walk($tables, function (&$item) {
+                $item = "`$item`";
+            });
+
             $tables = implode(',', $tables);
 
-            return "DROP TABLE {$tables}";
+            unset($item);
+
+            $ifexists = $exists ? 'IF EXISTS' : '';
+
+            return "DROP TABLE {$ifexists} {$tables}";
         }
     }
 
     public function collate(...$params)
     {
-        
+        return $this->set(
+            'collate',
+            $params,
+            function (array $params) : string
+            {
+                return $this->collate = $params[1] ?? 'utf8_unicode_ci';
+            }
+        );   
     }
 
     public function charset(...$params)
     {
-
+        return $this->set(
+            'default charset',
+            $params,
+            function (array $params) : string
+            {
+                return $this->charset = $params[1] ?? 'utf8mb4';
+            }
+        );
     }
 
     public function engine(...$params)
     {
-        if (1 === ($cnt = count($params))) {
-            $this->engine = $params[0] ?? null;
-
-            return $this;
-        }
-
-        if (2 === $cnt) {
-            if (! ($this->name = ($params[0] ?? null))) {
-                excp('Missing table name when setting engine.');
+        return $this->set(
+            'engine',
+            $params,
+            function (array $params) : string
+            {
+                return $this->engine = $params[1] ?? 'InnoDB';
             }
-            $this->engine = $params[1] ?? null;
-
-            return
-            "ALTER TABLE `{$this->name}` ENGINE = {$this->engine}";
-        }
+        );
     }
 
     public function autoincre(...$params)
     {
+        return $this->set(
+            'auto_increment',
+            $params,
+            function (array $params) : string
+            {
+                return $this->autoincre = intval($params[1] ?? null);
+            }
+        );
+    }
+
+    public function comment(...$params)
+    {
+        return $this->set(
+            'comment',
+            $params,
+            function (array $params) : string
+            {
+                $this->comment = $params[1] ?? null;
+
+                return ldo()->quote($this->comment);
+            },
+            'comment on it'
+        );
+    }
+
+    public function set(
+        string $attr,
+        array $params,
+        \Closure $calback,
+        string $desc = null
+    ) : string
+    {
         if (1 === ($cnt = count($params))) {
-            $this->autoincre = $params[0] ?? null;
+            $this->$attr = $params[0] ?? null;
 
             return $this;
         }
 
         if (2 === $cnt) {
+            $attr = strtoupper($attr);
             if (! ($this->name = ($params[0] ?? null))) {
-                excp('Missing table name when setting auto_increment.');
+                excp(
+                    'Missing table name when '
+                    .($desc ?? "setting {$attr}")
+                );
             }
-            $this->autoincre = intval($params[1] ?? null);
 
-            return
-            "ALTER TABLE `{$this->name}` AUTO_INCREMENT = {$this->autoincre}";
+            $value = $calback($params);
+
+            return "ALTER TABLE `{$this->name}` {$attr}={$value}";
         }
     }
 
-    public function getAutoincre() : string
+    private function getAutoincre() : string
     {
         return $this->autoincre
         ? "AUTO_INCREMENT={$this->autoincre}"
         : '';
     }
 
-    public function getComment() : string
+    private function getComment() : string
     {
         return $this->comment
-        ? ('COMMENT='.(ldo()->quote($this->comment)).' ')
+        ? ('COMMENT='.(ldo()->quote($this->comment)))
         : '';
-    }
-
-    public function comment(...$params)
-    {
-        if (1 === ($cnt = count($params))) {
-            $this->comment = $params[0] ?? null;
-
-            return $this;
-        }
-
-        if (2 === $cnt) {
-            if (! ($this->name = ($params[0] ?? null))) {
-                excp('Missing table name when comment on it.');
-            }
-            $this->comment = $params[1] ?? null;
-            $comment = ldo()->quote($this->comment);
-
-            return
-            "ALTER TABLE `{$this->name}` COMMENT {$comment}";
-        }
     }
 }
