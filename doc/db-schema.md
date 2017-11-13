@@ -33,14 +33,15 @@ $schema->createIfNotExists('table', function ($table) {
 ### Alter table
 
 ``` php
+// In Closure
 $schema->alter('user', function ($table) {
     // Drop column
     $table
-    ->dropColumn('group');
+    ->drop('group');
 
     // Add column
     $table
-    ->addColumn('group')
+    ->add('group')
     //->first()
     ->after('role')
     ->tinyint()
@@ -49,26 +50,49 @@ $schema->alter('user', function ($table) {
 
     // Modfiy column
     $table
-    ->modifyColumn('email')
+    ->modify('email')
     ->first()
     ->char(128)
     //->after('role')
     ->unique();
 
     // Change column
-    $table->changeColumn('group', 'group2')
+    $table
+    ->change('group', 'group2')
     ->after('name')
     ->tinyint();
-
-    // Rename table
-    $table->renameTableTo('user2');
-    $table->renameTableAs('user3');
 
     // Set column default
     $table->setDefault('group', 1);
     // Drop column default
     $table->dropDefault('group');
+
+    // Rename table
+    $table->renameTableTo('user2');
+    $table->renameTableAs('user3');
+    $table->renameTable('user4', 'TO');
+    $table->renameTable('user5', 'AS');
+    $table->renameTable('user6');    // TO
 });
+
+// Or, identically
+// Drop column
+$schema->table('user')->dropCol('group');
+$schema->table('user')->dropColumn('group');
+
+// Set column default
+$schema->table('user')->setColDefault('group', 1);
+$schema->table('user')->setColumnDefault('group', 1);
+// Drop column default
+$schema->table('user')->dropColDefault('group');
+$schema->table('user')->dropColumnDefault('group');
+
+// Rename table
+$schema->table('user')->renameTo('tmp1');
+$schema->table('tmp1')->renameAs('tmp2');
+$schema->table('tmp2')->rename('tmp3', 'AS');
+$schema->table('tmp3')->rename('tmp4', 'TO');
+$schema->table('tmp4')->rename('user');    // TO
 ```
 
 ### Drop table
@@ -80,20 +104,29 @@ $schema->dropIfExists('table1', 'table2', ...);
 
 ### Table settings
 ``` php
+$schema->table('table1')->comment('This is the comment of table1');
 $schema->comment('table1', 'This is the comment of table1');
 
 // This is the new auto_increment start of table2
+$schema->table('table2')->autoincre(1024);
 $schema->autoincre('table2', 1024);
 
+$schema->table('table3')->engine('InnoDB');
 $schema->engine('table3', 'InnoDB');
 
+$schema->table('table4')->charset('utf8m4');
 $schema->charset('table4', 'utf8m4');
 
+$schema->table('table5')->collate('utf8_unicode_ci');
 $schema->collate('table5', 'utf8_unicode_ci');
 ```
+
+> Due to specific database limitations, some schema operation will not make effect, like mysql trasaction implict commit staff.
+> 
+> If these things happened, check out the raw sql in database client first.
 
 ### Commit schema
 
 By default, schema definitions will be auto commited if you don't do anything after schema definitionings.
 
-However, you can also commit schema definitions manually by `$schema->commit()``.
+However, you can also commit schema definitions (immediately) manually by `$schema->commit()`.

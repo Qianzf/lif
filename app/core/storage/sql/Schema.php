@@ -16,9 +16,16 @@ class Schema implements \Lif\Core\Intf\DBConn
     ];
     private $statements = [];
     private $autocommit = true;
+    private $table      = null;    // Table schema object
 
-    public function __call($name, $args)
+    public function __construct(string $conn = null, string $flush = null)
     {
+        $this->setConn($conn);
+
+        $this->flush = $flush;
+
+        $this->db();
+
         if (! ($this->getDriver())) {
             excp(
                 'Missing database driver in current connection: '
@@ -32,6 +39,13 @@ class Schema implements \Lif\Core\Intf\DBConn
                 .($this->getDriver() ?? '(empty)')
             );
         }
+    }
+
+    private function createDriver()
+    {
+        if ($this->table) {
+            return $this->table;
+        }
 
         if (!($class = nsOf('storage', 'SQL\\'.ucfirst($this->getDriver())))
             || !class_exists($class)
@@ -39,11 +53,22 @@ class Schema implements \Lif\Core\Intf\DBConn
             excp('Schema class not exists: '.$class);
         }
 
+        return (new $class);
+    }
+
+    public function __call($name, $args)
+    {
         $statement = call_user_func_array(
-            [(new $class), $name], $args
+            [$this->createDriver(), $name], $args
         );
 
         if ($statement) {
+            if (is_object($statement)) {
+                $this->table = $statement;
+                
+                return $this;
+            }
+
             $this->statements[] = $statement;
         }
     }
@@ -66,6 +91,7 @@ class Schema implements \Lif\Core\Intf\DBConn
     public function commit()
     {
         foreach ($this->statements as $statement) {
+            // dd($statement);
             try {
                 $this->db()->exec($statement);
             } catch (\PDOException $pdoe) {

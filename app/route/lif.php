@@ -9,4 +9,16 @@
 $this->get('/', 'lif');
 
 $this->get('test', function () {
+    $schema = new \Lif\Core\Storage\SQL\Schema;
+
+    $res = $schema
+    ->table('user')
+    ->addCol('group')
+    // ->first()
+    ->after('role')
+    ->tinyint();
+    // ->default(1)
+    // ->comment('User group ID');
+
+    dd($res);
 });

@@ -12,6 +12,7 @@ class AbstractColumn
     private $alter     = null;
     private $name      = null;
     private $old       = null;
+    private $concrete  = null;    // Concrete Column object
     private $concretes = [];
     private $callbacks = [
         'engine',
@@ -49,14 +50,14 @@ class AbstractColumn
         return $this;
     }
 
-    public function addColumn(string $name)
+    public function add(string $name)
     {
         return $this
         ->setAlter('add column')
         ->setName($name);
     }
 
-    public function changeColumn(string $old, string $new)
+    public function change(string $old, string $new)
     {
         return $this
         ->setAlter('change column')
@@ -64,14 +65,14 @@ class AbstractColumn
         ->setName($new);
     }
 
-    public function modifyColumn(string $name)
+    public function modify(string $name)
     {
         return $this
         ->setAlter('modify column')
         ->setName($name);
     }
 
-    public function dropColumn(string $name)
+    public function drop(string $name)
     {
         return $this->concretes[] = (new class($name) {
             private $name = null;
@@ -89,15 +90,15 @@ class AbstractColumn
 
     public function renameTableAs(string $as)
     {
-        return $this->renameTable('AS', $as);
+        return $this->renameTable($as, 'AS');
     }
 
     public function renameTableTo(string $to)
     {
-        return $this->renameTable('TO', $to);
+        return $this->renameTable($to, 'TO');
     }
 
-    private function renameTable(string $rename, string $new)
+    public function renameTable(string $new, string $rename = 'TO')
     {
         return $this->concretes[] = (new class($new, $rename) {
             private $new    = null;
@@ -106,7 +107,7 @@ class AbstractColumn
             public function __construct(string $new, string $rename)
             {
                 $this->new    = $new;
-                $this->rename = $rename;
+                $this->rename = strtoupper($rename);
             }
             public function grammar()
             {
@@ -158,7 +159,7 @@ class AbstractColumn
         }
 
         return call_user_func_array([
-            ($this->concretes[] = $this->createColumn()),
+            ($this->concretes[] = $this->concrete()),
             $name
         ],
             $params
@@ -170,11 +171,15 @@ class AbstractColumn
         return $this->concretes;
     }
 
-    private function createColumn() : ConcreteColumn
+    private function concrete() : ConcreteColumn
     {
-        return (
-            new ConcreteColumn
-        )
+        if (!$this->concrete
+            || !($this->concrete instanceof ConcreteColumn)
+        ) {
+            $this->concrete = new ConcreteColumn;
+        }
+
+        return $this->concrete
         ->ofCreator($this)
         ->setName($this->name)
         ->setOld($this->old)

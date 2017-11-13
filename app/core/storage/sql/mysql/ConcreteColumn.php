@@ -223,6 +223,13 @@ class ConcreteColumn
         return $this;
     }
 
+    public function default($default = null) : ConcreteColumn
+    {
+        $this->default = $default;
+
+        return $this;
+    }
+
     public function nullable(string $name = null) : ConcreteColumn
     {
         $this->nullable = true;

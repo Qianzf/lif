@@ -8,8 +8,6 @@ namespace Lif\Core\Storage\SQL\Mysql;
 
 class Table
 {
-    use \Lif\Core\Traits\MethodNotExists;
-
     private $name      = null;
     private $comment   = null;
     private $column    = null;
@@ -19,6 +17,44 @@ class Table
     private $collation = 'utf8_unicode_ci';
     private $indexes   = [];
     private $temporary = false;
+    private $alter     = false;
+
+    public function table(string $name) : Table
+    {
+        $this->name  = $name;
+        $this->alter = true;
+
+        return $this;
+    }
+
+    private function genGrammers() : string
+    {
+        if (! ($columns = $this->column->getConcretes())) {
+            excp('Missing table definition.');
+        }
+
+        $grammers = '';
+        foreach ($columns as $column) {
+            $grammers .= $column->grammar();
+
+            if (false !== next($columns)) {
+                $grammers .= ',';
+            }
+
+            $grammers .= "\n";
+        }
+
+        return trim($grammers ?: '');
+    }
+
+    private function createColumn() : AbstractColumn
+    {
+        if (!$this->column || !($this->column instanceof AbstractColumn)) {
+            $this->column = (new AbstractColumn)->ofTable($this);
+        }
+
+        return $this->column;
+    }
 
     public function createIfNotExists(
         string $table,
@@ -40,32 +76,14 @@ class Table
     {
         if (! ($this->name = $table)) {
             excp(
-                'Missing or illegal table name to create: '
-                .$table
+                'Missing or illegal table name to definition: '
+                .($this->name ?? '(empty)')
             );
         }
 
-        call_user_func(
-            $ddl,
-            ($this->column = (new AbstractColumn)->ofTable($this))
-        );
+        call_user_func($ddl, $this->createColumn());
 
-        if (! ($columns = $this->column->getConcretes())) {
-            excp('Missing table definition.');
-        }
-
-        $definitions = '';
-        foreach ($columns as $column) {
-            $definitions .= $column->grammar();
-
-            if (false !== next($columns)) {
-                $definitions .= ',';
-            }
-
-            $definitions .= "\n";
-        }
-
-        return $definitions ?: '';
+        return $this->genGrammers();
     }
 
     public function create(
@@ -92,16 +110,9 @@ class Table
         return $schema;
     }
 
-    public function alter(
-        string $table,
-        \Closure $ddl
-    )
+    public function alter(string $table, \Closure $ddl)
     {
-        $definitions = $this->definitions($table, $ddl);
-        $schema  = "ALTER TABLE `{$this->name}` ";
-        $schema .= $definitions;
-
-        return $schema;
+        return $this->genAlterSchema($this->definitions($table, $ddl));
     }
 
     public function dropIfExists(...$tables)
@@ -112,6 +123,78 @@ class Table
     public function drop(...$tables)
     {
         return $this->__drop($tables);
+    }
+
+    private function alterations($alteration, ...$params)
+    {
+        if (! ($this->name)) {
+            excp(
+                'Missing or illegal table name to alteration: '
+                .($this->name ?? '(empty)')
+            );
+        }
+
+        $result = call_user_func_array([
+            $this->createColumn(),
+            $alteration
+        ], $params);
+
+        if ($result instanceof AbstractColumn) {
+            $this->column = $result;
+
+            return $this;
+        }
+
+        return $this->genGrammers();
+    }
+
+    private function genAlterSchema(string $alteration) : string
+    {
+        return "ALTER TABLE `{$this->name}` {$alteration}";
+    }
+
+    public function addCol(string $name)
+    {
+        return $this->addColumn($name);
+    }
+
+    public function addColumn(string $name)
+    {
+        return $this->alterations('add', $name);
+    }
+
+    public function dropCol(string $name)
+    {
+        return $this->dropColumn($name);
+    }
+
+    public function dropColumn(string $name)
+    {
+        return $this->genAlterSchema($this->alterations('drop', $name));
+    }
+
+    public function dropColDefault(string $column)
+    {
+        return $this->dropColumnDefault($column);
+    }
+
+    public function dropColumnDefault(string $column)
+    {
+        return $this->genAlterSchema(
+            $this->alterations('dropDefault', $column)
+        );
+    }
+
+    public function setColDefault(string $column, $default)
+    {
+        return $this->setColumnDefault($column, $default);
+    }
+
+    public function setColumnDefault(string $column, $default)
+    {
+        return $this->genAlterSchema(
+            $this->alterations('setDefault', $column, $default)
+        );
     }
 
     private function __drop(
@@ -134,14 +217,38 @@ class Table
         }
     }
 
+    public function rename(string $name, string $rename = 'TO')
+    {
+        $rename = strtoupper($rename);
+
+        return "ALTER TABLE `{$this->name}` RENAME {$rename} `{$name}`";
+    }
+
+    public function renameAs(string $name)
+    {
+        return $this->rename($name, 'AS');
+    }
+
+    public function renameTo(string $name)
+    {
+        return $this->rename($name);
+    }
+
+    public function __call($name, $args)
+    {
+        call_user_func_array([$this->createColumn(), $name], $args);
+
+        return $this;
+    }
+
     public function collate(...$params)
     {
         return $this->set(
             'collate',
             $params,
-            function (array $params) : string
+            function ($value) : string
             {
-                return $this->collate = $params[1] ?? 'utf8_unicode_ci';
+                return $this->collate = $value ?? 'utf8_unicode_ci';
             }
         );   
     }
@@ -151,9 +258,9 @@ class Table
         return $this->set(
             'default charset',
             $params,
-            function (array $params) : string
+            function ($value = null) : string
             {
-                return $this->charset = $params[1] ?? 'utf8mb4';
+                return $this->charset = $value ?? 'utf8mb4';
             }
         );
     }
@@ -163,9 +270,9 @@ class Table
         return $this->set(
             'engine',
             $params,
-            function (array $params) : string
+            function ($value = null) : string
             {
-                return $this->engine = $params[1] ?? 'InnoDB';
+                return $this->engine = $value ?? 'InnoDB';
             }
         );
     }
@@ -175,9 +282,9 @@ class Table
         return $this->set(
             'auto_increment',
             $params,
-            function (array $params) : string
+            function ($value = null) : string
             {
-                return $this->autoincre = intval($params[1] ?? null);
+                return $this->autoincre = intval($value);
             }
         );
     }
@@ -187,11 +294,9 @@ class Table
         return $this->set(
             'comment',
             $params,
-            function (array $params) : string
+            function ($value) : string
             {
-                $this->comment = $params[1] ?? null;
-
-                return ldo()->quote($this->comment);
+                return ldo()->quote($this->comment = $value);
             },
             'comment on it'
         );
@@ -202,16 +307,23 @@ class Table
         array $params,
         \Closure $calback,
         string $desc = null
-    ) : string
-    {
+    ) {
+        $attr = strtoupper($attr);
+
         if (1 === ($cnt = count($params))) {
-            $this->$attr = $params[0] ?? null;
+            $value = $params[0] ?? null;
+            if ($this->alter) {
+                if ($value = $calback($value)) {
+                    return "ALTER TABLE `{$this->name}` {$attr}={$value}";
+                }
+            }
+
+            $this->$attr = $value;
 
             return $this;
         }
 
         if (2 === $cnt) {
-            $attr = strtoupper($attr);
             if (! ($this->name = ($params[0] ?? null))) {
                 excp(
                     'Missing table name when '
@@ -219,9 +331,9 @@ class Table
                 );
             }
 
-            $value = $calback($params);
-
-            return "ALTER TABLE `{$this->name}` {$attr}={$value}";
+            if ($value = $calback($params[1] ?? null)) {
+                return "ALTER TABLE `{$this->name}` {$attr}={$value}";
+            }
         }
     }
 
