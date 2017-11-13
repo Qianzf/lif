@@ -141,17 +141,13 @@ trait Numberics
     {
         $this->decimal = $this->decimal ?? 2;
         
-        return $this->length
-        ? "({$this->length}) "
-        : '';
+        return $this->length ? "({$this->length}) " : '';
     }
 
     private function getFloatLength()
     {
         $this->decimal = $this->decimal ?? 2;
         
-        return $this->length
-        ? "({$this->length},{$this->decimal}) "
-        : '';
+        return $this->length ? "({$this->length},{$this->decimal}) " : '';
     }
 }

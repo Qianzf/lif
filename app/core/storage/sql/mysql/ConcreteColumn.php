@@ -8,7 +8,9 @@
 
 namespace Lif\Core\Storage\SQL\Mysql;
 
-class ConcreteColumn implements \Lif\Core\Intf\SQLSchemaWorker
+use Lif\Core\Intf\{SQLSchemaWorker, SQLSchemaBuilder};
+
+class ConcreteColumn implements SQLSchemaWorker
 {
     use \Lif\Core\Traits\MethodNotExists;
     use Grammers;
@@ -36,6 +38,11 @@ class ConcreteColumn implements \Lif\Core\Intf\SQLSchemaWorker
         $this->creator = $creator;
 
         return $this;
+    }
+
+    public function getCreator() : SQLSchemaBuilder
+    {
+        return $this->creator;
     }
 
     public function setName(string $name = null) : ConcreteColumn
@@ -91,7 +98,9 @@ class ConcreteColumn implements \Lif\Core\Intf\SQLSchemaWorker
     public function commonSuffix() : string
     {
         $suffix  = $this->nullable  ? '' : ' NOT NULL ';
-        $suffix .= $this->default   ? " Default {$this->default} " : '';
+        $suffix .= empty_safe($this->default)
+        ? ''
+        : " Default {$this->default} ";
         $suffix .= $this->increable ? ' AUTO_INCREMENT ' : '';
         $suffix .= $this->unique    ? ' UNIQUE KEY ' : '';
         $suffix .= $this->primary   ? ' PRIMARY KEY ' : '';
@@ -279,5 +288,15 @@ class ConcreteColumn implements \Lif\Core\Intf\SQLSchemaWorker
         }
 
         return $this;
+    }
+
+    public function beforeDeath(SQLSchemaWorker $worker = null)
+    {
+        return $this->creator->beforeDeath($this);
+    }
+
+    public function __destruct()
+    {
+        return $this->beforeDeath($this);
     }
 }

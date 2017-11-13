@@ -6,9 +6,11 @@
 
 namespace Lif\Core\Storage\SQL\Mysql;
 
-class AbstractColumn implements \Lif\Core\Intf\SQLSchemaWorker
+use Lif\Core\Intf\{SQLSchemaWorker, SQLSchemaBuilder};
+
+class AbstractColumn implements SQLSchemaWorker
 {
-    private $table     = null;
+    private $creator   = null;
     private $alter     = null;
     private $name      = null;
     private $old       = null;
@@ -22,11 +24,16 @@ class AbstractColumn implements \Lif\Core\Intf\SQLSchemaWorker
         'comment',
     ];
 
-    public function ofTable(Table $table) : AbstractColumn
+    public function ofCreator(Table $creator) : AbstractColumn
     {
-        $this->table = $table;
+        $this->creator = $creator;
 
         return $this;
+    }
+
+    public function getCreator() : SQLSchemaBuilder
+    {
+        return $this->creator;
     }
 
     private function setAlter(string $alter = null): AbstractColumn
@@ -153,7 +160,7 @@ class AbstractColumn implements \Lif\Core\Intf\SQLSchemaWorker
     public function __call($name, $params)
     {
         if (in_array($name, $this->callbacks)) {
-            call_user_func_array([$this->table, $name], $params);
+            call_user_func_array([$this->creator, $name], $params);
 
             return $this;
         }
@@ -178,5 +185,10 @@ class AbstractColumn implements \Lif\Core\Intf\SQLSchemaWorker
         ->setName($this->name)
         ->setOld($this->old)
         ->setAlter($this->alter);
+    }
+
+    public function beforeDeath(SQLSchemaWorker $worker = null)
+    {
+        return $this->creator->beforeDeath();
     }
 }

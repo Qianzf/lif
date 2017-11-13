@@ -6,7 +6,7 @@
 
 namespace Lif\Core\Storage\SQL\Mysql;
 
-use \Lif\Core\Intf\{SQLSchemaMaster, SQLSchemaWorker};
+use \Lif\Core\Intf\{SQLSchemaMaster, SQLSchemaWorker, SQLSchemaBuilder};
 
 class Table implements SQLSchemaWorker
 {
@@ -20,13 +20,18 @@ class Table implements SQLSchemaWorker
     private $collation = 'utf8_unicode_ci';
     private $indexes   = [];
     private $temporary = false;
-    private $autonomy  = false;    // Should handle
+    private $autonomy  = false;    // Weather alterations handled by self
 
     public function ofCreator(SQLSchemaMaster $creator) : Table
     {
         $this->creator = $creator;
 
         return $this;
+    }
+
+    public function getCreator() : SQLSchemaBuilder
+    {
+        return $this->creator;
     }
 
     public function table(string $name) : Table
@@ -37,42 +42,9 @@ class Table implements SQLSchemaWorker
         return $this;
     }
 
-    private function autonomy(string $statement)
-    {
-        if ($this->autonomy) {
-            return $this->creator->exec($statement);
-        }
-
-        return $statement;
-    }
-
-    private function genGrammers() : string
-    {
-        if (! ($columns = $this->column->getConcretes())) {
-            excp('Missing table definition.');
-        }
-
-        $grammers = '';
-        foreach ($columns as $column) {
-            $grammers .= $column->grammar();
-
-            if (false !== next($columns)) {
-                $grammers .= ',';
-            }
-
-            $grammers .= "\n";
-        }
-
-        return trim($grammers ?: '');
-    }
-
     private function createColumn() : AbstractColumn
     {
-        if (!$this->column || !($this->column instanceof AbstractColumn)) {
-            $this->column = (new AbstractColumn)->ofTable($this);
-        }
-
-        return $this->column;
+        return $this->column = (new AbstractColumn)->ofCreator($this);
     }
 
     public function createIfNotExists(
@@ -86,23 +58,6 @@ class Table implements SQLSchemaWorker
             $temporary,
             true
         );
-    }
-
-    private function definitions(
-        string $table,
-        \Closure $ddl
-    ) : string
-    {
-        if (! ($this->name = $table)) {
-            excp(
-                'Missing or illegal table name to definition: '
-                .($this->name ?? '(empty)')
-            );
-        }
-
-        call_user_func($ddl, $this->createColumn());
-
-        return $this->genGrammers();
     }
 
     public function create(
@@ -134,19 +89,29 @@ class Table implements SQLSchemaWorker
         return $this->genAlterSchema($this->definitions($table, $ddl));
     }
 
+    public function dropTableIfExists(...$tables)
+    {
+        return $this->__drop(true, $tables);
+    }
+
     public function dropIfExists(...$tables)
     {
-        return $this->__drop($tables, true);
+        return $this->__drop(true, $tables);
+    }
+
+    public function dropTable(...$tables)
+    {
+        return $this->__drop(false, $tables);
     }
 
     public function drop(...$tables)
     {
-        return $this->__drop($tables);
+        return $this->__drop(false, $tables);
     }
 
     private function __drop(
-        array $tables = null,
-        bool $exists = null
+        bool $exists = false,
+        array $tables = null
     ) : string
     {
         if ($tables) {
@@ -164,7 +129,62 @@ class Table implements SQLSchemaWorker
         }
     }
 
-    private function alterations($alteration, ...$params)
+    private function autonomy($statement)
+    {
+        if ($this->autonomy) {
+            if (is_string($statement)) {
+                $_statement = $statement;
+            } elseif (is_object($statement)
+                && method_exists($statement, 'grammar')
+            ) {
+                $_statement = $this->genAlterSchema($statement->grammar());
+            }
+
+            return $this->creator->exec($_statement);
+        }
+
+        return $statement;
+    }
+
+    // Generate grammers group into one statement
+    // via column bound to current table
+    private function genGrammers() : string
+    {
+        if (! ($columns = $this->column->getConcretes())) {
+            excp('Missing table definition.');
+        }
+
+        $grammers = '';
+        foreach ($columns as $column) {
+            $grammers .= $column->grammar();
+
+            if (false !== next($columns)) {
+                $grammers .= ',';
+            }
+
+            $grammers .= "\n";
+        }
+
+        return trim($grammers ?: '');
+    }
+
+    // Processing column groups definition
+    private function definitions(string $table, \Closure $ddl) : string
+    {
+        if (! ($this->name = $table)) {
+            excp(
+                'Missing or illegal table name to definition: '
+                .($this->name ?? '(empty)')
+            );
+        }
+
+        call_user_func($ddl, $this->createColumn());
+
+        return $this->genGrammers();
+    }
+
+    // Processing single column alteration
+    private function alterations(string $alteration, ...$params)
     {
         if (! ($this->name)) {
             excp(
@@ -178,18 +198,20 @@ class Table implements SQLSchemaWorker
             $alteration
         ], $params);
 
-        if ($result instanceof AbstractColumn) {
-            $this->column = $result;
-
-            return $this;
+        if (is_object($result)) {
+            return $result;
         }
 
         return $this->genGrammers();
     }
 
-    private function genAlterSchema(string $alteration) : string
+    private function genAlterSchema($alteration)
     {
-        return "ALTER TABLE `{$this->name}` {$alteration}";
+        if (is_string($alteration) && $alteration) {
+            return "ALTER TABLE `{$this->name}` {$alteration}";
+        }
+
+        return $alteration;
     }
 
     public function addCol(string $name)
@@ -202,6 +224,26 @@ class Table implements SQLSchemaWorker
         return $this->alterations('add', $name);
     }
 
+    public function modifyCol(string $name)
+    {
+        return $this->modifyColumn($name);
+    }
+
+    public function modifyColumn(string $name)
+    {
+        return $this->alterations('modify', $name);
+    }
+
+    public function changeCol(string $old, string $new)
+    {
+        return $this->changeColumn($old, $new);
+    }
+
+    public function changeColumn(string $old, string $new)
+    {
+        return $this->alterations('change', $old, $new);
+    }
+
     public function dropCol(string $name)
     {
         return $this->dropColumn($name);
@@ -209,9 +251,7 @@ class Table implements SQLSchemaWorker
 
     public function dropColumn(string $name)
     {
-        return $this->autonomy(
-            $this->genAlterSchema($this->alterations('drop', $name))
-        );
+        return $this->__alter('drop', $name);
     }
 
     public function dropColDefault(string $column)
@@ -221,9 +261,7 @@ class Table implements SQLSchemaWorker
 
     public function dropColumnDefault(string $column)
     {
-        return $this->autonomy($this->genAlterSchema(
-            $this->alterations('dropDefault', $column)
-        ));
+        return $this->__alter('dropDefault', $column);
     }
 
     public function setColDefault(string $column, $default)
@@ -233,21 +271,23 @@ class Table implements SQLSchemaWorker
 
     public function setColumnDefault(string $column, $default)
     {
+        return $this->__alter('setDefault', $column, $default);
+    }
+
+    private function __alter(string $alteration, ...$params)
+    {
         return $this->autonomy($this->genAlterSchema(
-            $this->alterations('setDefault', $column, $default)
+            $this->alterations($alteration, ...$params)
         ));
     }
 
     public function rename(string $name, string $rename = 'TO')
     {
-        $rename    = strtoupper($rename);
-        $statement = "ALTER TABLE `{$this->name}` RENAME {$rename} `{$name}`";
+        $rename = strtoupper($rename);
 
-        if ($this->autonomy) {
-            return $this->creator->exec($statement);
-        }
-
-        return $statement;
+        return $this->autonomy(
+            "ALTER TABLE `{$this->name}` RENAME {$rename} `{$name}`"
+        );
     }
 
     public function renameAs(string $name)
@@ -272,8 +312,7 @@ class Table implements SQLSchemaWorker
         return $this->set(
             'collate',
             $params,
-            function ($value) : string
-            {
+            function ($value) : string {
                 return $this->collate = $value ?? 'utf8_unicode_ci';
             }
         );   
@@ -284,8 +323,7 @@ class Table implements SQLSchemaWorker
         return $this->set(
             'default charset',
             $params,
-            function ($value = null) : string
-            {
+            function ($value = null) : string {
                 return $this->charset = $value ?? 'utf8mb4';
             }
         );
@@ -296,8 +334,7 @@ class Table implements SQLSchemaWorker
         return $this->set(
             'engine',
             $params,
-            function ($value = null) : string
-            {
+            function ($value = null) : string {
                 return $this->engine = $value ?? 'InnoDB';
             }
         );
@@ -308,8 +345,7 @@ class Table implements SQLSchemaWorker
         return $this->set(
             'auto_increment',
             $params,
-            function ($value = null) : string
-            {
+            function ($value = null) : string {
                 return $this->autoincre = intval($value);
             }
         );
@@ -320,8 +356,7 @@ class Table implements SQLSchemaWorker
         return $this->set(
             'comment',
             $params,
-            function ($value) : string
-            {
+            function ($value) : string {
                 return ldo()->quote($this->comment = $value);
             },
             'comment on it'
@@ -338,10 +373,10 @@ class Table implements SQLSchemaWorker
 
         if (1 === ($cnt = count($params))) {
             $value = $params[0] ?? null;
-            if ($this->autonomy) {
-                if ($value = $calback($value)) {
-                    return "ALTER TABLE `{$this->name}` {$attr}={$value}";
-                }
+            if ($value = $calback($value)) {
+                return $this->autonomy(
+                    "ALTER TABLE `{$this->name}` {$attr}={$value}"
+                );
             }
 
             $this->$attr = $value;
@@ -370,15 +405,16 @@ class Table implements SQLSchemaWorker
 
     private function getAutoincre() : string
     {
-        return $this->autoincre
-        ? "AUTO_INCREMENT={$this->autoincre}"
-        : '';
+        return $this->autoincre ? "AUTO_INCREMENT={$this->autoincre} " : '';
     }
 
     private function getComment() : string
     {
-        return $this->comment
-        ? ('COMMENT='.(ldo()->quote($this->comment)))
-        : '';
+        return $this->comment ? ('COMMENT='.(ldo()->quote($this->comment))) : '';
+    }
+
+    public function beforeDeath(SQLSchemaWorker $worker = null)
+    {
+        return $this->autonomy($this->genAlterSchema($this->genGrammers()));
     }
 }

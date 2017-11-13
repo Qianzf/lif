@@ -73,34 +73,30 @@ class Schema implements SQLSchemaMaster
 
     public function commitAllOnce()
     {
-        try {
-            if ($this->statements) {
-                $this->exec(
-                    implode(";\n", $this->statements)
-                );
-            }
-        } catch (\PDOException $pdoe) {
-            excp($pdoe->getMessage()."({$statement})");
-        } catch (\Error $e) {
-            excp($e->getMessage()."({$statement})");
+        if ($statement = implode(";\n", $this->statements)) {
+            return $this->exec($statement);
         }
     }
 
     public function exec(string $statement)
     {
-        return $this->db()->exec($statement);
+        if ($statement) {
+            try {
+                return $this->db()->exec($statement);
+            } catch (\PDOException $pdoe) {
+                excp($pdoe->getMessage()."({$statement})");
+            } catch (\Exception $e) {
+                excp($e->getMessage()."({$statement})");
+            } catch (\Error $e) {
+                excp($e->getMessage()."({$statement})");
+            }
+        }
     }
 
     public function commit()
     {
         foreach ($this->statements as $statement) {
-            try {
-                $this>exec($statement);
-            } catch (\PDOException $pdoe) {
-                excp($pdoe->getMessage()."({$statement})");
-            } catch (\Error $e) {
-                excp($e->getMessage()."({$statement})");
-            }
+            return $this->exec($statement);
         }
     }
 

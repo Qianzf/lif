@@ -8,7 +8,7 @@ namespace Lif\Core\Intf;
 
 use Lif\Core\Storage\LDO;
 
-interface DBConn
+interface DBConn extends SQLSchemaBuilder
 {
     public function __construct(string $conn = null, string $flush = null);
     

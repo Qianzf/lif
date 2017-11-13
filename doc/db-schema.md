@@ -2,6 +2,7 @@
 
 ``` php
 $schema = new \Lif\Core\Storage\SQL\Schema;
+schema();
 ```
 
 ### Create table
@@ -79,6 +80,34 @@ $schema->alter('user', function ($table) {
 // Drop column
 $schema->table('user')->dropCol('group');
 $schema->table('user')->dropColumn('group');
+
+// Add column
+$schema
+->table('user')
+->addCol('group')
+// ->addColumn('group')
+->after('role')
+->tinyint()
+->default(1)
+->comment('User group ID');
+
+// Modfiy column
+$schema
+->table('user')
+->modifyCol('email')
+// ->modifyColumn('email')
+->first()
+->char(128)
+//->after('role')
+->unique();
+
+// Change column
+$schema
+->table('user')
+->changeCol('group', 'group2')
+// ->changeColumn('group', 'group2')
+->after('name')
+->tinyint();
 
 // Set column default
 $schema->table('user')->setColDefault('group', 1);

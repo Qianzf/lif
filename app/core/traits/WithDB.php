@@ -11,10 +11,10 @@ use Lif\Core\Storage\LDO;
 
 trait WithDB
 {
-    protected $db       = null;    // Database connection object
-    protected $flush    = null;    // Flush database connection flag
-    protected $conn     = null;    // Database connection name
-    protected $driver   = null;    // Database driver 
+    protected $db     = null;    // Database connection object
+    protected $flush  = null;    // Flush database connection flag
+    protected $conn   = null;    // Database connection name
+    protected $driver = null;    // Database driver 
 
     public function __construct(string $conn = null, string $flush = null)
     {

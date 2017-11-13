@@ -782,8 +782,21 @@ if (! fe('conf')) {
     }
 }
 if (! fe('config')) {
-    function config($key) {
+    function config(string $key) {
         return array_query_by_coherent_keys(conf_all(), $key);
+    }
+}
+if (! fe('singleton')) {
+    function singleton(
+        string $key,
+        $class = null,
+        bool $flush = null
+    ) {
+        if (is_null($class)) {
+            return \Lif\Core\Factory\Singleton::get($key);
+        }
+
+        return \Lif\Core\Factory\Singleton::set($key, $class, $flush);
     }
 }
 if (! fe('build_pdo_dsn')) {
@@ -949,6 +962,13 @@ if (! fe('model')) {
         }
 
         return new $class($pk);
+    }
+}
+if (! fe('schema')) {
+    function schema(bool $flush = false) {
+        return singleton('schema', function () {
+            return \Lif\Core\Storage\SQL\Schema::class;
+        }, $flush);
     }
 }
 if (! fe('escape_fields')) {
