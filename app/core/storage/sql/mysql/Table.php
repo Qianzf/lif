@@ -6,8 +6,11 @@
 
 namespace Lif\Core\Storage\SQL\Mysql;
 
-class Table
+use \Lif\Core\Intf\{SQLSchemaMaster, SQLSchemaWorker};
+
+class Table implements SQLSchemaWorker
 {
+    private $creator   = null;
     private $name      = null;
     private $comment   = null;
     private $column    = null;
@@ -17,14 +20,30 @@ class Table
     private $collation = 'utf8_unicode_ci';
     private $indexes   = [];
     private $temporary = false;
-    private $alter     = false;
+    private $autonomy  = false;    // Should handle
+
+    public function ofCreator(SQLSchemaMaster $creator) : Table
+    {
+        $this->creator = $creator;
+
+        return $this;
+    }
 
     public function table(string $name) : Table
     {
-        $this->name  = $name;
-        $this->alter = true;
+        $this->name     = $name;
+        $this->autonomy = true;
 
         return $this;
+    }
+
+    private function autonomy(string $statement)
+    {
+        if ($this->autonomy) {
+            return $this->creator->exec($statement);
+        }
+
+        return $statement;
     }
 
     private function genGrammers() : string
@@ -125,6 +144,26 @@ class Table
         return $this->__drop($tables);
     }
 
+    private function __drop(
+        array $tables = null,
+        bool $exists = null
+    ) : string
+    {
+        if ($tables) {
+            array_walk($tables, function (&$item) {
+                $item = "`$item`";
+            });
+
+            $tables = implode(',', $tables);
+
+            unset($item);
+
+            $ifexists = $exists ? 'IF EXISTS' : '';
+
+            return "DROP TABLE {$ifexists} {$tables}";
+        }
+    }
+
     private function alterations($alteration, ...$params)
     {
         if (! ($this->name)) {
@@ -170,7 +209,9 @@ class Table
 
     public function dropColumn(string $name)
     {
-        return $this->genAlterSchema($this->alterations('drop', $name));
+        return $this->autonomy(
+            $this->genAlterSchema($this->alterations('drop', $name))
+        );
     }
 
     public function dropColDefault(string $column)
@@ -180,9 +221,9 @@ class Table
 
     public function dropColumnDefault(string $column)
     {
-        return $this->genAlterSchema(
+        return $this->autonomy($this->genAlterSchema(
             $this->alterations('dropDefault', $column)
-        );
+        ));
     }
 
     public function setColDefault(string $column, $default)
@@ -192,36 +233,21 @@ class Table
 
     public function setColumnDefault(string $column, $default)
     {
-        return $this->genAlterSchema(
+        return $this->autonomy($this->genAlterSchema(
             $this->alterations('setDefault', $column, $default)
-        );
-    }
-
-    private function __drop(
-        array $tables = null,
-        bool $exists = null
-    ) : string
-    {
-        if ($tables) {
-            array_walk($tables, function (&$item) {
-                $item = "`$item`";
-            });
-
-            $tables = implode(',', $tables);
-
-            unset($item);
-
-            $ifexists = $exists ? 'IF EXISTS' : '';
-
-            return "DROP TABLE {$ifexists} {$tables}";
-        }
+        ));
     }
 
     public function rename(string $name, string $rename = 'TO')
     {
-        $rename = strtoupper($rename);
+        $rename    = strtoupper($rename);
+        $statement = "ALTER TABLE `{$this->name}` RENAME {$rename} `{$name}`";
 
-        return "ALTER TABLE `{$this->name}` RENAME {$rename} `{$name}`";
+        if ($this->autonomy) {
+            return $this->creator->exec($statement);
+        }
+
+        return $statement;
     }
 
     public function renameAs(string $name)
@@ -312,7 +338,7 @@ class Table
 
         if (1 === ($cnt = count($params))) {
             $value = $params[0] ?? null;
-            if ($this->alter) {
+            if ($this->autonomy) {
                 if ($value = $calback($value)) {
                     return "ALTER TABLE `{$this->name}` {$attr}={$value}";
                 }

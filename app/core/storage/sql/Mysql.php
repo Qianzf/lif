@@ -8,7 +8,7 @@ namespace Lif\Core\Storage\SQL;
 
 use Lif\Core\Storage\SQL\Mysql\Table;
 
-class Mysql
+class Mysql implements \Lif\Core\Intf\SQLSchemaWorker
 {
     // @return fluent SQL
     public function __call($name, $params)

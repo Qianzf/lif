@@ -8,7 +8,7 @@
 
 namespace Lif\Core\Storage\SQL\Mysql;
 
-class ConcreteColumn
+class ConcreteColumn implements \Lif\Core\Intf\SQLSchemaWorker
 {
     use \Lif\Core\Traits\MethodNotExists;
     use Grammers;

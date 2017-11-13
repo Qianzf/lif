@@ -6,7 +6,9 @@
 
 namespace Lif\Core\Storage\SQL;
 
-class Schema implements \Lif\Core\Intf\DBConn
+use Lif\Core\Intf\{SQLSchemaMaster, SQLSchemaWorker};
+
+class Schema implements SQLSchemaMaster
 {
     use \Lif\Core\Traits\WithDB;
 
@@ -16,7 +18,6 @@ class Schema implements \Lif\Core\Intf\DBConn
     ];
     private $statements = [];
     private $autocommit = true;
-    private $table      = null;    // Table schema object
 
     public function __construct(string $conn = null, string $flush = null)
     {
@@ -41,43 +42,40 @@ class Schema implements \Lif\Core\Intf\DBConn
         }
     }
 
-    private function createDriver()
+    public function createWorker() : SQLSchemaWorker
     {
-        if ($this->table) {
-            return $this->table;
-        }
-
         if (!($class = nsOf('storage', 'SQL\\'.ucfirst($this->getDriver())))
             || !class_exists($class)
         ) {
             excp('Schema class not exists: '.$class);
         }
 
-        return (new $class);
+        return (new $class)->ofCreator($this);
     }
 
     public function __call($name, $args)
     {
         $statement = call_user_func_array(
-            [$this->createDriver(), $name], $args
+            [$this->createWorker(), $name], $args
         );
 
         if ($statement) {
             if (is_object($statement)) {
-                $this->table = $statement;
-                
-                return $this;
+                return $statement;
             }
-
-            $this->statements[] = $statement;
+            if (is_string($statement)) {
+                $this->statements[] = $statement;
+            }
         }
+
+        return $this;
     }
 
     public function commitAllOnce()
     {
         try {
             if ($this->statements) {
-                $this->db()->exec(
+                $this->exec(
                     implode(";\n", $this->statements)
                 );
             }
@@ -88,12 +86,16 @@ class Schema implements \Lif\Core\Intf\DBConn
         }
     }
 
+    public function exec(string $statement)
+    {
+        return $this->db()->exec($statement);
+    }
+
     public function commit()
     {
         foreach ($this->statements as $statement) {
-            // dd($statement);
             try {
-                $this->db()->exec($statement);
+                $this>exec($statement);
             } catch (\PDOException $pdoe) {
                 excp($pdoe->getMessage()."({$statement})");
             } catch (\Error $e) {
@@ -102,7 +104,7 @@ class Schema implements \Lif\Core\Intf\DBConn
         }
     }
 
-    private function addSupportDriver(string $driver) : Schema
+    public function addSupportDriver(string $driver) : SQLSchemaMaster
     {
         if (! in_array($driver, $this->supported)) {
             $this->supported[] = $driver;
@@ -111,14 +113,14 @@ class Schema implements \Lif\Core\Intf\DBConn
         return $this;
     }
 
-    public function setAutocommit(bool $auto) : Schema
+    public function setAutocommit(bool $auto) : SQLSchemaMaster
     {
         $this->autocommit = $auto;
 
         return $this;
     }
 
-    private function getSupportedDrivers() : array
+    public function getSupportedDrivers() : array
     {
         return $this->supported;
     }

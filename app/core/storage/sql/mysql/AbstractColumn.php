@@ -6,7 +6,7 @@
 
 namespace Lif\Core\Storage\SQL\Mysql;
 
-class AbstractColumn
+class AbstractColumn implements \Lif\Core\Intf\SQLSchemaWorker
 {
     private $table     = null;
     private $alter     = null;
@@ -173,13 +173,7 @@ class AbstractColumn
 
     private function concrete() : ConcreteColumn
     {
-        if (!$this->concrete
-            || !($this->concrete instanceof ConcreteColumn)
-        ) {
-            $this->concrete = new ConcreteColumn;
-        }
-
-        return $this->concrete
+        return ($this->concrete = new ConcreteColumn)
         ->ofCreator($this)
         ->setName($this->name)
         ->setOld($this->old)
