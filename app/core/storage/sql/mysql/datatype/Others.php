@@ -23,9 +23,6 @@ trait Others
 
         $this->conflict('name', $col);
         $this->conflict('type', 'ENUM');
-
-        $this->name = $col;
-        $this->type = 'ENUM';
         $this->enum = $enum;
 
         return $this;
@@ -45,9 +42,6 @@ trait Others
 
         $this->conflict('name', $col);
         $this->conflict('type', 'SET');
-
-        $this->name = $col;
-        $this->type = 'SET';
         $this->set  = $set;
 
         return $this;
@@ -57,11 +51,9 @@ trait Others
     {
         if ($col) {
             $this->conflict('name', $col);
-            $this->name = $col;
         }
 
         $this->conflict('type', 'JSON');
-        $this->type = 'JSON';
 
         return $this;
     }

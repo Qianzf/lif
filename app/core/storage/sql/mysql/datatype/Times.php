@@ -49,11 +49,9 @@ trait Times
     {
         if ($col) {
             $this->conflict('name', $col);
-            $this->name = $col;
         }
 
         $this->conflict('type', $type);
-        $this->type = $type;
 
         return $this;
     }

@@ -121,9 +121,7 @@ class ConcreteColumn implements SQLSchemaWorker
 
     public function commonPrefix()
     {
-        $prefix  = $this->alter
-        ? strtoupper($this->alter).' '
-        : '';
+        $prefix  = $this->alter ? strtoupper($this->alter).' ' : '';
 
         $prefix .= $this->old ? "`{$this->old}` " : '';
         $prefix .= "`{$this->name}` ";
@@ -135,22 +133,19 @@ class ConcreteColumn implements SQLSchemaWorker
     private function getComment()
     {
         return $this->comment
-        ? ('COMMENT '.(ldo()->quote($this->comment)))
-        : '';
+        ? ('COMMENT '.(ldo()->quote($this->comment))) : '';
     }
 
     private function getFormat()
     {
         return $this->format
-        ? ('COLUMN_FORMAT '.(ldo()->quote($this->format)))
-        : '';
+        ? ('COLUMN_FORMAT '.(ldo()->quote($this->format))) : '';
     }
 
     private function getStorage()
     {
         return $this->storage
-        ? ('STORAGE '.(ldo()->quote($this->storage)))
-        : '';
+        ? ('STORAGE '.(ldo()->quote($this->storage))) : '';
     }
 
     public function __get(string $attr)
@@ -186,8 +181,6 @@ class ConcreteColumn implements SQLSchemaWorker
     {
         $this->conflict('name', $name);
 
-        $this->name = $name;
-
         return $this;
     }
 
@@ -199,11 +192,10 @@ class ConcreteColumn implements SQLSchemaWorker
     {
         if ($name) {
             $this->conflict('name', $name);
-            $this->name = $name;
         }
+
         if ($type) {
             $this->conflict('type', $type);
-            $this->type = $type;
         }
 
         $this->length    = $length;
@@ -221,13 +213,12 @@ class ConcreteColumn implements SQLSchemaWorker
     }
 
     public function notnull(string $name = null) : ConcreteColumn
-    {
-        $this->nullable = false;
-        
+    {   
         if (! is_null($name)) {
             $this->conflict('name', $name);
-            $this->name = $name;
         }
+
+        $this->nullable = false;
 
         return $this;
     }
@@ -241,24 +232,22 @@ class ConcreteColumn implements SQLSchemaWorker
 
     public function nullable(string $name = null) : ConcreteColumn
     {
-        $this->nullable = true;
-
         if (! is_null($name)) {
             $this->conflict('name', $name);
-            $this->name = $name;
         }
+
+        $this->nullable = true;
 
         return $this;
     }
 
     public function unique(string $name = null) : ConcreteColumn
     {
-        $this->unique = true;
-
         if (! is_null($name)) {
             $this->conflict('name', $name);
-            $this->name = $name;
         }
+
+        $this->unique = true;
 
         return $this;
     }
@@ -287,16 +276,22 @@ class ConcreteColumn implements SQLSchemaWorker
             );
         }
 
+        $this->$attr = $conflict;
+
         return $this;
     }
 
     public function beforeDeath(SQLSchemaWorker $worker = null)
     {
-        return $this->creator->beforeDeath($this);
+        return $this->creator->fulfillWishFor($this);
     }
 
     public function __destruct()
     {
         return $this->beforeDeath($this);
+    }
+
+    public function fulfillWishFor(SQLSchemaWorker $worker = null)
+    {
     }
 }

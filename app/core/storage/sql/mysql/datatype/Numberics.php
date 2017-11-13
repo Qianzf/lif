@@ -104,11 +104,9 @@ trait Numberics
     {
         if ($col) {
             $this->conflict('name', $col);
-            $this->name = $col;
         }
 
         $this->conflict('type', $type);
-        $this->type   = $type;
         $this->length = $length;
 
         if (! is_null($decimal)) {

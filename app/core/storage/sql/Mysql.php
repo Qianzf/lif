@@ -41,6 +41,10 @@ class Mysql implements SQLSchemaWorker
         return $this->creator->exec($statement);
     }
 
+    public function fulfillWishFor(SQLSchemaWorker $worker = null)
+    {
+    }
+    
     public function beforeDeath(SQLSchemaWorker $worker = null)
     {
     }

@@ -187,8 +187,12 @@ class AbstractColumn implements SQLSchemaWorker
         ->setAlter($this->alter);
     }
 
+    public function fulfillWishFor(SQLSchemaWorker $worker = null)
+    {
+        return $this->creator->fulfillWishFor($worker);
+    }
+
     public function beforeDeath(SQLSchemaWorker $worker = null)
     {
-        return $this->creator->beforeDeath();
     }
 }

@@ -413,8 +413,12 @@ class Table implements SQLSchemaWorker
         return $this->comment ? ('COMMENT='.(ldo()->quote($this->comment))) : '';
     }
 
-    public function beforeDeath(SQLSchemaWorker $worker = null)
+    public function fulfillWishFor(SQLSchemaWorker $worker = null)
     {
         return $this->autonomy($this->genAlterSchema($this->genGrammers()));
+    }
+
+    public function beforeDeath(SQLSchemaWorker $worker = null)
+    {
     }
 }

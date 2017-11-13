@@ -96,8 +96,10 @@ class Schema implements SQLSchemaMaster
     public function commit()
     {
         foreach ($this->statements as $statement) {
-            return $this->exec($statement);
+            $this->exec($statement);
         }
+
+        return true;
     }
 
     public function addSupportDriver(string $driver) : SQLSchemaMaster

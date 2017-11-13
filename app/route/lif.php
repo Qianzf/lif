@@ -9,18 +9,10 @@
 $this->get('/', 'lif');
 
 $this->get('test', function () {
-    // create environment table
+    // schema()->table('user')->rename('user_tmp');
+    schema()->table('trending')->rename('trending_tmp');
 
-    db('local_sqlite')->table('environment')->get();
-
-    $schema->dropTableIfExists('demo', 'test');
-
-    // $schema
-    // ->table('user')
-    // ->modifyColumn('group')
-    // ->after('status')
-    // ->tinyint()
-    // ->default(0);
+    // db('local_sqlite')->table('environment')->get();
 
     // db()->table('user')->whereId('>', 0)->update('group', 0);
 });

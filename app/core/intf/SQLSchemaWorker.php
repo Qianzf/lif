@@ -7,4 +7,6 @@ interface SQLSchemaWorker extends SQLSchemaBuilder
     public function getCreator() : SQLSchemaBuilder;
 
     public function beforeDeath(SQLSchemaWorker $worker = null);
+    
+    public function fulfillWishFor(SQLSchemaWorker $worker = null);
 }
