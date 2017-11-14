@@ -5,6 +5,22 @@ $schema = new \Lif\Core\Storage\SQL\Schema;
 schema();
 ```
 
+### Create database
+
+``` php
+$schema->createDB('test');
+$schema->createDBIfNotExists('test');
+$schema->createDB('test', true);    // check if not exists
+```
+
+### Drop database
+
+```php
+$schema->dropDB('test');
+$schema->dropDBIfExists('test');
+$schema->dropDB('test', true);    // check if exists
+```
+
 ### Create table
 
 ``` php

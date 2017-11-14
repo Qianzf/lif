@@ -71,9 +71,18 @@ class Schema implements SQLSchemaMaster
         return $this;
     }
 
+    private function statementsGetClean()
+    {
+        $statements = $this->statements;
+
+        $this->statements = [];
+
+        return $statements;
+    }
+
     public function commitAllOnce()
     {
-        if ($statement = implode(";\n", $this->statements)) {
+        if ($statement = implode(";\n", $this->statementsGetClean())) {
             return $this->exec($statement);
         }
     }
@@ -95,7 +104,7 @@ class Schema implements SQLSchemaMaster
 
     public function commit()
     {
-        foreach ($this->statements as $statement) {
+        foreach ($this->statementsGetClean() as $statement) {
             $this->exec($statement);
         }
 
