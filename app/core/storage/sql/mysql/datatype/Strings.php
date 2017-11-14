@@ -6,6 +6,23 @@ use Lif\Core\Storage\SQL\Mysql\ConcreteColumn;
 
 trait Strings
 {
+    private $charset = 'utf8mb4';
+    private $collate = 'utf8mb4_unicode_ci';
+
+    public function charset(string $charset)
+    {
+        $this->charset = true;
+        
+        return $this;
+    }
+
+    public function collate(string $collate)
+    {
+        $this->collate = true;
+        
+        return $this;
+    }
+
     public function tinytext(
         string $col = null,
         int $length = 255

@@ -9,10 +9,10 @@
 $this->get('/', 'lif');
 
 $this->get('test', function () {
-    
-    schema()->createDBIfNotExists('tes2t', function ($db) {
-        $db->charset('utf8')->collate('utf8_unicode_ci');
+    schema()->createDBIfNotExists('yyzx', function ($db) {
+        $db->charset('utf8mb4')->collate('utf8mb4_unicode_ci');
     });
+
 
     // schema()->dropIfExists('test', 'test2');
 

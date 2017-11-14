@@ -4,6 +4,10 @@
 //     Helper Functions for Web Scenarios
 // ------------------------------------------
 
+if (! fe('url')) {
+    function url() {
+    }
+}
 if (! fe('csrf_token')) {
     function csrf_token() {
         $key  = stringify(config('app.csrf.key') ?? '');

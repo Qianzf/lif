@@ -13,8 +13,8 @@ class Mysql implements SQLSchemaWorker
 {
     private $creator = null;
     private $name    = null;
-    private $charset = 'utf8m4';
-    private $collate = 'utf8m4_unicode_ci';
+    private $charset = 'utf8mb4';
+    private $collate = 'utf8mb4_unicode_ci';
 
     public function createDBIfNotExists(
         string $name,

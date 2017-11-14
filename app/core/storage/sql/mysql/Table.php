@@ -16,8 +16,8 @@ class Table implements SQLSchemaWorker
     private $column    = null;
     private $autoincre = null;
     private $engine    = 'InnoDB';
-    private $charset   = 'utf8';
-    private $collation = 'utf8_unicode_ci';
+    private $charset   = 'utf8mb4';
+    private $collation = 'utf8mb4_unicode_ci';
     private $indexes   = [];
     private $temporary = false;
     private $autonomy  = false;    // Weather alterations handled by self

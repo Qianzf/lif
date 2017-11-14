@@ -9,6 +9,20 @@ trait Numberics
     private $decimal   = null;
     private $unsigned  = null;
     private $zerofill  = null;
+
+    public function zerofill()
+    {
+        $this->zerofill = true;
+
+        return $this;
+    }
+
+    public function unsigned()
+    {
+        $this->unsigned = true;
+        
+        return $this;
+    }
     
     public function integer(
         string $col = null,
