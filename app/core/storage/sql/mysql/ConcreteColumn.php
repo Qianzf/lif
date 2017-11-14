@@ -33,7 +33,7 @@ class ConcreteColumn implements SQLSchemaWorker
     private $format    = null;
     private $storage   = null;
 
-    public function ofCreator(AbstractColumn $creator) : ConcreteColumn
+    public function ofCreator(SQLSchemaBuilder $creator) : SQLSchemaBuilder
     {
         $this->creator = $creator;
 

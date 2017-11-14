@@ -16,7 +16,11 @@ interface DBConn extends SQLSchemaBuilder
 
     public function setFlush(bool $flush) : DBConn;
 
-    public function getConn() : string;
+    public function getConn();
+    
+    public function getDriver();
+    
+    public function getDb();
 
     public function getFlush() : bool;
 

@@ -3,6 +3,11 @@
 ``` php
 $schema = new \Lif\Core\Storage\SQL\Schema;
 schema();
+
+// Scheming given database connection
+$scheme->setConn('mysql_rw_2');
+schema()->setConn('mysql_rw_2');
+schema('mysql_rw_2');
 ```
 
 ### Create database
@@ -11,6 +16,11 @@ schema();
 $schema->createDB('test');
 $schema->createDBIfNotExists('test');
 $schema->createDB('test', true);    // check if not exists
+
+$schema->createDBIfNotExists('test', function ($db) {
+// schema()->createDBIfNotExists('test', function ($db) {
+    $db->charset('utf8m4')->collate('utf8m4_unicode_ci');
+});
 ```
 
 ### Drop database

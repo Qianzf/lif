@@ -26,7 +26,7 @@ class Singleton
             }
         }
 
-        return $singleton;
+        return self::$singletons[$key] = $singleton;
     }
 
     public static function get(string $key)

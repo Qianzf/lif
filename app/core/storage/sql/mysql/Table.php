@@ -22,7 +22,7 @@ class Table implements SQLSchemaWorker
     private $temporary = false;
     private $autonomy  = false;    // Weather alterations handled by self
 
-    public function ofCreator(SQLSchemaMaster $creator) : Table
+    public function ofCreator(SQLSchemaBuilder $creator) : SQLSchemaBuilder
     {
         $this->creator = $creator;
 
@@ -405,12 +405,14 @@ class Table implements SQLSchemaWorker
 
     private function getAutoincre() : string
     {
-        return $this->autoincre ? "AUTO_INCREMENT={$this->autoincre} " : '';
+        return $this->autoincre
+        ? "AUTO_INCREMENT={$this->autoincre} " : '';
     }
 
     private function getComment() : string
     {
-        return $this->comment ? ('COMMENT='.(ldo()->quote($this->comment))) : '';
+        return $this->comment
+        ? ('COMMENT='.(ldo()->quote($this->comment))) : '';
     }
 
     public function fulfillWishFor(SQLSchemaWorker $worker = null)

@@ -16,24 +16,12 @@ class Mysql implements SQLSchemaWorker
     private $charset = 'utf8m4';
     private $collate = 'utf8m4_unicode_ci';
 
-  //   [DEFAULT] CHARACTER SET [=] charset_name
-  // | [DEFAULT] COLLATE [=] collation_name
-
     public function createDBIfNotExists(
         string $name,
         \Closure $callable = null
     )
     {
         return $this->__createDB($name, $callable, true);
-    }
-
-    private function __createDB(
-        string $name,
-        \Closure $callable = null,
-        bool $check = false
-    )
-    {
-        return $this->database('create', $name, $check);
     }
 
     public function createDB(
@@ -43,6 +31,47 @@ class Mysql implements SQLSchemaWorker
     )
     {
         return $this->__createDB($name, $callable, $check);
+    }
+
+    private function __createDB(
+        string $name,
+        \Closure $callable = null,
+        bool $check = false
+    )
+    {
+        call_user_func($callable, $this);    // setting db attrs only
+
+        $schema  = $this->database('create', $name, $check);
+        $schema .= $this->getCharsetGrammer();
+        $schema .= $this->getCollateGrammer();
+
+        return $schema;
+    }
+
+    private function getCharsetGrammer()
+    {
+        return $this->charset
+        ? " DEFAULT CHARACTER SET = {$this->charset} " : '';
+    }
+
+    private function getCollateGrammer()
+    {
+        return $this->collate
+        ? " DEFAULT COLLATE = {$this->collate} " : '';
+    }
+
+    public function collate(string $collate)
+    {
+        $this->collate = $collate;
+
+        return $this;
+    }
+
+    public function charset(string $charset)
+    {
+        $this->charset = $charset;
+
+        return $this;
     }
 
     private function database(
@@ -64,10 +93,10 @@ class Mysql implements SQLSchemaWorker
             );
         }
 
-        $not    = ('DROP' == $action) ? ' ' : ' NOT ';
-        $exists = $check ? " IF{$not}EXISTS " : ' ';
+        $not    = ('DROP' == $action) ? '' : 'NOT';
+        $exists = $check ? "IF {$not} EXISTS" : '';
 
-        return "{$action} DATABASE{$exists}`{$this->name}`";
+        return "{$action} DATABASE {$exists} `{$this->name}`";
     }
 
     public function __dropDB(string $name, bool $check = false)
@@ -96,7 +125,7 @@ class Mysql implements SQLSchemaWorker
         );
     }
 
-    public function ofCreator($creator) : Mysql
+    public function ofCreator(SQLSchemaBuilder $creator) : SQLSchemaBuilder
     {
         $this->creator = $creator;
 

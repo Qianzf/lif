@@ -965,10 +965,11 @@ if (! fe('model')) {
     }
 }
 if (! fe('schema')) {
-    function schema(bool $flush = false) {
-        return singleton('schema', function () {
-            return \Lif\Core\Storage\SQL\Schema::class;
-        }, $flush);
+    function schema(string $conn = null) {
+        return (
+            new \Lif\Core\Storage\SQL\Schema($conn)
+        )
+        ->setConn($conn);
     }
 }
 if (! fe('escape_fields')) {

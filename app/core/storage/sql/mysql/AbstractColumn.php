@@ -24,7 +24,7 @@ class AbstractColumn implements SQLSchemaWorker
         'comment',
     ];
 
-    public function ofCreator(Table $creator) : AbstractColumn
+    public function ofCreator(SQLSchemaBuilder $creator) : SQLSchemaBuilder
     {
         $this->creator = $creator;
 

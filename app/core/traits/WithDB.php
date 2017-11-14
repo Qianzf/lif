@@ -36,11 +36,7 @@ trait WithDB
 
     public function db(LDO $db = null) : LDO
     {
-        if ($db) {
-            $this->db = $db;
-        }
-        
-        return $this->db ?? ($this->db = $this->ldo());
+        return $this->db = $this->ldo();
     }
 
     public function setConn(string $conn = null): DBConn
@@ -61,13 +57,18 @@ trait WithDB
     {
         return $this->flush;
     }
+
+    public function getDb()
+    {
+        return $this->db;
+    }
     
-    public function getConn() : string
+    public function getConn()
     {
         return $this->conn;
     }
 
-    public function getDriver() : string
+    public function getDriver()
     {
         return $this->driver
         ?? (

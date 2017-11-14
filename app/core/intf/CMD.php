@@ -32,5 +32,12 @@ interface CMD
     // Get colored options text string for console outputing
     public function getColoredOptionsText(array $options) : string;
 
+    // Output success meassage
     public function success(string $msg) : void;
+    
+    // Output failure meassage
+    public function fails(string $msg) : void;
+
+    // Output information meassage
+    public function info(string $msg) : void;
 }
