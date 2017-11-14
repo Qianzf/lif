@@ -9,12 +9,14 @@
 $this->get('/', 'lif');
 
 $this->get('test', function () {
-    schema()->createDBIfNotExists('yyzx', function ($db) {
+    dd(schema('mysql57')->hasDB('yyzx'));
+
+    schema('mysql57')->createDBIfNotExists('yyzx', function ($db) {
         $db->charset('utf8mb4')->collate('utf8mb4_unicode_ci');
     });
 
 
-    // schema()->dropIfExists('test', 'test2');
+    schema()->dropIfExists('test', 'test2');
 
     // schema()->dropDBIfExists('test', true);
 

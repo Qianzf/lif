@@ -10,6 +10,23 @@ schema()->setConn('mysql_rw_2');
 schema('mysql_rw_2');
 ```
 
+### Use database 
+
+``` php
+// Use database `lif` on connection `mysql57`
+schema('mysql57')->useDB('lif');
+```
+
+### Check database 
+
+``` php
+// Check if database `abcd` exists on connection `mysql57`
+schema('mysql57')->hasDB('abcd');    // `true` or `false`
+// Check if database is in using on connection `mysql57`
+schema('mysql57')->hasDBUsed();    // bool `false` or string database name
+schema('mysql57')->useDB('lif')->hasDBUsed();
+```
+
 ### Create database
 
 ``` php
@@ -29,6 +46,13 @@ $schema->createDBIfNotExists('test', function ($db) {
 $schema->dropDB('test');
 $schema->dropDBIfExists('test');
 $schema->dropDB('test', true);    // check if exists
+```
+
+#### Check table
+
+``` php
+schema('mysql57')->hasTable('db');    // `true` or `false`
+schema('mysql57')->useDB('mysql')->hasTable('db');
 ```
 
 ### Create table

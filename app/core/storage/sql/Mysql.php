@@ -16,6 +16,55 @@ class Mysql implements SQLSchemaWorker
     private $charset = 'utf8mb4';
     private $collate = 'utf8mb4_unicode_ci';
 
+    public function hasTable(string $name)
+    {
+        $query  = 'SELECT `table_name` AS `exists` ';
+        $query .= 'FROM `information_schema`.`tables` ';
+        $query .= "WHERE `table_schema`=DATABASE() AND `table_name`='{$name}'";
+        $callback = function (\PDOStatement $statement) {
+            $result = $statement->fetch(\PDO::FETCH_ASSOC);
+            return !empty_safe($result['exists']);
+        };
+
+        return [
+            'query'    => $query,
+            // 'query'    => "SHOW TABLES LIKE '{$name}'",
+            'callback' => $callback,
+        ];
+    }
+
+    public function hasDBUsed()
+    {
+        $callback = function (\PDOStatement $statement) {
+            $result = $statement->fetch(\PDO::FETCH_ASSOC);
+            return $result['status'] ?? false;
+        };
+
+        return [
+            'query'    => 'SELECT DATABASE() AS `status` FROM DUAL',
+            'callback' => $callback,
+        ];
+    }
+
+    public function hasDB(string $name)
+    {
+        $callback = function (\PDOStatement $statement) {
+            return !empty_safe($statement->fetch(\PDO::FETCH_ASSOC));
+        };
+
+        return [
+            'query'    => "SHOW DATABASES LIKE '{$name}'",
+            'callback' => $callback,
+        ];
+    }
+
+    public function useDB(string $db = null)
+    {
+        return function () use ($db) {
+            return "USE `{$db}`";
+        };
+    }
+
     public function createDBIfNotExists(
         string $name,
         \Closure $callable = null
@@ -135,6 +184,11 @@ class Mysql implements SQLSchemaWorker
     public function getCreator() : SQLSchemaBuilder
     {
         return $this->creator;
+    }
+
+    public function query(string $statement)
+    {
+        return $this->creator->query($statement);
     }
 
     public function exec(string $statement)

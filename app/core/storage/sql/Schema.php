@@ -61,8 +61,22 @@ class Schema implements SQLSchemaMaster
 
         if ($statement) {
             if (is_object($statement)) {
+                if ($statement instanceof \Closure) {
+                    $this->exec($statement());
+
+                    return $this;
+                }
+
                 return $statement;
             }
+            if (is_array($statement)
+                && ($query = exists($statement, 'query'))
+                && ($callback = exists($statement, 'callback'))
+                && ($callback instanceof \Closure)
+            ) {
+                return $callback($this->query($query));
+            }
+
             if (is_string($statement)) {
                 $this->statements[] = $statement;
             }
@@ -84,6 +98,21 @@ class Schema implements SQLSchemaMaster
     {
         if ($statement = implode(";\n", $this->statementsGetClean())) {
             return $this->exec($statement);
+        }
+    }
+
+    public function query(string $statement)
+    {
+        if ($statement) {
+            try {
+                return $this->db()->query($statement);
+            } catch (\PDOException $pdoe) {
+                excp($pdoe->getMessage()."({$statement})");
+            } catch (\Exception $e) {
+                excp($e->getMessage()."({$statement})");
+            } catch (\Error $e) {
+                excp($e->getMessage()."({$statement})");
+            }
         }
     }
 
