@@ -13,9 +13,4 @@ class Dit implements \Lif\Core\Intf\VCD
     public function revert()
     {       
     }
-
-    public function execute()
-    {
-        dd($this->db());
-    }
 }

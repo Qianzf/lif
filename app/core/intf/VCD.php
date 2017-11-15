@@ -11,6 +11,4 @@ interface VCD extends DBConn
     public function commit();
 
     public function revert();
-
-    public function execute();
 }

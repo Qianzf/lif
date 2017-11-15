@@ -155,27 +155,36 @@ trait Strings
 
         $this->conflict('type', $type);
 
-        if (!is_null($length) && !$this->length) {
+        if (! is_null($length)) {
             $this->length = $length;
         }
 
         return $this;
     }
 
+    private function grammarOfStrings() : string
+    {
+        $grammer  = $this->getStringLength();
+        $grammer .= $this->charset
+        ? "CHARACTER SET {$this->charset} " : '';
+        $grammer .= $this->collate
+        ? "COLLATE {$this->collate} " : '';
+
+        return $this->fillGrammer($grammer);
+    }
+
     private function grammarOfBinary() : string
     {
-        return $this->fillGrammer($this->getStringLength());
+        return $this->grammarOfStrings();
     }
 
     private function grammarOfString() : string
     {
-        return $this->fillGrammer($this->getStringLength());
+        return $this->grammarOfStrings();
     }
 
     private function getStringLength()
     {
-        return $this->length
-        ? "({$this->length}) "
-        : '';
+        return $this->length ? "({$this->length}) " : '';
     }
 }

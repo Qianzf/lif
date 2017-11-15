@@ -405,8 +405,7 @@ class Table implements SQLSchemaWorker
 
     private function getAutoincre() : string
     {
-        return $this->autoincre
-        ? "AUTO_INCREMENT={$this->autoincre} " : '';
+        return $this->autoincre ? "AUTO_INCREMENT={$this->autoincre} " : '';
     }
 
     private function getComment() : string

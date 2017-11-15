@@ -189,10 +189,13 @@ class AbstractColumn implements SQLSchemaWorker
 
     public function fulfillWishFor(SQLSchemaWorker $worker = null)
     {
-        return $this->creator->fulfillWishFor($worker);
+        if (! in_array($worker, $this->concretes)) {
+            $this->concretes[] = $worker;
+        }
     }
 
     public function beforeDeath(SQLSchemaWorker $worker = null)
     {
+        return $this->creator->fulfillWishFor($this);
     }
 }

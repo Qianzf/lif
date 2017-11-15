@@ -9,4 +9,8 @@
 $this->get('/', 'lif');
 
 $this->get('test', function () {
+    $dit = new Lif\Dat\Dbvc\CreateUserTable;
+
+    $dit->revert();
+    $dit->commit();
 });

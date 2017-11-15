@@ -52,7 +52,7 @@ class ConcreteColumn implements SQLSchemaWorker
         return $this;
     }
 
-    public function grammar()
+    public function exitIfUnGrammerable()
     {
         if (! $this->name) {
             excp(
@@ -68,6 +68,12 @@ class ConcreteColumn implements SQLSchemaWorker
             );
         }
 
+        return true;
+    }
+
+    public function grammar()
+    {
+        $this->exitIfUnGrammerable();
         $this->type = strtoupper($this->type);
 
         foreach ($this->grammers as $grammer => $group) {
@@ -121,23 +127,12 @@ class ConcreteColumn implements SQLSchemaWorker
 
     public function commonPrefix()
     {
+        $this->exitIfUnGrammerable();
+
         $prefix  = $this->alter ? strtoupper($this->alter).' ' : '';
         $prefix .= $this->old ? "`{$this->old}` " : '';
         $prefix .= "`{$this->name}` ";
         $prefix .= "{$this->type}";
-
-        $this->type = strtoupper($this->type);
-        if (in_array($this->type, $this->grammers['integer'])
-            || in_array($this->type, $this->grammars['float'])
-        ) {
-            $prefix .= $this->unsigned ? 'UNSIGNED ' : '';
-            $prefix .= $this->zerofill ? 'ZEROFILL ' : '';
-        } elseif (in_array($this->type, $this->grammers['string'])) {
-            $prefix .= $this->charset
-            ? "CHARACTER SET {$this->charset} " : '';
-            $prefix .= $this->collate
-            ? "COLLATE {$this->collate} " : '';
-        }
 
         return $prefix;
     }
