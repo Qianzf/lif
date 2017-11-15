@@ -29,13 +29,18 @@ schema('mysql57')->useDB('lif')->hasDBUsed();
 
 ### Create database
 
+- Create database use default charset and collate settings
+
 ``` php
 $schema->createDB('test');
 $schema->createDBIfNotExists('test');
 $schema->createDB('test', true);    // check if not exists
+```
 
+- Create database use custom charset and collate settings
+
+``` php
 $schema->createDBIfNotExists('test', function ($db) {
-// schema()->createDBIfNotExists('test', function ($db) {
     $db->charset('utf8m4')->collate('utf8m4_unicode_ci');
 });
 ```

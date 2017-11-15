@@ -88,7 +88,9 @@ class Mysql implements SQLSchemaWorker
         bool $check = false
     )
     {
-        call_user_func($callable, $this);    // setting db attrs only
+        if ($callable) {
+            call_user_func($callable, $this);    // setting db attrs only
+        }
 
         $schema  = $this->database('create', $name, $check);
         $schema .= $this->getCharsetGrammer();
