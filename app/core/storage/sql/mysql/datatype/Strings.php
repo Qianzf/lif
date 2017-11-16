@@ -11,14 +11,14 @@ trait Strings
 
     public function charset(string $charset)
     {
-        $this->charset = true;
+        $this->charset = $charset;
         
         return $this;
     }
 
     public function collate(string $collate)
     {
-        $this->collate = true;
+        $this->collate = $collate;
         
         return $this;
     }

@@ -289,7 +289,11 @@ if (! fe('exists')) {
     }
 }
 if (! fe('nsOf')) {
-    function nsOf(string $of = null, string $class = '') {
+    function nsOf(
+        string $of = null,
+        string $class = '',
+        bool $topSlash = true
+    ) {
         if (! $of) {
             return '\\';
         }
@@ -305,20 +309,24 @@ if (! fe('nsOf')) {
 
         if (is_string($of)) {
             $nsArr = [
-                'ctl'  => '\Lif\Ctl\\',
-                'mdl'  => '\Lif\Mdl\\',
-                'mdwr' => '\Lif\Mdwr\\',
-                'core' => '\Lif\Core\\',
-                'web'  => '\Lif\Core\Web\\',
-                '_cmd' => '\Lif\Core\Cmd\\',
-                'cmd'  => '\Lif\Cmd\\',
-                'lib'  => '\Lif\Core\Lib\\',
-                'queue'    => '\Lif\Core\Queue\\',
-                'logger'   => '\Lif\Core\Logger\\',
-                'storage'  => '\Lif\Core\Storage\\',
-                'strategy' => '\Lif\Core\Strategy\\',
-           ];
-            return ($nsArr[$of] ?? '\\').ucfirst($class);
+                'ctl'  => 'Lif\Ctl\\',
+                'mdl'  => 'Lif\Mdl\\',
+                'dbvc' => 'Lif\Dat\\Dbvc\\',
+                'mdwr' => 'Lif\Mdwr\\',
+                'core' => 'Lif\Core\\',
+                'web'  => 'Lif\Core\Web\\',
+                '_cmd' => 'Lif\Core\Cmd\\',
+                'cmd'  => 'Lif\Cmd\\',
+                'lib'  => 'Lif\Core\Lib\\',
+                'queue'    => 'Lif\Core\Queue\\',
+                'logger'   => 'Lif\Core\Logger\\',
+                'storage'  => 'Lif\Core\Storage\\',
+                'strategy' => 'Lif\Core\Strategy\\',
+            ];
+
+            $ns = ($nsArr[$of] ?? '').ucfirst($class);
+
+            return $topSlash ? '\\'.$ns : $ns;
         }
     }
 }
@@ -328,6 +336,7 @@ if (! fe('pathOf')) {
         $paths = [
             'root'   => $root.'/',
             'app'    => $root.'/app/',
+            'dbvc'   => $root.'/app/dat/dbvc/',
             'core'   => $root.'/app/core/',
             'aux'    => $root.'/app/core/aux/',
             '_cmd'   => $root.'/app/core/cmd/',
@@ -358,8 +367,10 @@ if (! fe('pathOf')) {
         if (! file_exists($path)) {
             $arr = explode('/', $path);
             unset($arr[count($arr)-1]);
-            if (! file_exists(implode('/', $arr))) {
-                @mkdir(implode('/', $arr));
+            $dir = implode('/', $arr);
+            if (! file_exists($dir)) {
+                // !!! `true` is necessary for recursive creating
+                @mkdir($dir, 0775, true);
             }
         }
 
@@ -488,17 +499,22 @@ if (! fe('excp')) {
     }
 }
 if (! fe('format_namespace')) {
-    function format_namespace($namespaceRaw) {
-        if (is_array($namespaceRaw) && $namespaceRaw) {
+    function format_namespace($raw) {
+        if (is_array($raw) && $raw) {
             return implode(
                 '\\',
                 array_filter(
-                    explode('\\', implode('\\', $namespaceRaw))
+                    explode('\\', implode('\\', $raw))
                )
            );
         }
-        if (is_string($namespaceRaw) && $namespaceRaw) {
-            return implode('\\', array_filter(explode('\\', $namespaceRaw)));
+        if (is_string($raw) && $raw) {
+            $arr = explode('\\', $raw);
+            array_walk($arr, function (&$item, $key) {
+                $item = ucfirst($item);
+            });
+
+            return implode('\\', array_filter($arr));
         }
 
         return '\\';

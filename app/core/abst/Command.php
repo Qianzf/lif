@@ -15,7 +15,7 @@ abstract class Command extends Container implements CMD
     
     protected $name    = '';    // Command full name
     protected $intro   = '';    // Command desc
-    protected $option  = [];    // Command Options
+    protected $option  = [];    // Command Option-methods mapping
     protected $desc    = [];    // Command options desc
     // Global options for every command to be executed
     protected $_option = [
