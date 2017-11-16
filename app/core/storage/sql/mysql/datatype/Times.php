@@ -40,6 +40,10 @@ trait Times
         return $this->times('datetime', $col, $fsp);
     }
 
+    public function grammarOfTime()
+    {
+        return $this->fillGrammer();
+    }
 
     public function times(
         string $type,

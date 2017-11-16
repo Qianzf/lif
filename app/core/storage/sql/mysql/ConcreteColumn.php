@@ -33,6 +33,12 @@ class ConcreteColumn implements SQLSchemaWorker
     private $format    = null;
     private $storage   = null;
 
+    // Tmp stack for specific column attributes
+    private $raw       = [
+        'default' => false,
+
+    ];
+
     public function ofCreator(SQLSchemaBuilder $creator) : SQLSchemaBuilder
     {
         $this->creator = $creator;
@@ -104,9 +110,7 @@ class ConcreteColumn implements SQLSchemaWorker
     public function commonSuffix() : string
     {
         $suffix  = $this->nullable  ? '' : ' NOT NULL ';
-        $suffix .= empty_safe($this->default)
-        ? ''
-        : " Default {$this->default} ";
+        $suffix .= $this->getDefault();
         $suffix .= $this->increable ? ' AUTO_INCREMENT ' : '';
         $suffix .= $this->unique    ? ' UNIQUE KEY ' : '';
         $suffix .= $this->primary   ? ' PRIMARY KEY ' : '';
@@ -135,6 +139,21 @@ class ConcreteColumn implements SQLSchemaWorker
         $prefix .= "{$this->type}";
 
         return $prefix;
+    }
+
+    private function getDefault()
+    {
+        $default = null;
+
+        if ($this->default instanceof \Closure) {
+            $default = ($this->default)();
+        } elseif ($this->raw['default'] ?? false) {
+            $default = $this->default;
+        } elseif (! empty_safe($this->default)) {
+            $default = ldo()->quote($this->default);
+        }
+
+        return is_null($default) ? '' : "DEFAULT {$default}";
     }
 
     private function getComment()
@@ -230,9 +249,13 @@ class ConcreteColumn implements SQLSchemaWorker
         return $this;
     }
 
-    public function default($default = null) : ConcreteColumn
+    public function default(
+        $default = null,
+        bool $raw = false
+    ) : ConcreteColumn
     {
         $this->default = $default;
+        $this->raw['default'] = $raw;
 
         return $this;
     }

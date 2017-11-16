@@ -47,6 +47,14 @@ trait Strings
         return $this->strings($col, $length, 'mediumtext');
     }
 
+    public function text(
+        string $col = null,
+        int $length = 255
+    ) : ConcreteColumn
+    {
+        return $this->strings($col, $length, 'text');
+    }
+
     public function longtext(
         string $col = null,
         int $length = 255

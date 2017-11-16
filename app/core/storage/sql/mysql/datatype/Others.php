@@ -42,7 +42,7 @@ trait Others
 
         $this->conflict('name', $col);
         $this->conflict('type', 'SET');
-        $this->set  = $set;
+        $this->set = $set;
 
         return $this;
     }

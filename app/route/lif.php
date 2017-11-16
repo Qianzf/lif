@@ -10,6 +10,7 @@ $this->get('/', 'lif');
 
 $this->get('test', function () {
     $dit = new Lif\Dat\Dbvc\CreateUserTable;
+    // $dit = new Lif\Dat\Dbvc\CreateJobTable;
 
     $dit->revert();
     $dit->commit();

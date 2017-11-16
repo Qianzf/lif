@@ -86,6 +86,25 @@ $schema->createIfNotExists('table', function ($table) {
 }
 ```
 
+#### Default with raw SQL grammer
+
+``` php
+schema()->createIfNotExists('user', function ($table) {
+    $table->pk('id');
+
+    $table
+    ->datetime('create_at')
+    ->default('CURRENT_TIMESTAMP()', true);
+
+    // Or
+    $table
+    ->datetime('create_at')
+    ->default(function () {
+        return 'CURRENT_TIMESTAMP()';
+    });
+});
+```
+
 ### Alter table
 
 ``` php
