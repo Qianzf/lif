@@ -9,7 +9,7 @@ class CreateServerTable extends Dit
     public function commit()
     {
         schema()->createIfNotExists('server', function ($table) {
-            // Definitions ...
+            $table->pk('id');
         });
     }
 

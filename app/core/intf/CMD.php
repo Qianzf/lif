@@ -33,11 +33,11 @@ interface CMD
     public function getColoredOptionsText(array $options) : string;
 
     // Output success meassage
-    public function success(string $msg) : void;
+    public function success(string $msg, bool $exit = true) : void;
     
     // Output failure meassage
-    public function fails(string $msg) : void;
+    public function fails(string $msg, bool $exit = true) : void;
 
     // Output information meassage
-    public function info(string $msg) : void;
+    public function info(string $msg, bool $exit = true) : void;
 }

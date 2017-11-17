@@ -9,7 +9,7 @@ class CreateTrendingTable extends Dit
     public function commit()
     {
         schema()->createIfNotExists('trending', function ($table) {
-            // Definitions ...
+            $table->pk('id');
         });
     }
 

@@ -291,18 +291,29 @@ abstract class Command extends Container implements CMD
         return segstr($text);
     }
 
-    public function info(string $msg) : void
+    public function info(string $msg, bool $exit = true) : void
     {
-        output(segstr(color($msg, 'CYAN')), linewrap());
+        $this->output($msg, 'CYAN', $exit);
     }
 
-    public function success(string $msg) : void
+    public function success(string $msg, bool $exit = true) : void
     {
-        output(segstr(color($msg, 'GREEN')));
+        $this->output($msg, 'GREEN', $exit);
     }
 
-    public function fails(string $msg) : void
+    public function fails(string $msg, bool $exit = true) : void
     {
-        output(segstr(color($msg, 'RED')));
+        $this->output($msg, 'RED', $exit);
+    }
+
+    private function output(string $msg, string $color, bool $exit = true)
+    {
+        $text = segstr(color($msg, $color));
+
+        if ($exit) {
+            output($text);
+        }
+
+        echo $text;
     }
 }

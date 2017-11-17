@@ -1127,25 +1127,53 @@ if (! fe('load')) {
 }
 if (! fe('load_array')) {
     function load_array(string $path, array &$msg = []) : array {
-        if (file_exists($path)) {
-            $fsi = new \FilesystemIterator($path);
-            foreach ($fsi as $file) {
-                if ($file->isFile()) {
-                    if ('php' == $file->getExtension()) {
-                        $_msg = include_once $file->getPathname();
-                        if ($_msg && is_array($_msg)) {
-                            $msg = array_merge($_msg, $msg);
-                        }
-                    }
-                } elseif ($file->isDir()) {
-                    $_path = $path.$file->getBasename();
-                    load_array($_path, $msg);
-                }
-            }
-            unset($fsi);
+        if (! file_exists($path)) {
+            excp('Array PHP files path not exists: '.$path);
         }
 
+        $fsi = new \FilesystemIterator($path);
+        foreach ($fsi as $file) {
+            if ($file->isFile()) {
+                if ('php' == $file->getExtension()) {
+                    $_msg = include_once $file->getPathname();
+                    if ($_msg && is_array($_msg)) {
+                        $msg = array_merge($_msg, $msg);
+                    }
+                }
+            } elseif ($file->isDir()) {
+                $_path = $path.$file->getBasename();
+                load_array($_path, $msg);
+            }
+        }
+        unset($fsi);
+
         return $msg;
+    }
+}
+if (! fe('load_object')) {
+    function load_object(string $path, \Closure $callable) {
+        if (! file_exists($path)) {
+            excp('Object PHP files path not exists: '.$path);
+        }
+
+        $fsi = new \FilesystemIterator($path);
+        foreach ($fsi as $file) {
+            if ($file->isFile()) {
+                if ('php' == $file->getExtension()) {
+                    $arr = explode('.', $file->getBasename());
+                    if (! ($class = $arr[0] ?? null)) {
+                        excp('Illegal class name: '. $class);
+                    }
+
+                    $callable($class, $path);
+                }
+            } elseif ($file->isDir()) {
+                $_path = $path.$file->getBasename();
+                load_object($_path, $callable);
+            }
+        }
+        unset($fsi);
+
     }
 }
 if (! fe('sysmsg')) {

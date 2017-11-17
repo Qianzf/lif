@@ -854,9 +854,13 @@ class Builder implements \Lif\Core\Intf\DBConn
         return $this->crud('DELETE')->execute($exec, $sql);
     }
 
-    public function truncate()
+    public function truncate(string $table = null)
     {
-        return $this->crud('DELETE')->raw("TRUNCATE TABLE `{$this->table}`");
+        if ($table = $table ?: $this->table) {
+            return $this->crud('DELETE')->raw("TRUNCATE TABLE `{$table}`");
+        }
+
+        excp('Missing table name to truncate.');
     }
 
     public function raw($raw, array $values = [], $exec = true, $sql = false)
