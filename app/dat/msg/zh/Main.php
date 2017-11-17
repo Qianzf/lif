@@ -127,4 +127,8 @@ return [
     'INFORMATION' => '信息',
     'INFO' => '信息',
     'SERVICE_IS_STOPPED' => '服务暂停，请稍后再试',
+    'PUBLIC_KEY' => '公钥',
+    'PRIVATE_KEY' => '私钥',
+    'PATH' => '路径',
+    'ABSOLUTE' => '绝对'
 ];

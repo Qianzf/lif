@@ -25,10 +25,10 @@ trait Strings
 
     public function tinytext(
         string $col = null,
-        int $length = 255
+        int $length = null
     ) : ConcreteColumn
     {
-        return $this->strings($col, $length, 'tinytext');
+        return $this->strings($col, null, 'tinytext');
     }
 
     public function mediumtext(
@@ -193,6 +193,6 @@ trait Strings
 
     private function getStringLength()
     {
-        return $this->length ? "({$this->length}) " : '';
+        return $this->length ? "({$this->length}) " : ' ';
     }
 }

@@ -200,7 +200,11 @@ abstract class Model
             unset($data[$this->pk()]);    // Protected primary key
 
             return $this->alive
-            ? $this->query()->update($data)
+            ? $this
+            ->query()
+            ->where($this->pk, $this->items[$this->pk])
+            ->update($data)
+
             : $this->query()->insert($data);
         }
     }

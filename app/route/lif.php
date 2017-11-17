@@ -9,5 +9,17 @@
 $this->get('/', 'lif');
 
 $this->get('test', function () {
-    db()->truncate('lif_dit');
+    // schema()->dropDBIfExists('ldtdf');
+    // schema()->createDBIfNotExists('ldtdf');
+
+    // db()->truncate('__dit__');die;
+
+    $data = db('sqlite')
+    ->select(
+        'value as val'
+    )
+    ->table('task_status')
+    ->get();
+
+    dd(db()->table('task_status')->insert($data));
 });

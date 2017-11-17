@@ -2098,8 +2098,8 @@ if (! fe('ssh_exec_array')) {
        $ssh = new \Lif\Core\Cli\SSH(ssh_conf($config));
 
        foreach ($cmds as $key => $cmd) {
-            $ret          = $ssh->exec($cmd);
-            $ret['cmd']   = $cmd;
+            $ret        = $ssh->exec($cmd);
+            $ret['cmd'] = $cmd;
             
             if ($ret['num'] != 0) {
                 return $ret;
@@ -2107,5 +2107,27 @@ if (! fe('ssh_exec_array')) {
        }
 
        return true;
+    }
+}
+if (! fe('init_dit_table')) {
+    function init_dit_table() {
+        schema()
+        ->createIfNotExists('__dit__', function ($table) {
+            $table->pk('id');
+            $table
+            ->string('name')
+            ->charset('utf8')
+            ->collate('utf8_unicode_ci')
+            ->unique();
+            $table->tinyint('version')->default(1);
+            $table
+            ->timestamp('create_at')
+            ->default('CURRENT_TIMESTAMP()', true);
+
+            $table
+            ->charset('utf8')
+            ->collate('utf8_unicode_ci');
+        })
+        ->commit();
     }
 }

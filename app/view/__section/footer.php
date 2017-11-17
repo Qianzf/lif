@@ -11,6 +11,11 @@
         <?php } ?>
 
     </select>
+
+    <span class="stub"></span>
+    <sub><small><i>(
+        <?= get_lif_ver() ?>
+    )</small></i></sub>
 </footer>
 
 <input

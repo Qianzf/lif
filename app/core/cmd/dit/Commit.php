@@ -10,15 +10,17 @@ class Commit extends Command
 
     public function fire()
     {
-        $dits      = db()
-        ->table('lif_dit')
-        ->select('dit', 'version')
+        init_dit_table();
+
+        $dits = db()
+        ->table('__dit__')
+        ->select('name', 'version')
         ->sort([
             'version' => 'desc'
         ])
         ->get();
 
-        $committed = array_column($dits, 'dit');
+        $committed = array_column($dits, 'name');
         $version   = intval($dits[0]['version'] ?? 0);
 
         load_object(pathOf('dbvc'),
@@ -33,14 +35,22 @@ class Commit extends Command
                         excp('Dit class not exists: '.$ns);
                     }
 
-                    (new $ns)->commit();
+                    try {
+                        db()->start();
 
-                    db()->table('lif_dit')->insert([
-                        'dit'     => $dit,
-                        'version' => ++$version,
-                    ]);
+                        (new $ns)->commit();
 
-                    $this->success("{$output} (Success)", false);
+                        db()->table('__dit__')->insert([
+                            'name'    => $dit,
+                            'version' => ++$version,
+                        ]);
+
+                        db()->commit();
+                        $this->success("{$output} (Success)", false);
+                    } catch (\PDOException $pdoe) {
+                        db()->rollback();
+                        $this->fails("{$output (failed)}");
+                    }
                 } else {
                     $this->info("{$output} (Skipped)", false);
                 }

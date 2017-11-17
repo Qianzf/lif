@@ -124,4 +124,8 @@ return [
     'INFORMATION' => 'Information',
     'INFO' => 'Information',
     'SERVICE_IS_STOPPED' => 'Service is stopped, please try out later.',
+    'PUBLIC_KEY' => 'Public Key',
+    'PRIVATE_KEY' => 'Private Key',
+    'PATH' => 'Path',
+    'ABSOLUTE' => 'Absolute'
 ];

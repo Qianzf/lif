@@ -10,7 +10,9 @@ class Status extends Command
 
     public function fire()
     {
-        $commited = db()->table('lif_dit')->get();
+        init_dit_table();
+        
+        $commited = db()->table('__dit__')->get();
 
         $table = '-- Commited Dits --';
         $title = 'ID | Name | Version | Create At';
@@ -27,7 +29,7 @@ class Status extends Command
         $this->info("{$_table}\n{$_title}", false);
 
         load_object(pathOf('dbvc'), function ($dit) use ($commited) {
-            $_dits = array_column($commited, 'dit');
+            $_dits = array_column($commited, 'name');
             if (! in_array($dit, $_dits)) {
                 $this->fails("- $dit", false);
             }

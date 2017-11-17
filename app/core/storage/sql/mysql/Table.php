@@ -17,7 +17,7 @@ class Table implements SQLSchemaWorker
     private $autoincre = null;
     private $engine    = 'InnoDB';
     private $charset   = 'utf8mb4';
-    private $collation = 'utf8mb4_unicode_ci';
+    private $collate   = 'utf8mb4_unicode_ci';
     private $indexes   = [];
     private $temporary = false;
     private $autonomy  = false;    // Weather alterations handled by self
@@ -78,7 +78,7 @@ class Table implements SQLSchemaWorker
         $schema .= "ENGINE={$this->engine} ";
         $schema .= $this->getAutoincre();
         $schema .= "DEFAULT CHARACTER SET {$this->charset} ";
-        $schema .= "COLLATE {$this->collation} ";
+        $schema .= "COLLATE {$this->collate} ";
         $schema .= $this->getComment();
 
         return $schema;

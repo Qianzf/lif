@@ -14,8 +14,15 @@ class CreateUserTable extends Dit
             $table->string('account')->unique();
             $table->string('email')->unique();
             $table->string('passwd');
-            $table->medint('role')->comment('User role ID');
-            $table->enum('status', 0, 1)->default(1)->comment('User status ID');
+            $table
+            
+            ->char('role', 32)
+            ->comment('User role => `user_role`.`key`');
+
+            $table
+            ->tinyint('status')
+            ->default(1)
+            ->comment('User status ID');
         });
     }
 

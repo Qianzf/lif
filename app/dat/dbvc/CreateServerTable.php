@@ -10,6 +10,30 @@ class CreateServerTable extends Dit
     {
         schema()->createIfNotExists('server', function ($table) {
             $table->pk('id');
+            $table->string('name');
+            
+            $table
+            ->string('host', 128)
+            ->comment('Server Host: IP/Domain');
+
+            $table
+            ->tinyint('port')
+            ->default(22)
+            ->comment('Server Port');
+            
+            $table
+            ->string('user', 64)
+            ->comment('User of server');
+            
+            $table
+            ->string('pubk')
+            ->nullable()
+            ->comment('Public key file path');
+            
+            $table
+            ->string('prik')
+            ->nullable()
+            ->comment('Private key file path');
         });
     }
 

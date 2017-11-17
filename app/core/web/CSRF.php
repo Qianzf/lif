@@ -19,7 +19,7 @@ class CSRF implements \Lif\Core\Intf\Middleware
     {
         if (in_array(server('REQUEST_METHOD'), $this->allowedMethods)) {
         } else {
-            if ($token = $app->request->get('__rftkn__')) {
+            if ($token = $app->request->magic('__rftkn__')) {
                 list($data, $hash)  = explode('.', $token);
                 list($time, $nonce) = explode(':', $data);
 

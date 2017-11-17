@@ -6,6 +6,7 @@
 ]) ?>
 
 <form method="POST" autocomplete="off">
+    <?= csrf_feild() ?>
     <label><?= lang('ACCOUNT') ?>
         <input type="text" name="account" value="<?= $user->account ?>">
     </label>

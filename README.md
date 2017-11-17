@@ -42,6 +42,12 @@ LiF has it's own database SQL query builder, it's simple but handles all the SQL
 
 LiF has it's own schema creator, which handles the SQL database definition and schema management.
 
+- Dit
+
+Version control database implementation in LiF.
+
+> It's naming borrows from Git.
+
 ### Model/ORM
 
 Support basic and flexible Model/ORM functionalities.
@@ -119,8 +125,6 @@ See: _doc/*_.
 > - Middleware `terminable()` method
 
 > - Enable or disable some time-wasting but will still be used features via core configurations
-
-> - Version control database
 
 > - Mock data
 

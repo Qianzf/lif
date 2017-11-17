@@ -233,3 +233,4 @@ $schema->collate('table5', 'utf8_unicode_ci');
 By default, schema definitions will be auto commited if you don't do anything after schema definitionings.
 
 However, you can also commit schema definitions (immediately) manually by `$schema->commit()`.
+

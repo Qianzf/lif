@@ -153,7 +153,7 @@ class ConcreteColumn implements SQLSchemaWorker
             $default = ldo()->quote($this->default);
         }
 
-        return is_null($default) ? '' : "DEFAULT {$default}";
+        return is_null($default) ? '' : "DEFAULT {$default} ";
     }
 
     private function getComment()
@@ -227,6 +227,7 @@ class ConcreteColumn implements SQLSchemaWorker
         $this->length    = $length;
         $this->primary   = true;
         $this->increable = true;
+        $this->unsigned  = true;
 
         return $this;
     }

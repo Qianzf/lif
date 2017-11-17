@@ -202,9 +202,10 @@ class Builder implements \Lif\Core\Intf\DBConn
             excp('Table alias only support un-numeric string.');
         }
 
-        $this->table = is_null($alias)
-        ? $name
-        : escape_fields($name).' AS '.escape_fields($alias);
+        $this->table = escape_fields($name)
+        .(
+            is_null($alias) ? '' : ' AS '.escape_fields($alias)
+        );
 
         return $this;
     }
@@ -564,9 +565,14 @@ class Builder implements \Lif\Core\Intf\DBConn
 
     protected function legalSqlSelects($fields)
     {
+        if ($fields instanceof \Closure) {
+            return $fields();
+        }
+
         if (!is_string($fields) && !is_array($fields)) {
             return false;
         }
+
         if (! $fields) {
             return '`*`';
         }
@@ -590,6 +596,8 @@ class Builder implements \Lif\Core\Intf\DBConn
                 }
             } elseif (is_string($select)) {
                 $selectStr .= $select;
+            } elseif ($select instanceof \Closure) {
+                $selectStr .= $select();
             } else {
                 excp('Illgeal select field.');
             }

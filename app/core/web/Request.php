@@ -12,8 +12,9 @@ class Request extends Container implements Observable
     protected $name    = 'request';
     protected $route   = null;
     protected $type    = null;
-    protected $params  = null;
     protected $headers = null;
+    protected $params  = [];
+    protected $magic   = [];
 
     public function __construct()
     {
@@ -83,6 +84,15 @@ class Request extends Container implements Observable
         return $this->params()->toArray();
     }
 
+    public function magic(string $key = null)
+    {
+        $this->params();
+
+        return is_null($key)
+        ? $this->magic
+        : ($this->magic[$key] ?? null);
+    }
+
     public function params()
     {
         if ($this->params) {
@@ -109,7 +119,21 @@ class Request extends Container implements Observable
             array_merge($_params, $params);
         }
 
+        array_walk($params, function (&$val, $key) use (&$params) {
+            if ('__' === mb_substr($key, 0, 2)) {
+                $this->magic[$key] = $val;
+                unset($params[$key]);
+            }
+        });
+
         return $this->params = collect($params);
+    }
+
+    public function unset(string $key = null)
+    {
+        if ($key && isset($this->params[$key])) {
+            unset($this->params[$key]);
+        }
     }
 
     public function headers()
