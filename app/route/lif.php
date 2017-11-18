@@ -9,6 +9,8 @@
 $this->get('/', 'lif');
 
 $this->get('test', function () {
+    dd(lang('NO_USER'));
+
     // schema()->table('__dit__')->autoincre(1);
     // schema()->dropDBIfExists('ldtdf');
     // schema()->createDBIfNotExists('ldtdf');

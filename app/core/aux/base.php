@@ -1160,14 +1160,14 @@ if (! fe('load_phps')) {
 }
 if (! fe('load_array')) {
     function load_array(string $path, array &$msg = []) : array {
-        return load_phps($path, function ($file) use (&$msg) {
+        load_phps($path, function ($file) use (&$msg) {
             $_msg = include $file->getPathname();
             if ($_msg && is_array($_msg)) {
                 $msg = array_merge($_msg, $msg);
             }
+        }, false);
 
-            return $msg;
-        });
+        return $msg;
     }
 }
 if (! fe('load_object')) {
