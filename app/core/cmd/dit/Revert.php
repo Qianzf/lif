@@ -20,9 +20,7 @@ class Revert extends Command
     private $ditID = null;
 
     public function fire()
-    {
-        init_dit_table();
-        
+    {        
         $revertToLast = false;
         // Check if revert version exists
         if (is_null($this->ditVersion)) {

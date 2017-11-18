@@ -10,20 +10,22 @@ require_once __DIR__.'/../../vendor/autoload.php';
     new Lif\Core\App
 )
 
-// -------------------------------------------------------------
-//     Tell web strategy how many global middlewares we need
-// -------------------------------------------------------------
+// -------------------------------------------
+//     How many global middlewares we need
+// -------------------------------------------
 
 ->withMiddlewares(
     'cors',
     'safty.csrf'
 )
 
-// -------------------------------------------------------------
-//     Tell web strategy how many route files need to add in
-// -------------------------------------------------------------
+// ------------------------------------
+//     How many route files we need
+// ------------------------------------
 
 ->withRoutes(
     'lif',
     'ldtdf'
-);
+)
+
+;

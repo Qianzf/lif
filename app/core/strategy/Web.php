@@ -40,7 +40,7 @@ class Web extends Container implements Observer, Strategy
     protected function load(): Web
     {
         load(
-            pathOf('aux').'web.php',
+            pathOf('_aux').'web.php',
             'Web helper file'
         );
 

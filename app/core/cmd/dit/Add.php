@@ -24,8 +24,6 @@ class Add extends Command
 
     public function fire()
     {
-        // init_dit_table();
-        
         if (! ($dit = ucfirst($this->ditName))) {
             $this->fails('Missing dit name.');
         }

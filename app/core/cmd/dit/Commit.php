@@ -10,8 +10,6 @@ class Commit extends Command
 
     public function fire()
     {
-        init_dit_table();
-
         $dits = db()
         ->table('__dit__')
         ->select('name', 'version')

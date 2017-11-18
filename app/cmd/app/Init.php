@@ -1,6 +1,6 @@
 <?php
 
-namespace Lif\Core\Cmd\App;
+namespace Lif\Cmd\App;
 
 use Lif\Core\Abst\Command;
 

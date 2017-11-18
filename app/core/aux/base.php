@@ -81,6 +81,7 @@ if (! fe('init')) {
         mb_regex_encoding('UTF-8');
         mb_language('uni');
         session_init();
+        load_user_helpers();
     }
 }
 if (! fe('session_init')) {
@@ -88,6 +89,13 @@ if (! fe('session_init')) {
         ini_set('session.name', 'LIFSESSID');
         ini_set('session.cookie_lifetime', 3600);
         ini_set('session.cookie_httponly', true);
+    }
+}
+if (! fe('load_user_helpers')) {
+    function load_user_helpers() {
+        load_phps(pathOf('aux'), function ($file) {
+            include_once $file->getPathname();
+        });
     }
 }
 if (! fe('dd')) {
@@ -338,7 +346,8 @@ if (! fe('pathOf')) {
             'app'    => $root.'/app/',
             'dbvc'   => $root.'/app/dat/dbvc/',
             'core'   => $root.'/app/core/',
-            'aux'    => $root.'/app/core/aux/',
+            'aux'    => $root.'/app/aux/',
+            '_aux'   => $root.'/app/core/aux/',
             '_cmd'   => $root.'/app/core/cmd/',
             'cmd'    => $root.'/app/cmd/',
             'ctl'    => $root.'/app/ctl/',
@@ -1125,55 +1134,52 @@ if (! fe('load')) {
         }
     }
 }
-if (! fe('load_array')) {
-    function load_array(string $path, array &$msg = []) : array {
+if (! fe('load_phps')) {
+    function load_phps(string $path, \Closure $callable) {
         if (! file_exists($path)) {
-            excp('Array PHP files path not exists: '.$path);
+            excp('PHP files path not exists: '.$path);
         }
 
+        $result = [];
         $fsi = new \FilesystemIterator($path);
         foreach ($fsi as $file) {
             if ($file->isFile()) {
                 if ('php' == $file->getExtension()) {
-                    $_msg = include_once $file->getPathname();
-                    if ($_msg && is_array($_msg)) {
-                        $msg = array_merge($_msg, $msg);
-                    }
+                    $result[$file->getPathname()] = $callable($file);
                 }
             } elseif ($file->isDir()) {
-                $_path = $path.$file->getBasename();
-                load_array($_path, $msg);
+                $_path = $path.'/'.$file->getBasename();
+                load_phps($_path, $callable);
             }
         }
+
         unset($fsi);
 
-        return $msg;
+        return $result;
+    }
+}
+if (! fe('load_array')) {
+    function load_array(string $path, array &$msg = []) : array {
+        return load_phps($path, function ($file) use (&$msg) {
+            $_msg = include $file->getPathname();
+            if ($_msg && is_array($_msg)) {
+                $msg = array_merge($_msg, $msg);
+            }
+
+            return $msg;
+        });
     }
 }
 if (! fe('load_object')) {
     function load_object(string $path, \Closure $callable) {
-        if (! file_exists($path)) {
-            excp('Object PHP files path not exists: '.$path);
-        }
-
-        $fsi = new \FilesystemIterator($path);
-        foreach ($fsi as $file) {
-            if ($file->isFile()) {
-                if ('php' == $file->getExtension()) {
-                    $arr = explode('.', $file->getBasename());
-                    if (! ($class = $arr[0] ?? null)) {
-                        excp('Illegal class name: '. $class);
-                    }
-
-                    $callable($class, $path);
-                }
-            } elseif ($file->isDir()) {
-                $_path = $path.$file->getBasename();
-                load_object($_path, $callable);
+        load_phps($path, function ($file) use ($path, $callable) {
+            $arr = explode('.', $file->getBasename());
+            if (! ($class = $arr[0] ?? null)) {
+                excp('Illegal class name: '. $class);
             }
-        }
-        unset($fsi);
 
+            $callable($class, $path);
+        });
     }
 }
 if (! fe('sysmsg')) {
@@ -2107,75 +2113,5 @@ if (! fe('ssh_exec_array')) {
        }
 
        return true;
-    }
-}
-if (! fe('init_dit_table')) {
-    function init_dit_table() {
-        schema()
-        ->createIfNotExists('__dit__', function ($table) {
-            $table->pk('id');
-            $table
-            ->string('name')
-            ->charset('utf8')
-            ->collate('utf8_unicode_ci')
-            ->unique();
-            $table->tinyint('version')->default(1);
-            $table
-            ->timestamp('create_at')
-            ->default('CURRENT_TIMESTAMP()', true);
-
-            $table
-            ->charset('utf8')
-            ->collate('utf8_unicode_ci');
-        })
-        ->commit();
-    }
-}
-if (! fe('init_job_table')) {
-    function init_job_table() {
-        schema()
-        ->createIfNotExists('__job__', function ($table) {
-            $table->pk('id');
-            $table->string('queue');
-            $table->text('detail');
-            
-            $table
-            ->tinyint('try')
-            ->default(0)
-            ->comment('How many tried times to be consider as failed');
-            
-            $table
-            ->tinyint('tried')
-            ->default(0)
-            ->comment('Tried times of this job in current try loop');
-            
-            $table
-            ->tinyint('retried')
-            ->unsigned()
-            ->comment('Failed times of this job')
-            ->default(0);
-            
-            $table
-            ->datetime('create_at')
-            ->default('CURRENT_TIMESTAMP()', true);
-
-            $table
-            ->tinyint('timeout')
-            ->unsigned()
-            ->comment('The max execution time for this job');
-
-            $table
-            ->tinyint('restart')
-            ->default(0)
-            ->comment('Should this job need to be restarted');
-            
-            $table
-            ->tinyint('lock')
-            ->default(0)
-            ->comment('Job running or not');
-
-            $table->comment('Queue job table');
-        })
-        ->commit();
     }
 }

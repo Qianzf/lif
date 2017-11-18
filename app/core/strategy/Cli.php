@@ -56,7 +56,7 @@ class Cli extends Container implements Strategy
     protected function load() : Cli
     {
         load(
-            pathOf('aux').'cli.php',
+            pathOf('_aux').'cli.php',
             'Cli helper file'
         );
 

@@ -9,9 +9,7 @@ class Status extends Command
     protected $intro = 'List current dits status';
 
     public function fire()
-    {
-        init_dit_table();
-        
+    {        
         $commited = db()->table('__dit__')->get();
 
         $table = '-- Commited Dits --';
