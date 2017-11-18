@@ -258,6 +258,11 @@ abstract class Model
         return $this;
     }
 
+    public function isAlive()
+    {
+        return $this->alive;
+    }
+
     public function getAlias()
     {
         $alias = empty_safe($this->alias)

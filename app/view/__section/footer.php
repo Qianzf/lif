@@ -13,15 +13,19 @@
     </select>
 
     <span class="stub"></span>
-    <sub><small><i>(
-        <?= get_lif_ver() ?>
-    )</small></i></sub>
+    <sub><small><i>
+        <?= 'v ', get_lif_ver() ?>
+    </small></i></sub>
 </footer>
 
 <input
 type="hidden"
 name="__error"
 value="<?= lang(share_flush('__error')) ?>">
+<input
+type="hidden"
+name="__back2last"
+value="<?= share_flush('back2last') ?>">
 
 <?= js([
     'js/main'

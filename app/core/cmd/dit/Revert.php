@@ -106,6 +106,7 @@ class Revert extends Command
         ->delete();
 
         if ($deleted >= 0) {
+            schema()->table('__dit__')->autoincre(1);
             $this->success(
                 "Dits [{$text}] has reverted to verion: "
                 .($revertToLast ? '(last)' : $this->ditVersion)

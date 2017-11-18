@@ -163,6 +163,16 @@ function hasErrorOrNot() {
     if (error) {
         alert(error)
     }
+
+    needBack2Last()
+}
+function needBack2Last() {
+    let back2last = $('input[name="__back2last"]')
+    let last = back2last.val()
+    if (back2last && last) {
+        back2last.val('')
+        window.location.href = last
+    }    
 }
 function getHost() {
     let aTag = getATag(window.location.href)

@@ -8,6 +8,10 @@ class Web
 
     public function handle($app)
     {
+        // update previous url
+        share('url_previous', (share('url_current') ?? $app->url()));
+        share('url_current', $app->url());
+        
         if (($this->auth = share('user'))
             && (false !== exists($this->auth, 'id'))
             && (false !== exists($this->auth, 'role'))

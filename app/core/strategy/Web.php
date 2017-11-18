@@ -261,6 +261,11 @@ class Web extends Container implements Observer, Strategy
         return $this->_route->aliases;
     }
 
+    public function url()
+    {
+        return $this->request->url;
+    }
+
     public function route()
     {
         return $this->request->route;

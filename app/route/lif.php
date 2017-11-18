@@ -9,6 +9,7 @@
 $this->get('/', 'lif');
 
 $this->get('test', function () {
+    // schema()->table('__dit__')->autoincre(1);
     // schema()->dropDBIfExists('ldtdf');
     // schema()->createDBIfNotExists('ldtdf');
 
@@ -21,5 +22,5 @@ $this->get('test', function () {
     ->table('task_status')
     ->get();
 
-    dd(db()->table('task_status')->insert($data));
+    // dd(db()->table('task_status')->insert($data));
 });

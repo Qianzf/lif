@@ -13,7 +13,17 @@ class User extends Ctl
 
     public function info(UserModel $user)
     {
-        share('hidden-search-bar', true);
+        $error = $back2last = null;
+        if ($user->isAlive()) {
+            $error     = lang('NO_USER');
+            $back2last = share('url_previous');
+        }
+
+        shares([
+            'hidden-search-bar' => true,
+            '__error'   => $error,
+            'back2last' => $back2last,
+        ]);
         
         view('ldtdf/user/info')->withUser($user);
     }

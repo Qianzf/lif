@@ -11,6 +11,7 @@ class Request extends Container implements Observable
     
     protected $name    = 'request';
     protected $route   = null;
+    protected $url     = null;
     protected $type    = null;
     protected $headers = null;
     protected $params  = [];
@@ -66,6 +67,11 @@ class Request extends Container implements Observable
         }
 
         return $this->route;
+    }
+
+    public function url()
+    {
+        return $this->url = ($_SERVER['REQUEST_URI'] ?? '/');
     }
 
     public function type()
