@@ -86,7 +86,7 @@ class Revert extends Command
 
         $dits = array_column($_dits, 'name');
         $ids  = $this->ditID ? $this->ditID : array_column($_dits, 'id');
-        $text = $this->ditID ?? implode(',', $ids);
+        $text = $this->ditID ? implode(',', $ids) : '';
 
         // Revert dits
         foreach ($dits as $dit) {
@@ -117,16 +117,23 @@ class Revert extends Command
         }
     }
 
-    public function setID($id = null)
+    public function setID($ids = null)
     {
-        if ($id && (!is_numeric($id)
-            || ($id != ($_id = intval($id)))
-            || ($_id < 0)
-        )) {
-            $this->fails('Dit ID must be an positive integer.');
-        }
+        $arr = explode(',', $ids);
 
-        $this->ditID = $_id;
+        array_walk($arr, function (&$id) {
+            $id = trim($id);
+            if ($id && (!is_numeric($id)
+                || ($id != ($_id = intval($id)))
+                || ($_id < 0)
+            )) {
+                $this->fails('Dit ID must be an positive integer.');
+            }
+
+            $id = $_id;
+        });
+
+        $this->ditID = $arr;
     }
 
     public function setVersion($version = null)
