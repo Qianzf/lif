@@ -12,5 +12,9 @@ class Init extends Command
     {
         init_dit_table();
         init_job_table();
+        
+        prepare_user_role_data();
+        prepare_task_status_data();
+        prepare_event_data();
     }
 }
