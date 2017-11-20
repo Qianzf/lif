@@ -127,5 +127,7 @@ return [
     'PUBLIC_KEY' => 'Public Key',
     'PRIVATE_KEY' => 'Private Key',
     'PATH' => 'Path',
-    'ABSOLUTE' => 'Absolute'
+    'ABSOLUTE' => 'Absolute',
+    'RUNNING' => 'Running',
+    'STOPPED' => 'Stopped',
 ];

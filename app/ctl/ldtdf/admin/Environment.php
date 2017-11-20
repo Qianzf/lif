@@ -14,9 +14,17 @@ class Environment extends Ctl
         'prod',
     ];
 
+    private $status = [
+        'running',
+        'stopped',
+    ];
+
     public function __construct()
     {
-        share('env-types', $this->types);
+        shares([
+            'env-types'  => $this->types,
+            'env-status' => $this->status,
+        ]);
     }
 
     public function index(Env $env)
@@ -31,11 +39,20 @@ class Environment extends Ctl
             && in_array($type, $this->types)
         ) {
             $_type = $type;
+            $env = $env->whereType($type);
         } else {
             $_type = $this->types;
         }
 
-        $env     = $env->whereType($_type);
+        if (($stat = $this->request->get('status'))
+            && in_array($stat, $this->status)
+        ) {
+            $status = $stat;
+            $env = $env->whereStatus($status);
+        } else {
+            $status = 'all';
+        }
+
         $keyword = $this->request->get('search') ?? null;
 
         if ($keyword) {
@@ -51,9 +68,10 @@ class Environment extends Ctl
         $pages   = ceil(($records / $offset));
 
         view('ldtdf/admin/env/index')
-        ->withEnvsTypeKeywordRecordsPagesOffset(
+        ->withEnvsTypeStatusKeywordRecordsPagesOffset(
             $envs,
             $type,
+            $status,
             $keyword,
             $records,
             $pages,

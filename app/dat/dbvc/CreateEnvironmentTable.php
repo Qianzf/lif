@@ -16,7 +16,11 @@ class CreateEnvironmentTable extends Dit
             
             $table
             ->string('host', 128)
-            ->comment('Virtual host name to access this env');
+            ->comment('Outer-accessible address for this env');
+
+            $table
+            ->string('path')
+            ->comment('Absolute path on server of this env');
             
             $table
             ->int('project')

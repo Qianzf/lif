@@ -6,6 +6,7 @@
 ]) ?>
 
 <form method="POST">
+    <?= csrf_feild() ?>
     <label>
         <?= lang('TITLE') ?>
         <input type="text" name="name" value="<?= $env->name ?>" required>
@@ -14,6 +15,16 @@
     <label>
         <?= lang('HOST_ADDR') ?>
         <input type="text" name="host" value="<?= $env->host ?>" required>
+    </label>
+
+    <label>
+        <?= lang('PATH') ?>
+        <input
+        type="text"
+        name="path"
+        placeholder="<?= lang('SERVER_ABSOLUTE_PATH') ?>"
+        value="<?= $env->path ?>"
+        required>
     </label>
 
     <label>
@@ -65,6 +76,23 @@
             value="<?= $server->id ?>">
                 <?= $server->name ?>
                 (<?= $server->host ?>)
+            </option>
+            <?php } ?>
+            <?php } ?>
+        </select>
+    </label>
+
+    <label>
+        <?= lang('STATUS') ?>
+        <select name="status" required>
+            <?php if (($stat = share('env-status')) && iteratable($stat)) { ?>
+            <?php foreach ($stat as $status) { ?>
+            <option
+            <?php if ($status == $env->status) { ?>
+            selected
+            <?php } ?>
+            value="<?= $status ?>">
+                <?= lang($status) ?>
             </option>
             <?php } ?>
             <?php } ?>

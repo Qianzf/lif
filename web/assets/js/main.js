@@ -65,8 +65,8 @@ $(window).ready(function () {
             }
         }
     })
-    $('#env-types-filter').change(function () {
-        location.href = ('type', this.value)
+    $('.filter-name-by-value-select').change(function () {
+        reloadWithQuerys(this.name, this.value)
     })
     $('.query-filters').change(function () {
         console.log(this.value)

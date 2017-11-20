@@ -24,6 +24,7 @@ abstract class Model
     private $items  = [];
     private $query  = null;
     private $alive  = false;
+    private $filter = [];
 
     public function __construct(int $id = null, string $pk = null)
     {
@@ -74,7 +75,9 @@ abstract class Model
             );
         }
 
-        return $this->query;
+        return $this
+        ->query
+        ->persistentFrom($this->filter);
     }
 
     public function pk()
@@ -110,8 +113,9 @@ abstract class Model
             $args
         );
 
-        if ($res instanceof Builder) {
-            $this->query = $res;
+        if ($res instanceof Builder) {            
+            $this->filter = $res->persistentFor();
+            $this->query  = $res;
 
             return $this;
         }
@@ -220,7 +224,8 @@ abstract class Model
     // Clean references
     public function clean() : Model
     {
-        $this->query = null;
+        $this->query  = null;
+        $this->filter = [];
 
         return $this;
     }

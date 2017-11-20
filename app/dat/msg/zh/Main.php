@@ -130,5 +130,7 @@ return [
     'PUBLIC_KEY' => '公钥',
     'PRIVATE_KEY' => '私钥',
     'PATH' => '路径',
-    'ABSOLUTE' => '绝对'
+    'ABSOLUTE' => '绝对',
+    'RUNNING' => '运行中',
+    'STOPPED' => '已停止',
 ];

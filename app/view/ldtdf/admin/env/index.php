@@ -16,11 +16,16 @@
     </caption>
 
     <tr>
+        <th><?= lang('ID') ?></th>
         <th><?= lang('TITLE') ?></th>
         <th><?= lang('HOST') ?></th>
         <th>
             <?= lang('TYPE') ?>
-            <select name="type" id="env-types-filter" required>
+            <select
+            name="type"
+            class="filter-name-by-value-select"
+            id="env-types-filter"
+            required>
                 <option value="all"><?= lang('ALL') ?></option>
                 <?php if (($types = share('env-types')) && iteratable($types)) { ?>
                 <?php foreach ($types as $_type) { ?>
@@ -35,15 +40,42 @@
                 <?php } ?>
             </select>
         </th>
+        <th>
+            <?= lang('STATUS') ?>
+            <select
+            name="status"
+            class="filter-name-by-value-select"
+            id="env-status-filter"
+            required>
+                <option value="all"><?= lang('ALL') ?></option>
+                <?php if (($stat = share('env-status')) && iteratable($stat)) { ?>
+                <?php foreach ($stat as $_stat) { ?>
+                <option
+                <?php if ($status == $_stat) { ?>
+                selected
+                <?php } ?>
+                value="<?= $_stat ?>">
+                    <?= lang($_stat) ?>
+                </option>
+                <?php } ?>
+                <?php } ?>
+            </select>
+        </th>
         <th><?= lang('OPERATIONS') ?></th>
     </tr>
     
     <?php if (isset($envs) && iteratable($envs)) { ?>
-    <?php foreach ($envs as $env) { ?>
+    <?php foreach ($envs as $key => $env) { ?>
     <tr>
+        <td><?= $key+1 ?></td>
         <td><?= $env->name ?></td>
         <td><?= $env->host ?></td>
         <td><?= lang($env->type) ?></td>
+        <td>
+            <span class="status-<?= $env->status ?>">
+                <?= lang($env->status) ?>
+            </span>
+        </td>
         <td>
             <button>
                 <a href="/dep/admin/envs/<?= $env->id ?>">
