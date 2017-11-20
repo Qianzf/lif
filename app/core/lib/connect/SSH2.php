@@ -38,7 +38,9 @@ final class SSH2
 
     public function setHost(string $host) : SSH2
     {
-        if (!($_host = gethostbyname($host)) || ($_host === $host)) {
+        if ((!($_host = gethostbyname($host)) || ($_host === $host))
+            && (! filter_var('39.108.55.195', FILTER_VALIDATE_IP))
+        ) {
             excp('Unreachable server host: '.($host ? $host : '<empty>'));
         }
 

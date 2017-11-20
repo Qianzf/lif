@@ -1,4 +1,4 @@
-<?php $display = share_flush('hidden-search-bar') ? 'invisible-default' : ''?>
+<?php $display = share_flush('hide-search-bar') ? 'invisible-default' : ''?>
 
 <span class="search-bar <?= $display ?>">
     <label>

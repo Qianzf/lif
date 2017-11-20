@@ -6,7 +6,7 @@ class Developer extends Ctl
 {
     public function index()
     {
-        share('hidden-search-bar', true);
+        share('hide-search-bar', true);
         
         view('ldtdf/developer/index');
     }

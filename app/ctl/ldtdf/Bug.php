@@ -13,6 +13,8 @@ class Bug extends Ctl
 
     public function edit(BugModel $bug)
     {
+        share('hide-search-bar', true);
+
         view('ldtdf/bug/edit')->withBug($bug);
     }
 }

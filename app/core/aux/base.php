@@ -373,7 +373,7 @@ if (! fe('pathOf')) {
             isset($paths[$of]) ? $paths[$of].$file : null
         );
 
-        if (! file_exists($path)) {
+        if (is_string($path) && !file_exists($path)) {
             $arr = explode('/', $path);
             unset($arr[count($arr)-1]);
             $dir = implode('/', $arr);

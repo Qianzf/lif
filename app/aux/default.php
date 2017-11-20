@@ -7,6 +7,7 @@
 if (! fe('init_dit_table')) {
     function init_dit_table() {
         schema()
+        ->setAutocommit(false)
         ->createIfNotExists('__dit__', function ($table) {
             $table->pk('id');
             $table
@@ -29,6 +30,7 @@ if (! fe('init_dit_table')) {
 if (! fe('init_job_table')) {
     function init_job_table() {
         schema()
+        ->setAutocommit(false)
         ->createIfNotExists('__job__', function ($table) {
             $table->pk('id');
             $table->string('queue');
@@ -174,6 +176,44 @@ if (! fe('prepare_event_data')) {
                 [
                     'key' => 'assign_bug',
                     'desc' => 'A bug has been assigned to an user',
+                ],
+            ]);
+        }
+    }
+}
+if (! fe('prepare_env_data')) {
+    function prepare_env_data() {
+        if (schema()->hasTable('env_type')) {
+            db()->truncate('env_type');
+            db()->table('env_type')->insert([
+                [
+                    'key' => 'test',
+                    'desc' => 'Basic testing environment',
+                ],
+                [
+                    'key' => 'emrg',
+                    'desc' => 'Same as testing environment, for emergency only',
+                ],
+                [
+                    'key' => 'stage',
+                    'desc' => 'Same as testing environmnet, use production data copy',
+                ],
+                [
+                    'key' => 'prod',
+                    'desc' => 'Production environment',
+                ],
+            ]);
+        }
+        if (schema()->hasTable('env_status')) {
+            db()->truncate('env_status');
+            db()->table('env_status')->insert([
+                [
+                    'key' => 'running',
+                    'desc' => 'Environment is running regularly',
+                ],
+                [
+                    'key' => 'stopped',
+                    'desc' => 'Environment is stopped and not serving anymore',
                 ],
             ]);
         }

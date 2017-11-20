@@ -20,7 +20,7 @@ class User extends Ctl
         }
 
         shares([
-            'hidden-search-bar' => true,
+            'hide-search-bar' => true,
             '__error'   => $error,
             'back2last' => $back2last,
         ]);
@@ -65,7 +65,7 @@ class User extends Ctl
 
     public function profile($uid)
     {
-        share('hidden-search-bar', true);
+        share('hide-search-bar', true);
         
         view('ldtdf/user/profile')->withUidEmailName(
             share('user.id'),

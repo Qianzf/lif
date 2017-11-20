@@ -6,7 +6,7 @@ use Lif\Core\Abst\Command;
 
 class Init extends Command
 {
-    protected $intro = 'Initialize LiF application';
+    protected $intro = 'Initialize LDTDF system';
 
     public function fire()
     {
@@ -16,5 +16,6 @@ class Init extends Command
         prepare_user_role_data();
         prepare_task_status_data();
         prepare_event_data();
+        prepare_env_data();
     }
 }

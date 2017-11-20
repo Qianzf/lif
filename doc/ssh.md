@@ -20,6 +20,10 @@ return [
 ];
 ```
 
+#### Notice
+
+The path of public key and private key must be accessible for the PHP script who execute SSH related codes.
+
 ## Connect and execute shell commands
 
 - Without other extension
