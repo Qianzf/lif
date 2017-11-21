@@ -80,6 +80,7 @@ $(window).ready(function () {
             $('.custom-task-attr').hide();
             $('.outer-task-detail').show();
         } else {
+            $('.custom-task-attr').removeClass('invisible-default');
             $('.custom-task-attr').show();
             $('.outer-task-detail').hide();
         }

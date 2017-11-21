@@ -16,21 +16,16 @@ class CreateTrendingTable extends Dit
             ->int('uid')
             ->unsigned()
             ->comment('User ID');
-            
-            $table
-            ->int('tid')
-            ->unsigned()
-            ->nullable()
-            ->comment('Task ID');
 
             $table
             ->string('event', 64)
             ->comment('Event key => `event`.`key`');
 
             $table
-            ->text('detail')
+            ->tinytext('ref_id')
             ->nullable()
-            ->comment('Trending detail');
+            ->unsigned()
+            ->comment('Trending related object ID');
             
             $table->comment('User Trending Table');
         });

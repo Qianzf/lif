@@ -20,7 +20,23 @@ class Task extends Ctl
 
     public function create(TaskModel $task)
     {
-        dd($task->create($this->request->all()));
+        $data = $this->request->all();
+        $data['status']  = 'created';
+        $data['creator'] = share('user.id');
+
+        if (($status = $task->create($data))
+            && is_integer($status)
+            && ($status > 0)
+        ) {
+            $msg = 'CREATED_SUCCESS';
+        } else {
+            $msg    = lang('CREATED_FAILED', $status);
+            $status = 'new';
+        }
+
+        share_error_i18n($msg);
+
+        return redirect("/dep/tasks/{$status}");
     }
 
     public function update(TaskModel $task)
@@ -30,7 +46,7 @@ class Task extends Ctl
             redirect('/dep/tasks');
         }
 
-        $status = (($err = $task->save($this->request->all())) > 0)
+        $status = (($err = $task->save($this->request->all())) >= 0)
         ? 'UPDATE_OK'
         : 'UPDATE_FAILED';
 

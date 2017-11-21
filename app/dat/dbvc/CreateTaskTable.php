@@ -14,7 +14,11 @@ class CreateTaskTable extends Dit
             $table
             ->int('creator')
             ->unsigned()
-            ->comment('User ID who created this task');
+            ->comment('User who created this task: `user`.`id`');
+
+            $table
+            ->string('title')
+            ->comment('Task Title');
 
             $table
             ->string('status')
@@ -25,13 +29,21 @@ class CreateTaskTable extends Dit
             ->comment('Task deatail page URL from outer system');
 
             $table
-            ->string('title')
-            ->comment('Task Title');
+            ->char('custom', 8)
+            ->default('no')
+            ->comment('Custom task detail or not: yes/no');
 
             $table
-            ->tinyint('custom')
-            ->default(0)
-            ->comment('Custom task detail or not: 0 => no; 1 => yes');
+            ->string('story_role')
+            ->comment('User story 1st element: User Role');
+
+            $table
+            ->string('story_activity')
+            ->comment('User story 2nd element: activity');
+
+            $table
+            ->string('story_value')
+            ->comment('User story 3rd element: value');
         });
     }
 

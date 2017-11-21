@@ -6,7 +6,7 @@ return [
     'USER' => 'User',
     'PROFILE' => 'Profile',
     'LOGIN'   => 'Login',
-    'LOGGEDIN' => 'Logged in',
+    'LOGIN_SYS' => 'Logged in',
     'ASSIGN' => 'Assign',
     'LOGOUT'  => 'Logout',
     'SWITCH_LANG'  => 'Switch Language',
@@ -142,4 +142,8 @@ return [
     'NO_PROJECT' => 'No project',
     'GROUP' => 'Group',
     'NOT' => 'Not',
+    'COMMENT' => 'Comment',
+    'STORY_WHO' => 'As a',
+    'STORY_WHAT' => 'I Want',
+    'STORY_FOR' => 'For',
 ];

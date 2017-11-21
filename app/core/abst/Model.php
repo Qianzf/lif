@@ -9,7 +9,7 @@ namespace Lif\Core\Abst;
 use Lif\Core\Storage\SQL\Builder;
 
 abstract class Model
-{
+{    
     // Child class confinable
     protected $table  = null;       // table name
     protected $alias  = null;       // table alias

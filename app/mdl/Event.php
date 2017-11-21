@@ -1,0 +1,77 @@
+<?php
+
+namespace Lif\Mdl;
+
+use Lif\Core\Mdl as ModelBase;
+
+class Event extends ModelBase
+{
+    protected $table = 'event';
+    protected $_tbx   = null;
+    protected $_fdx   = null;
+    protected $pk     = 'id';
+    protected $alias  = null;
+    // validation rules for fields
+    protected $rules  = [
+    ];
+    // protected items that cann't update
+    protected $unwriteable = [
+    ];
+    // protected items that cann't read
+    protected $unreadable  = [
+    ];
+
+    public function genHTMLStringOfLoginSys()
+    {
+    }
+
+    public function genHTMLStringforBug($id)
+    {
+        return [
+            'route' => "/dep/bugs/{$id}",
+            'title' => $this->getBugTitle($id),
+        ];
+    }
+
+    public function genHTMLStringforTask($id)
+    {
+        return [
+            'route' => "/dep/tasks/{$id}",
+            'title' => $this->getTaskTitle($id),
+        ];
+    }
+
+    public function genHTMLStringOfUpdateBugComment($id)
+    {
+        return $this->genHTMLStringforBug($id);
+    }
+
+    public function genHTMLStringOfUpdateTaskComment($id)
+    {
+        return $this->genHTMLStringforTask($id);
+    }
+
+    public function genHTMLStringOfAssignTask($id)
+    {
+        return $this->genHTMLStringforTask($id);
+    }
+
+    public function genHTMLStringOfUpdateTask($id)
+    {
+        return $this->genHTMLStringforTask($id);
+    }
+
+    public function getBugTitle($id)
+    {
+        $bug = db()->table('bug')->select('title')->whereId($id)->first();
+
+        return $bug['title'] ?? null;
+    }
+
+    public function getTaskTitle($id)
+    {
+        $task = db()->table('task')->select('title')->whereId($id)->first();
+
+        return $task['title'] ?? null;
+    }
+}

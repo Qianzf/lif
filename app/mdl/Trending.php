@@ -43,6 +43,29 @@ class Trending extends Mdl
         return $user->trendings($params['from'], $params['take']);
     }
 
+    public function genHTMLStringOfEvent() : string
+    {
+        $event   = $this->makeEvent();
+        $key     = underline2camelcase($this->event);
+        $handler = "genHTMLStringOf{$key}";
+
+        if (! method_exists($event, $handler)) {
+            excp("Event string generator not found: {$handler}()");
+        }
+        
+        $data = call_user_func([$event, $handler], $this->ref_id);
+
+        $route = $data['route'] ?? null;
+        $title = $data['title'] ?? null;
+
+        return $data ? ": <a href='{$route}'>{$title}</a>" : '';
+    }
+
+    public function makeEvent()
+    {
+        return new Event;
+    }
+
     public function user()
     {
         return $this->belongsTo(

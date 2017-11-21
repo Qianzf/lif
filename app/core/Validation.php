@@ -22,10 +22,10 @@ class Validation
                 excp('Single validation rule must be a string or array.');
             }
 
-            $_rules = explode('|', $rule);
+            $_rules = array_filter(explode('|', $rule));
 
             foreach ($_rules as $_rule) {
-                $_ruleArr = explode(':', $_rule);
+                $_ruleArr = array_filter(explode(':', $_rule));
 
                 if (!isset($_ruleArr[0])
                     || !method_exists($this, $_ruleArr[0])
@@ -35,37 +35,27 @@ class Validation
 
                 $validator = $_ruleArr[0];
                 $extra     = $_ruleArr[1] ?? null;
+                $isWhen    = ('when' === strtolower($validator));
 
-                if (('need' != $validator)) {
-                    if (! isset($data[$key])) {
-                        if (isset($hasDefault)) {
-                            $data[$key] = $hasDefault;
-                        }
-
-                        if ('when' != $validator) {
-                            break;
-                        }
+                if (true !== ($err = $this->$validator(
+                    ($data[$key] ?? null),
+                    $extra,
+                    $data,
+                    $key
+                ))) {
+                    if (isset($hasDefault)) {
+                        $data[$key] = $hasDefault;
+                        break;
+                    }
+                    if (($isWhen && (-1 === $err))
+                        || (!isset($_rules['need']))
+                    ) {
+                        break;
                     }
 
-                    if (true !== ($err = $this->$validator(
-                        ($data[$key] ?? null),
-                        $extra,
-                        $data,
-                        $key
-                    ))) {
-                        if (isset($hasDefault)) {
-                            $data[$key] = $hasDefault;
-                            break;
-                        }
-
-                        return is_string($err)
-                        ? $err
-                        : 'ILLEGAL_'.strtoupper($key);
-                    }
-                } else {
-                    if (true !== ($err = $this->need($key, $data))) {
-                        return $err;
-                    }
+                    return is_string($err)
+                    ? $err
+                    : 'ILLEGAL_'.strtoupper($key);
                 }
             }
         }
@@ -155,17 +145,19 @@ class Validation
 
         $val = $cond[1] ?? '';
 
-        if (isset($data[$cond[0]])
-            && ($data[$cond[0]] == $val)
-            && (
-                !isset($data[$key])
-                || !$value
-            )
-        ) {
-            return 'MISSING_'.strtoupper($key);
+        if (isset($data[$cond[0]]) && ($data[$cond[0]] == $val)) {
+            if (!isset($data[$key]) || empty_safe($value)) {
+                return 'MISSING_'.strtoupper($key);
+            }
+
+            // Exists given key of `when`@`cond` in `$data`
+            // And need to keep on validating (if has more validations)
+            return 1;
         }
 
-        return true;
+        // No given key of `when`@`cond` in `$data`
+        // And doesn't need to keep on validating (if has more validations)
+        return -1;
     }
 
     // Don't need start and end part

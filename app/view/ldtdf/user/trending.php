@@ -12,43 +12,39 @@
             <?= lang('ALL') ?>
         </option>
 
-        <?php if (isset($users) && iteratable($users)) { ?>
-        <?php foreach ($users as $user) { ?>
+        <?php if (isset($users) && iteratable($users)) : ?>
+        <?php foreach ($users as $user) : ?>
         <option <?= ($user->id == $uid) ? 'selected' : '' ?>
-        value="<?= $user->id?>">
+        value="<?= $user->id ?>">
             <?= $user->name ?>
-            <?php if ($user->id == share('user.id')) { ?>
+            <?php if ($user->id == share('user.id')) : ?>
             (<?= lang('ME') ?>)
-            <?php } ?>
+            <?php endif ?>
         </option>
-        <?php } ?>
-        <?php } ?>
+        <?php endforeach ?>
+        <?php endif ?>
     </select>
 </p>
 
-<?php if (isset($trending) && iteratable($trending)) { ?>
-<?php foreach ($trending as $log) { ?>
+<?php if (isset($trendings) && iteratable($trendings)) : ?>
+<?php foreach ($trendings as $trending) : ?>
 <ul>
     <li>
         <?php
-            $user = $log->user();
+            $user = $trending->user();
             $name = (share('user.id') == $user->id)
             ? lang('YOU') : (
                 $user->name ?? lang('UNKNOWN_USER')
             );
         ?>
-        <?= $log->at ,' , ' ,lang($user->role) ?>
+        <?= $trending->at, ' , ', lang($user->role) ?>
         <a href="/dep/user/<?= $user->id ?>">
             <?= $user->name ?>
         </a>
-        <?= lang($log->event), (
-            $log->detail
-            ? (': '.$log->detail)
-            : ''
-        )?>
+        <?= lang($trending->event), $trending->genHTMLStringOfEvent() ?>
     </li>
 </ul>
-<?php } ?>
-<?php } ?>
+<?php endforeach ?>
+<?php endif ?>
 
 <?= $this->section('pagebar') ?>

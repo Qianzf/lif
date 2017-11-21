@@ -55,7 +55,7 @@ class User extends Ctl
         $pages   = ceil($records / $pageScale);
 
         view('ldtdf/user/trending')
-        ->withUsersTrendingPagesRecords(
+        ->withUsersTrendingsPagesRecords(
             $users,
             $data,
             $pages,

@@ -39,7 +39,7 @@ class Passport extends Ctl
         // Save login event to trending
         $trend->at     = date('Y-m-d H:i:s', $timestamp);
         $trend->uid    = $user->id;
-        $trend->event  = 'loggedin';
+        $trend->event  = 'login_sys';
         $trend->save();
         
         $shares = [

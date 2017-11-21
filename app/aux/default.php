@@ -103,7 +103,7 @@ if (! fe('prepare_task_status_data')) {
                 ],
                 [
                     'key' => 'waitting_dev',
-                    'val' => '待开发：被产品经理安排给开发者负责人',
+                    'val' => '待开发：被产品经理／测试人员安排给一位开发者负责人',
                 ],
                 [
                     'key' => 'deving',
@@ -159,8 +159,8 @@ if (! fe('prepare_event_data')) {
             db()->truncate('event');
             db()->table('event')->insert([
                 [
-                    'key' => 'login_ok',
-                    'desc' => 'User Login successfully',
+                    'key' => 'login_sys',
+                    'desc' => 'User Loggedin system',
                 ],
                 [
                     'key' => 'create_task',
@@ -177,6 +177,30 @@ if (! fe('prepare_event_data')) {
                 [
                     'key' => 'assign_bug',
                     'desc' => 'A bug has been assigned to an user',
+                ],
+                [
+                    'key' => 'comment_task',
+                    'desc' => 'A user has commented a task',
+                ],
+                [
+                    'key' => 'comment_bug',
+                    'desc' => 'A user has commented a bug',
+                ],
+                [
+                    'key' => 'update_task',
+                    'desc' => 'A user has updated a task',
+                ],
+                [
+                    'key' => 'update_bug',
+                    'desc' => 'A user has updated a bug',
+                ],
+                [
+                    'key' => 'update_task_comment',
+                    'desc' => 'A user has updated a comment of a task',
+                ],
+                [
+                    'key' => 'update_bug_comment',
+                    'desc' => 'A user has updated a comment of a bug',
                 ],
             ]);
         }

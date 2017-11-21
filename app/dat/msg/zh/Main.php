@@ -6,7 +6,7 @@ return [
     'USER' => '用户',
     'PROFILE' => '资料',
     'LOGIN'   => '登录',
-    'LOGGEDIN' => '登录系统',
+    'LOGIN_SYS' => '登录系统',
     'ASSIGN' => '指派',
     'LOGOUT'  => '退出登录',
     'SWITCH_LANG'  => '切换语言',
@@ -145,4 +145,8 @@ return [
     'NO_PROJECT' => '找不到项目',
     'GROUP' => '群组',
     'NOT' => '不',
+    'COMMENT' => '评论',
+    'STORY_WHO' => '我作为',
+    'STORY_WHAT' => '想要',
+    'STORY_FOR' => '以便',
 ];
