@@ -23,7 +23,7 @@ class Add extends Command
             $this->fails('No name specified for controller.');
         }
 
-        $class = format_namespace($controller);
+        $class = format_ns($controller);
 
         if (class_exists($_class = nsOf('ctl', $class, false))) {
             $this->fails('Controller already exists: '.$_class);

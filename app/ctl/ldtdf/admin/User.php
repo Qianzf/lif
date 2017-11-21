@@ -6,13 +6,20 @@ use Lif\Mdl\User as UserModel;
 
 class User extends Ctl
 {
+    protected $roles = null;
+    
+    public function __construct()
+    {
+        $this->roles = implode(',', share('system-roles'));
+    }
+
     public function index(UserModel $user)
     {
         $request = $this->request->all();
 
         legal_or($request, [
             'search' => ['string', ''],
-            'role'   => ['in:admin,developer,tester', false],
+            'role'   => ["in:{$this->roles}", false],
             'page'   => ['int|min:1', 1],
         ]);
 
@@ -67,7 +74,7 @@ class User extends Ctl
             'name'    => 'need',
             'email'   => 'need|email',
             'passwd'  => 'need',
-            'role'    => 'need|in:admin,tester,developer',
+            'role'    => "need|in:{$this->roles}",
         ]);
 
         foreach ($request as $key => $value) {

@@ -397,7 +397,7 @@ class Route extends Container implements Observable
                 $_handle = $ctl.'@'.$route['bind'];
             }
 
-            $handle = format_namespace($namespaces).'\\'.$_handle;
+            $handle = format_ns($namespaces).'\\'.$_handle;
         } else {
             throw new \Lif\Core\Excp\IllegalRouteDefinition(1);
         }

@@ -6,18 +6,35 @@
 ]) ?>
 
 <form method="POST" autocomplete="off">
+    <?= csrf_feild() ?>
     <label>
         <?= lang('TITLE') ?>
         <input type="text" name="name" required value="<?= $project->name ?>">
     </label>
 
     <label>
-        <?= 'URL' ?>
+        <?= lang('TYPE') ?>
+        <select name="type" required>
+            <option
+            value="web"
+            <?= ($project->type == 'web') ? 'selected' : '' ?>>
+            Web
+            </option>
+            <option
+            value="app"
+            <?= ($project->type == 'app') ? 'selected' : '' ?>>
+            App
+            </option>
+        </select>
+    </label>
+
+    <label>
+        <?= lang('REPO_URL') ?>
          <input type="text" name="url" required value="<?= $project->url ?>">
     </label>
 
     <label>
-        <?= 'VCS' ?>
+        <?= lang('VCS') ?>
         <select name="vcs" required>
             <option value="git">git</option>
         </select>
@@ -26,6 +43,11 @@
     <label>
         <?= lang('DESCRIPTION') ?>
         <textarea name="desc"><?= $project->desc ?></textarea>
+    </label>
+
+    <label>
+        <?= lang('REPO_API_TOKEN') ?>
+         <input type="password" name="token" value="<?= $project->token ?>">
     </label>
 
     <?= $this->section('submit', [

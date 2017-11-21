@@ -21,7 +21,7 @@ class CmdAdd extends CMD
             $this->fails('No name specified for command.');
         }
 
-        $class = format_namespace($command);
+        $class = format_ns($command);
 
         if (class_exists($_class = nsOf('cmd', $class, false))) {
             $this->fails('Command already exists: '.$_class);

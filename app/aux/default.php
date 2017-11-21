@@ -87,6 +87,7 @@ if (! fe('prepare_user_role_data')) {
                 ['key' => 'dev', 'desc'   => 'IT System operator',],
                 ['key' => 'ops', 'desc'   => 'System Admin',],
                 ['key' => 'test', 'desc'  => 'Software Testing Engineer',],
+                ['key' => 'ui', 'desc'  => 'User Interface designer',],
             ]);
         }
     }

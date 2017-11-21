@@ -159,6 +159,7 @@ abstract class Model
         array_walk($data, function (&$item, $key) {
             $model = clone $this;
             $model->items = $item;
+            $model->alive = !empty_safe($item);
             $item = $model;
         });
 
@@ -203,13 +204,18 @@ abstract class Model
         if ($data = ($data ? $data : $this->items)) {
             unset($data[$this->pk()]);    // Protected primary key
 
-            return $this->alive
-            ? $this
-            ->query()
-            ->where($this->pk, $this->items[$this->pk])
-            ->update($data)
+            try {
+                return $this->alive
 
-            : $this->query()->insert($data);
+                ? $this
+                ->query()
+                ->where($this->pk, $this->items[$this->pk])
+                ->update($data)
+
+                : $this->query()->insert($data);
+            } catch (\PDOException $pdoe) {
+                dd($pdoe->getMessage());
+            }
         }
     }
 
@@ -279,6 +285,11 @@ abstract class Model
         }
 
         return $alias;
+    }
+
+    public function getPK()
+    {
+        return $this->items[$this->pk] ?? null;
     }
 
     public function getTable()

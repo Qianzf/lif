@@ -17,6 +17,7 @@
 
     <tr>
         <th><?= lang('TITLE') ?></th>
+        <th><?= lang('TYPE') ?></th>
         <th><?= lang('REPO_URL') ?></th>
         <th><?= lang('OPERATIONS') ?></th>
     </tr>
@@ -25,6 +26,7 @@
     <?php foreach ($projects as $project) { ?>
     <tr>
         <td><?= $project->name ?></td>
+        <td><?= $project->type ?></td>
         <td><?= $project->url ?></td>
         <td>
             <button>

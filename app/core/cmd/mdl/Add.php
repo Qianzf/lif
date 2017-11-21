@@ -23,7 +23,7 @@ class Add extends Command
             $this->fails('No name specified for model.');
         }
 
-        $class = format_namespace($model);
+        $class = format_ns($model);
 
         if (class_exists($_class = nsOf('mdl', $class, false))) {
             $this->fails('Model already exists: '.$_class);

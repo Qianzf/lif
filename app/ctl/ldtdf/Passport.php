@@ -47,8 +47,11 @@ class Passport extends Ctl
             'timeout' => $this->timeout,
             'system-roles' => [
                 'admin',
-                'developer',
-                'tester',
+                'pm',
+                'dev',
+                'ops',
+                'test',
+                'ui',
             ],
         ];
 

@@ -23,7 +23,7 @@ class CSRF implements \Lif\Core\Intf\Middleware
                 list($data, $hash)  = explode('.', $token);
                 list($time, $nonce) = explode(':', $data);
 
-                if (($time+$this->expire) < time()) {
+                if (($time+$this->getExpire()) < time()) {
                     $this->error('Expired CSRF token');
                 }
 
@@ -42,5 +42,10 @@ class CSRF implements \Lif\Core\Intf\Middleware
     private function error(string $err)
     {
         client_error("Unsafe request: $err.");
+    }
+
+    private function getExpire()
+    {
+        return config('app.csrf.expire') ?? $this->expire;
     }
 }

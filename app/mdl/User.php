@@ -34,6 +34,22 @@ class User extends Mdl
         ->first();
     }
 
+    public function inGroup($gid) : bool
+    {
+        if (! $this->isAlive()
+            || !($user = $this->getPK())
+        ) {
+            excp('Can not determine if user in group when user is not alive.');
+        }
+
+        return !empty_safe(
+            db()
+            ->table('user_group_map')
+            ->whereUserGroup($user, $gid)
+            ->get()
+        );
+    }
+
     public function trendings(int $start = 0, int $offset = 16)
     {
         return $this->hasMany([

@@ -193,19 +193,27 @@ class Web extends Container implements Observer, Strategy
         } elseif (is_string($this->handler)) {
             $args = explode('@', $this->handler);
             if ((count($args) !== 2)
-                || !($ctlName = trim(format_namespace($args[0])))
+                || !($ctlName = trim(format_ns($args[0])))
                 || !($act = trim($args[1]))
             ) {
                 throw new \Lif\Core\Excp\IllegalRouteDefinition(2);
             }
 
-            $ctl = Factory::make($ctlName, nsOf('ctl'));
+            $ctl = Factory::make($ns = nsOf('ctl', $ctlName));
             $act = lcfirst($act);
 
-            return call_user_func_array([
-                $ctl,
-                '__lif__'
-            ], [$this, $act, $this->routeVars]);
+            if (method_exists($ctl, '__lif__')) {
+                return call_user_func_array([
+                    $ctl,
+                    '__lif__'
+                ], [$this, $act, $this->routeVars]);
+            }
+
+            if (! method_exists($ctl, $act)) {
+                excp("Method not found: `{$ns}@{$act}`");
+            }
+
+            return call_user_func_array([$ctl, $act], $this->routeVars);
         } else {
             throw new \Lif\Core\Excp\IllegalRouteDefinition(1);
         }

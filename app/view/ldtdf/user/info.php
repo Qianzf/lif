@@ -17,6 +17,14 @@
 
     <label>
         <button class="btn-info">
+            <?= lang('ROLE') ?>
+        </button>
+        <span class="stub"></span>
+        <code><?= lang("ROLE_{$user->role}") ?></code>
+    </label>
+
+    <label>
+        <button class="btn-info">
             <?= lang('EMAIL') ?>
         </button>
         <span class="stub"></span>

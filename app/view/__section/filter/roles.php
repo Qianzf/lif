@@ -4,7 +4,7 @@
     <?php foreach ($roles as $role) { ?>
     <?php $selected = ($searchrole == $role) ? 'selected' : '' ?>
     <option value="<?= $role ?>" <?= $selected ?>>
-        <?= lang($role) ?>
+        <?= lang("ROLE_{$role}") ?>
     </option>
     <?php } ?>
     <?php } ?>

@@ -18,10 +18,23 @@ class CreateProjectTable extends Dit
 
             $table
             ->string('url')
+            ->unique()
             ->comment('Project URL in vcs');
 
             $table->string('name');
-            $table->tinytext('desc');
+            
+            $table
+            ->string('type')
+            ->comment('Project type: client-side(APP) or server-side(WEB) or something else => `project_type`.`key`');
+
+            $table
+            ->tinytext('desc')
+            ->nullable();
+
+            $table
+            ->string('token')
+            ->nullable()
+            ->comment('Integration with vcs APIs used token');
         });
     }
 

@@ -71,6 +71,27 @@ For example:
 
 Well, if frontend developers don't familiar with PHP, the better way is to build web app via HTTP API.
 
+- PHP Raw code short cuts
+
+Besides normal PHP `{}` blocks, we can also use `:` and `end***` grammers to do the same things like below:
+
+```php
+<?php if (isset($groups) && iteratable($groups)) : ?>
+<?php foreach ($groups as $group): ?>
+    <tr>
+        <td><?= $group->name ?></td>
+        <td>
+            <button>
+                <a href="/path/to/resources/<?= $group->id ?>">
+                    <?= lang('EDIT') ?>
+                </a>
+            </button>
+        </td>
+    </tr>
+<?php endforeach ?>
+<?php endif ?>
+```
+
 - Share data between views
 
 ``` php

@@ -20,16 +20,15 @@
         <input type="password" name="passwd"
         placeholder="<?= lang('PROVIDE_NEW_PASSWD') ?>">
     </label>
+
     <label><?= lang('USER_ROLE') ?>
         <select name="role">
-        
             <?php foreach (share('system-roles') as $role) { ?>
             <?php $selected = ($role == $user->role) ? 'selected' : '' ?>
             <option value="<?= $role ?>" <?= $selected ?>>
-                <?= lang($role) ?>
+                <?= lang("ROLE_{$role}") ?>
             </option>
             <?php } ?>
-
         </select>
     </label>
     

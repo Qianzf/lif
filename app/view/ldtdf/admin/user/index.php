@@ -8,6 +8,11 @@
             <a href="users/new"><?= lang('ADD_USER') ?></a>
         </button>
     </dd>
+    <dd>
+        <button>
+            <a href="users/groups"><?= lang('GROUP_MANAGE') ?></a>
+        </button>
+    </dd>
 </dl>
 
 <table>
@@ -29,7 +34,7 @@
         <td><?= $user->account ?></td>
         <td><?= $user->name ?></td>
         <td><?= $user->email ?></td>
-        <td><?= lang($user->role) ?></td>
+        <td><?= lang("ROLE_{$user->role}") ?></td>
         <td>
             <button>
                 <a href="users/<?= $user->id ?>">

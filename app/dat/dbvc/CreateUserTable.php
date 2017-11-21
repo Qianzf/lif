@@ -14,8 +14,8 @@ class CreateUserTable extends Dit
             $table->string('account')->unique();
             $table->string('email')->unique();
             $table->string('passwd');
+
             $table
-            
             ->char('role', 32)
             ->comment('User role => `user_role`.`key`');
 

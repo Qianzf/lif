@@ -488,6 +488,11 @@ if (! fe('exception')) {
         : $response($info);
     }
 }
+if (! fe('excp')) {
+    function excp($msg, $err = 500, $format = 'json') {
+        throw new \Lif\Core\Excp\Lif($msg, $err, $format);
+    }
+}
 if (! fe('build_log_str')) {
     function build_log_str($data, string $level = 'log') : string {
         $timestamp = time();
@@ -502,13 +507,8 @@ if (! fe('build_log_str')) {
         return stringify($content);
     }
 }
-if (! fe('excp')) {
-    function excp($msg, $err = 500, $format = 'json') {
-        throw new \Lif\Core\Excp\Lif($msg, $err, $format);
-    }
-}
-if (! fe('format_namespace')) {
-    function format_namespace($raw) {
+if (! fe('format_ns')) {
+    function format_ns($raw) {
         if (is_array($raw) && $raw) {
             return implode(
                 '\\',

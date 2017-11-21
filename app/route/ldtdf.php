@@ -69,6 +69,17 @@ $this->group([
             $this->get('{id}', 'info');
             $this->post('{id}', 'update');
             $this->get('delete/{id}', 'delete');
+
+            $this->group([
+                'prefix' => 'groups',
+                'ctl' => 'UserGroup',
+            ], function () {
+                $this->get('/', 'index');
+                $this->get('new', 'add');
+                $this->post('new', 'create');
+                $this->get('{id}', 'edit');
+                $this->post('{id}', 'update');
+            });
         });
 
         $this->group([
@@ -76,7 +87,7 @@ $this->group([
             'ctl'    => 'Project',
         ], function () {
             $this->get('/', 'index');
-            $this->get('new', 'edit');
+            $this->get('new', 'add');
             $this->post('new', 'create');
             $this->get('{id}', 'edit');
             $this->post('{id}', 'update');
