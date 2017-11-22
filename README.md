@@ -98,6 +98,10 @@ Support common used loggers follows PSR-3, and in a more flexible way.
 
 Support basic queue and queue jobs functionalities.
 
+### Facade
+
+LiF implements a simple way to proxy classes by facade. 
+
 ### I18N
 
 Use `sysmsg()`/`lang()` and dynamic language packages, LiF can easily achieve simple i18n.
@@ -119,8 +123,6 @@ Use `email()` to send an email is very simple, see more details in doc.
 See: _doc/*_.
 
 > TODO (It's not full-finished yet, but in my active development)
-
-> - Facade
 
 > - Middleware `terminable()` method
 

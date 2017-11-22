@@ -184,6 +184,10 @@ if (! fe('legal_or')) {
         } else {
             $validator = new \Lif\Core\Validation;
             foreach ($rulesWithDefaults as $key => $_rulesWithDefaults) {
+                if (! is_array($_rulesWithDefaults)) {
+                    excp('Rules with defaults need an array in `legal_or()`');
+                }
+
                 $rules = $_rulesWithDefaults[0] ?? (
                     $_rulesWithDefaults['rules'] ?? null
                 );
@@ -326,6 +330,8 @@ if (! fe('nsOf')) {
                 '_cmd' => 'Lif\Core\Cmd\\',
                 'cmd'  => 'Lif\Cmd\\',
                 'lib'  => 'Lif\Core\Lib\\',
+                '_facade'  => 'Lif\Core\Facade\\',
+                'facade'   => 'Lif\Facade\\',
                 'queue'    => 'Lif\Core\Queue\\',
                 'logger'   => 'Lif\Core\Logger\\',
                 'storage'  => 'Lif\Core\Storage\\',

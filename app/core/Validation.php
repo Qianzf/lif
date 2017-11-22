@@ -4,6 +4,13 @@ namespace Lif\Core;
 
 class Validation
 {
+    public function exec(array $data, array $rules)
+    {
+        $this->run($data, $rules);
+
+        return $data;
+    }
+
     public function run(array &$data, array $rules)
     {
         foreach ($rules as $key => $item) {
@@ -11,13 +18,10 @@ class Validation
             if (is_string($item)) {
                 $rule = $item;
             } elseif (is_array($item)) {
-                if (!isset($item[0]) && !isset($item['rule'])) {
+                if (! ($rule = $item[0] ?? ($item['rule'] ?? null))) {
                     excp('Missing validation rule.');
                 }
-                $rule = $item[0] ?? $item['rule'];
-                if (isset($item[1]) || isset($item['default'])) {
-                    $hasDefault = $item[1] ?? $item['default'];
-                }
+                $hasDefault = $item[1] ?? ($item['default'] ?? null);
             } else {
                 excp('Single validation rule must be a string or array.');
             }
@@ -36,6 +40,7 @@ class Validation
                 $validator = $_ruleArr[0];
                 $extra     = $_ruleArr[1] ?? null;
                 $isWhen    = ('when' === strtolower($validator));
+                $necessary = in_array('need', $_rules);
 
                 if (true !== ($err = $this->$validator(
                     ($data[$key] ?? null),
@@ -43,19 +48,19 @@ class Validation
                     $data,
                     $key
                 ))) {
-                    if (isset($hasDefault)) {
-                        $data[$key] = $hasDefault;
-                        break;
-                    }
-                    if (($isWhen && (-1 === $err))
-                        || (!isset($_rules['need']))
-                    ) {
-                        break;
+                    if (! $necessary) {
+                        if (($isWhen && (-1 === $err))) {
+                            break;
+                        }
+
+                        if (isset($hasDefault)) {
+                            $data[$key] = $hasDefault;
+                            break;
+                        }
                     }
 
                     return is_string($err)
-                    ? $err
-                    : 'ILLEGAL_'.strtoupper($key);
+                    ? $err : 'ILLEGAL_'.strtoupper($key);
                 }
             }
         }
@@ -64,11 +69,15 @@ class Validation
     }
 
     // Check existing and un-empty value
-    public function need(string $key, array $data)
-    {
-        return (isset($data[$key]) && !empty($data[$key]))
+    public function need(
+        $vaule = null,
+        $extra = null,
+        array $data,
+        string $key
+    ) {
+        return (isset($data[$key]) && !empty_safe($data[$key]))
         ? true
-        : 'MISSING_'.strtoupper($key);
+        : 'MISSING_OR_EMPTY_'.strtoupper($key);
     }
 
     // If has email field then check it
@@ -163,7 +172,7 @@ class Validation
     // Don't need start and end part
     public function regex(string $value, string $regex)
     {
-        $regex = '/'.$regex.'/u';
+        $regex = "/{$regex}/u";
         
         return (0 < preg_match($regex, $value));
     }
