@@ -124,8 +124,6 @@ See: _doc/*_.
 
 > TODO (It's not full-finished yet, but in my active development)
 
-> - Middleware `terminable()` method
-
 > - Enable or disable some time-wasting but will still be used features via core configurations
 
 > - Mock data

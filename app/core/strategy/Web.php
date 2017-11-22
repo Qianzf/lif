@@ -223,9 +223,7 @@ class Web extends Container implements Observer, Strategy
 
     public function listen($name)
     {
-        $handle = $this->listenHandleMap[$name];
-
-        if (!exists($this->listenHandleMap, $name)
+        if (!($handle = exists($this->listenHandleMap, $name))
             || !method_exists($this, $handle)
         ) {
             throw new \Lif\Core\Excp\MethodNotFound(__CLASS__, $handle);

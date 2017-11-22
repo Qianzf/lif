@@ -48,15 +48,11 @@ class Validation
                     $data,
                     $key
                 ))) {
-                    if (! $necessary) {
-                        if (($isWhen && (-1 === $err))) {
-                            break;
-                        }
-
+                    if (!$necessary || ($isWhen && (-1 === $err))) {
                         if (isset($hasDefault)) {
                             $data[$key] = $hasDefault;
-                            break;
                         }
+                        break;
                     }
 
                     return is_string($err)
