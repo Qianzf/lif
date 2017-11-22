@@ -41,6 +41,7 @@ class Validation
                 $extra     = $_ruleArr[1] ?? null;
                 $isWhen    = ('when' === strtolower($validator));
                 $necessary = in_array('need', $_rules);
+                $hasKey    = isset($data[$key]);
 
                 if (true !== ($err = $this->$validator(
                     ($data[$key] ?? null),
@@ -48,12 +49,21 @@ class Validation
                     $data,
                     $key
                 ))) {
-                    if (!$necessary || ($isWhen && (-1 === $err))) {
-                        if (isset($hasDefault)) {
-                            $data[$key] = $hasDefault;
-                        }
-                        if (! isset($data[$key])) {
-                            break;
+                    if (isset($hasDefault)) {
+                        $data[$key] = $hasDefault;
+                    }
+
+                    if (! $hasKey) {
+                        break;
+                    }
+
+                    if (! $necessary) {
+                        if ($isWhen) {
+                            if (-1 === $err) {
+                                break;
+                            } elseif (1 === $err) {
+                                continue;
+                            }
                         }
                     }
 

@@ -9,6 +9,16 @@
 $this->get('/', 'lif');
 
 $this->get('test', function () {
+    $data = [
+        'custom' => 'no',
+        'url' => 'http://lif.dev/test',
+    ];
+
+    dd(validate($data, [
+        'custom' => ['need|in:yes,no', 'no'],
+        'url' => 'when:custom=no|url',
+    ]));
+    
     // $servers = db()->table('server')->get();
     
     // foreach ($servers as $server) {

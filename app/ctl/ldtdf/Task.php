@@ -97,7 +97,7 @@ class Task extends Ctl
             $status = 'UPDATE_FAILED';
         }
 
-        $err = !is_integer($err) ? lang($err) : null;
+        $err = is_integer($err) ? null : lang($err);
 
         share_error(lang($status, $err));
 
