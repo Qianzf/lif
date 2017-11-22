@@ -6,7 +6,7 @@
 
 namespace Lif\Core\Web;
 
-class CSRF implements \Lif\Core\Intf\Middleware
+class CSRF extends \Lif\Core\Abst\Middleware
 {
     private $allowedMethods = [
         'GET',
@@ -15,7 +15,7 @@ class CSRF implements \Lif\Core\Intf\Middleware
     ];
     private $expire = 60;
 
-    public function handle($app)
+    public function passing($app)
     {
         if (in_array(server('REQUEST_METHOD'), $this->allowedMethods)) {
         } else {

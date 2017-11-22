@@ -21,6 +21,10 @@ class CreateTaskTable extends Dit
             ->comment('Task Title');
 
             $table
+            ->datetime('create_at')
+            ->default('CURRENT_TIMESTAMP()', true);
+
+            $table
             ->string('status')
             ->comment('Task status => `task_status`.`key`');
 
@@ -44,6 +48,15 @@ class CreateTaskTable extends Dit
             $table
             ->string('story_value')
             ->comment('User story 3rd element: value');
+
+            $table
+            ->tinytext('acceptances')
+            ->comment('Acceptances of this task');
+
+            $table
+            ->text('extra')
+            ->nullable()
+            ->comment('Extra data of this task');
         });
     }
 

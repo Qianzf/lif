@@ -22,7 +22,9 @@ Support Basic functions, auto amount to the main application instance.
 
 ### Middleware
 
-Execute before controllers and after request.
+- Passing: Execute before controller and after request.
+
+- Callback: Execute before PHP exit and after controller.
 
 ### Controller
 
@@ -122,15 +124,17 @@ Use `email()` to send an email is very simple, see more details in doc.
 
 See: _doc/*_.
 
-> TODO (It's not full-finished yet, but in my active development)
+## TODO (It's not full-finished yet, but in my active development)
 
-> - Enable or disable some time-wasting but will still be used features via core configurations
+- Unify response and make middleware callback work
 
-> - Mock data
+- Enable or disable some time-wasting but will still be used features via core configurations
 
-> - Self-test, self-deploy, shell-based tasks handle
-> 
-> - GraphQL support
+- Mock data
+
+- Self-test, self-deploy, shell-based tasks handle
+
+- GraphQL support
 
 ## LICENSE
 

@@ -1,6 +1,7 @@
 <?= $this->layout('main') ?>
 <?= $this->title([lang('TASK_LIST'), lang('LDTDFMS')]) ?>
 <?= $this->section('common') ?>
+<?= $this->section('filter/user') ?>
 
 <dl class="list">
     <dd>
@@ -18,6 +19,7 @@
     <tr>
         <th><?= lang('ID') ?></th>
         <th><?= lang('TITLE') ?></th>
+        <th><?= lang('CREATOR') ?></th>
         <th><?= lang('OPERATIONS') ?></th>
     </tr>
 
@@ -26,6 +28,7 @@
     <tr>
         <td><?= $task->id ?></td>
         <td><?= $task->title ?></td>
+        <td><?= $task->creator()->name ?></td>
         <td>
             <button>
                 <a href="tasks/<?= $task->id ?>"><?= lang('DETAILS') ?></a>

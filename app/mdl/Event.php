@@ -21,11 +21,11 @@ class Event extends ModelBase
     protected $unreadable  = [
     ];
 
-    public function genHTMLStringOfLoginSys()
+    public function genDetailsOfLoginSys()
     {
     }
 
-    public function genHTMLStringforBug($id)
+    public function genDetailsforBug($id)
     {
         return [
             'route' => "/dep/bugs/{$id}",
@@ -33,7 +33,7 @@ class Event extends ModelBase
         ];
     }
 
-    public function genHTMLStringforTask($id)
+    public function genDetailsforTask($id)
     {
         return [
             'route' => "/dep/tasks/{$id}",
@@ -41,24 +41,29 @@ class Event extends ModelBase
         ];
     }
 
-    public function genHTMLStringOfUpdateBugComment($id)
+    public function genDetailsOfUpdateBugComment($id)
     {
-        return $this->genHTMLStringforBug($id);
+        return $this->genDetailsforBug($id);
     }
 
-    public function genHTMLStringOfUpdateTaskComment($id)
+    public function genDetailsOfUpdateTaskComment($id)
     {
-        return $this->genHTMLStringforTask($id);
+        return $this->genDetailsforTask($id);
     }
 
-    public function genHTMLStringOfAssignTask($id)
+    public function genDetailsOfCreateTask($id)
     {
-        return $this->genHTMLStringforTask($id);
+        return $this->genDetailsforTask($id);
     }
 
-    public function genHTMLStringOfUpdateTask($id)
+    public function genDetailsOfAssignTask($id)
     {
-        return $this->genHTMLStringforTask($id);
+        return $this->genDetailsforTask($id);
+    }
+
+    public function genDetailsOfUpdateTask($id)
+    {
+        return $this->genDetailsforTask($id);
     }
 
     public function getBugTitle($id)

@@ -3,17 +3,50 @@
 namespace Lif\Ctl\Ldtdf;
 
 use Lif\Mdl\Task as TaskModel;
+use Lif\Mdl\User;
 
 class Task extends Ctl
 {
-    public function index(TaskModel $task)
+    public function index(TaskModel $task, User $user)
     {
-        view('ldtdf/task/index')->withTasks($task->all());
+        $querys = $this->request->all();
+        legal_or($querys, [
+            'user' => ['int|min:1', null],
+        ]);
+
+        if ($uid = $querys['user']) {
+            $task = $task->whereCreator($uid);
+        }
+
+        $tasks = $task->get();
+
+        view('ldtdf/task/index')->withRecordsTasksUsers(
+            $task->count(),
+            $tasks,
+            $user->getNonAdmin()
+        );
+    }
+
+    public function add(TaskModel $task)
+    {
+        share('hide-search-bar', true);
+        
+        view('ldtdf/task/edit')->withTask($task);
     }
 
     public function edit(TaskModel $task)
     {
-        share('hide-search-bar', true);
+        $error = $back2last = null;
+        if (! $task->isAlive()) {
+            $error     = lang('NO_TASK');
+            $back2last = share('url_previous');
+        }
+
+        shares([
+            'hide-search-bar' => true,
+            '__error'   => $error,
+            'back2last' => $back2last,
+        ]);
         
         view('ldtdf/task/edit')->withTask($task);
     }
@@ -29,6 +62,7 @@ class Task extends Ctl
             && ($status > 0)
         ) {
             $msg = 'CREATED_SUCCESS';
+            $task->addTrending('create');
         } else {
             $msg    = lang('CREATED_FAILED', $status);
             $status = 'new';
@@ -41,14 +75,27 @@ class Task extends Ctl
 
     public function update(TaskModel $task)
     {
+        if ($task->creator != share('user.id')) {
+            share_error_i18n('UPDATE_PERMISSION_DENIED');
+            redirect($this->route);
+        }
+
         if (! $task->items()) {
             share_error_i18n('TASK_NOT_FOUND');
             redirect('/dep/tasks');
         }
 
-        $status = (($err = $task->save($this->request->all())) >= 0)
-        ? 'UPDATE_OK'
-        : 'UPDATE_FAILED';
+        if (!empty_safe($err = $task->save($this->request->all()))
+            && is_numeric($err)
+            && ($err >= 0)
+        ) {
+            $status = 'UPDATE_OK';
+            if ($err > 0) {
+                $task->addTrending('update');
+            }
+        } else {
+            $status = 'UPDATE_FAILED';
+        }
 
         $err = !is_integer($err) ? lang($err) : null;
 

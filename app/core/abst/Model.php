@@ -204,18 +204,25 @@ abstract class Model
         if ($data = ($data ? $data : $this->items)) {
             unset($data[$this->pk()]);    // Protected primary key
 
-            try {
-                return $this->alive
+            $status = $this->alive
+            ? $this
+            ->query()
+            ->where($this->pk, $this->items[$this->pk])
+            ->update($data)
+            : $this->query()->insert($data);
 
-                ? $this
+            $pk = $this->alive ? $this->items[$this->pk] : $status;
+
+            if ($status > 0) {
+                $this->items = $this
                 ->query()
-                ->where($this->pk, $this->items[$this->pk])
-                ->update($data)
-
-                : $this->query()->insert($data);
-            } catch (\PDOException $pdoe) {
-                dd($pdoe->getMessage());
+                ->reset()
+                ->table($this->table)
+                ->where($this->pk, $pk)
+                ->first();
             }
+
+            return $status;
         }
     }
 

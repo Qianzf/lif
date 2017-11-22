@@ -1,13 +1,14 @@
-<?php $action = lang(($model->id ? 'EDIT' : 'ADD')."_{$key}") ?>
+<?php $action = $action ?? ($model->id ? 'EDIT' : 'ADD'); ?>
+<?php $title  = lang("{$action}_{$key}"); ?>
 
 <?= $this->title([
-        $action,
+        $title,
         lang('LDTDFMS')
     ])
 ?>
 <?= $this->section('common') ?>
 <h4>
-    <?= $action ?>
+    <?= $title ?>
     <sup>
         <small>
             <a href="<?= $route ?>"><?= lang('BACK_TO_LIST') ?></a>

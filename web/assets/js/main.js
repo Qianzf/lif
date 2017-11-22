@@ -76,14 +76,20 @@ $(window).ready(function () {
     })
 
     $('input[name="custom"]').click(function () {
-        if ('no' == this.value) {
-            $('.custom-task-attr').hide();
-            $('.outer-task-detail').show();
-        } else {
-            $('.custom-task-attr').removeClass('invisible-default');
-            $('.custom-task-attr').show();
-            $('.outer-task-detail').hide();
+        let outer  = $('.outer-task-detail')
+        let custom = $('.custom-task-attr')
+        let show = outer
+        let hide = custom
+        if ('yes' == this.value) {
+            show = custom
+            hide = outer
         }
+
+        hide.hide()
+        hide.attr('disabled', true);
+        show.removeClass('invisible-default');
+        show.attr('disabled', false);
+        show.show()
     })
 
     hasErrorOrNot()

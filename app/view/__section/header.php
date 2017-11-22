@@ -10,7 +10,7 @@
     <select name="loggedin">
         <option>
             <?=
-                lang(share('user.role'))
+                lang('ROLE_'.share('user.role'))
                 .': '
                 .share('user.name')
                 .' ('

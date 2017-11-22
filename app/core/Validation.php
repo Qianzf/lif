@@ -52,7 +52,9 @@ class Validation
                         if (isset($hasDefault)) {
                             $data[$key] = $hasDefault;
                         }
-                        break;
+                        if (! isset($data[$key])) {
+                            break;
+                        }
                     }
 
                     return is_string($err)

@@ -74,6 +74,7 @@ return [
     'FAILED' => 'Failed',
     'UPDATED_NOTHING' => 'Updated nothing',
     'VIEW_PERMISSION_DENIED' => 'You do not have permission to view this page',
+    'UPDATE_PERMISSION_DENIED' => 'You do not have permission to update',
     'MANAGE' => 'Manage',
     'EDIT' => 'Edit',
     'MISSING' => 'Missing',
@@ -146,4 +147,9 @@ return [
     'STORY_WHO' => 'As a',
     'STORY_WHAT' => 'I Want',
     'STORY_FOR' => 'For',
+    'STORY_AC' => 'Acceptances',
+    'ATTACHMENT' => 'Attachements',
+    'VIEW' => 'View',
+    'NO_TASK' => 'Task not found',
+    'CREATOR' => 'Creator',
 ];

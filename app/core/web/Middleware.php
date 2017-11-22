@@ -16,20 +16,18 @@ class Middleware extends Container implements Observable
     
     protected $name  = 'middleware';
     protected $argvs = [];
-    protected $middlewares = [];
+    protected $middlewares = [];    // key with object instance
 
     public function run($observer, $middlewares = [])
     {
         return $this
         ->addObserver($observer)
-        ->through($middlewares)
+        ->passing($middlewares)
         ->done();
     }
 
-    public function through($middlewares): Middleware
+    public function passing($middlewares): Middleware
     {
-        $this->middlewares = $middlewares;
-
         $mdwrNS = nsOf('mdwr');
         foreach ($middlewares as $middleware) {
             if (is_string($middleware)) {
@@ -44,9 +42,11 @@ class Middleware extends Container implements Observable
                     $middleware = ucfirst($middleware);
                 }
 
-                $this->argvs[$middleware][] = (
-                    Factory::make($middleware, $mdwrNS)
-                )->handle($this->app);
+                $this->middlewares[$middleware] = (
+                    $mdwr = Factory::make($middleware, $mdwrNS)
+                );
+
+                $this->argvs[$middleware][] = $mdwr->passing($this->app);
             }
         }
 

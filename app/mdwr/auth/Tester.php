@@ -4,5 +4,5 @@ namespace Lif\Mdwr\Auth;
 
 class Tester extends Role
 {
-    protected $role = 'tester';
+    protected $role = 'test';
 }

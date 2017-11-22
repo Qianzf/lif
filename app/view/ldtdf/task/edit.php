@@ -1,9 +1,4 @@
 <?= $this->layout('main') ?>
-<?= $this->section('back2list', [
-    'model' => $task,
-    'key'   => 'TASK',
-    'route' => '/dep/tasks',
-]) ?>
 
 <?php if (isset($task) && is_object($task)) { ?>
 <?php $hiddenCustomRadio = $task->id ? 'invisible-default' : ''; ?>
@@ -12,12 +7,27 @@
 <?php $checkedYes = $custom ? 'checked' : ''; ?>
 <?php $hiddenOuterDetail = $custom ? 'invisible-default' : ''; ?>
 <?php $hiddenCustomAttr  = $custom ? '' : 'invisible-default'; ?>
-<form method="POST">
+<?php $editable = ($task->creator == share('user.id')) || !$task->isAlive(); ?>
+<?php $editStyle = $editable ? '' : 'disabled'; ?>
+
+<?= $this->section('back2list', [
+    'model'  => $task,
+    'key'    => 'TASK',
+    'action' => ($editable ? null : 'VIEW'),
+    'route'  => '/dep/tasks',
+]) ?>
+
+<form method="POST" novalidate>
     <?= csrf_feild() ?>
 
     <label>
         <?= lang('TITLE') ?>
-        <input type="text" name="title" value="<?= $task->title ?>">
+        <input
+        <?= $editStyle ?>
+        type="text"
+        name="title"
+        required
+        value="<?= $task->title ?>">
     </label>
 
     <label class="<?= $hiddenCustomRadio ?>">
@@ -38,35 +48,64 @@
 
     <label class="outer-task-detail <?= $hiddenOuterDetail ?>">
         <?= lang('TASK_URL') ?>
-        <input type="text" name="url" value="<?= $task->url ?>">
+        <?php if ($editable) : ?>
+            <input
+            type="text"
+            name="url"
+            required
+            value="<?= $task->url ?>">
+        <?php else: ?>
+            <a href="<?= $task->url ?>">
+                <?= $task->url ?>
+            </a>
+        <?php endif ?>
     </label>
 
     <label class="custom-task-attr <?= $hiddenCustomAttr ?>">
         <?= lang('STORY_WHO') ?>
         <input
+        <?= $editStyle ?>
         type="text"
         name="story_role"
+        required
         value="<?= $task->story_role ?>">
     </label>
 
     <label class="custom-task-attr <?= $hiddenCustomAttr ?>">
         <?= lang('STORY_WHAT') ?>
-        <input
-        type="text"
-        name="story_activity"
-        value="<?= $task->story_activity ?>">
+        <textarea
+        <?= $editStyle ?>
+        required
+        name="story_activity"><?= $task->story_activity ?></textarea>
     </label>
 
     <label class="custom-task-attr <?= $hiddenCustomAttr ?>">
         <?= lang('STORY_FOR') ?>
-        <input
-        type="text"
-        name="story_value"
-        value="<?= $task->story_value ?>">
+        <textarea
+        <?= $editStyle ?>
+        required
+        name="story_value"><?= $task->story_value ?></textarea>
     </label>
 
+    <label class="custom-task-attr <?= $hiddenCustomAttr ?>">
+        <?= lang('STORY_AC') ?>
+        <textarea
+        required
+        <?= $editStyle ?>
+        name="acceptances"><?= $task->acceptances ?></textarea>
+    </label>
+
+    <label class="custom-task-attr <?= $hiddenCustomAttr ?>">
+        <?= lang('ATTACHMENT') ?>
+        <textarea
+        <?= $editStyle ?>
+        name="extra"><?= $task->extra ?></textarea>
+    </label>
+
+    <?php if ($editable) : ?>
     <?= $this->section('submit', [
         'model' => $task
     ]) ?>
+    <?php endif ?>
 </form>
 <?php } ?>

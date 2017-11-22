@@ -2,11 +2,11 @@
 
 namespace Lif\Mdwr\Auth;
 
-class Role
+class Role extends \Lif\Core\Abst\Middleware
 {
     // protected $role = null;
 
-    public function handle($app)
+    public function passing($app)
     {
         if ($this->getRole() !== strtolower(share('user.role'))) {
             share_error_i18n('VIEW_PERMISSION_DENIED');

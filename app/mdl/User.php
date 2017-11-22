@@ -10,6 +10,11 @@ class User extends Mdl
         'passwd',
     ];
 
+    public function getNonAdmin()
+    {
+        return $this->whereStatus(1)->whereRole('!=', 'admin')->get();
+    }
+
     public function listNonAdminUsers()
     {
         $role = (share('user.role') == 'admin')

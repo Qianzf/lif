@@ -2,11 +2,11 @@
 
 namespace Lif\Mdwr\Auth;
 
-class Web
+class Web extends \Lif\Core\Abst\Middleware
 {
     protected $auth = false;
 
-    public function handle($app)
+    public function passing($app)
     {
         // update previous url
         share('url_previous', (share('url_current') ?? $app->url()));

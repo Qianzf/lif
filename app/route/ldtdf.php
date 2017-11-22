@@ -45,7 +45,7 @@ $this->group([
         'ctl' => 'Task',
     ], function () {
         $this->get('/', 'index');
-        $this->get('new', 'edit');
+        $this->get('new', 'add');
         $this->post('new', 'create');
         $this->get('{id}', 'edit');
         $this->post('{id}', 'update');
@@ -118,7 +118,7 @@ $this->group([
     });
 
     $this->group([
-        'prefix'    => 'developer',
+        'prefix'    => 'dev',
         'namespace' => 'Developer',
         'middleware' => [
             'auth.developer',
@@ -128,7 +128,7 @@ $this->group([
     });
 
     $this->group([
-        'prefix'    => 'tester',
+        'prefix'    => 'test',
         'namespace' => 'Tester',
         'middleware' => [
             'auth.tester',

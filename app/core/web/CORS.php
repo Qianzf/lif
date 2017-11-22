@@ -6,9 +6,9 @@
 
 namespace Lif\Core\Web;
 
-class CORS implements \Lif\Core\Intf\Middleware
+class CORS extends \Lif\Core\Abst\Middleware
 {
-    public function handle($app)
+    public function passing($app)
     {
         $headers = [
             'Access-Control-Allow-Origin'  => '*',
@@ -32,5 +32,9 @@ class CORS implements \Lif\Core\Intf\Middleware
         }
 
         return true;
+    }
+
+    public function callback($app)
+    {
     }
 }

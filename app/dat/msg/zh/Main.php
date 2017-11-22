@@ -74,6 +74,7 @@ return [
     'FAILED' => '失败',
     'UPDATED_NOTHING' => '无更新项',
     'VIEW_PERMISSION_DENIED' => '抱歉，你无权查看本页面',
+    'UPDATE_PERMISSION_DENIED' => '抱歉，你无权执行本次更新',
     'MANAGE' => '管理',
     'EDIT' => '编辑',
     'MISSING' => '缺少',
@@ -149,4 +150,9 @@ return [
     'STORY_WHO' => '我作为',
     'STORY_WHAT' => '想要',
     'STORY_FOR' => '以便',
+    'STORY_AC' => '验收条件',
+    'ATTACHMENT' => '附件',
+    'VIEW' => '查看',
+    'NO_TASK' => '任务不存在',
+    'CREATOR' => '创建人',
 ];

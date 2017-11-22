@@ -47,7 +47,7 @@ class Trending extends Mdl
     {
         $event   = $this->makeEvent();
         $key     = underline2camelcase($this->event);
-        $handler = "genHTMLStringOf{$key}";
+        $handler = "genDetailsOf{$key}";
 
         if (! method_exists($event, $handler)) {
             excp("Event string generator not found: {$handler}()");

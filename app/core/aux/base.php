@@ -1386,7 +1386,7 @@ if (! fe('request_json_api')) {
    ) {
         $headers = [
             'Content-Type: application/json; Charset=UTF-8',
-       ];
+        ];
 
         $ret = request_http_api($uri, $type, $headers, $params);
 

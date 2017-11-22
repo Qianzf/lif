@@ -15,6 +15,7 @@ class Web extends Container implements Observer, Strategy
     protected $_route      = null;
     protected $request     = null;
     protected $middleware  = [];
+    protected $response    = null;
     protected $globalMiddlewares  = [];
 
     private $listenHandleMap = [
@@ -138,7 +139,7 @@ class Web extends Container implements Observer, Strategy
         // !!! Hander must set before middlewares be executed
         $this->handler   = $this->routes[$key][$type]['handle'];
         $this->routeVars = $this->assign($this->routes[$key][$type]['params']);
-        $this->mdwr(exists($this->routes[$key][$type], 'middlewares'));
+        $this->passingMiddlewares(exists($this->routes[$key][$type], 'middlewares'));
 
         return $this;
     }
@@ -167,7 +168,7 @@ class Web extends Container implements Observer, Strategy
         return $this;
     }
 
-    protected function mdwr(array $middlewares = [])
+    protected function passingMiddlewares(array $middlewares = [])
     {
         // !!! Make sure global middlewares be executed first
         ($this->middleware = Factory::make('middleware', nsOf('web')))
@@ -175,6 +176,17 @@ class Web extends Container implements Observer, Strategy
             $this->globalMiddlewares,
             $middlewares
         ));
+
+        return $this;
+    }
+
+    protected function callbackMiddlewares()
+    {
+        foreach ($this->middlewares as $key => $middleware) {
+            if ($middleware instanceof \Lif\Core\Abst\Middleware) {
+                call_user_func([$middleware, 'callback'], $this);
+            }
+        }
 
         return $this;
     }
@@ -189,7 +201,7 @@ class Web extends Container implements Observer, Strategy
     public function execute()
     {
         if (is_callable($this->handler)) {
-            return $this->__callableSafe($this->handler, $this->vars);
+            $response = $this->__callableSafe($this->handler, $this->vars);
         } elseif (is_string($this->handler)) {
             $args = explode('@', $this->handler);
             if ((count($args) !== 2)
@@ -203,7 +215,7 @@ class Web extends Container implements Observer, Strategy
             $act = lcfirst($act);
 
             if (method_exists($ctl, '__lif__')) {
-                return call_user_func_array([
+                $response = call_user_func_array([
                     $ctl,
                     '__lif__'
                 ], [$this, $act, $this->routeVars]);
@@ -213,10 +225,17 @@ class Web extends Container implements Observer, Strategy
                 excp("Method not found: `{$ns}@{$act}`");
             }
 
-            return call_user_func_array([$ctl, $act], $this->routeVars);
+            $response = call_user_func_array([$ctl, $act], $this->routeVars);
         } else {
             throw new \Lif\Core\Excp\IllegalRouteDefinition(1);
         }
+
+        if ($response instanceof \Lif\Core\Web\Response) {
+            $this->response = $response;
+        }
+
+        // Execute registered middleware callbacks
+        $this->callbackMiddlewares();
 
         return $this;
     }
@@ -252,8 +271,8 @@ class Web extends Container implements Observer, Strategy
     public function middlewares()
     {
         return (
-            is_object($this->middleware) &&
-            method_exists($this->middleware, 'all')
+            is_object($this->middleware)
+            && method_exists($this->middleware, 'all')
         ) ? $this->middleware->all() : [];
     }
 

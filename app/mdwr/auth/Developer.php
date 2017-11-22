@@ -4,5 +4,5 @@ namespace Lif\Mdwr\Auth;
 
 class Developer extends Role
 {
-    protected $role = 'developer';
+    protected $role = 'dev';
 }
