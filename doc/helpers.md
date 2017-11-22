@@ -1,4 +1,4 @@
-Global LiF defined helper functions.
+Global LiF defined core helper functions.
 
 ### A
 
@@ -11,6 +11,26 @@ Check if application in debug model from configurations.
 Get current application environment from configurations.
 
 ### B
+
+- `between($num, $start, $end)`
+
+Compare a number is in the range of `$start` and `$end`.
+
+- `build_cmds(string | array $cmds)`
+
+Build a shell commands string from given `$cmds`.
+
+- `build_cmds_with_env($cmds)`
+
+Build a shell commands string from given `$cmds`, and prefixed with common used environment variables.
+
+- `build_log_str($data, string $level = 'log') : string`
+
+Build common log text string.
+
+- `build_pdo_dsn($conn)`
+
+Build PDO construct data source from configurations.
 
 ### C
 

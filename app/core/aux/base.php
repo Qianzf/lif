@@ -1805,7 +1805,7 @@ if (! fe('camelcase2underline')) {
     }
 }
 if (! fe('between')) {
-    function between(int $num, int $start, int $end) : bool {
+    function between($num, $start, $end) : bool {
         return (($start <= $num) && ($num <= $end));
     }
 }
