@@ -8,8 +8,7 @@ class Trending extends Mdl
 
     public function list(array $params)
     {
-        $role = (share('user.role') == 'admin')
-        ? -1 : 'admin';
+        // $role = (share('user.role') == 'admin') ? -1 : 'admin';
 
         legal_or($params, [
             'uid'  => ['int|min:1', null],
@@ -23,7 +22,7 @@ class Trending extends Mdl
             ->sort([
                 'trending.at' => 'desc',
             ])
-            ->where('user.role', '!=', $role)
+            // ->where('user.role', '!=', $role)
             ->limit(
                 $params['from'],
                 $params['take']

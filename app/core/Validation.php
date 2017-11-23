@@ -64,6 +64,8 @@ class Validation
                             } elseif (1 === $err) {
                                 continue;
                             }
+                        } else {
+                            break;
                         }
                     }
 

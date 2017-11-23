@@ -81,6 +81,7 @@ $(window).ready(function () {
         let show = outer
         let hide = custom
         if ('yes' == this.value) {
+            tryDisplayEditormd()
             show = custom
             hide = outer
         }
@@ -94,6 +95,23 @@ $(window).ready(function () {
 
     hasErrorOrNot()
 })
+function tryDisplayEditormd()
+{
+    if (typeof EditorMDObjects) {
+        for (let i in EditorMDObjects) {
+            editormd(EditorMDObjects[i].id, {
+                width   : '80%',
+                height  : 300,
+                syncScrolling : 'single',
+                path    : '/assets/editor.md/lib/',
+                placeholder : EditorMDObjects[i].placeholder
+                // emoji : true
+                // saveHTMLToTextarea : true,
+                // previewTheme: 'github'
+            })
+        }
+    }
+}
 function tryReloadWithNewPage(page)
 {
     let canReload = false

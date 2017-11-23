@@ -50,7 +50,7 @@ class CreateTaskTable extends Dit
             ->comment('User story 3rd element: value');
 
             $table
-            ->tinytext('acceptances')
+            ->text('acceptances')
             ->comment('Acceptances of this task');
 
             $table

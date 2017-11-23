@@ -47,13 +47,15 @@ class Task extends Ctl
             '__error'   => $error,
             'back2last' => $back2last,
         ]);
+
+        $action = ($task->creator == share('user.id')) ? 'edit' : 'info';
         
-        view('ldtdf/task/edit')->withTask($task);
+        view("ldtdf/task/{$action}")->withTask($task);
     }
 
     public function create(TaskModel $task)
     {
-        $data = $this->request->all();
+        $data = $this->request->all();dd($data);
         $data['status']  = 'created';
         $data['creator'] = share('user.id');
 

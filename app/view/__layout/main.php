@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>
-        <?= $title ?>
+        <?= ($title ?? null) ?>
     </title>
 
     <?=
@@ -21,7 +21,7 @@
 
     <?= $this->section('header') ?>
 
-    <?= $__MAIN__ ?>
+    <?= ($__MAIN__ ?? null) ?>
 
     <?= $this->section('footer') ?>
 

@@ -44,6 +44,14 @@ Get current PHP executing context.
 
 Try dump any given amount variables nicely and exit.
 
+- `db(string $conn = null, bool $flush = false)`
+
+Get sql database query builder instance.
+
+- `db_conns()`
+
+Get current database connections.
+
 ### E
 
 - `void ee()`
