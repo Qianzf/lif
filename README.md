@@ -90,7 +90,7 @@ Support the transformation between array and collection class.
 
 ### Validation
 
-Support custom validation and keep an uniform return values: `false` or language key.
+Support custom validation and keep an uniform return values: `true` or language key.
 
 ### Log
 

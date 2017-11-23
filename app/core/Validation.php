@@ -164,19 +164,16 @@ class Validation
 
         $val = $cond[1] ?? '';
 
-        if (isset($data[$cond[0]]) && ($data[$cond[0]] == $val)) {
-            if (!isset($data[$key]) || empty_safe($value)) {
-                return 'MISSING_'.strtoupper($key);
-            }
+        // Exists given `{key}` of `when:{key}={cond}` in `$data`
+        // And `$data[{$key}]` == {cond}
+        // And need to keep on validating (if has more validations)
+        return (isset($data[$cond[0]]) && ($data[$cond[0]] == $val))
+        ? 1
 
-            // Exists given key of `when`@`cond` in `$data`
-            // And need to keep on validating (if has more validations)
-            return 1;
-        }
-
-        // No given key of `when`@`cond` in `$data`
-        // And doesn't need to keep on validating (if has more validations)
-        return -1;
+        // No given `{key}` of `when:{key}={cond}` in `$data`
+        // Or `$data[{$key}]` != {cond}
+        // And doesn't need to keep on validating
+        : -1;
     }
 
     // Don't need start and end part

@@ -3,12 +3,11 @@
 <?= $this->section('common')  ?>
 
 <h2>
-    <span class="text-info">[</span>
+    <span class="stub"></span>
     <small><code>
-        #<?= $task->id ?>
+        <?= $task->id ?>
     </code></small>
     <?= $task->title ?>
-    <span class="text-info">]</span>
     <sup><button class="btn-info">
         <?= lang("TASK_{$task->status}") ?>
     </button></sup>
@@ -25,16 +24,29 @@
     </p>
 <?php else : ?>
     <blockquote><em>
-        <?=
-            lang('STORY_WHO'), ' ' , $task->story_role, ', ',
-            lang('STORY_WHAT'), ' ', $task->story_activity, ', ',
-            lang('STORY_FOR'), ' ', $task->story_value
-        ?>
+        <p>
+            <?= lang('STORY_WHO') ?>
+            <span><?= $task->story_role ?></span>
+        </p>
+        <p>
+            <?= lang('STORY_WHAT') ?>
+            <span><?= $task->story_activity ?></span>
+        </p>
+        <p>
+            <?= lang('STORY_FOR') ?>
+            <span><?= $task->story_value ?></span>
+        </p>
     </em></blockquote>
     <div id="task-acceptances">
+        <span class="text-info">[</span>
         <b><?= lang('STORY_AC') ?></b>
+        <span class="text-info">]</span>
     </div>
-    <div id="task-others"></div>
+    <div id="task-others">
+        <span class="text-info">[</span>
+        <b><?= lang('OTHER_NOTES') ?></b>
+        <span class="text-info">]</span>
+    </div>
 
     <textarea
     id="task-acceptances-md"
@@ -44,22 +56,7 @@
     style="display:none"><?= $task->extra ?></textarea>
 <?php endif ?>
 
-<?= css([
-    'editor.md/css/editormd.min',
-    'editor.md/css/editormd.preview.min',
-    'editor.md/lib/codemirror/codemirror.min',
-    'editor.md/lib/codemirror/addon/dialog/dialog',
-    'editor.md/lib/codemirror/addon/search/matchesonscrollbar',
-]) ?>
-
-<?= js([
-    'editor.md/editormd.min',
-    'editor.md/lib/codemirror/codemirror.min',
-    'editor.md/lib/codemirror/modes.min',
-    'editor.md/lib/codemirror/addons.min',
-    'editor.md/lib/marked.min',
-    'editor.md/lib/prettify.min',
-]) ?>
+<?= $this->section('lib/editormd') ?>
 
 <script type="text/javascript">
     editormd.markdownToHTML("task-acceptances", {
