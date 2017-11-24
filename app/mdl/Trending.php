@@ -6,19 +6,33 @@ class Trending extends Mdl
 {
     protected $table = 'trending';
 
+    public function add(
+        string $aciton,
+        string $refType = null,
+        string $refID = null
+    ) {
+        return $this->insert([
+            'at'       => date('Y-m-d H:i:s'),
+            'user'     => share('user.id'),
+            'action'   => $aciton,
+            'ref_type' => $refType,
+            'ref_id'   => $refID,
+        ]);
+    }
+
     public function list(array $params)
     {
         // $role = (share('user.role') == 'admin') ? -1 : 'admin';
 
         legal_or($params, [
-            'uid'  => ['int|min:1', null],
+            'user' => ['int|min:1', null],
             'from' => ['int|min:0', 0],
             'take' => ['int|min:0', 20],
         ]);
 
-        if (is_null($params['uid'])) {
+        if (is_null($params['user'])) {
             return $this
-            ->leftJoin('user', 'user.id', 'trending.uid')
+            ->leftJoin('user', 'user.id', 'trending.user')
             ->sort([
                 'trending.at' => 'desc',
             ])
@@ -30,7 +44,7 @@ class Trending extends Mdl
             ->get();
         }
 
-        $user = model(User::class, $params['uid']);
+        $user = model(User::class, $params['user']);
 
         if (! $user->items()) {
             client_error('USER_NOT_FOUND', 404);
@@ -45,7 +59,7 @@ class Trending extends Mdl
     public function genHTMLStringOfEvent() : string
     {
         $event   = $this->makeEvent();
-        $key     = underline2camelcase($this->event);
+        $key     = underline2camelcase("{$this->action}{$this->ref_type}");
         $handler = "genDetailsOf{$key}";
 
         if (! method_exists($event, $handler)) {
@@ -69,7 +83,7 @@ class Trending extends Mdl
     {
         return $this->belongsTo(
             User::class,
-            'uid',
+            'user',
             'id'
         );
     }

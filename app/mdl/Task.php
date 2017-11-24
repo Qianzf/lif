@@ -38,13 +38,14 @@ class Task extends Mdl
         );
     }
 
-    public function addTrending(string $event)
+    public function addTrending(string $action)
     {
         db()->table('trending')->insert([
             'at'     => date('Y-m-d H:i:s'),
-            'uid'    => share('user.id'),
-            'event'  => strtolower($event).'_task',
-            'ref_id' => $this->id,
+            'user'   => share('user.id'),
+            'action' => $action,
+            'ref_type' => 'task',
+            'ref_id'   => $this->id,
         ]);
     }
 }

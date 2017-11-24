@@ -330,7 +330,7 @@ abstract class Model
         } else {
             // Use local key mapped value of current model
             if (! isset($this->items[$lk])) {
-                excp('Non-exists model can not has any rel`ionship.');
+                excp('Non-exists model can not has any relationship.');
             }
 
             $value = $this->items[$lk];

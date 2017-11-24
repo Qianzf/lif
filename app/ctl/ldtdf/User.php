@@ -44,8 +44,8 @@ class User extends Ctl
         }
 
         $from = ($querys['page'] - 1) * $pageScale;
-        $data = $trending->list([
-            'uid'  => $uid,
+        $trendings = $trending->list([
+            'user' => $uid,
             'from' => $from,
             'take' => $pageScale,
         ]);
@@ -57,7 +57,7 @@ class User extends Ctl
         view('ldtdf/user/trending')
         ->withUsersTrendingsPagesRecords(
             $users,
-            $data,
+            $trendings,
             $pages,
             $records
         );

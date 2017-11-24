@@ -60,7 +60,7 @@ class User extends Mdl
         return $this->hasMany([
             'model' => Trending::class,
             'lk'    => 'id',
-            'fk'    => 'uid',
+            'fk'    => 'user',
             'from'  => $start,
             'take'  => $offset,
             'sort'  => [

@@ -32,15 +32,8 @@ class Passport extends Ctl
             share('__error', sysmsg('ILLEGAL_USER_CREDENTIALS'));
             redirect('/dep/user/login');
         }
-
         unset($user->passwd);
         $timestamp = time();
-
-        // Save login event to trending
-        $trend->at     = date('Y-m-d H:i:s', $timestamp);
-        $trend->uid    = $user->id;
-        $trend->event  = 'login_sys';
-        $trend->save();
         
         $shares = [
             'user'    => $user->items(),
@@ -63,6 +56,8 @@ class Passport extends Ctl
         }
 
         shares($shares);
+
+        $trend->add('login_sys');
 
         redirect('/dep');
     }

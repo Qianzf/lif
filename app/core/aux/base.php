@@ -1218,7 +1218,7 @@ if (! fe('sysmsg')) {
 
         // Support get missing system message by single word key
         if (false !== mb_strpos($key, '_')) {
-            $arr  = explode('_', $key);
+            $arr  = array_filter(explode('_', $key));
             $_msg = '';
             $stub = (('en' == $lang) ? ' ' : '');
             foreach ($arr as $_key) {

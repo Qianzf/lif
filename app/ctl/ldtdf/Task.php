@@ -3,10 +3,22 @@
 namespace Lif\Ctl\Ldtdf;
 
 use Lif\Mdl\Task as TaskModel;
-use Lif\Mdl\{User, Project};
+use Lif\Mdl\{User, Project, Trending};
 
 class Task extends Ctl
 {
+    public function assign()
+    {
+        $id = $this->vars[0] ?? null;
+
+        return redirect("/dep/tasks/{$id}");
+    }
+
+    public function assignTo()
+    {
+        dd($this->request->all());
+    }
+
     public function index(TaskModel $task, User $user)
     {
         $querys = $this->request->all();
@@ -36,7 +48,7 @@ class Task extends Ctl
         view('ldtdf/task/edit')->withTaskProjects($task, $projects);
     }
 
-    public function edit(TaskModel $task, Project $proj)
+    public function edit(TaskModel $task, Project $proj, Trending $trending)
     {
         $error = $back2last = null;
         if (! $task->isAlive()) {
@@ -59,9 +71,29 @@ class Task extends Ctl
         } else {
             $project = $task->project();
         }
+
+        $querys = $this->request->all();
+        legal_or($querys, [
+            'trending' => ['in:asc,desc', 'asc']
+        ]);
+
+        $trendings = $trending
+        ->where([
+            'ref_type' => 'task',
+            'ref_id'   => $task->id,
+        ])
+        ->sort([
+            'at' => $querys['trending']
+        ])
+        ->get();
         
         view("ldtdf/task/{$action}")
-        ->withTaskProjectsProject($task, $projects, $project);
+        ->withTaskProjectsProjectTrendings(
+            $task,
+            $projects,
+            $project,
+            $trendings
+        );
     }
 
     public function create(TaskModel $task)

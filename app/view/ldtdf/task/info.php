@@ -80,22 +80,9 @@
     style="display:none"><?= $task->extra ?></textarea>
 <?php endif ?>
 
-<p>
-    <span class="stub-2"></span>
-    <span class="text-info">[</span>
-    <small><?= lang('TASK_TRENDING') ?></small>
-    <span class="text-info">]</span>
-    <ul>
-        <li>
-            <span><?= $task->create_at ?></span>
-            <a href="/dep/user/<?= $task->creator ?>">
-                <?= $task->creator()->name ?>
-            </a>
-            <span><?= lang('CREATED') ?></span>
-        </li>
-    </ul>
-</p>
-
+<?= $this->section('trendings-with-sort', [
+    'model' => $task,
+]) ?>
 <?= $this->section('lib/editormd') ?>
 
 <script type="text/javascript">

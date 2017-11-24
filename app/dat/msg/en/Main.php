@@ -161,4 +161,7 @@ return [
     'VALUE' => 'Value',
     'ACHIEVE' => 'Achive',
     'TIME' => 'Time',
+    'CANCEL' => 'Cancel',
+    'ASSIGN_TO' => 'Assign To',
+    'CONFIRM' => 'Confirm',
 ];

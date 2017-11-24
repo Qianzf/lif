@@ -164,4 +164,7 @@ return [
     'VALUE' => '价值',
     'ACHIEVE' => '实现',
     'TIME' => '时间',
+    'CANCEL' => '取消',
+    'ASSIGN_TO' => '指派给',
+    'CONFIRM' => '确认',
 ];

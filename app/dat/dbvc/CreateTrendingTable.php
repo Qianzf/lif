@@ -13,18 +13,20 @@ class CreateTrendingTable extends Dit
             $table->datetime('at');
             
             $table
-            ->int('uid')
+            ->int('user')
             ->unsigned()
             ->comment('User ID');
 
+            $table->string('action', 32);
+            
             $table
-            ->string('event', 64)
-            ->comment('Event key => `event`.`key`');
+            ->string('ref_type', 32)
+            ->nullable();
 
             $table
-            ->tinytext('ref_id')
-            ->nullable()
+            ->int('ref_id')
             ->unsigned()
+            ->nullable()
             ->comment('Trending related object ID');
             
             $table->comment('User Trending Table');

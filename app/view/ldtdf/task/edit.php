@@ -16,17 +16,24 @@
     'route'  => '/dep/tasks',
 ]) ?>
 
+<?= $this->section('assign-form', [
+    'model' => $task,
+    'key'   => 'TASK',
+    'route' => "/dep/tasks/{$task->id}/assign"
+]) ?>
+
 <form method="POST">
     <?= csrf_feild() ?>
 
+    <?php if ($task->status) : ?>
     <label>
         <span class="label-title">
             <?= lang('TASK_STATUS') ?>
         </span>
-        <?php if ($task->status) : ?>
         <code><?= lang("TASK_{$task->status}") ?></code>
-        <?php endif ?>
     </label>
+    <?php endif ?>
+
     <label>
         <span class="label-title">
             <?= lang('RELATED_PROJECT') ?>
@@ -152,19 +159,16 @@
         'model' => $task
     ]) ?>
     <?php endif ?>
-
-    <label><button id="assign-to">
-        <?= lang('ASSIGN') ?>
-    </button></label>
 </form>
 <?php } ?>
 
+<?= $this->section('trendings-with-sort', [
+    'model' => $task,
+]) ?>
 <?= $this->section('lib/editormd') ?>
+<?= $this->section('lib/jqueryui') ?>
 
 <script type="text/javascript">
-    $('#assign-to').click(function (e) {
-        e.preventDefault()
-    })
     var EditorMDObjects = [
     {
         id : 'task-others',

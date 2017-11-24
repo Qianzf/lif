@@ -53,7 +53,7 @@ class Validation
                         $data[$key] = $hasDefault;
                     }
 
-                    if (! $hasKey) {
+                    if (!$hasKey && !$necessary) {
                         break;
                     }
 
@@ -63,13 +63,6 @@ class Validation
                         } elseif (1 === $err) {
                             continue;
                         }
-                    } else {
-                        if (! $necessary) {
-                            break;
-                        }
-                    }
-
-                    if (! $necessary) {
                     }
 
                     return is_string($err)

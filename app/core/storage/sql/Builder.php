@@ -383,15 +383,12 @@ class Builder implements \Lif\Core\Intf\DBConn
                     if (is_scalar($conds[0])) {
                         $where = $conds[0];
                     } elseif (is_array($conds[0])) {
-                        $_conds = $conds[0][array_keys($conds[0])[0]];
-                        if (! is_array($_conds)) {
-                            $where = $this->whereConditionals($conds[0]);
-                        } else {
-                            foreach ($conds[0] as $key => $cond) {
-                                $where .= $this->whereConditionals($cond);
-                                if (false !== next($conds[0])) {
-                                    $where .= ' AND ';
-                                }
+                        foreach ($conds[0] as $key => $cond) {
+                            $_cond  = is_array($cond)
+                            ? $cond : [$key => $cond];
+                            $where .= $this->whereConditionals($_cond);
+                            if (false !== next($conds[0])) {
+                                $where .= ' AND ';
                             }
                         }
                     } elseif (is_closure($conds[0])) {
