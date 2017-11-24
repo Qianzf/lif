@@ -8,16 +8,40 @@
         <?= $task->id ?>
     </code></small>
     <?= $task->title ?>
-    <sup><button class="btn-info">
-        <?= lang("TASK_{$task->status}") ?>
-    </button></sup>
 </h2>
 
-<span class="vertical"></span>
+<p>
+    <span class="stub-2"></span>
+    <span class="text-info">[</span>
+    <small><?= lang('TASK_STATUS') ?></small>
+    <span class="text-info">]</span>
+    <?php if ($task->status) : ?>
+    <button class="btn-info"><?= lang("TASK_{$task->status}") ?></button>
+    <?php endif ?>
+</p>
+
+<p>
+    <span class="stub-2"></span>
+    <span class="text-info">[</span>
+    <small><?= lang('RELATED_PROJECT') ?></small>
+    <span class="text-info">]</span>
+    <i>
+        <a href="/dep/projects/<?= $project->id ?>">
+            <?= $project->name, " ({$project->type})"?>
+        </a>
+    </i>
+</p>
+
+<p>
+    <span class="stub-2"></span>
+    <span class="text-info">[</span>
+    <small><?= lang('TASK_DETAILS') ?></small>
+    <span class="text-info">]</span>
+</p>
 
 <?php if ('no' == $task->custom) : ?>
     <p>
-        <span><?= lang('TASK_DETAILS'), ': ' ?></span>
+        <span class="stub-3"></span>
         <em><a href="<?= $task->url ?>">
             <?= $task->url ?>
         </a></em>
@@ -55,6 +79,22 @@
     id="task-others-md"
     style="display:none"><?= $task->extra ?></textarea>
 <?php endif ?>
+
+<p>
+    <span class="stub-2"></span>
+    <span class="text-info">[</span>
+    <small><?= lang('TASK_TRENDING') ?></small>
+    <span class="text-info">]</span>
+    <ul>
+        <li>
+            <span><?= $task->create_at ?></span>
+            <a href="/dep/user/<?= $task->creator ?>">
+                <?= $task->creator()->name ?>
+            </a>
+            <span><?= lang('CREATED') ?></span>
+        </li>
+    </ul>
+</p>
 
 <?= $this->section('lib/editormd') ?>
 

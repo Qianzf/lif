@@ -16,8 +16,34 @@
     'route'  => '/dep/tasks',
 ]) ?>
 
-<form method="POST" novalidate>
+<form method="POST">
     <?= csrf_feild() ?>
+
+    <label>
+        <span class="label-title">
+            <?= lang('TASK_STATUS') ?>
+        </span>
+        <?php if ($task->status) : ?>
+        <code><?= lang("TASK_{$task->status}") ?></code>
+        <?php endif ?>
+    </label>
+    <label>
+        <span class="label-title">
+            <?= lang('RELATED_PROJECT') ?>
+        </span>
+        <select name="project" required>
+            <option>-- <?= lang('SELECT_PROJECT') ?> --</option>
+            <?php foreach ($projects as $project): ?>
+                <option
+                <?php if ($task->project == $project->id): ?>
+                    selected
+                <?php endif ?>
+                value="<?= $project->id ?>">
+                    <?= $project->name, " ($project->type)" ?>
+                </option>
+            <?php endforeach ?>
+        </select>
+    </label>
 
     <label>
         <span class="label-title">
@@ -54,7 +80,7 @@
             <input
             type="text"
             name="url"
-            required
+            class="required"
             placeholder="<?= lang('TASK_DETAILS_URL') ?>"
             value="<?= $task->url ?>">
         <?php else: ?>
@@ -70,8 +96,8 @@
         <?= $editStyle ?>
         type="text"
         name="story_role"
-        required
-        placeholder="<?= lang('USER_ROLE') ?>"
+        class="required"
+        placeholder="<?= lang('WHAT_USER_ROLE') ?>"
         value="<?= $task->story_role ?>">
     </label>
 
@@ -79,7 +105,7 @@
         <span class="label-title"><?= lang('STORY_WHAT') ?></span>
         <textarea
         <?= $editStyle ?>
-        required
+        class="required"
         placeholder="<?= lang('WHAT_FUNCTIONALITIES') ?>"
         name="story_activity"><?= $task->story_activity ?></textarea>
     </label>
@@ -88,7 +114,7 @@
         <span class="label-title"><?= lang('STORY_FOR') ?></span>
         <textarea
         <?= $editStyle ?>
-        required
+        class="required"
         placeholder="<?= lang('ACHIEVE_WHAT_VALUE') ?>"
         name="story_value"><?= $task->story_value ?></textarea>
     </label>
@@ -100,7 +126,7 @@
         class="editormd editormd-vertical custom-task-attr">
             <textarea
             style="display:none"
-            class="editormd-markdown-textarea"
+            class="editormd-markdown-textarea required"
             <?= $editStyle ?>
             placeholder="<?= lang('STORY_AC') ?>"
             name="acceptances"><?= $task->acceptances ?></textarea>
@@ -121,36 +147,38 @@
         </div>
     </label>
 
-    <?php if ($task->status) : ?>
-    <button class="btn-info">
-        <?= lang("TASK_{$task->status}") ?>
-    </button>
-    <?php endif ?>
-
     <?php if ($editable) : ?>
     <?= $this->section('submit', [
         'model' => $task
     ]) ?>
     <?php endif ?>
+
+    <label><button id="assign-to">
+        <?= lang('ASSIGN') ?>
+    </button></label>
 </form>
 <?php } ?>
 
 <?= $this->section('lib/editormd') ?>
 
 <script type="text/javascript">
-var EditorMDObjects = [
-{
-    id : 'task-others',
-    placeholder : "<?= lang('OTHER_NOTES') ?>"
-},
-{
-    id : 'task-acceptances',
-    placeholder : "<?= lang('STORY_AC') ?>"
-}
-]
-<?php if ($task->isAlive()) : ?>
-$(function() {
-    tryDisplayEditormd()
-})
-<?php endif ?>
+    $('#assign-to').click(function (e) {
+        e.preventDefault()
+    })
+    var EditorMDObjects = [
+    {
+        id : 'task-others',
+        placeholder : "<?= lang('OTHER_NOTES') ?>"
+    },
+    {
+        id : 'task-acceptances',
+        placeholder : "<?= lang('STORY_AC') ?>"
+    }
+    ]
+    <?php if ($task->isAlive()) : ?>
+    $(function() {
+        tryDisplayEditormd()
+        removeRequired()
+    })
+    <?php endif ?>
 </script>

@@ -160,4 +160,5 @@ return [
     'FUNCTIONALITIES' => 'Functionalities',
     'VALUE' => 'Value',
     'ACHIEVE' => 'Achive',
+    'TIME' => 'Time',
 ];

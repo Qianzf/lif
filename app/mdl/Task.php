@@ -9,15 +9,25 @@ class Task extends Mdl
     protected $rules = [
         'custom'  => ['in:yes,no', 'no'],
         'creator' => 'int|min:1',
+        'project' => 'int|min:1',
         'title'   => 'string',
         'status'  => 'string',
-        'url'     => 'when:custom=no|url',
-        'story_role'     => 'when:custom=yes|string',
-        'story_activity' => 'when:custom=yes|string',
-        'story_value'    => 'when:custom=yes|string',
-        'acceptances'    => 'when:custom=yes|string',
+        'url'     => 'when:custom=no|need|url',
+        'story_role'     => 'when:custom=yes|need|string',
+        'story_activity' => 'when:custom=yes|need|string',
+        'story_value'    => 'when:custom=yes|need|string',
+        'acceptances'    => 'when:custom=yes|need|string',
         'extra'          => 'when:custom=yes|string',
     ];
+
+    public function project()
+    {
+        return $this->belongsTo(
+            Project::class,
+            'project',
+            'id'
+        );
+    }
 
     public function creator()
     {

@@ -57,16 +57,19 @@ class Validation
                         break;
                     }
 
-                    if (! $necessary) {
-                        if ($isWhen) {
-                            if (-1 === $err) {
-                                break;
-                            } elseif (1 === $err) {
-                                continue;
-                            }
-                        } else {
+                    if ($isWhen) {
+                        if (-1 === $err) {
+                            break;
+                        } elseif (1 === $err) {
+                            continue;
+                        }
+                    } else {
+                        if (! $necessary) {
                             break;
                         }
+                    }
+
+                    if (! $necessary) {
                     }
 
                     return is_string($err)

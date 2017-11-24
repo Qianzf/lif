@@ -3,7 +3,7 @@
 namespace Lif\Ctl\Ldtdf;
 
 use Lif\Mdl\Task as TaskModel;
-use Lif\Mdl\User;
+use Lif\Mdl\{User, Project};
 
 class Task extends Ctl
 {
@@ -27,14 +27,16 @@ class Task extends Ctl
         );
     }
 
-    public function add(TaskModel $task)
+    public function add(TaskModel $task, Project $project)
     {
+        $projects = $project->all();
+
         share('hide-search-bar', true);
         
-        view('ldtdf/task/edit')->withTask($task);
+        view('ldtdf/task/edit')->withTaskProjects($task, $projects);
     }
 
-    public function edit(TaskModel $task)
+    public function edit(TaskModel $task, Project $proj)
     {
         $error = $back2last = null;
         if (! $task->isAlive()) {
@@ -48,14 +50,23 @@ class Task extends Ctl
             'back2last' => $back2last,
         ]);
 
-        $action = ($task->creator == share('user.id')) ? 'edit' : 'info';
+        $action   = 'info';
+        $projects = $project = null;
+
+        if ($task->creator == share('user.id')) {
+            $action = 'edit';
+            $projects = $proj->all();
+        } else {
+            $project = $task->project();
+        }
         
-        view("ldtdf/task/{$action}")->withTask($task);
+        view("ldtdf/task/{$action}")
+        ->withTaskProjectsProject($task, $projects, $project);
     }
 
     public function create(TaskModel $task)
     {
-        $data = $this->request->all();dd($data);
+        $data = $this->request->all();
         $data['status']  = 'created';
         $data['creator'] = share('user.id');
 

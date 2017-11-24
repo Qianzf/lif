@@ -69,7 +69,6 @@ $(window).ready(function () {
         reloadWithQuerys(this.name, this.value)
     })
     $('.query-filters').change(function () {
-        console.log(this.value)
         if (this.value) {
             reloadUseQuery(this.name, this.value)
         }
@@ -87,14 +86,27 @@ $(window).ready(function () {
         }
 
         hide.hide()
-        hide.attr('disabled', true);
-        show.removeClass('invisible-default');
-        show.attr('disabled', false);
+        hide.attr('disabled', true)
+        show.removeClass('invisible-default')
+        show.attr('disabled', false)
         show.show()
+
+        removeRequired()
     })
 
     hasErrorOrNot()
 })
+function removeRequired() {
+    let reference = $('.outer-task-detail')
+    let custom = $('.custom-task-attr')
+    if ('yes' == $('input[name="custom"]').val()) {
+        reference.children('.required').removeAttr('required')
+        custom.children('.required').attr('required', 'required')
+    } else {
+        custom.children('.required').removeAttr('required')
+        reference.children('.required').attr('required', 'required')
+    }
+}
 function tryDisplayEditormd()
 {
     if (typeof EditorMDObjects) {

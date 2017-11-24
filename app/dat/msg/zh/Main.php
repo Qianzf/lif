@@ -147,8 +147,8 @@ return [
     'GROUP' => '群组',
     'NOT' => '不',
     'COMMENT' => '评论',
-    'STORY_WHO' => '我作为',
-    'STORY_WHAT' => '想要',
+    'STORY_WHO' => '作为',
+    'STORY_WHAT' => '我想要',
     'STORY_FOR' => '以便',
     'STORY_AC' => '验收条件',
     'ATTACHMENT' => '附件',
@@ -163,4 +163,5 @@ return [
     'FUNCTIONALITIES' => '功能',
     'VALUE' => '价值',
     'ACHIEVE' => '实现',
+    'TIME' => '时间',
 ];
