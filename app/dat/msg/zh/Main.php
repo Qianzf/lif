@@ -168,4 +168,7 @@ return [
     'ASSIGN_TO' => '指派给',
     'CONFIRM' => '确认',
     'ETC' => '等',
+    'STORY' => '故事',
+    'DOC' => '文档',
+    'DOCUMENTATION' => '文档',
 ];

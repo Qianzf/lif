@@ -1,3 +1,4 @@
+<!-- https://pandao.github.io/editor.md/examples/full.html -->
 <?= css([
     'editor.md/css/editormd.min',
     'editor.md/css/editormd.preview.min',

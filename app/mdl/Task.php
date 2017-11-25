@@ -7,18 +7,20 @@ class Task extends Mdl
     protected $table = 'task';
 
     protected $rules = [
-        'custom'  => ['in:yes,no', 'no'],
         'creator' => 'int|min:1',
         'project' => 'int|min:1',
-        'title'   => 'string',
         'status'  => 'string',
-        'url'     => 'when:custom=no|need|url',
-        'story_role'     => 'when:custom=yes|need|string',
-        'story_activity' => 'when:custom=yes|need|string',
-        'story_value'    => 'when:custom=yes|need|string',
-        'acceptances'    => 'when:custom=yes|need|string',
-        'extra'          => 'when:custom=yes|string',
+        'title'   => 'string',
     ];
+
+    public function canBeAssignedBy(int $user = null)
+    {
+        if ($user = $user ?? (share('user.id') ?? null)) {
+            return true;
+        }
+
+        excp('Missing user id.');
+    }
 
     public function trendings(array $querys = [])
     {

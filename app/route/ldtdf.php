@@ -30,6 +30,22 @@ $this->group([
     });
 
     $this->group([
+        'prefix' => 'stories',
+        'ctl' => 'Story',
+    ], function () {
+        $this->get('/', 'index');
+        $this->get('new', 'add');
+    });
+
+    $this->group([
+        'prefix' => 'docs',
+        'ctl' => 'Doc',
+    ], function () {
+        $this->get('/', 'index');
+        $this->get('new', 'add');
+    });
+
+    $this->group([
         'prefix' => 'bugs',
         'ctl' => 'Bug',
     ], function () {

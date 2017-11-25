@@ -14,12 +14,6 @@
     'route'  => '/dep/tasks',
 ]) ?>
 
-<?= $this->section('assign-form', [
-    'model' => $task,
-    'key'   => 'TASK',
-    'route' => "/dep/tasks/{$task->id}/assign"
-]) ?>
-
 <form method="POST" action="/dep/tasks/<?= $task->id ?>">
     <?= csrf_feild() ?>
 
@@ -157,7 +151,6 @@
     'model' => $task,
 ]) ?>
 <?= $this->section('lib/editormd') ?>
-<?= $this->section('lib/jqueryui') ?>
 
 <script type="text/javascript">
     var EditorMDObjects = [

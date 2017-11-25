@@ -1,5 +1,4 @@
 <?php if ($model->isAlive()): ?>
-<span class="stub-2"></span>
 <label><button id="assign-to">
     <?= lang('ASSIGN') ?>
 </button></label>
@@ -7,7 +6,7 @@
 title="<?= lang("ASSIGN_{$key}", $model->title) ?>"
 class="invisible-default">
     <form method="POST" action="<?= $route ?>">
-        
+        <?= csrf_feild() ?>
         <label>
             <span class="label-title">
                 <?= lang('ASSIGN_TO') ?>
@@ -45,4 +44,5 @@ class="invisible-default">
         })
     })
 </script>
+<?= $this->section('lib/jqueryui') ?>
 <?php endif ?>

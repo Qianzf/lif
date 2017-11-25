@@ -10,9 +10,16 @@
     <?= $task->title ?>
 
     <?php if (isset($editable) && $editable): ?>
-        <button>
-            <a href="/dep/tasks/<?= $task->id ?>/edit"><?= lang('EDIT') ?></a>
-        </button>
+    <button>
+        <a href="/dep/tasks/<?= $task->id ?>/edit"><?= lang('EDIT') ?></a>
+    </button>
+    <?php endif ?>
+    <?php if (isset($assignable) && $assignable): ?>
+        <?= $this->section('assign-form', [
+            'model' => $task,
+            'key'   => 'TASK',
+            'route' => "/dep/tasks/{$task->id}/assign"
+        ]) ?>
     <?php endif ?>
 </h2>
 

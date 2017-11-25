@@ -165,4 +165,7 @@ return [
     'ASSIGN_TO' => 'Assign To',
     'CONFIRM' => 'Confirm',
     'ETC' => ' etc',
+    'STORY' => 'Story',
+    'DOC' => 'Documentation',
+    'DOCUMENTATION' => 'Documentation',
 ];

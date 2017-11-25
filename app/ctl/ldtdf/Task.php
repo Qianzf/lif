@@ -39,13 +39,8 @@ class Task extends Ctl
         );
     }
 
-    public function edit(TaskModel $task, Project $project)
+    public function add(TaskModel $task, Project $project)
     {
-        if (! $task->isAlive()) {
-            share_error_i18n('NO_TASK');
-            return redirect(share('url_previous'));
-        }
-
         share('hide-search-bar', true);
         
         view('ldtdf/task/edit')
@@ -55,6 +50,16 @@ class Task extends Ctl
             true,
             $task->trendings()
         );
+    }
+
+    public function edit(TaskModel $task, Project $project)
+    {
+        if (! $task->isAlive()) {
+            share_error_i18n('NO_TASK');
+            return redirect(share('url_previous'));
+        }
+
+        return $this->add($task, $project);
     }
 
     public function info(TaskModel $task)
@@ -69,14 +74,17 @@ class Task extends Ctl
             'trending' => ['in:asc,desc', 'asc']
         ]);
 
-        $editable = ($task->creator == share('user.id'));
+        $user       = share('user.id');
+        $editable   = ($task->creator == $user);
+        $assignable = ($task->canBeAssignedBy($user));
         
         view("ldtdf/task/info")
-        ->withTaskProjectTrendingsEditable(
+        ->withTaskProjectTrendingsEditableAssignable(
             $task,
             $task->project(),
             $task->trendings($querys),
-            $editable
+            $editable,
+            $assignable
         );
     }
 

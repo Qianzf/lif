@@ -12,18 +12,24 @@ class CreateTaskTable extends Dit
             $table->pk('id');
 
             $table
+            ->string('title')
+            ->comment('Task Title');
+
+            $table
             ->int('creator')
             ->unsigned()
             ->comment('User who created this task => `user`.`id`');
 
             $table
-            ->int('project')
+            ->int('story')
             ->unsigned()
-            ->comment('Project ID this task relate to => `user`.`id`');
+            ->nullable()
+            ->comment('User story ID this task relate to => `story`.`id`');
 
             $table
-            ->string('title')
-            ->comment('Task Title');
+            ->int('project')
+            ->unsigned()
+            ->comment('Project ID this task relate to => `project`.`id`');
 
             $table
             ->datetime('create_at')
@@ -32,36 +38,6 @@ class CreateTaskTable extends Dit
             $table
             ->string('status')
             ->comment('Task status => `task_status`.`key`');
-
-            $table
-            ->tinytext('url')
-            ->comment('Task deatail page URL from outer system');
-
-            $table
-            ->char('custom', 8)
-            ->default('no')
-            ->comment('Custom task detail or not: yes/no');
-
-            $table
-            ->string('story_role')
-            ->comment('User story 1st element: User Role');
-
-            $table
-            ->string('story_activity')
-            ->comment('User story 2nd element: activity');
-
-            $table
-            ->string('story_value')
-            ->comment('User story 3rd element: value');
-
-            $table
-            ->text('acceptances')
-            ->comment('Acceptances of this task');
-
-            $table
-            ->text('extra')
-            ->nullable()
-            ->comment('Extra data of this task');
         });
     }
 

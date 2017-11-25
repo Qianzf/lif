@@ -126,6 +126,9 @@ input:focus {
 .btn-todo {
     background-color: coral;
 }
+.btn-story {
+    background-color: violet;
+}
 .btn-info {
     background-color: lightseagreen;
     pointer-events: none;
@@ -147,8 +150,9 @@ input:focus {
     padding: 10px;
     font-weight: bold;
 }
-.btn-logo {
-    color: black;
+.btn-doc {
+    background-color: floralwhite;
+    color: #eeeeee;
 }
 .btn-default a,
 .btn-alert a,

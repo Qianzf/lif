@@ -3,12 +3,20 @@
         <a href="/dep/todo"><?= lang('TODO') ?></a>
     </button>
 
+    <button class="btn-story">
+        <a href="/dep/stories"><?= lang('STORY') ?></a>
+    </button>
+    
     <button class="btn-alert">
         <a href="/dep/tasks"><?= lang('TASK') ?></a>
     </button>
 
     <button class="btn-emergency">
         <a href="/dep/bugs"><?= lang('BUG') ?></a>
+    </button>
+
+    <button class="btn-doc">
+        <a href="/dep/docs"><?= lang('DOCUMENTATION') ?></a>
     </button>
 
     <button class="btn-trending">
