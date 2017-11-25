@@ -164,4 +164,5 @@ return [
     'CANCEL' => 'Cancel',
     'ASSIGN_TO' => 'Assign To',
     'CONFIRM' => 'Confirm',
+    'ETC' => ' etc',
 ];

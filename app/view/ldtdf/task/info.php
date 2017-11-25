@@ -8,6 +8,12 @@
         <?= $task->id ?>
     </code></small>
     <?= $task->title ?>
+
+    <?php if (isset($editable) && $editable): ?>
+        <button>
+            <a href="/dep/tasks/<?= $task->id ?>/edit"><?= lang('EDIT') ?></a>
+        </button>
+    <?php endif ?>
 </h2>
 
 <p>

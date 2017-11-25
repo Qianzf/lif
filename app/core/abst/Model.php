@@ -393,69 +393,72 @@ abstract class Model
     // Get all related models of current model
     // One-to-Many
     public function hasMany(...$params) {
-        if (isset($params[0])) {
-            if (is_array($params[0])) {
-                $params[0]['type'] = 1;
-
-                return $this->join($params[0]);
-            } elseif (is_string($params[0])) {
-                // !!! Parameter index order will affect result here
-                // 2 => Local key
-                $idxMap = [
-                    0 => 'model',    // Model class namespace
-                    1 => 'lk',       // Foreign key
-                    2 => 'fk',       // Local key
-                    3 => 'lv',       // Local value mapping to local key
-                    4 => 'from',     // Limit start
-                    5 => 'take',     // Limit offset
-                    6 => 'sort'      // Sort rules => array
-                ];
-                $_params['type'] = 1;
-                foreach ($params as $key => $value) {
-                    if (! isset($idxMap[$key])) {
-                        excp('Illegal has-many parameters.');
-                    }
-
-                    $_params[$idxMap[$key]] = $value;
-                }
-
-                return $this->join($_params);
+        return $this->parseRelation(
+            'has-many',
+            $params, function (&$params) {
+                $params['type'] = 1;
             }
-        }
-
-        excp('Illegal has-many params.');
+        );
     }
 
     // Get one specific model current model belongs to only
     // One-to-One
-    public function belongsTo(...$params) {
+    public function belongsTo(...$params)
+    {
+        return $this->parseRelation(
+            'belongs-to',
+            $params, function (&$params) {
+                $params['type'] = 2;
+            }
+        );
+    }
+
+    public function parseRelation(
+        string $relation,
+        array $params,
+        \Closure $callback
+    ) {
         if (isset($params[0])) {
+            // !!! Parameter index order will affect result here
+            // 2 => Local key
+            $idxMap = [
+                0 => 'model',    // Model class namespace
+                1 => 'lk',       // Foreign key
+                2 => 'fk',       // Local key
+                3 => 'lv',       // Local value mapping to local key
+                4 => 'from',     // Limit start
+                5 => 'take',     // Limit offset
+                6 => 'sort'      // Sort rules => array
+            ];
+
             if (is_array($params[0])) {
-                $params[0]['type'] = 2;
-
-                return $this->join($params[0]);
-            } elseif (is_string($params[0])) {
-                // !!! Parameter index order will affect result here
-                // 2 => Local key
-                $idxMap = [
-                    0 => 'model',    // Model class namespace
-                    1 => 'lk',       // Foreign key
-                    2 => 'fk',       // Local key
-                    3 => 'lv',       // Local value mapping to local key
-                ];
-                $_params['type'] = 2;
-                foreach ($params as $key => $value) {
-                    if (! isset($idxMap[$key])) {
-                        excp('Illegal belongs-to parameters.');
+                foreach ($params[0] as $key => $value) {
+                    if (isset($idxMap[$key])) {
+                        $_params[$idxMap[$key]] = $value;
+                    } elseif (in_array($key, $idxMap)) {
+                        $_params[$key] = $value;
+                    } else {
+                        excp("Illegal {$relation} parameters(2)");
                     }
-
+                }
+            } elseif (is_string($params[0])) {
+                foreach ($params as $key => $value) {
                     $_params[$idxMap[$key]] = $value;
                 }
-
-                return $this->join($_params);
             }
+
+            if (!isset($_params['model'])
+                || !isset($_params['lk'])
+                || !isset($_params['fk'])
+            ) {
+                excp("Illegal {$relation} parameters(3)");
+            }
+
+            $callback($_params);
+
+            return $this->join($_params);
         }
 
-        excp('Illegal belongs-to params.');
+        excp("Illegal {$relation} parameters(1)");
     }
 }

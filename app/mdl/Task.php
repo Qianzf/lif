@@ -20,6 +20,23 @@ class Task extends Mdl
         'extra'          => 'when:custom=yes|string',
     ];
 
+    public function trendings(array $querys = [])
+    {
+        $relationship = [
+            'model' => Trending::class,
+            'lk' => 'id',
+            'fk' => 'ref_id',
+        ];
+
+        if ($order = ($querys['trending'] ?? null)) {
+            $relationship['sort'] = [
+                'at' => $order,
+            ];
+        }
+
+        return $this->hasMany($relationship);
+    }
+
     public function project()
     {
         return $this->belongsTo(

@@ -167,4 +167,5 @@ return [
     'CANCEL' => '取消',
     'ASSIGN_TO' => '指派给',
     'CONFIRM' => '确认',
+    'ETC' => '等',
 ];

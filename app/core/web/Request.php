@@ -135,6 +135,34 @@ class Request extends Container implements Observable
         return $this->params = collect($params);
     }
 
+    public function gets()
+    {
+        $get = $_GET;
+        
+        array_walk($get, function (&$val, $key) use (&$get) {
+            if ('__' === mb_substr($key, 0, 2)) {
+                $this->magic[$key] = $val;
+                unset($get[$key]);
+            }
+        });
+
+        return $get;
+    }
+
+    public function posts()
+    {
+        $post = $_POST;
+        
+        array_walk($post, function (&$val, $key) use (&$post) {
+            if ('__' === mb_substr($key, 0, 2)) {
+                $this->magic[$key] = $val;
+                unset($post[$key]);
+            }
+        });
+
+        return $post;
+    }
+
     public function unset(string $key = null)
     {
         if ($key && isset($this->params[$key])) {

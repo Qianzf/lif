@@ -6,8 +6,6 @@
 <?php $checkedYes = $custom ? 'checked' : ''; ?>
 <?php $hiddenOuterDetail = $custom ? 'invisible-default' : ''; ?>
 <?php $hiddenCustomAttr  = $custom ? '' : 'invisible-default'; ?>
-<?php $editable = ($task->creator == share('user.id')) || !$task->isAlive(); ?>
-<?php $editStyle = $editable ? '' : 'disabled'; ?>
 
 <?= $this->section('back2list', [
     'model'  => $task,
@@ -22,7 +20,7 @@
     'route' => "/dep/tasks/{$task->id}/assign"
 ]) ?>
 
-<form method="POST">
+<form method="POST" action="/dep/tasks/<?= $task->id ?>">
     <?= csrf_feild() ?>
 
     <?php if ($task->status) : ?>
@@ -73,7 +71,6 @@
     <label>
         <span class="label-title"><?= lang('TITLE') ?></span>
         <input
-        <?= $editStyle ?>
         type="text"
         name="title"
         required
@@ -100,7 +97,6 @@
     <label class="custom-task-attr <?= $hiddenCustomAttr ?>">
         <span class="label-title"><?= lang('STORY_WHO') ?></span>
         <input
-        <?= $editStyle ?>
         type="text"
         name="story_role"
         class="required"
@@ -111,7 +107,6 @@
     <label class="custom-task-attr <?= $hiddenCustomAttr ?>">
         <span class="label-title"><?= lang('STORY_WHAT') ?></span>
         <textarea
-        <?= $editStyle ?>
         class="required"
         placeholder="<?= lang('WHAT_FUNCTIONALITIES') ?>"
         name="story_activity"><?= $task->story_activity ?></textarea>
@@ -120,7 +115,6 @@
     <label class="custom-task-attr <?= $hiddenCustomAttr ?>">
         <span class="label-title"><?= lang('STORY_FOR') ?></span>
         <textarea
-        <?= $editStyle ?>
         class="required"
         placeholder="<?= lang('ACHIEVE_WHAT_VALUE') ?>"
         name="story_value"><?= $task->story_value ?></textarea>
@@ -134,7 +128,6 @@
             <textarea
             style="display:none"
             class="editormd-markdown-textarea required"
-            <?= $editStyle ?>
             placeholder="<?= lang('STORY_AC') ?>"
             name="acceptances"><?= $task->acceptances ?></textarea>
         </div>
@@ -148,7 +141,6 @@
             <textarea
             style="display:none"
             class="editormd-markdown-textarea"
-            <?= $editStyle ?>
             placeholder="<?= lang('OTHERS') ?>"
             name="extra"><?= $task->extra ?></textarea>
         </div>
@@ -160,7 +152,6 @@
     ]) ?>
     <?php endif ?>
 </form>
-<?php } ?>
 
 <?= $this->section('trendings-with-sort', [
     'model' => $task,
@@ -172,7 +163,12 @@
     var EditorMDObjects = [
     {
         id : 'task-others',
-        placeholder : "<?= lang('OTHER_NOTES') ?>"
+        placeholder : "<?=
+            lang('OTHER_NOTES'),
+            ' / ',
+            lang('ATTACHMENT'),
+            lang('ETC')
+        ?>"
     },
     {
         id : 'task-acceptances',
@@ -186,3 +182,4 @@
     })
     <?php endif ?>
 </script>
+<?php } ?>

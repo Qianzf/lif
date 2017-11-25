@@ -3,7 +3,7 @@
 namespace Lif\Ctl\Ldtdf;
 
 use Lif\Mdl\Task as TaskModel;
-use Lif\Mdl\{User, Project, Trending};
+use Lif\Mdl\{User, Project};
 
 class Task extends Ctl
 {
@@ -39,60 +39,44 @@ class Task extends Ctl
         );
     }
 
-    public function add(TaskModel $task, Project $project)
+    public function edit(TaskModel $task, Project $project)
     {
-        $projects = $project->all();
+        if (! $task->isAlive()) {
+            share_error_i18n('NO_TASK');
+            return redirect(share('url_previous'));
+        }
 
         share('hide-search-bar', true);
         
-        view('ldtdf/task/edit')->withTaskProjects($task, $projects);
+        view('ldtdf/task/edit')
+        ->withTaskProjectsEditableTrendings(
+            $task,
+            $project->all(),
+            true,
+            $task->trendings()
+        );
     }
 
-    public function edit(TaskModel $task, Project $proj, Trending $trending)
+    public function info(TaskModel $task)
     {
-        $error = $back2last = null;
         if (! $task->isAlive()) {
-            $error     = lang('NO_TASK');
-            $back2last = share('url_previous');
+            share_error_i18n('NO_TASK');
+            return redirect(share('url_previous'));
         }
 
-        shares([
-            'hide-search-bar' => true,
-            '__error'   => $error,
-            'back2last' => $back2last,
-        ]);
-
-        $action   = 'info';
-        $projects = $project = null;
-
-        if ($task->creator == share('user.id')) {
-            $action = 'edit';
-            $projects = $proj->all();
-        } else {
-            $project = $task->project();
-        }
-
-        $querys = $this->request->all();
+        $querys = $this->request->gets;
         legal_or($querys, [
             'trending' => ['in:asc,desc', 'asc']
         ]);
 
-        $trendings = $trending
-        ->where([
-            'ref_type' => 'task',
-            'ref_id'   => $task->id,
-        ])
-        ->sort([
-            'at' => $querys['trending']
-        ])
-        ->get();
+        $editable = ($task->creator == share('user.id'));
         
-        view("ldtdf/task/{$action}")
-        ->withTaskProjectsProjectTrendings(
+        view("ldtdf/task/info")
+        ->withTaskProjectTrendingsEditable(
             $task,
-            $projects,
-            $project,
-            $trendings
+            $task->project(),
+            $task->trendings($querys),
+            $editable
         );
     }
 
@@ -130,13 +114,15 @@ class Task extends Ctl
             redirect('/dep/tasks');
         }
 
-        if (!empty_safe($err = $task->save($this->request->all()))
+        if (!empty_safe($err = $task->save($this->request->posts))
             && is_numeric($err)
             && ($err >= 0)
         ) {
-            $status = 'UPDATE_OK';
             if ($err > 0) {
+                $status = 'UPDATE_OK';
                 $task->addTrending('update');
+            } else {
+                $status = 'UPDATED_NOTHING';
             }
         } else {
             $status = 'UPDATE_FAILED';

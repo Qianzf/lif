@@ -1,5 +1,5 @@
 <?php $__submit = lang($model->id ? 'UPDATE' : 'CREATE'); ?>
 
-<label>
+<label class="label-title">
     <input type="submit" value="<?= $__submit ?>">
 </label>

@@ -47,8 +47,9 @@ $this->group([
         $this->get('/', 'index');
         $this->get('new', 'add');
         $this->post('new', 'create');
-        $this->get('{id}', 'edit');
+        $this->get('{id}', 'info');
         $this->post('{id}', 'update');
+        $this->get('{id}/edit', 'edit');
         $this->get('{id}/assign', 'assign');
         $this->post('{id}/assign', 'assignTo');
     });

@@ -101,17 +101,17 @@ function removeRequired() {
     let custom = $('.custom-task-attr')
     if ('yes' == $('input[name="custom"]').val()) {
         reference.children('.required').removeAttr('required')
-        custom.children('.required').attr('required', 'required')
+        custom.children('.required').attr('required', true)
     } else {
         custom.children('.required').removeAttr('required')
-        reference.children('.required').attr('required', 'required')
+        reference.children('.required').attr('required', true)
     }
 }
 function tryDisplayEditormd()
 {
     if (typeof EditorMDObjects) {
         for (let i in EditorMDObjects) {
-            editormd(EditorMDObjects[i].id, {
+            let editor = editormd(EditorMDObjects[i].id, {
                 width   : '80%',
                 height  : 300,
                 syncScrolling : 'single',
