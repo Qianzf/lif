@@ -143,7 +143,7 @@ For examples:
 ``` php
 $name   = $table = null;
 $config = [
-    'name'  => 'sqlite'
+    'name'  => 'sqlite',
     'table' => 'lif',
 ];
 
@@ -154,7 +154,7 @@ if (true !== ($err = legal_and($config, [
     excp('Illegal config: '.$err);
 }
 
-dd($name, $table);    // Output: null, lif
+dd($name, $table);    // Output: `null`, lif
 ```
 
 In this case, `$config` is validate, so the value of `$table` turns into string `lif` after validation, but `$name` was not give into rules array, so `$name` still is `null`.

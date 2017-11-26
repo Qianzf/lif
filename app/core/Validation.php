@@ -11,14 +11,159 @@ class Validation
         return $data;
     }
 
-    public function run(array &$data, array $rules)
+    public function runOr(array $data, array $rulesWithDefaults) : array
+    {
+        $errs = $data;
+        if (! $rulesWithDefaults) {
+            array_walk($errs, function (&$item, $key) {
+                $item = true;
+            });
+        } else {
+            foreach ($rulesWithDefaults as $key => $item) {
+            if (! is_array($item)) {
+                    excp('Legal-or validation rule must be an array.');
+                }
+
+                if (! ($rule = $item[0] ?? ($item['rules'] ?? null))) {
+                    excp('Missing validation rules.');
+                }
+                $hasDefault = $item[1] ?? ($item['default'] ?? null);
+
+                $_rules = array_filter(explode('|', $rule));
+
+                foreach ($_rules as $_rule) {
+                    $_ruleArr = array_filter(explode(':', $_rule),
+                        function ($val) {
+                            return !empty_safe($val);
+                    });
+
+                    if (!isset($_ruleArr[0])
+                        || !method_exists($this, $_ruleArr[0])
+                    ) {
+                        excp('Missing validator: '.($_ruleArr[0] ?? 'unknown'));
+                    }
+
+                    $validator = $_ruleArr[0];
+                    $extra     = $_ruleArr[1] ?? null;
+                    $isWhen    = ('when' === strtolower($validator));
+                    $necessary = in_array('need', $_rules);
+                    $hasKey    = isset($data[$key]);
+
+                    if (true !== ($err = $this->$validator(
+                        ($data[$key] ?? null),
+                        $extra,
+                        $data,
+                        $key
+                    ))) {
+                        $data[$key] = $hasDefault;
+
+                        if (!$hasKey && !$necessary) {
+                            break;
+                        }
+
+                        if ($isWhen) {
+                            if (-1 === $err) {
+                                break;
+                            } elseif (1 === $err) {
+                                continue;
+                            }
+                        }
+
+                        $err = is_string($err)
+                        ? $err : 'ILLEGAL_'.strtoupper($key);
+                    }
+
+                    $errs[$key] = $err;
+                }
+            }
+        }
+
+        return [$errs, $data];
+    }
+
+    public function runAnd(array $data, array $rulesWithVars)
+    {
+        foreach ($rulesWithVars as $key => $_rulesWithVars) {
+            if (! ($rules = (is_string($_rulesWithVars)
+                ? $_rulesWithVars
+                : $_rulesWithVars[0] ?? (
+                    $_rulesWithVars['rules'] ?? null
+            )))) {
+                excp('Missing validation rules.');
+            }
+            if (!isset($data[$key]) || is_null($data[$key])) {
+                return 'MISSING_'.strtoupper($key);
+            }
+
+            $_rules = array_filter(explode('|', $rules));
+
+            foreach ($_rules as $_rule) {
+                $_ruleArr = array_filter(explode(':', $_rule),
+                    function ($val) {
+                        return !empty_safe($val);
+                });
+
+                if (!isset($_ruleArr[0])
+                    || !method_exists($this, $_ruleArr[0])
+                ) {
+                    excp('Missing validator: '.($_ruleArr[0] ?? 'unknown'));
+                }
+
+                $validator = $_ruleArr[0];
+                $extra     = $_ruleArr[1] ?? null;
+                $isWhen    = ('when' === strtolower($validator));
+                $necessary = in_array('need', $_rules);
+                $hasKey    = isset($data[$key]);
+
+                if (true !== ($err = $this->$validator(
+                    ($data[$key] ?? null),
+                    $extra,
+                    $data,
+                    $key
+                ))) {
+                    if (isset($hasDefault)) {
+                        $data[$key] = $hasDefault;
+                    }
+
+                    if (!$hasKey && !$necessary) {
+                        break;
+                    }
+
+                    if ($isWhen) {
+                        if (-1 === $err) {
+                            break;
+                        } elseif (1 === $err) {
+                            continue;
+                        }
+                    }
+
+                    return is_string($err)
+                    ? $err : 'ILLEGAL_'.strtoupper($key);
+                }
+            }
+
+            if (isset($_rulesWithVars[1])
+                || is_null($_rulesWithVars[1])
+            ) {
+                $_rulesWithVars[1] = $data[$key];
+            } elseif (isset($_rulesWithVars['var'])
+                || is_null($_rulesWithVars['var'])
+            ) {
+                $_rulesWithVars['var'] = $data[$key];
+            }
+        }
+
+        return true;   
+    }
+
+    public function run(array $data, array $rules)
     {
         foreach ($rules as $key => $item) {
             unset($hasDefault);
             if (is_string($item)) {
                 $rule = $item;
             } elseif (is_array($item)) {
-                if (! ($rule = $item[0] ?? ($item['rule'] ?? null))) {
+                if (! ($rule = $item[0] ?? ($item['rules'] ?? null))) {
                     excp('Missing validation rule.');
                 }
                 $hasDefault = $item[1] ?? ($item['default'] ?? null);
@@ -29,7 +174,10 @@ class Validation
             $_rules = array_filter(explode('|', $rule));
 
             foreach ($_rules as $_rule) {
-                $_ruleArr = array_filter(explode(':', $_rule));
+                $_ruleArr = array_filter(explode(':', $_rule),
+                    function ($val) {
+                        return !empty_safe($val);
+                });
 
                 if (!isset($_ruleArr[0])
                     || !method_exists($this, $_ruleArr[0])

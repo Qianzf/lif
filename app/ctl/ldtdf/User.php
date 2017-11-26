@@ -38,9 +38,9 @@ class User extends Ctl
             'search' => ['string', null],
         ]);
 
-        $uid = (0 == $querys['user']) ? null : $querys['user'];
+        $uid = (0 === $querys['user']) ? null : $querys['user'];
         if ($uid > 0) {
-            $trending = $trending->whereUid($uid);
+            $trending = $trending->whereUser($uid);
         }
 
         $from = ($querys['page'] - 1) * $pageScale;

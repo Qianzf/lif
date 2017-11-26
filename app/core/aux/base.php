@@ -171,92 +171,31 @@ if (! fe('context')) {
         ? 'cli' : 'web';
     }
 }
+if (! fe('validate')) {
+    function validate(array &$data, array $rules) {
+        return \Lif\Core\Facade\Validation::run(
+            $data,
+            $rules
+       );
+    }
+}
 if (! fe('legal_or')) {
-    function legal_or(&$data, array $rulesWithDefaults) : array {
-        if (!is_array($data) && !is_object($data)) {
-            excp('Validate source must be an arra or object.');
-        }
-        $err = $data;
-        if (! $rulesWithDefaults) {
-            array_walk($err, function (&$item, $key) {
-                $item = true;
-            });
-        } else {
-            $validator = new \Lif\Core\Validation;
-            foreach ($rulesWithDefaults as $key => $_rulesWithDefaults) {
-                if (! is_array($_rulesWithDefaults)) {
-                    excp('Rules with defaults need an array in `legal_or()`');
-                }
+    function legal_or(array &$data, array $rulesWithDefaults) : array {
+        list($errs, $data) = \Lif\Core\Facade\Validation::runOr(
+            $data,
+            $rulesWithDefaults
+        );
 
-                $rules = $_rulesWithDefaults[0] ?? (
-                    $_rulesWithDefaults['rules'] ?? null
-                );
-                $default = $_rulesWithDefaults[1] ?? (
-                    $_rulesWithDefaults['default'] ?? null
-                );
-                if (! $rules) {
-                    excp('Missing validation rules.');
-                }
-
-                if (!isset($data[$key]) || is_null($data[$key])) {
-                    $err[$key]  = 'MISSING_'.strtoupper($key);
-                    $data[$key] = $default;
-                } else {
-                    if (! is_array($rules)) {
-                        $rules = [$key => $rules];
-                    }
-                    
-                    if (true !== ($err[$key] = $validator->run($data, $rules))) {
-                        $data[$key] = $default;
-                    }
-                }
-            }
-        }
-
-        return $err;
+        return $errs;
     }
 }
 if (! fe('legal_and')) {
-    function legal_and($data, array $rulesWithVars) {
-        if (!is_array($data) && !is_object($data)) {
-            excp('Validate source must be an arra or object.');
-        }
-
+    function legal_and(array $data, array $rulesWithVars) {
         if ($rulesWithVars) {
-            $validator = new \Lif\Core\Validation;
-            foreach ($rulesWithVars as $key => $_rulesWithVars) {
-                $rules = is_string($_rulesWithVars)
-                ? $_rulesWithVars
-                : $_rulesWithVars[0] ?? (
-                    $_rulesWithVars['rules'] ?? null
-                );
-
-                if (! $rules) {
-                    excp('Missing validation rules.');
-                }
-
-                if (!isset($data[$key]) || is_null($data[$key])) {
-                    return 'MISSING_'.strtoupper($key);
-                } else {
-                    if (! is_array($rules)) {
-                        $rules = [$key => $rules];
-                    }
-
-                    if (true !== ($err = $validator->run($data, $rules))) {
-                        return $err;
-                    }
-
-                    if (isset($_rulesWithVars[1])
-                        || is_null($_rulesWithVars[1])
-                    ) {
-                        $_rulesWithVars[1] = $data[$key];
-                    } elseif (isset($_rulesWithVars['var'])
-                        || is_null($_rulesWithVars['var'])
-                    ) {
-                        $_rulesWithVars['var'] = $data[$key];
-                    }
-                }
-            }
+            return \Lif\Core\Facade\Validation::runAnd(
+                $data,
+                $rulesWithVars
+            );
         }
 
         return true;
@@ -476,7 +415,8 @@ if (! fe('exception')) {
             'msg' => $exObj->getMessage(),
             'err' => $exObj->getCode(),
         ];
-        $_info['trace'] = explode("\n", $exObj->getTraceAsString());
+        $_info['trace'] = $exObj->getTrace();
+        // $_info['trace'] = explode("\n", $exObj->getTraceAsString());
 
         // !!! Make sure check app conf path first
         // !!! Or infinite loop will occur when app conf file not exists
@@ -1549,14 +1489,6 @@ if (! fe('is_timestamp')) {
 if (! fe('is_closure')) {
     function is_closure($var) {
         return is_object($var) && ($var instanceof \Closure);
-    }
-}
-if (! fe('validate')) {
-    function validate(array &$data, array $rules) {
-        return (new \Lif\Core\Validation)->run(
-            $data,
-            $rules
-       );
     }
 }
 if (! fe('classname')) {
