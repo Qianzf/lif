@@ -12,17 +12,13 @@ class CreateStoryTable extends Dit
             $table->pk('id');
 
             $table
+            ->int('creator')
+            ->unsigned()
+            ->comment('User who created this story => `user`.`id`');
+
+            $table
             ->string('title')
             ->comment('User story Title');
-
-            $table
-            ->char('custom', 8)
-            ->default('no')
-            ->comment('Custom user story details or not: yes/no');
-
-            $table
-            ->tinytext('url')
-            ->comment('Task deatail page URL from outer system');
 
             $table
             ->string('role')

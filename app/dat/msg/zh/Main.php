@@ -151,6 +151,8 @@ return [
     'STORY_WHAT' => '我想要',
     'STORY_FOR' => '以便',
     'STORY_AC' => '验收条件',
+    'ACCEPTANCE' => '验收条件',
+    'ACCEPTANCES' => '验收条件',
     'ATTACHMENT' => '附件',
     'OTHERS' => '其他',
     'OTHER' => '其他',
@@ -169,6 +171,8 @@ return [
     'CONFIRM' => '确认',
     'ETC' => '等',
     'STORY' => '故事',
+    'STORIES' => '故事',
     'DOC' => '文档',
     'DOCUMENTATION' => '文档',
+    'EMPTY' => '空的',
 ];

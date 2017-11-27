@@ -109,7 +109,7 @@ function removeRequired() {
 }
 function tryDisplayEditormd()
 {
-    if (typeof EditorMDObjects) {
+    if (typeof EditorMDObjects != 'undefined') {
         for (let i in EditorMDObjects) {
             let editor = editormd(EditorMDObjects[i].id, {
                 width   : '80%',

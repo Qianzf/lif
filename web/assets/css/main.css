@@ -25,6 +25,11 @@ code {
 header {
     margin-top: 10px;
 }
+footer {
+    position: relative;
+    bottom: 0;
+    margin-top: 20px;
+}
 form, section {
     margin: 10px;
 }

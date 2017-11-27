@@ -59,7 +59,7 @@ class Trending extends Mdl
     public function genHTMLStringOfEvent() : string
     {
         $event   = $this->makeEvent();
-        $key     = underline2camelcase("{$this->action}_{$this->ref_type}");
+        $key     = ucfirst($this->ref_type);
         $handler = "genDetailsOf{$key}";
 
         if (! method_exists($event, $handler)) {

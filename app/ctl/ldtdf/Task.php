@@ -3,7 +3,7 @@
 namespace Lif\Ctl\Ldtdf;
 
 use Lif\Mdl\Task as TaskModel;
-use Lif\Mdl\{User, Project};
+use Lif\Mdl\{User, Project, Story};
 
 class Task extends Ctl
 {
@@ -39,13 +39,17 @@ class Task extends Ctl
         );
     }
 
-    public function add(TaskModel $task, Project $project)
-    {
+    public function add(
+        TaskModel $task,
+        Story $story,
+        Project $project
+    ) {
         share('hide-search-bar', true);
         
         view('ldtdf/task/edit')
-        ->withTaskProjectsEditableTrendings(
+        ->withTaskStoriesProjectsEditableTrendings(
             $task,
+            $story->all(),
             $project->all(),
             true,
             $task->trendings()

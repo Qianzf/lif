@@ -148,6 +148,8 @@ return [
     'STORY_WHAT' => 'I Want',
     'STORY_FOR' => 'For',
     'STORY_AC' => 'Acceptances',
+    'ACCEPTANCE' => 'Acceptance',
+    'ACCEPTANCES' => 'Acceptances',
     'ATTACHMENT' => 'Attachements',
     'OTHERS' => 'Others',
     'OTHER' => 'Other',
@@ -166,6 +168,8 @@ return [
     'CONFIRM' => 'Confirm',
     'ETC' => ' etc',
     'STORY' => 'Story',
+    'STORIES' => 'Stories',
     'DOC' => 'Documentation',
     'DOCUMENTATION' => 'Documentation',
+    'EMPTY' => 'Empty',
 ];

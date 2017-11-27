@@ -24,6 +24,24 @@
 
     <label>
         <span class="label-title">
+            <?= lang('RELATED_STORY') ?>
+        </span>
+        <select name="story" required>
+            <option>-- <?= lang('SELECT_STORY') ?> --</option>
+            <?php foreach ($stories as $story): ?>
+                <option
+                <?php if ($task->story == $story->id): ?>
+                    selected
+                <?php endif ?>
+                value="<?= $story->id ?>">
+                    <?= $story->title ?>
+                </option>
+            <?php endforeach ?>
+        </select>
+    </label>
+
+    <label>
+        <span class="label-title">
             <?= lang('RELATED_PROJECT') ?>
         </span>
         <select name="project" required>

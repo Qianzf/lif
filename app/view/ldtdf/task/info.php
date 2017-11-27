@@ -5,7 +5,7 @@
 <h2>
     <span class="stub"></span>
     <small><code>
-        <?= $task->id ?>
+        T<?= $task->id ?>
     </code></small>
 
     <?php if (isset($editable) && $editable): ?>

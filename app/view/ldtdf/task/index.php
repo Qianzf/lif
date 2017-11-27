@@ -1,7 +1,6 @@
 <?= $this->layout('main') ?>
 <?= $this->title([lang('TASK_LIST'), lang('LDTDFMS')]) ?>
 <?= $this->section('common') ?>
-<?= $this->section('filter/user') ?>
 
 <dl class="list">
     <dd>
@@ -13,6 +12,9 @@
     </dd>
 </dl>
 
+<?php if (isset($tasks) && iteratable($tasks)) : ?>
+<?= $this->section('filter/user') ?>
+
 <table>
     <caption><?= lang('TASK_LIST') ?></caption>
 
@@ -23,8 +25,6 @@
         <th><?= lang('STATUS') ?></th>
         <th><?= lang('OPERATIONS') ?></th>
     </tr>
-
-    <?php if (isset($tasks) && $tasks) : ?>
     <?php foreach ($tasks as $task) : ?>
     <tr>
         <td><?= $task->id ?></td>
@@ -38,7 +38,7 @@
         </td>
     </tr>
     <?php endforeach ?>
-    <?php endif ?>
 </table>
 
 <?= $this->section('pagebar') ?>
+<?php endif ?>

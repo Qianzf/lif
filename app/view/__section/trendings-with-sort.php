@@ -1,8 +1,9 @@
 <?php if (isset($model) && $model->isAlive()): ?>
+    <?php $object = $object ?? classname($model); ?>
     <p>
         <span class="stub-2"></span>
         <span class="text-info">[</span>
-        <small><?= lang('TASK_TRENDING') ?></small>
+        <small><?= lang("{$object}_TRENDING") ?></small>
         <?php $sort = (isset($_GET['trending']) && in_array($_GET['trending'], [
             'asc', 'desc',
             ])) ? $_GET['trending'] : 'asc';

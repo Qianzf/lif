@@ -13,13 +13,11 @@ class Story extends ModelBase
     protected $alias  = null;
     // validation rules for fields
     protected $rules  = [
-        'custom'   => ['in:yes,no', 'no'],
-        'url'      => 'when:custom=no|need|url',
-        'role'     => 'when:custom=yes|need|string',
-        'activity' => 'when:custom=yes|need|string',
-        'value'    => 'when:custom=yes|need|string',
-        'acceptances' => 'when:custom=yes|need|string',
-        'extra'       => 'when:custom=yes|string',
+        'role'     => 'need|string',
+        'activity' => 'need|string',
+        'value'    => 'need|string',
+        'acceptances' => 'need|string',
+        'extra'       => 'string',
     ];
     // protected items that cann't update
     protected $unwriteable = [
@@ -27,6 +25,45 @@ class Story extends ModelBase
     // protected items that cann't read
     protected $unreadable  = [
     ];
+
+    public function list()
+    {
+        return $this
+        ->reset()
+        ->sort([
+            'create_at' => 'desc',
+        ])
+        ->get();
+    }
+
+    public function canBeAssignedBy(int $user = null)
+    {
+        if ($user = $user ?? (share('user.id') ?? null)) {
+            return true;
+        }
+
+        excp('Missing user id.');
+    }
+
+    public function trendings(array $querys = [])
+    {
+        $relationship = [
+            'model' => Trending::class,
+            'lk' => 'id',
+            'fk' => 'ref_id',
+            'where' => [
+                'ref_type' => 'story',
+            ],
+        ];
+
+        if ($order = ($querys['trending'] ?? null)) {
+            $relationship['sort'] = [
+                'at' => $order,
+            ];
+        }
+
+        return $this->hasMany($relationship);
+    }
 
     public function addTrending(string $action)
     {

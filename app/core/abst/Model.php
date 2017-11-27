@@ -276,6 +276,13 @@ abstract class Model
         return $this;
     }
 
+    public function setItems(array $items)
+    {
+        $this->items = $items;
+
+        return $this;
+    }
+
     public function isAlive()
     {
         return $this->alive;
@@ -354,6 +361,12 @@ abstract class Model
         )
         ->where($where, $value);
 
+        if ($_where = ($params['where'] ?? null)) {
+            foreach ($_where as $key => $val) {
+                $model = $model->where("{$model->getTable()}.{$key}", $val);
+            }
+        }
+
         if (isset($params['sort'])
             && is_array($params['sort'])
             && $params['sort']
@@ -428,7 +441,8 @@ abstract class Model
                 3 => 'lv',       // Local value mapping to local key
                 4 => 'from',     // Limit start
                 5 => 'take',     // Limit offset
-                6 => 'sort'      // Sort rules => array
+                6 => 'sort',     // Sort rules => array
+                7 => 'where',    // Where conditions => array
             ];
 
             if (is_array($params[0])) {

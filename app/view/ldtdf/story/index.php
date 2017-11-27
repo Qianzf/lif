@@ -11,3 +11,26 @@
         </button>
     </dd>
 </dl>
+
+<?php if (isset($stories) && iteratable($stories)): ?>
+<table>
+    <caption><?= lang('STORY_LIST') ?></caption>
+
+    <tr>
+        <th><?= lang('ID') ?></th>
+        <th><?= lang('TITLE') ?></th>
+        <th><?= lang('OPERATIONS') ?></th>
+    </tr>
+    <?php foreach ($stories as $story): ?>
+    <tr>
+        <td><?= $story->id ?></td>
+        <td><?= $story->title ?></td>
+        <td>
+            <a href="/dep/stories/<?= $story->id ?>">
+                <?= lang('DETAILS') ?>
+            </a>
+        </td>
+    </tr>
+    <?php endforeach ?>
+</table>
+<?php endif ?>

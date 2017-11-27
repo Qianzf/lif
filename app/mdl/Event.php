@@ -25,7 +25,7 @@ class Event extends ModelBase
     {
     }
 
-    public function genDetailsforBug($id)
+    public function genDetailsOfBug($id)
     {
         return [
             'route' => "/dep/bugs/{$id}",
@@ -33,7 +33,7 @@ class Event extends ModelBase
         ];
     }
 
-    public function genDetailsforTask($id)
+    public function genDetailsOfTask($id)
     {
         return [
             'route' => "/dep/tasks/{$id}",
@@ -41,22 +41,7 @@ class Event extends ModelBase
         ];
     }
 
-    public function genDetailsOfUpdateBugComment($id)
-    {
-        return $this->genDetailsforBug($id);
-    }
-
-    public function genDetailsOfUpdateTaskComment($id)
-    {
-        return $this->genDetailsforTask($id);
-    }
-
-    public function genDetailsOfCreateStory($id)
-    {
-        return $this->genDetailsforStory($id);   
-    }
-
-    public function genDetailsforStory($id)
+    public function genDetailsOfStory($id)
     {
         return [
             'route' => "/dep/stories/{$id}",
@@ -64,24 +49,13 @@ class Event extends ModelBase
         ];
     }
 
-    public function genDetailsOfCreateTask($id)
-    {
-        return $this->genDetailsforTask($id);
-    }
-
-    public function genDetailsOfAssignTask($id)
-    {
-        return $this->genDetailsforTask($id);
-    }
-
-    public function genDetailsOfUpdateTask($id)
-    {
-        return $this->genDetailsforTask($id);
-    }
-
     public function getBugTitle($id)
     {
-        $bug = db()->table('bug')->select('title')->whereId($id)->first();
+        $bug = db()
+        ->table('bug')
+        ->select('title')
+        ->whereId($id)
+        ->first();
 
         return $bug['title'] ?? null;
     }
