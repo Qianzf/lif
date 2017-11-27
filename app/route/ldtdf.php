@@ -35,6 +35,10 @@ $this->group([
     ], function () {
         $this->get('/', 'index');
         $this->get('new', 'add');
+        $this->post('new', 'create');
+        $this->get('{id}', 'info');
+        $this->get('{id}/edit', 'edit');
+        $this->post('{id}', 'update');
     });
 
     $this->group([

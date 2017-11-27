@@ -27,4 +27,15 @@ class Story extends ModelBase
     // protected items that cann't read
     protected $unreadable  = [
     ];
+
+    public function addTrending(string $action)
+    {
+        db()->table('trending')->insert([
+            'at'     => date('Y-m-d H:i:s'),
+            'user'   => share('user.id'),
+            'action' => $action,
+            'ref_type' => 'story',
+            'ref_id'   => $this->id,
+        ]);
+    }
 }

@@ -39,6 +39,15 @@ class Task extends Mdl
         return $this->hasMany($relationship);
     }
 
+    public function story()
+    {
+        return $this->belongsTo(
+            Story::class,
+            'story',
+            'id'
+        );
+    }
+
     public function project()
     {
         return $this->belongsTo(

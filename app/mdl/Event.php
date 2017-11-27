@@ -51,6 +51,19 @@ class Event extends ModelBase
         return $this->genDetailsforTask($id);
     }
 
+    public function genDetailsOfCreateStory($id)
+    {
+        return $this->genDetailsforStory($id);   
+    }
+
+    public function genDetailsforStory($id)
+    {
+        return [
+            'route' => "/dep/stories/{$id}",
+            'title' => $this->getStoryTitle($id),
+        ];
+    }
+
     public function genDetailsOfCreateTask($id)
     {
         return $this->genDetailsforTask($id);
@@ -73,9 +86,28 @@ class Event extends ModelBase
         return $bug['title'] ?? null;
     }
 
+    public function getStoryTitle($id)
+    {
+        $story = db()
+        ->table('story')
+        ->select('title')
+        ->whereId($id)
+        ->first();
+
+        return $story['title'] ?? null;
+    }
+
     public function getTaskTitle($id)
     {
-        $task = db()->table('task')->select('title')->whereId($id)->first();
+        $task = db()
+        ->table('task', 't')
+        ->leftJoin('story s', 't.story', 's.id')
+        ->leftJoin('project p', 't.project', 'p.id')
+        ->select('s.title', 'p.name')
+        ->where([
+            't.id' => $id,
+        ])
+        ->first();
 
         return $task['title'] ?? null;
     }

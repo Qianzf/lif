@@ -53,6 +53,7 @@ return [
         'hcm' => [
             'driver' => 'mysql',
             'host' => 'db',
+            'port' => '3307',
             'user' => 'root',
             'passwd' => '123456',
             'dbname' => 'lif',

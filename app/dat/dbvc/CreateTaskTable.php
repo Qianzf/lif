@@ -12,10 +12,6 @@ class CreateTaskTable extends Dit
             $table->pk('id');
 
             $table
-            ->string('title')
-            ->comment('Task Title');
-
-            $table
             ->int('creator')
             ->unsigned()
             ->comment('User who created this task => `user`.`id`');

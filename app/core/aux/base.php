@@ -779,6 +779,10 @@ if (! fe('build_pdo_dsn')) {
             case 'mysql':
                 $dsn .= 'host='
                 .$conn['host'];
+                $dsn .= ';port='.(exists($conn, 'port')
+                    ? $conn['port']
+                    : 'utf8'
+                );
                 $dsn .= ';charset='.(exists($conn, 'charset')
                     ? $conn['charset']
                     : 'utf8'

@@ -7,7 +7,6 @@
     <small><code>
         <?= $task->id ?>
     </code></small>
-    <?= $task->title ?>
 
     <?php if (isset($editable) && $editable): ?>
     <button>
@@ -52,26 +51,26 @@
     <span class="text-info">]</span>
 </p>
 
-<?php if ('no' == $task->custom) : ?>
+<?php if ('no' == $story->custom) : ?>
     <p>
         <span class="stub-3"></span>
-        <em><a href="<?= $task->url ?>">
-            <?= $task->url ?>
+        <em><a href="<?= $story->url ?>">
+            <?= $story->url ?>
         </a></em>
     </p>
 <?php else : ?>
     <blockquote><em>
         <p>
             <?= lang('STORY_WHO') ?>
-            <span><?= $task->story_role ?></span>
+            <span><?= $story->role ?></span>
         </p>
         <p>
             <?= lang('STORY_WHAT') ?>
-            <span><?= $task->story_activity ?></span>
+            <span><?= $story->activity ?></span>
         </p>
         <p>
             <?= lang('STORY_FOR') ?>
-            <span><?= $task->story_value ?></span>
+            <span><?= $story->value ?></span>
         </p>
     </em></blockquote>
     <div id="task-acceptances">
@@ -87,10 +86,10 @@
 
     <textarea
     id="task-acceptances-md"
-    style="display:none"><?= $task->acceptances ?></textarea>
+    style="display:none"><?= $story->acceptances ?></textarea>
     <textarea
     id="task-others-md"
-    style="display:none"><?= $task->extra ?></textarea>
+    style="display:none"><?= $story->extra ?></textarea>
 <?php endif ?>
 
 <?= $this->section('trendings-with-sort', [

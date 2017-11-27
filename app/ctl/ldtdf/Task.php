@@ -79,7 +79,8 @@ class Task extends Ctl
         $assignable = ($task->canBeAssignedBy($user));
         
         view("ldtdf/task/info")
-        ->withTaskProjectTrendingsEditableAssignable(
+        ->withStoryTaskProjectTrendingsEditableAssignable(
+            $task->story(),
             $task,
             $task->project(),
             $task->trendings($querys),
