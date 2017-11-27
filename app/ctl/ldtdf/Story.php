@@ -23,10 +23,11 @@ class Story extends Ctl
         $assignable = ($story->canBeAssignedBy($user));
 
         view('ldtdf/story/info')
-        ->withStoryEditableAssignableTrendings(
+        ->withStoryEditableAssignableTasksTrendings(
             $story,
             $editable,
             $assignable,
+            $story->tasks(),
             $story->trendings()
         );
     }

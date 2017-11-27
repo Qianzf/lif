@@ -28,6 +28,11 @@ class CreateTaskTable extends Dit
             ->comment('Project ID this task relate to => `project`.`id`');
 
             $table
+            ->text('notes')
+            ->nullable()
+            ->comment('Notes of this task');
+
+            $table
             ->datetime('create_at')
             ->default('CURRENT_TIMESTAMP()', true);
 

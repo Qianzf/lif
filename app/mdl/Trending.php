@@ -58,18 +58,20 @@ class Trending extends Mdl
 
     public function genHTMLStringOfEvent() : string
     {
-        $event   = $this->makeEvent();
-        $key     = ucfirst($this->ref_type);
-        $handler = "genDetailsOf{$key}";
-
-        if (! method_exists($event, $handler)) {
-            excp("Event string generator not found: {$handler}()");
-        }
+        $event = $this->makeEvent();
+        $data  = false;
         
-        $data = call_user_func([$event, $handler], $this->ref_id);
+        if ($key = ucfirst($this->ref_type)) {
+            $handler = "genDetailsOf{$key}";
+            if (! method_exists($event, $handler)) {
+                excp("Event string generator not found: {$handler}()");
+            }
+            
+            $data = call_user_func([$event, $handler], $this->ref_id);
 
-        $route = $data['route'] ?? null;
-        $title = $data['title'] ?? null;
+            $route = $data['route'] ?? null;
+            $title = $data['title'] ?? null;
+        }
 
         return $data ? ": <a href='{$route}'>{$title}</a>" : '';
     }

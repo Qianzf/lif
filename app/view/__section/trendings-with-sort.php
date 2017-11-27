@@ -1,19 +1,22 @@
 <?php if (isset($model) && $model->isAlive()): ?>
     <?php $object = $object ?? classname($model); ?>
-    <p>
-        <span class="stub-2"></span>
-        <span class="text-info">[</span>
-        <small><?= lang("{$object}_TRENDING") ?></small>
-        <?php $sort = (isset($_GET['trending']) && in_array($_GET['trending'], [
-            'asc', 'desc',
-            ])) ? $_GET['trending'] : 'asc';
-        ?>
-        <button
-        onclick="resortTrending('<?= $sort ?>')"
-        class="fa fa-sort-<?= $sort ?>"></button>
-        <span class="text-info">]</span>
+    <div>
+        <h6>
+            <span class="stub-2"></span>
+            <span class="text-info">[</span>
+            <small><?= lang("{$object}_TRENDING") ?></small>
+            <?php $sort = (isset($_GET['trending']) && in_array($_GET['trending'], [
+                'asc', 'desc',
+                ])) ? $_GET['trending'] : 'asc';
+            ?>
+            <button
+            onclick="resortTrending('<?= $sort ?>')"
+            class="fa fa-sort-<?= $sort ?>"></button>
+            <span class="text-info">]</span>
+        </h6>
+
         <?= $this->section('trendings') ?>
-    </p>
+    </div>
 
     <script type="text/javascript">
         function resortTrending(sort) {

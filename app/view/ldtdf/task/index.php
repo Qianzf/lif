@@ -12,24 +12,38 @@
     </dd>
 </dl>
 
-<?php if (isset($tasks) && iteratable($tasks)) : ?>
-<?= $this->section('filter/user') ?>
+<?= $this->section('filter/user', [
+    'user' => 'CREATOR',
+]) ?>
 
 <table>
     <caption><?= lang('TASK_LIST') ?></caption>
 
     <tr>
         <th><?= lang('ID') ?></th>
-        <th><?= lang('TITLE') ?></th>
+        <th><?= lang('STORY') ?></th>
+        <th><?= lang('PROJECT') ?></th>
         <th><?= lang('CREATOR') ?></th>
+        <th><?= lang('TIME') ?></th>
         <th><?= lang('STATUS') ?></th>
         <th><?= lang('OPERATIONS') ?></th>
     </tr>
+    <?php if (isset($tasks) && iteratable($tasks)) : ?>
     <?php foreach ($tasks as $task) : ?>
     <tr>
         <td><?= $task->id ?></td>
-        <td><?= $task->title ?></td>
+        <td>
+            <a href="/dep/stories/<?= $task->story()->id?>">
+                <?= $task->story()->title ?>
+            </a>
+        </td>
+        <td>
+            <a href="/dep/projects/<?= $task->project()->id ?>">
+                <?= $task->project()->name ?>
+            </a>
+        </td>
         <td><?= $task->creator()->name ?></td>
+        <td><?= $task->create_at ?></td>
         <td><?= lang("TASK_{$task->status}") ?></td>
         <td>
             <button>
@@ -38,7 +52,7 @@
         </td>
     </tr>
     <?php endforeach ?>
+    <?php endif ?>
 </table>
 
 <?= $this->section('pagebar') ?>
-<?php endif ?>

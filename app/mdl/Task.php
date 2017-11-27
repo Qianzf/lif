@@ -28,6 +28,9 @@ class Task extends Mdl
             'model' => Trending::class,
             'lk' => 'id',
             'fk' => 'ref_id',
+            'where' => [
+                'ref_type' => 'task',
+            ],
         ];
 
         if ($order = ($querys['trending'] ?? null)) {

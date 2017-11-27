@@ -10,7 +10,7 @@
             );
         ?>
         <?= $trending->at, ' , ', lang("ROLE_{$user->role}") ?>
-        <a href="/dep/user/<?= $user->id ?>">
+        <a href="/dep/users/<?= $user->id ?>">
             <?= $user->name ?>
         </a>
         <?=

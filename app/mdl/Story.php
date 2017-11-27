@@ -45,6 +45,26 @@ class Story extends ModelBase
         excp('Missing user id.');
     }
 
+    public function creator()
+    {
+        return $this->belongsTo(
+            User::class,
+            'creator',
+            'id'
+        );
+    }
+
+    public function tasks()
+    {
+        $relationship = [
+            'model' => Task::class,
+            'lk' => 'id',
+            'fk' => 'story',
+        ];
+
+        return $this->hasMany($relationship);
+    }
+
     public function trendings(array $querys = [])
     {
         $relationship = [

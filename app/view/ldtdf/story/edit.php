@@ -9,7 +9,7 @@
 ]) ?>
 
 <?php if (isset($story) && is_object($story)) { ?>
-<?php $sid = $story->isAlive() ? $story->id : 'new' ?>
+<?php $sid = $story->isAlive() ? $story->id : 'new'; ?>
 
 <form method="POST" action="/dep/stories/<?= $sid ?>">
     <?= csrf_feild() ?>

@@ -8,9 +8,12 @@ class Web extends \Lif\Core\Abst\Middleware
 
     public function passing($app)
     {
-        // update previous url
-        share('url_previous', (share('url_current') ?? $app->url()));
+        $previous = (share('url_previous') != (
+            share('url_current') ?? $app->url())
+        ) ? share('url_current') : '/dep';
+
         share('url_current', $app->url());
+        share('url_previous', $previous);
         
         if (($this->auth = share('user'))
             && (false !== exists($this->auth, 'id'))
@@ -28,6 +31,6 @@ class Web extends \Lif\Core\Abst\Middleware
             return $this->auth;
         }
 
-        redirect('/dep/user/login');
+        redirect('/dep/users/login');
     }
 }

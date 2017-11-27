@@ -2,13 +2,15 @@
 <?= $this->title([lang('VIEW_STORY'), lang('LDTDFMS')]) ?>
 <?= $this->section('common')  ?>
 
-<h2>
+<h4>
+    <?= lang('VIEW_STORY') ?>
+
     <span class="stub"></span>
     <small><code>
         S<?= $story->id ?>
     </code></small>
 
-    <?= $story->title ?>
+    <em><?= $story->title ?></em>
 
     <?php if (isset($editable) && $editable): ?>
     <button>
@@ -16,29 +18,22 @@
     </button>
     <?php endif ?>
     <?php if (isset($assignable) && $assignable): ?>
-        <?= $this->section('assign-form', [
-            'model' => $story,
-            'key'   => 'STORY',
-            'route' => "/dep/stories/{$story->id}/assign"
-        ]) ?>
+        <button>
+            <a href="/dep/tasks/new?story=<?= $story->id ?>">
+                <?= lang('ASSIGN') ?>
+            </a>
+        </button>
     <?php endif ?>
-</h2>
+</h4>
 
-<p>
-    <span class="stub-2"></span>
-    <span class="text-info">[</span>
-    <small><?= lang('STORY_DETAILS') ?></small>
-    <span class="text-info">]</span>
-</p>
+<div>
+    <h5>
+        <span class="stub-2"></span>
+        <span class="text-info">[</span>
+        <?= lang('STORY_DETAILS') ?>
+        <span class="text-info">]</span>
+    </h5>
 
-<?php if ('no' == $story->custom) : ?>
-    <p>
-        <span class="stub-3"></span>
-        <em><a href="<?= $story->url ?>">
-            <?= $story->url ?>
-        </a></em>
-    </p>
-<?php else : ?>
     <blockquote><em>
         <p>
             <?= lang('STORY_WHO') ?>
@@ -53,24 +48,53 @@
             <span><?= $story->value ?></span>
         </p>
     </em></blockquote>
-    <div id="story-acceptances">
+</div>
+
+<div id="story-acceptances">
+    <h5>
         <span class="text-info">[</span>
-        <b><?= lang('STORY_AC') ?></b>
+        <?= lang('STORY_AC') ?>
         <span class="text-info">]</span>
-    </div>
-    <div id="story-others">
-        <span class="text-info">[</span>
-        <b><?= lang('OTHER_NOTES') ?></b>
-        <span class="text-info">]</span>
-    </div>
+    </h5>
 
     <textarea
     id="story-acceptances-md"
     style="display:none"><?= $story->acceptances ?></textarea>
+</div>
+
+<div id="story-others">
+    <h5>
+        <span class="text-info">[</span>
+        <?= lang('OTHER_NOTES') ?>
+        <span class="text-info">]</span>
+    </h5>
+
     <textarea
     id="story-others-md"
     style="display:none"><?= $story->extra ?></textarea>
-<?php endif ?>
+</div>
+
+<div>
+    <h5>
+        <span class="stub-2"></span>
+        <span class="text-info">[</span>
+        <?= lang('RELATED_TASK') ?>
+        <span class="text-info">]</span>
+    </h5>
+
+    <?php if (isset($tasks) && iteratable($tasks)): ?>
+    <ul>
+        <?php foreach ($tasks as $task): ?>
+        <li>
+            <a href="/dep/tasks/<?= $task->id ?>">
+                #<?= $task->id ?>
+            </a>
+        </li>
+        <?php endforeach ?>
+    </ul>
+    <?php endif ?>
+</div>
+
 
 <?= $this->section('trendings-with-sort', [
     'model'  => $story,

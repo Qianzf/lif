@@ -1,7 +1,7 @@
 <?= $this->layout('main') ?>
 
 <?php if (isset($task) && is_object($task)) { ?>
-<?php $tid = $task->isAlive() ? $task->id : 'new' ?>
+<?php $tid = $task->isAlive() ? $task->id : 'new'; ?>
 
 <?= $this->section('back2list', [
     'model'  => $task,
@@ -12,15 +12,6 @@
 
 <form method="POST" action="/dep/tasks/<?= $tid ?>">
     <?= csrf_feild() ?>
-
-    <?php if ($task->status) : ?>
-    <label>
-        <span class="label-title">
-            <?= lang('TASK_STATUS') ?>
-        </span>
-        <code><?= lang("TASK_{$task->status}") ?></code>
-    </label>
-    <?php endif ?>
 
     <label>
         <span class="label-title">
@@ -58,6 +49,18 @@
         </select>
     </label>
 
+    <label>
+        <span class="label-title"><?= lang('NOTES') ?></span>
+        <div
+        id="task-notes"
+        class="editormd editormd-vertical">
+            <textarea
+            class="editormd-markdown-textarea"
+            placeholder="<?= lang('TASK_NOTES') ?>"
+            name="notes"><?= $task->notes ?></textarea>
+        </div>
+    </label>
+
     <?php if ($editable) : ?>
     <?= $this->section('submit', [
         'model' => $task
@@ -65,7 +68,21 @@
     <?php endif ?>
 </form>
 
-<?= $this->section('trendings-with-sort', [
-    'model' => $task,
-]) ?>
+<?= $this->section('lib/editormd') ?>
+<script type="text/javascript">
+    var EditorMDObjects = [
+    {
+        id : 'task-notes',
+        placeholder : "<?=
+            lang('NOTES'),
+            ' / ',
+            lang('ATTACHMENT'),
+            lang('ETC')
+        ?>"
+    }
+    ]
+    $(function() {
+        tryDisplayEditormd()
+    })
+</script>
 <?php } ?>

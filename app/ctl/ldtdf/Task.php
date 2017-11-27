@@ -35,7 +35,7 @@ class Task extends Ctl
         view('ldtdf/task/index')->withRecordsTasksUsers(
             $task->count(),
             $tasks,
-            $user->getNonAdmin()
+            $user->list()
         );
     }
 
@@ -44,6 +44,25 @@ class Task extends Ctl
         Story $story,
         Project $project
     ) {
+        $data = $this->request->all();
+
+        legal_or($data, [
+            'story' => ['int|min:1', null],
+        ]);
+
+        if ($sid = $data['story']) {
+            if (! $story->find($sid)) {
+                shares([
+                    '__error'   => lang('STORY_NOT_FOUND', $sid),
+                    'back2last' => share('url_previous'),
+                ]);
+
+                return redirect($this->route);
+            }
+
+            $task->story = $sid;
+        }
+
         share('hide-search-bar', true);
         
         view('ldtdf/task/edit')
@@ -56,14 +75,18 @@ class Task extends Ctl
         );
     }
 
-    public function edit(TaskModel $task, Project $project)
+    public function edit(
+        TaskModel $task,
+        Story $story,
+        Project $project
+    )
     {
         if (! $task->isAlive()) {
             share_error_i18n('NO_TASK');
             return redirect(share('url_previous'));
         }
 
-        return $this->add($task, $project);
+        return $this->add($task, $story, $project);
     }
 
     public function info(TaskModel $task)
@@ -81,6 +104,8 @@ class Task extends Ctl
         $user       = share('user.id');
         $editable   = ($task->creator == $user);
         $assignable = ($task->canBeAssignedBy($user));
+
+        share('hide-search-bar', true);
         
         view("ldtdf/task/info")
         ->withStoryTaskProjectTrendingsEditableAssignable(
@@ -106,7 +131,7 @@ class Task extends Ctl
             $msg = 'CREATED_SUCCESS';
             $task->addTrending('create');
         } else {
-            $msg    = lang('CREATED_FAILED', $status);
+            $msg    = lang('CREATED_FAILED', lang($status));
             $status = 'new';
         }
 

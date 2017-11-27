@@ -1,8 +1,9 @@
 <?php if (isset($users) && iteratable($users)) : ?>
 <?php $uid = intval($_GET['user'] ?? 0); ?>
+<?php $user = $user ?? 'USER' ?>
 <p>
     <button class="btn-info">
-        <?= lang('SPECIFIC_USER') ?>
+        <?= lang("SPECIFIC_{$user}") ?>
     </button>
     <select name="user" class="query-filters">
         <option value="0" <?= (-1 === $uid) ? 'selected' : '' ?>>

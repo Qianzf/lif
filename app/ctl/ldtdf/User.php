@@ -50,7 +50,7 @@ class User extends Ctl
             'take' => $pageScale,
         ]);
 
-        $users   = $user->listNonAdminUsers();
+        $users   = $user->getNonAdmin();
         $records = $trending->count();
         $pages   = ceil($records / $pageScale);
 

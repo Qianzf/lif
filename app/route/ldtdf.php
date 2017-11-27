@@ -19,7 +19,7 @@ $this->group([
     $this->get('todo', 'User@todo');
 
     $this->group([
-        'prefix' => 'user',
+        'prefix' => 'users',
     ], function () {
         $this->get('login', 'Passport@login')->cancel('auth.web');
         $this->post('login', 'Passport@auth')->cancel('auth.web');
@@ -72,6 +72,33 @@ $this->group([
         $this->get('{id}/edit', 'edit');
         $this->get('{id}/assign', 'assign');
         $this->post('{id}/assign', 'assignTo');
+    });
+
+    $this->group([
+        'prefix'    => 'projects',
+        'ctl'       => 'Project',
+    ], function () {
+        $this->get('{id}', 'info');
+    });
+
+    $this->group([
+        'prefix'    => 'dev',
+        'namespace' => 'Developer',
+        'middleware' => [
+            'auth.developer',
+        ],
+    ], function () {
+        $this->get('/', 'Developer@index');
+    });
+
+    $this->group([
+        'prefix'    => 'test',
+        'namespace' => 'Tester',
+        'middleware' => [
+            'auth.tester',
+        ],
+    ], function () {
+        $this->get('/', 'Tester@index');
     });
 
     $this->group([
@@ -138,25 +165,5 @@ $this->group([
             $this->get('{id}', 'edit');
             $this->post('{id}', 'update');
         });
-    });
-
-    $this->group([
-        'prefix'    => 'dev',
-        'namespace' => 'Developer',
-        'middleware' => [
-            'auth.developer',
-        ],
-    ], function () {
-        $this->get('/', 'Developer@index');
-    });
-
-    $this->group([
-        'prefix'    => 'test',
-        'namespace' => 'Tester',
-        'middleware' => [
-            'auth.tester',
-        ],
-    ], function () {
-        $this->get('/', 'Tester@index');
     });
 });

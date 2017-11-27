@@ -15,15 +15,10 @@ class User extends Mdl
         return $this->whereStatus(1)->whereRole('!=', 'admin')->get();
     }
 
-    public function listNonAdminUsers()
+    public function list()
     {
-        $role = (share('user.role') == 'admin')
-        ? -1 : 'admin';
-
         return $this
-        ->select('id', 'name')
         ->whereStatus(1)
-        ->whereRole('!=', $role)
         ->all();
     }
 

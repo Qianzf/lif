@@ -2,6 +2,7 @@
 <label><button id="assign-to">
     <?= lang('ASSIGN') ?>
 </button></label>
+
 <div id="task-assign-form"
 title="<?= lang("ASSIGN_{$key}", $model->title) ?>"
 class="invisible-default">
@@ -42,6 +43,14 @@ class="invisible-default">
             $('textarea[name="assign-notes"]').val('')
           }
         })
+    })
+    $('input[name="assign-to"]').autocomplete({
+        hints: [],
+        width: 300,
+        height: 30,
+        onSubmit: function(text){
+            $('#message').html('Selected: <b>' + text + '</b>');
+        }
     })
 </script>
 <?= $this->section('lib/jqueryui') ?>

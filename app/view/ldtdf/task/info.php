@@ -2,11 +2,14 @@
 <?= $this->title([lang('VIEW_TASK'), lang('LDTDFMS')]) ?>
 <?= $this->section('common')  ?>
 
-<h2>
+<h4>
+    <?= lang('VIEW_TASK') ?>
     <span class="stub"></span>
     <small><code>
         T<?= $task->id ?>
     </code></small>
+
+    <em><?= $task->story()->title ?></em>
 
     <?php if (isset($editable) && $editable): ?>
     <button>
@@ -20,7 +23,7 @@
             'route' => "/dep/tasks/{$task->id}/assign"
         ]) ?>
     <?php endif ?>
-</h2>
+</h4>
 
 <p>
     <span class="stub-2"></span>
@@ -51,46 +54,52 @@
     <span class="text-info">]</span>
 </p>
 
-<?php if ('no' == $story->custom) : ?>
+<blockquote><em>
     <p>
-        <span class="stub-3"></span>
-        <em><a href="<?= $story->url ?>">
-            <?= $story->url ?>
-        </a></em>
+        <?= lang('STORY_WHO') ?>
+        <span><?= $story->role ?></span>
     </p>
-<?php else : ?>
-    <blockquote><em>
-        <p>
-            <?= lang('STORY_WHO') ?>
-            <span><?= $story->role ?></span>
-        </p>
-        <p>
-            <?= lang('STORY_WHAT') ?>
-            <span><?= $story->activity ?></span>
-        </p>
-        <p>
-            <?= lang('STORY_FOR') ?>
-            <span><?= $story->value ?></span>
-        </p>
-    </em></blockquote>
-    <div id="task-acceptances">
-        <span class="text-info">[</span>
-        <b><?= lang('STORY_AC') ?></b>
-        <span class="text-info">]</span>
-    </div>
-    <div id="task-others">
-        <span class="text-info">[</span>
-        <b><?= lang('OTHER_NOTES') ?></b>
-        <span class="text-info">]</span>
-    </div>
+    <p>
+        <?= lang('STORY_WHAT') ?>
+        <span><?= $story->activity ?></span>
+    </p>
+    <p>
+        <?= lang('STORY_FOR') ?>
+        <span><?= $story->value ?></span>
+    </p>
+</em></blockquote>
 
-    <textarea
-    id="task-acceptances-md"
-    style="display:none"><?= $story->acceptances ?></textarea>
-    <textarea
-    id="task-others-md"
-    style="display:none"><?= $story->extra ?></textarea>
-<?php endif ?>
+<div id="task-acceptances">
+    <span class="text-info">[</span>
+    <b><?= lang('STORY_AC') ?></b>
+    <span class="text-info">]</span>
+</div>
+
+<div id="task-others">
+    <span class="text-info">[</span>
+    <b><?= lang('OTHER_NOTES') ?></b>
+    <span class="text-info">]</span>
+</div>
+
+<textarea
+id="task-acceptances-md"
+style="display:none"><?= $story->acceptances ?></textarea>
+<textarea
+id="task-others-md"
+style="display:none"><?= $story->extra ?></textarea>
+
+<p>
+    <span class="stub-2"></span>
+    <span class="text-info">[</span>
+    <small><?= lang('RELATED_STORY') ?></small>
+    <span class="text-info">]</span>
+
+    <i>
+        <a href="/dep/stories/<?= $task->story()->id ?>">
+            <?= $task->story()->title ?>
+        </a>
+    </i>
+</p>
 
 <?= $this->section('trendings-with-sort', [
     'model' => $task,

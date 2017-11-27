@@ -1,35 +1,33 @@
 <?= $this->layout('main') ?>
-<?= $this->title([lang('USER_INFO'), lang('LDTDFMS')]) ?>
+<?= $this->title([lang('PROJECT_INFO'), lang('LDTDFMS')]) ?>
 <?= $this->section('common') ?>
 <?= $this->section('title', [
-    'key' => 'USER_INFO'
+    'key' => 'PROJECT_INFO'
 ]) ?>
 
 <div class="form">
     <label>
         <button class="btn-info">
-            <?= lang('NAME') ?>
+            <?= lang('TITLE') ?>
         </button>
         <span class="stub"></span>
-        <small><?= $user->name ?></small>
+        <small><?= $project->name ?></small>
     </label>
 
     <label>
         <button class="btn-info">
-            <?= lang('ROLE') ?>
+            <?= lang('TYPE') ?>
         </button>
         <span class="stub"></span>
-        <small><?= lang("ROLE_{$user->role}") ?></small>
+        <small><?= lang($project->type) ?></small>
     </label>
 
     <label>
         <button class="btn-info">
-            <?= lang('EMAIL') ?>
+            <?= lang('DESCRIPTION') ?>
         </button>
         <span class="stub"></span>
-        <a href="mailto:<?= $user->email ?>">
-            <code><?= $user->email ?></code>
-        </a>
+        <small><?= $project->desc ?></small>
     </label>    
 </div>
 
