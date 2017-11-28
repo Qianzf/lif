@@ -35,6 +35,7 @@ $this->group([
         'ctl' => 'Story',
     ], function () {
         $this->get('/', 'index');
+        $this->get('list', 'list');
         $this->get('new', 'add');
         $this->post('new', 'create');
         $this->get('{id}', 'info');

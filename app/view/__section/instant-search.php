@@ -1,8 +1,11 @@
-<?php $width = $width ?? '200'; ?>
-<?php $api   = $api   ?? 'api'; ?>
+<?php $width   = $width ?? '200'; ?>
+<?php $api     = $api   ?? 'api'; ?>
+<?php $oldVal  = $oldVal  ?? false; ?>
 <?php $sresKey = $sresKey ?? 'id'; ?>
 <?php $sresVal = $sresVal ?? 'name'; ?>
 <?php $sresKeyInput = $sresKeyInput ?? 'name'; ?>
+<?php $closeSelectedHTML = '<span class="search-res-right-close"><i class="fa fa-remove" onclick="removeSelectedResult()"></i></span>';
+?>
 
 <div style="width:<?= $width?>px;display:inline-block;">
     <div id="selected-search-res">
@@ -10,13 +13,16 @@
         class="fa fa-angle-down"
         onclick="startInstantSearch(this)"
         data-angle="down"></label>
-        <span></span>
+        <span>
+            <?php if ($oldVal): ?>
+                <?= $oldVal, $closeSelectedHTML ?>
+            <?php endif ?>
+        </span>
     </div>
 
     <div id="instant-search-and-show">
         <input type="text"
         id="instant-search-bar"
-        onclick="instantSearch()"
         onkeyup="instantSearch()"
         placeholder="<?= lang('PROVIDE_KEYWORDS') ?>">
         <ul id="instant-search-res-list"></ul>
@@ -38,6 +44,7 @@
             selectedSearchResult.addClass('fa-angle-down')
         } else {
             obj.data().angle = 'up'
+            instantSearch()
             instantSearchAndShow.show()
             selectedSearchResult.removeClass('fa-angle-down')
             selectedSearchResult.addClass('fa-angle-up')
@@ -45,11 +52,16 @@
     }
     function instantSearch() {
         $('#instant-search-res-list').show()
-        let search = $('#instant-search-bar').val()
+        searchKeywords($('#instant-search-bar').val())
+    }
+    function searchKeywords(search) {
         $.get('<?= $api ?>', {
             'search': search
         }, function (res) {
-            let results = res.dat ? '' : '<?= lang('NO_RESULT')?>'
+            let results = res.dat
+            ? '' : '<small><i><?= lang('NO_RESULT') ?></i></small>'
+
+            let height  = 50
             for (let i in res.dat) {
                 results += '<li onclick="chooseSearchResult(this)" data-key="'
                 + res.dat[i].<?= $sresKey ?>
@@ -58,9 +70,12 @@
                 + '">'
                 + res.dat[i].<?= $sresVal ?>
                 + '</li>'
+                height += 50
             }
 
-            $('#instant-search-res-list').html(results)
+            let instantSearchResList = $('#instant-search-res-list')
+            instantSearchResList.css('height', height)
+            instantSearchResList.html(results)
         })
     }
     function chooseSearchResult(result) {
@@ -70,9 +85,7 @@
         selectedSearchResult.addClass('fa-angle-down')
         selectedSearchResult.data().angle = 'down'
         $('#instant-search-and-show').hide()
-        let html = result.dataset.value
-        + '<span class="search-res-right-close"><i class="fa fa-remove" onclick="removeSelectedResult()"></i></span>'
-
+        let html = result.dataset.value + '<?= $closeSelectedHTML ?>'
         $('#selected-search-res span').html(html)
     }
     function removeSelectedResult() {

@@ -189,7 +189,7 @@ input:invalid {
     background-repeat: no-repeat;
     background-position: 10px 8px;
     padding-left: 40px;
-    width: 73%;
+    width: 98%;
     font-size: 12px !important;
     /*margin-bottom: 10px;*/
 }
@@ -197,8 +197,9 @@ input:invalid {
     list-style-type: none;
     padding: 0;
     margin: 0;
-    height: 150px;
+    max-height: 150px;
     overflow: auto;
+    display: none;
 }
 #instant-search-and-show {
     display: none;
@@ -207,11 +208,10 @@ input:invalid {
     border: 1px solid #ddd; /* 链接添加边框 */
     margin-top: -1px; 
     background-color: #f6f6f6; 
-    padding: 12px; 
+    padding: 8px; 
     text-decoration: none;
-    font-size: 18px; 
-    color: black; 
-    display: block; 
+    color: green;
+    display: block;
 }
 #instant-search-res-list li.header {
     background-color: #e2e2e2; 
@@ -221,7 +221,7 @@ input:invalid {
     background-color: #eee;
 }
 #selected-search-res {
-    width: 198px;
+    width: 248px;
     border: 1px solid #ddd;
 }
 #selected-search-res label {
@@ -230,7 +230,5 @@ input:invalid {
     margin-left: 8px;
 }
 .search-res-right-close {
-    float: right;
-    margin-top: 8%;
-    margin-right: 10px;
+    margin-left: 10px;
 }

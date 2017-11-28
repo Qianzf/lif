@@ -181,4 +181,5 @@ return [
     'SCRIPT' => 'Script',
     'LOCAL' => 'Local',
     'REMOTE' => 'Remote',
+    'DEPENDENT' => 'Dependent',
 ];

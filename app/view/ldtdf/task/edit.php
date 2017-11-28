@@ -1,7 +1,7 @@
 <?= $this->layout('main') ?>
 
 <?php if (isset($task) && is_object($task)) { ?>
-<?php $tid = $task->isAlive() ? $task->id : 'new'; ?>
+<?php $tid   = $task->isAlive() ? $task->id : 'new'; ?>
 
 <?= $this->section('back2list', [
     'model'  => $task,
@@ -17,18 +17,14 @@
         <span class="label-title">
             <?= lang('RELATED_STORY') ?>
         </span>
-        <select name="story" required>
-            <option>-- <?= lang('SELECT_STORY') ?> --</option>
-            <?php foreach ($stories as $story): ?>
-                <option
-                <?php if ($task->story == $story->id): ?>
-                    selected
-                <?php endif ?>
-                value="<?= $story->id ?>">
-                    <?= $story->title ?>
-                </option>
-            <?php endforeach ?>
-        </select>
+        <input type="hidden" name="story" value="<?= $story->id ?>">
+        <?= $this->section('instant-search', [
+            'api' => '/dep/stories/list',
+            'oldVal' => $story->title,
+            'sresKeyInput' => 'story',
+            // 'sresKey' => 'id',
+            'sresVal' => 'title',
+        ]) ?>
     </label>
 
     <label>
@@ -37,20 +33,20 @@
         </span>
         <select name="project" required>
             <option>-- <?= lang('SELECT_PROJECT') ?> --</option>
-            <?php foreach ($projects as $project): ?>
+            <?php foreach ($projects as $proj): ?>
                 <option
-                <?php if ($task->project == $project->id): ?>
+                <?php if ($project->id == $proj->id): ?>
                     selected
                 <?php endif ?>
-                value="<?= $project->id ?>">
-                    <?= $project->name, " ($project->type)" ?>
+                value="<?= $proj->id ?>">
+                    <?= $proj->name, " ($proj->type)" ?>
                 </option>
             <?php endforeach ?>
         </select>
     </label>
 
     <label>
-        <span class="label-title"><?= lang('NOTES') ?></span>
+        <span class="label-title"><?= lang('TASK_NOTES') ?></span>
         <div
         id="task-notes"
         class="editormd editormd-vertical">

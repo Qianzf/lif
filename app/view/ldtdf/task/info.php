@@ -50,6 +50,20 @@
 <p>
     <span class="stub-2"></span>
     <span class="text-info">[</span>
+    <small><?= lang('RELATED_STORY') ?></small>
+    <span class="text-info">]</span>
+
+    <i>
+        <a href="/dep/stories/<?= $task->story()->id ?>">
+            S<?= $task->story()->id ?>:
+            <?= $task->story()->title ?>
+        </a>
+    </i>
+</p>
+
+<p>
+    <span class="stub-2"></span>
+    <span class="text-info">[</span>
     <small><?= lang('TASK_DETAILS') ?></small>
     <span class="text-info">]</span>
 </p>
@@ -96,20 +110,6 @@ style="display:none"><?= $story->extra ?></textarea>
 <textarea
 id="task-notes-md"
 style="display:none"><?= $task->notes ?></textarea>
-
-<p>
-    <span class="stub-2"></span>
-    <span class="text-info">[</span>
-    <small><?= lang('RELATED_STORY') ?></small>
-    <span class="text-info">]</span>
-
-    <i>
-        <a href="/dep/stories/<?= $task->story()->id ?>">
-            S<?= $task->story()->id ?>:
-            <?= $task->story()->title ?>
-        </a>
-    </i>
-</p>
 
 <p>
     <span class="stub-2"></span>

@@ -59,31 +59,36 @@ class Task extends Ctl
 
                 return redirect($this->route);
             }
-
-            $task->story = $sid;
         }
 
         share('hide-search-bar', true);
 
         view('ldtdf/task/edit')
-        ->withTaskStoriesProjectsEditableTrendings(
+        ->withTaskStoryProjectProjectsEditableTrendings(
             $task,
-            $story->all(),
+            $story,
+            $project,
             $project->all(),
             true,
             $task->trendings()
         );
     }
 
-    public function edit(
-        TaskModel $task,
-        Story $story,
-        Project $project
-    )
+    public function edit(TaskModel $task)
     {
         if (! $task->isAlive()) {
             share_error_i18n('NO_TASK');
             return redirect(share('url_previous'));
+        }
+
+        if (! ($story = $task->story())) {
+            share_error_i18n('NO_STORY');
+            return redirect(share('url_previous'));   
+        }
+
+        if (! ($project = $task->project())) {
+            share_error_i18n('NO_PROJECT');
+            return redirect(share('url_previous'));   
         }
 
         return $this->add($task, $story, $project);
@@ -179,6 +184,6 @@ class Task extends Ctl
 
         share_error(lang($status, $err));
 
-        redirect($this->route);
+        redirect("{$this->route}/edit");
     }
 }

@@ -4,6 +4,14 @@
 //     Helper Functions for Web Scenarios
 // ------------------------------------------
 
+if (! fe('is_ajax')) {
+    function is_ajax() {
+        return (
+            strtolower($ajax = server('HTTP_X_REQUESTED_WITH')
+            ) === 'xmlhttprequest'
+        );
+    }
+}
 if (! fe('url')) {
     function url() {
     }

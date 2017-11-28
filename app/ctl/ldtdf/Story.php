@@ -12,6 +12,17 @@ class Story extends Ctl
         view('ldtdf/story/index')->withStories($story->list());
     }
 
+    public function list(StoryModel $story)
+    {
+        $where = [];
+        
+        if ($search = $this->request->get('search')) {
+            $where[] = ['title', 'like', "%{$search}%"];
+        }
+
+        return response($story->list(['id', 'title'], $where, false));
+    }
+
     public function info(StoryModel $story)
     {
         if (! $story->isAlive()) {

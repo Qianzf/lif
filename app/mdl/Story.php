@@ -26,14 +26,27 @@ class Story extends ModelBase
     protected $unreadable  = [
     ];
 
-    public function list()
+    public function list(
+        $selects = null,
+        array $where = null,
+        bool $model = true
+    )
     {
-        return $this
+        $selects = $selects ?? '*';
+        $query   = $this
         ->reset()
+        ->select($selects);
+
+        if ($where) {
+            $query = $query->where($where);
+        }
+
+        return $query
         ->sort([
             'create_at' => 'desc',
         ])
-        ->get();
+        ->limit(0, 20)
+        ->all($model);
     }
 
     public function canBeAssignedBy(int $user = null)

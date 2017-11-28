@@ -175,8 +175,9 @@ abstract class Model
 
     public function all(bool $model = true)
     {
-        $res = $this->query()->get();
-
+        $query = clone $this;
+        $res = $query->query()->get();
+        
         if ($model) {
             $this->__toModel($res);
         }

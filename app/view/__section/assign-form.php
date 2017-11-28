@@ -16,8 +16,8 @@ class="invisible-default">
             <?= $this->section('instant-search', [
                 'api' => '/dep/users/list',
                 'sresKeyInput' => 'assign-to',
-                // 'sres-key' => '/api',
-                // 'sres-val' => '/api',
+                // 'sresKey' => '/api',
+                // 'sresVal' => '/api',
             ]) ?>
         </label>
         <label>

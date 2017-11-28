@@ -8,6 +8,7 @@ class Task extends Mdl
 
     protected $rules = [
         'creator' => 'int|min:1',
+        'story'   => 'int|min:1',
         'project' => 'int|min:1',
         'status'  => 'string',
         'title'   => 'string',

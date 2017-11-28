@@ -184,4 +184,5 @@ return [
     'SCRIPT' => '脚本',
     'LOCAL' => '本地',
     'REMOTE' => '远程',
+    'DEPENDENT' => '依赖',
 ];
