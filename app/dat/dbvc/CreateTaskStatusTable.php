@@ -20,6 +20,11 @@ class CreateTaskStatusTable extends Dit
             $table
             ->string('val')
             ->comment('Task status text desc');
+
+            $table
+            ->char('assignable', 8)
+            ->default('yes')
+            ->comment('If this status is assignable to user: yes/no');
         });
     }
 

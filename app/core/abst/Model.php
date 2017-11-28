@@ -113,7 +113,7 @@ abstract class Model
             $args
         );
 
-        if ($res instanceof Builder) {            
+        if ($res instanceof Builder) {      
             $this->filter = $res->persistentFor();
             $this->query  = $res;
 
@@ -173,9 +173,10 @@ abstract class Model
         return _json_encode($this->items());
     }
 
-    public function all(bool $model = true)
+    public function all(bool $model = true, bool $persistent = true)
     {
-        $query = clone $this;
+        $query = $persistent ? $this : (clone $this);
+
         $res = $query->query()->get();
         
         if ($model) {

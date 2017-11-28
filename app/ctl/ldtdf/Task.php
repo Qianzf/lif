@@ -7,6 +7,29 @@ use Lif\Mdl\{User, Project, Story};
 
 class Task extends Ctl
 {
+    public function getAttachableStories(Story $story)
+    {
+        $where = [];
+        
+        if ($search = $this->request->get('search')) {
+            $where[] = ['title', 'like', "%{$search}%"];
+        }
+
+        return response($story->list(['id', 'title'], $where, false));
+    }
+
+    public function getAssignableUsers(TaskModel $task)
+    {
+        if (! $task->isAlive()) {
+            return response([
+                'err' => '403',
+                'msg' => lang('NO_TASK'),
+            ]);
+        }
+
+        return response($task->getAssignableUsers());    
+    }
+
     public function assign()
     {
         $id = $this->vars[0] ?? null;
@@ -14,7 +37,7 @@ class Task extends Ctl
         return redirect("/dep/tasks/{$id}");
     }
 
-    public function assignTo()
+    public function assignTo(TaskModel $task)
     {
         dd($this->request->all());
     }
@@ -113,14 +136,15 @@ class Task extends Ctl
         share('hide-search-bar', true);
         
         view("ldtdf/task/info")
-        ->withStoryTaskTasksProjectTrendingsEditableAssignable(
+        ->withStoryTaskTasksProjectTrendingsEditableAssignableAssigns(
             $task->story(),
             $task,
             $task->relateTasks(),
             $task->project(),
             $task->trendings($querys),
             $editable,
-            $assignable
+            $assignable,
+            $task->assigns()
         );
     }
 

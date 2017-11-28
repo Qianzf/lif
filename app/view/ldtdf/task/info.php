@@ -20,6 +20,7 @@
         <?= $this->section('assign-form', [
             'model' => $task,
             'key'   => 'TASK',
+            'api'   => "/dep/tasks/{$task->id}/users/assignable",
             'route' => "/dep/tasks/{$task->id}/assign"
         ]) ?>
     <?php endif ?>
@@ -31,7 +32,7 @@
     <small><?= lang('TASK_STATUS') ?></small>
     <span class="text-info">]</span>
     <?php if ($task->status) : ?>
-    <button class="btn-info"><?= lang("TASK_{$task->status}") ?></button>
+    <button class="btn-info"><?= lang("STATUS_{$task->status}") ?></button>
     <?php endif ?>
 </p>
 

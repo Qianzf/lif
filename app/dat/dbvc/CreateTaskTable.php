@@ -27,9 +27,9 @@ class CreateTaskTable extends Dit
             ->unsigned()
             ->comment('Project ID this task relate to => `project`.`id`');
 
-            $table
-            ->int('dependent')
-            ->comment('Task of this task dependent to');
+            // $table
+            // ->int('dependent')
+            // ->comment('Task of this task dependent to');
 
             $table
             ->text('notes')

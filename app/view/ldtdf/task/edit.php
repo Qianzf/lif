@@ -19,7 +19,7 @@
         </span>
         <input type="hidden" name="story" value="<?= $story->id ?>">
         <?= $this->section('instant-search', [
-            'api' => '/dep/stories/list',
+            'api' => '/dep/tasks/stories/attachable',
             'oldVal' => $story->title,
             'sresKeyInput' => 'story',
             // 'sresKey' => 'id',

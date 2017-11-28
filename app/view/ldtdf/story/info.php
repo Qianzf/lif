@@ -20,7 +20,7 @@
     <?php if (isset($assignable) && $assignable): ?>
         <button>
             <a href="/dep/tasks/new?story=<?= $story->id ?>">
-                <?= lang('ASSIGN') ?>
+                <?= lang('DISPATCH_TASK') ?>
             </a>
         </button>
     <?php endif ?>

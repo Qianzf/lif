@@ -1133,7 +1133,7 @@ if (! fe('load_object')) {
     }
 }
 if (! fe('sysmsg')) {
-    function sysmsg($key, string $lang = null) : string {
+    function sysmsg($key, string $lang = null) {
         $key = strtoupper($key);
         if (! $lang || !is_string($lang)) {
             $lang = $_REQUEST['lang'] ?? null;

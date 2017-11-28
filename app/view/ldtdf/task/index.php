@@ -44,7 +44,7 @@
         </td>
         <td><?= $task->creator()->name ?></td>
         <td><?= $task->create_at ?></td>
-        <td><?= lang("TASK_{$task->status}") ?></td>
+        <td><?= lang("STATUS_{$task->status}") ?></td>
         <td>
             <button>
                 <a href="tasks/<?= $task->id ?>"><?= lang('DETAILS') ?></a>

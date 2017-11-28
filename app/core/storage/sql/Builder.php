@@ -31,6 +31,9 @@ class Builder implements \Lif\Core\Intf\DBConn
     protected $statement  = null;
     protected $bindValues = [];
 
+    // Tmp stack
+    private $last = [];
+
     public function trans(\Closure $trans)
     {
         $this->start();
@@ -93,6 +96,7 @@ class Builder implements \Lif\Core\Intf\DBConn
 
     public function persistentFrom(array $filter) : Builder
     {
+        $this->selects    = $filter['select'] ?? '*';
         $this->where      = $filter['where'] ?? null;
         $this->bindValues = $filter['binds'] ?? [];
 
@@ -102,16 +106,14 @@ class Builder implements \Lif\Core\Intf\DBConn
     public function persistentFor() : array
     {
         return [
-            'where' => $this->where,
-            'binds' => $this->bindValues,
+            'select' => $this->selects,
+            'where'  => $this->where,
+            'binds'  => $this->bindValues,
         ];
     }
 
     public function reset() : Builder
     {
-        $this->lastWhere = $this->where;
-        $this->lastBinds = $this->bindValues;
-
         $this->sql     = null;
         $this->_sql    = null;
         $this->crud    = null;

@@ -74,6 +74,8 @@ $this->group([
         $this->get('{id}/edit', 'edit');
         $this->get('{id}/assign', 'assign');
         $this->post('{id}/assign', 'assignTo');
+        $this->get('{id}/users/assignable', 'getAssignableUsers');
+        $this->get('stories/attachable', 'getAttachableStories');
     });
 
     $this->group([

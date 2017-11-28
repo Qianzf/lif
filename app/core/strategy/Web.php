@@ -219,13 +219,16 @@ class Web extends Container implements Observer, Strategy
                     $ctl,
                     '__lif__'
                 ], [$this, $act, $this->routeVars]);
-            }
+            } else {
+                if (! method_exists($ctl, $act)) {
+                    excp("Method not found: `{$ns}@{$act}`");
+                }
 
-            if (! method_exists($ctl, $act)) {
-                excp("Method not found: `{$ns}@{$act}`");
+                $response = call_user_func_array(
+                    [$ctl, $act],
+                    $this->routeVars
+                );
             }
-
-            $response = call_user_func_array([$ctl, $act], $this->routeVars);
         } else {
             throw new \Lif\Core\Excp\IllegalRouteDefinition(1);
         }

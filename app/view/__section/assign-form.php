@@ -10,19 +10,36 @@ class="invisible-default">
         <?= csrf_feild() ?>
         <label>
             <span class="label-title">
-                <?= lang('ASSIGN_TO') ?>
+                <?= lang('TARGET') ?>
             </span>
-            <input type="hidden" name="assign-to">
+            <input type="hidden" name="assign-to" required>
             <?= $this->section('instant-search', [
-                'api' => '/dep/users/list',
+                'api' => $api,
                 'sresKeyInput' => 'assign-to',
                 // 'sresKey' => '/api',
                 // 'sresVal' => '/api',
             ]) ?>
         </label>
         <label>
+          <span class="label-title">
+              <?= lang('ACTION') ?>
+          </span>
+          <select name="type" required>
+            <option value="0">
+              -- <?= lang('SELECT_ASSIGN_ACTION') ?> --
+            </option>
+            <?php if (isset($assigns) && iteratable($assigns)): ?>
+            <?php foreach ($assigns as $order => $assign): ?>
+              <option value="<?= $assign ?>">
+                <?= lang("ASSIGN_{$assign}") ?>
+              </option>
+            <?php endforeach ?>
+            <?php endif ?>
+          </select>
+        </label>
+        <label>
             <span class="label-title">
-                <?= lang('NOTES') ?>
+                <?= lang('REMARKS') ?>
             </span>
             <textarea name="assign-notes"></textarea>
         </label>

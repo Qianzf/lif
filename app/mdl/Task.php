@@ -4,6 +4,8 @@ namespace Lif\Mdl;
 
 class Task extends Mdl
 {
+    use \Lif\Traits\TaskStatus;
+
     protected $table = 'task';
 
     protected $rules = [
@@ -13,6 +15,14 @@ class Task extends Mdl
         'status'  => 'string',
         'title'   => 'string',
     ];
+
+    public function getAssignableUsers()
+    {
+        $status = underline2camelcase($this->status);
+        $taskStatusHandler = "getAssignableUsersWhen{$status}";
+
+        return $this->$taskStatusHandler();
+    }
 
     public function hasConflictTask(int $project, int $story = null)
     {
@@ -35,6 +45,14 @@ class Task extends Mdl
         }
 
         excp('No story parent to relate.');
+    }
+
+    public function assigns()
+    {
+        $status = underline2camelcase($this->status);
+        $taskStatusHandler = "getAssignActionsWhen{$status}";
+
+        return $this->$taskStatusHandler();
     }
 
     public function canBeAssignedBy(int $user = null)

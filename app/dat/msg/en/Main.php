@@ -182,4 +182,10 @@ return [
     'LOCAL' => 'Local',
     'REMOTE' => 'Remote',
     'DEPENDENT' => 'Dependent',
+    'REMARK' => 'Remark',
+    'REMARKS' => 'Remarks',
+    'ACTION' => 'Action',
+    'OBJECT' => 'Object',
+    'TARGET' => 'Target',
+    'DISPATCH' => 'Dispatch',
 ];
