@@ -35,6 +35,16 @@ class CreateProjectTable extends Dit
             ->string('token')
             ->nullable()
             ->comment('Integration with vcs APIs used token');
+
+            $table
+            ->char('script_type', 8)
+            ->nullable()
+            ->comment('Deploy type of this project');
+
+            $table
+            ->string('script_path')
+            ->nullable()
+            ->comment('Absolute path on server of this project deploy script');
         });
     }
 

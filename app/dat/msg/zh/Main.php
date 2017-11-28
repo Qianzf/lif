@@ -180,4 +180,8 @@ return [
     'EMPTY' => '空的',
     'NO_RESULT' => '没有相关结果',
     'PROJECT_EXIST_IN_STORY' => '所选项目在该故事中已存在',
+    'DEPLOY' => '部署',
+    'SCRIPT' => '脚本',
+    'LOCAL' => '本地',
+    'REMOTE' => '远程',
 ];

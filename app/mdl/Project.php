@@ -12,5 +12,7 @@ class Project extends Mdl
         'vcs'   => ['need|in:git', 'git'],
         'desc'  => 'string',
         'token' => ['string', null],
+        'script_type' => ['need|in:local,remote', null],
+        'script_path' => ['string', null],
     ];
 }
