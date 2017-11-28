@@ -59,9 +59,10 @@ class UserGroup extends Ctl
             return redirect($this->route);
         }
 
-        if (($status = $group->create($this->request->all())) > 0) {
+        if (($status = $group->createWithUsers($this->request->posts)) > 0) {
             share_error_i18n('CREATED_SUCCESS');
         } else {
+            $status = 'new';
             share_error_i18n('CREATE_FAILED');
         }
 
@@ -77,7 +78,7 @@ class UserGroup extends Ctl
         ) {
             share_error(lang('GROUP_ALREADY_EXISTS', $name));
         } else {
-            $msg = $group->updateWithUsersMap($this->request->all())
+            $msg = $group->updateWithUsers($this->request->posts)
             ? 'UPDATED_OK' : 'UPDATE_FAILED';
 
             share_error_i18n($msg);

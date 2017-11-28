@@ -33,19 +33,17 @@ class UserGroup extends ModelBase
         return false;
     }
 
-    public function updateWithUsersMap(array $data) : bool
+    public function writeWithUsers(array $data, int $group = null) : bool
     {
-        if (! $this->isAlive()
-            || !($group = $this->getPK())
-        ) {
-            excp('Can not update user group when group is not alive.');
-        }
-
+        $create = is_null($group);
         $users = $data['users'] ?? [];
         unset($data['users']);
 
         db()->start();
         $update = $this->save($data);
+        if ($create) {
+            $group = $update;
+        }
         $delete = db()
         ->table('user_group_map')
         ->whereGroup($group)
@@ -62,10 +60,26 @@ class UserGroup extends ModelBase
 
         if (($update >= 0) && ($delete >= 0)  && ($insert > 0)) {
             db()->commit();
-            return true;
+            return $create ? $update : true;
         }
 
         db()->rollback();
         return false;
+    }
+
+    public function createWithUsers(array $data) : bool
+    {
+        $this->reset();
+
+        return $this->writeWithUsers($data);
+    }
+
+    public function updateWithUsers(array $data) : bool
+    {
+        if (! $this->isAlive() || !($group = $this->getPK())) {
+            excp('Can not update user group when group is not alive.');
+        }
+
+        return $this->writeWithUsers($data, $group);
     }
 }

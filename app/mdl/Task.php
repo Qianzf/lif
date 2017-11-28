@@ -13,6 +13,29 @@ class Task extends Mdl
         'title'   => 'string',
     ];
 
+    public function hasConflictTask(int $project, int $story = null)
+    {
+        if ($story = ($story ?? $this->story()->id)) {
+            return $this
+            ->whereProjectStory($project, $story)
+            ->get();
+        }
+
+        excp('No story parent to relate.');
+    }
+
+    public function relateTasks(int $story = null)
+    {
+        if ($story = ($story ?? $this->story()->id)) {
+            return $this
+            ->whereStory($story)
+            ->whereId('!=', $this->id)
+            ->get();
+        }
+
+        excp('No story parent to relate.');
+    }
+
     public function canBeAssignedBy(int $user = null)
     {
         if ($user = $user ?? (share('user.id') ?? null)) {

@@ -64,7 +64,7 @@ class Task extends Ctl
         }
 
         share('hide-search-bar', true);
-        
+
         view('ldtdf/task/edit')
         ->withTaskStoriesProjectsEditableTrendings(
             $task,
@@ -108,9 +108,10 @@ class Task extends Ctl
         share('hide-search-bar', true);
         
         view("ldtdf/task/info")
-        ->withStoryTaskProjectTrendingsEditableAssignable(
+        ->withStoryTaskTasksProjectTrendingsEditableAssignable(
             $task->story(),
             $task,
+            $task->relateTasks(),
             $task->project(),
             $task->trendings($querys),
             $editable,
@@ -120,7 +121,15 @@ class Task extends Ctl
 
     public function create(TaskModel $task)
     {
-        $data = $this->request->all();
+        $data = $this->validate($this->request->all(), [
+            'story'   => 'int|min:1',
+            'project' => 'int|min:1',
+        ]);
+        if ($task->hasConflictTask(intval($data['project']), intval($data['story']))) {
+            share_error_i18n('PROJECT_EXIST_IN_STORY');
+            return redirect($this->route);
+        }
+
         $data['status']  = 'created';
         $data['creator'] = share('user.id');
 

@@ -25,6 +25,7 @@ $this->group([
         $this->post('login', 'Passport@auth')->cancel('auth.web');
         $this->get('logout', 'Passport@logout');
         $this->get('{id}', 'User@info');
+        $this->get('list', 'User@list');
         $this->get('profile', 'User@profile');
         $this->post('profile', 'User@update');
     });

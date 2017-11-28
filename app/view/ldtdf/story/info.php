@@ -87,7 +87,8 @@
         <?php foreach ($tasks as $task): ?>
         <li>
             <a href="/dep/tasks/<?= $task->id ?>">
-                #<?= $task->id ?>
+                T<?= $task->id ?>:
+                <?= $task->project()->name ?>
             </a>
         </li>
         <?php endforeach ?>

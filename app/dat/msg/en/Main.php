@@ -175,4 +175,6 @@ return [
     'DOC' => 'Documentation',
     'DOCUMENTATION' => 'Documentation',
     'EMPTY' => 'Empty',
+    'NO_RESULT' => 'No Result',
+    'PROJECT_EXIST_IN_STORY' => 'Project already exists in this story',
 ];

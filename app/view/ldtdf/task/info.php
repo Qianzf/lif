@@ -77,7 +77,13 @@
 
 <div id="task-others">
     <span class="text-info">[</span>
-    <b><?= lang('OTHER_NOTES') ?></b>
+    <b><?= lang('STORY_NOTES') ?></b>
+    <span class="text-info">]</span>
+</div>
+
+<div id="task-notes">
+    <span class="text-info">[</span>
+    <b><?= lang('TASK_NOTES') ?></b>
     <span class="text-info">]</span>
 </div>
 
@@ -87,6 +93,9 @@ style="display:none"><?= $story->acceptances ?></textarea>
 <textarea
 id="task-others-md"
 style="display:none"><?= $story->extra ?></textarea>
+<textarea
+id="task-notes-md"
+style="display:none"><?= $task->notes ?></textarea>
 
 <p>
     <span class="stub-2"></span>
@@ -96,9 +105,30 @@ style="display:none"><?= $story->extra ?></textarea>
 
     <i>
         <a href="/dep/stories/<?= $task->story()->id ?>">
+            S<?= $task->story()->id ?>:
             <?= $task->story()->title ?>
         </a>
     </i>
+</p>
+
+<p>
+    <span class="stub-2"></span>
+    <span class="text-info">[</span>
+    <small><?= lang('RELATED_TASK') ?></small>
+    <span class="text-info">]</span>
+
+    <?php if (isset($tasks) && iteratable($tasks)): ?>
+    <ul>
+        <?php foreach ($tasks as $task): ?>
+        <li>
+            <a href="/dep/tasks/<?= $task->id ?>">
+                T<?= $task->id ?>:
+                <?= $task->project()->name ?>
+            </a>
+        </li>
+        <?php endforeach ?>
+    </ul>
+    <?php endif ?>
 </p>
 
 <?= $this->section('trendings-with-sort', [
@@ -137,6 +167,13 @@ style="display:none"><?= $story->extra ?></textarea>
 
     editormd.markdownToHTML("task-others", {
         markdown : $('#task-others-md').val(),
+        htmlDecode : "style,script,iframe",
+        tocm : true,
+        markdownSourceCode : true
+    });
+
+    editormd.markdownToHTML("task-notes", {
+        markdown : $('#task-notes-md').val(),
         htmlDecode : "style,script,iframe",
         tocm : true,
         markdownSourceCode : true

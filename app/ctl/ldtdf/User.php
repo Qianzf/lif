@@ -11,6 +11,17 @@ class User extends Ctl
         view('ldtdf/user/todo');
     }
 
+    public function list(UserModel $user)
+    {
+        $where[] = ['role', '!=', 'admin'];
+
+        if ($search = $this->request->get('search')) {
+            $where[] = ['name', 'like', "%{$search}%"];
+        }
+
+        return response($user->list(['id', 'name'], $where, false));
+    }
+
     public function info(UserModel $user)
     {
         $error = $back2last = null;

@@ -173,11 +173,13 @@ abstract class Model
         return _json_encode($this->items());
     }
 
-    public function all()
+    public function all(bool $model = true)
     {
         $res = $this->query()->get();
 
-        $this->__toModel($res);
+        if ($model) {
+            $this->__toModel($res);
+        }
 
         return $res;
     }
@@ -209,6 +211,7 @@ abstract class Model
             ->query()
             ->where($this->pk, $this->items[$this->pk])
             ->update($data)
+
             : $this->query()->insert($data);
 
             $pk = $this->alive ? $this->items[$this->pk] : $status;

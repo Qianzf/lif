@@ -34,9 +34,11 @@
         </td>
         <td><?= $story->create_at ?></td>
         <td>
-            <a href="/dep/stories/<?= $story->id ?>">
-                <?= lang('DETAILS') ?>
-            </a>
+            <button>
+                <a href="/dep/stories/<?= $story->id ?>">
+                    <?= lang('DETAILS') ?>
+                </a>
+            </button>
         </td>
     </tr>
     <?php endforeach ?>

@@ -12,7 +12,13 @@ class="invisible-default">
             <span class="label-title">
                 <?= lang('ASSIGN_TO') ?>
             </span>
-            <input type="text" name="assign-to">
+            <input type="hidden" name="assign-to">
+            <?= $this->section('instant-search', [
+                'api' => '/dep/users/list',
+                'sresKeyInput' => 'assign-to',
+                // 'sres-key' => '/api',
+                // 'sres-val' => '/api',
+            ]) ?>
         </label>
         <label>
             <span class="label-title">
@@ -27,7 +33,7 @@ class="invisible-default">
         e.preventDefault()
         dialog = $("#task-assign-form" ).dialog({
           autoOpen: true,
-          height: 300,
+          height: 500,
           width: '70%',
           modal: true,
           buttons: {
@@ -43,14 +49,6 @@ class="invisible-default">
             $('textarea[name="assign-notes"]').val('')
           }
         })
-    })
-    $('input[name="assign-to"]').autocomplete({
-        hints: [],
-        width: 300,
-        height: 30,
-        onSubmit: function(text){
-            $('#message').html('Selected: <b>' + text + '</b>');
-        }
     })
 </script>
 <?= $this->section('lib/jqueryui') ?>

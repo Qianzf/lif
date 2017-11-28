@@ -64,7 +64,7 @@ abstract class Container
             return redirect($this->route);
         }
 
-        return $prepare;
+        return $data;
     }
 
     public function __call($name, $args)

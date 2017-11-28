@@ -323,7 +323,7 @@ if (! fe('_js')) {
         }
 
         if (is_string($js)) {
-            $path = ('/' == mb_substr($css, 0, 1))
+            $path = ('/' == mb_substr($js, 0, 1))
             ? $js.'.js'
             : '/assets/'.$js.'.js';
             

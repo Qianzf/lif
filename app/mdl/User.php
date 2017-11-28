@@ -15,11 +15,22 @@ class User extends Mdl
         return $this->whereStatus(1)->whereRole('!=', 'admin')->get();
     }
 
-    public function list()
+    public function list(
+        $selects = null,
+        array $where = null,
+        bool $model = true
+    )
     {
-        return $this
-        ->whereStatus(1)
-        ->all();
+        $selects = $selects ?? '*';
+        $query   = $this
+        ->select($selects)
+        ->whereStatus(1);
+
+        if ($where) {
+            $query = $query->where($where);
+        }
+
+        return $query->all($model);
     }
 
     public function login(string $account)

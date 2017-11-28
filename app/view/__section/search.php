@@ -6,10 +6,6 @@
         value="<?= ($keyword ?? '') ?>" required
         placeholder="<?= lang('PROVIDE_KEYWORDS') ?>">
     </label>
-
-    <button name="search-btn">
-        <?= lang('SEARCH') ?>
-    </button>
     <button name="clear-search-btn">
         <?= lang('CLEAR') ?>
     </button>
