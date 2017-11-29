@@ -178,6 +178,12 @@ input:focus {
 .status-stopped {
     background-color: red;
 }
+.text-task {
+    color: cornflowerblue;
+}
+.text-bug {
+    color: crimson;
+}
 .text-info {
     color: lightgrey;
 }

@@ -19,17 +19,12 @@ class CreateTaskTable extends Dit
             $table
             ->int('story')
             ->unsigned()
-            ->nullable()
             ->comment('User story ID this task relate to => `story`.`id`');
 
             $table
             ->int('project')
             ->unsigned()
             ->comment('Project ID this task relate to => `project`.`id`');
-
-            // $table
-            // ->int('dependent')
-            // ->comment('Task of this task dependent to');
 
             $table
             ->text('notes')
@@ -43,6 +38,12 @@ class CreateTaskTable extends Dit
             $table
             ->string('status')
             ->comment('Task status => `task_status`.`key`');
+
+            $table
+            ->int('current')
+            ->unsigned()
+            ->nullable()
+            ->comment('Current realted user of this task => `user`.`id`');
         });
     }
 

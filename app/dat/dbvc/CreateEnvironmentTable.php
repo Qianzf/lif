@@ -21,7 +21,7 @@ class CreateEnvironmentTable extends Dit
             $table
             ->string('path')
             ->comment('Absolute path on server of this env');
-            
+
             $table
             ->int('project')
             ->unsigned()
@@ -31,6 +31,13 @@ class CreateEnvironmentTable extends Dit
             ->int('server')
             ->unsigned()
             ->comment('Server ID of this env bound to');
+
+            $table
+            ->int('task')
+            ->unsigned()
+            ->nullable()
+            ->default(0)
+            ->comment('Task ID of this env assigned to');
             
             $table
             ->string('status')

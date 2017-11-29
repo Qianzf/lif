@@ -10,6 +10,15 @@ class User extends Mdl
         'passwd',
     ];
 
+    public function getCurrentTasks()
+    {
+        return $this->hasMany(
+            Task::class,
+            'id',
+            'current'
+        );
+    }
+
     public function getNonAdmin()
     {
         return $this->whereStatus(1)->whereRole('!=', 'admin')->get();

@@ -6,9 +6,15 @@ use Lif\Mdl\{User as UserModel, Trending};
 
 class User extends Ctl
 {
-    public function todo()
+    public function todo(UserModel $user)
     {
-        view('ldtdf/user/todo');
+        if (! ($user = $user->find(share('user.id')))) {
+            share_error_i18n('NO_USER');
+
+            return redirect($this->route);
+        }
+
+        return view('ldtdf/user/todo')->withTasks($user->getCurrentTasks());
     }
 
     public function list(UserModel $user)

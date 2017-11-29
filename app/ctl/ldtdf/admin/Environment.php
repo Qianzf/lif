@@ -111,7 +111,7 @@ class Environment extends Ctl
 
     public function update(Env $env)
     {
-        $status = (($err = $env->save($this->request->all())) > 0)
+        $status = (($err = $env->save($this->request->posts())) >= 0)
         ? 'UPDATE_OK'
         : 'UPDATE_FAILED';
 

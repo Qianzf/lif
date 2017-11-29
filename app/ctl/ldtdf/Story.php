@@ -30,8 +30,8 @@ class Story extends Ctl
         }
 
         $user       = share('user.id');
-        $editable   = ($story->creator == $user);
-        $assignable = ($story->canBeAssignedBy($user));
+        $editable   = ($story->canEdit());
+        $assignable = ($story->canBeDispatchedBy($user));
 
         view('ldtdf/story/info')
         ->withStoryEditableAssignableTasksTrendings(

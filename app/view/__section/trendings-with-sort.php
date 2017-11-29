@@ -15,7 +15,9 @@
             <span class="text-info">]</span>
         </h6>
 
-        <?= $this->section('trendings') ?>
+        <?= $this->section('trendings', [
+            'displayShort' => ($displayShort ?? false),
+        ]) ?>
     </div>
 
     <script type="text/javascript">

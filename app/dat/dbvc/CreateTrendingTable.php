@@ -17,7 +17,7 @@ class CreateTrendingTable extends Dit
             ->unsigned()
             ->comment('User ID');
 
-            $table->string('action', 32);
+            $table->string('action', 64);
             
             $table
             ->string('ref_type', 32)
@@ -28,6 +28,17 @@ class CreateTrendingTable extends Dit
             ->unsigned()
             ->nullable()
             ->comment('Trending related object ID');
+
+            $table
+            ->int('target')
+            ->unsigned()
+            ->nullable()
+            ->comment('User action target user: `user`.`id`');
+
+            $table
+            ->tinytext('notes')
+            ->nullable()
+            ->comment('User action related notes');
             
             $table->comment('User Trending Table');
         });

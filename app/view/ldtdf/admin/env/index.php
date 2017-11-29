@@ -17,8 +17,8 @@
 
     <tr>
         <th><?= lang('ID') ?></th>
-        <th><?= lang('TITLE') ?></th>
         <th><?= lang('HOST') ?></th>
+        <th><?= lang('TITLE') ?></th>
         <th>
             <?= lang('TYPE') ?>
             <select
@@ -40,6 +40,7 @@
                 <?php } ?>
             </select>
         </th>
+        <th><?= lang('BRANCH'), '/', lang('TASK') ?></th>
         <th>
             <?= lang('STATUS') ?>
             <select
@@ -68,9 +69,10 @@
     <?php foreach ($envs as $key => $env) { ?>
     <tr>
         <td><?= $key+1 ?></td>
-        <td><?= $env->name ?></td>
         <td><?= $env->host ?></td>
+        <td><?= $env->name ?></td>
         <td><?= lang($env->type) ?></td>
+        <td><?= $env->getTaskBranchHTML() ?></td>
         <td>
             <span class="status-<?= $env->status ?>">
                 <?= lang($env->status) ?>

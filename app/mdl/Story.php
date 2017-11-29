@@ -49,10 +49,19 @@ class Story extends ModelBase
         ->all($model);
     }
 
-    public function canBeAssignedBy(int $user = null)
+    public function canEdit()
+    {
+        return (
+            ($this->creator == share('user.id'))
+        );
+    }
+
+    public function canBeDispatchedBy(int $user = null)
     {
         if ($user = $user ?? (share('user.id') ?? null)) {
-            return true;
+            return (
+                ($this->creator == $user)
+            );
         }
 
         excp('Missing user id.');

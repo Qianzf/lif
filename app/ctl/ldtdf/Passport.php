@@ -66,6 +66,6 @@ class Passport extends Ctl
     {
         session()->destory();
 
-        redirect('/dep/user/login');
+        redirect('/dep/users/login');
     }
 }

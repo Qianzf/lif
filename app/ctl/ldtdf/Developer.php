@@ -1,13 +1,13 @@
 <?php
 
-namespace Lif\Ctl\Ldtdf\Tester;
+namespace Lif\Ctl\Ldtdf;
 
-class Tester extends Ctl
+class Developer extends Ctl
 {
     public function index()
     {
         share('hide-search-bar', true);
         
-        view('ldtdf/tester/index');
+        view('ldtdf/developer/index');
     }
 }

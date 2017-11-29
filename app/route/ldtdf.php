@@ -86,23 +86,33 @@ $this->group([
     });
 
     $this->group([
-        'prefix'    => 'dev',
-        'namespace' => 'Developer',
+        'prefix' => 'dev',
+        'ctl' => 'Developer',
         'middleware' => [
             'auth.developer',
         ],
     ], function () {
-        $this->get('/', 'Developer@index');
+        $this->get('/', 'index');
     });
 
     $this->group([
-        'prefix'    => 'test',
-        'namespace' => 'Tester',
+        'prefix' => 'test',
+        'ctl' => 'Tester',
         'middleware' => [
             'auth.tester',
         ],
     ], function () {
-        $this->get('/', 'Tester@index');
+        $this->get('/', 'index');
+    });
+
+    $this->group([
+        'prefix' => 'ops',
+        'ctl' => 'Operator',
+        'middleware' => [
+            'auth.operator',
+        ],
+    ], function () {
+        $this->get('/', 'index');
     });
 
     $this->group([

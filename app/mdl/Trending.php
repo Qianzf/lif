@@ -56,24 +56,36 @@ class Trending extends Mdl
         return $user->trendings($params['from'], $params['take']);
     }
 
-    public function genHTMLStringOfEvent() : string
+    public function genHTMLStringOfEvent(bool $displayShort = null) : string
     {
-        $event = $this->makeEvent();
-        $data  = false;
-        
-        if ($key = ucfirst($this->ref_type)) {
-            $handler = "genDetailsOf{$key}";
-            if (! method_exists($event, $handler)) {
-                excp("Event string generator not found: {$handler}()");
-            }
-            
-            $data = call_user_func([$event, $handler], $this->ref_id);
+        $html = lang($this->action);
 
-            $route = $data['route'] ?? null;
-            $title = $data['title'] ?? null;
+        if (! $displayShort) {
+            $html .= lang($this->ref_type);
+            $event = $this->makeEvent();
+            $data  = false;
+            
+            if ($key = ucfirst($this->ref_type)) {
+                $handler = "genDetailsOf{$key}";
+                if (! method_exists($event, $handler)) {
+                    excp("Event string generator not found: {$handler}()");
+                }
+                
+                $data = call_user_func([$event, $handler], $this->ref_id);
+
+                $route = $data['route'] ?? null;
+                $title = $data['title'] ?? null;
+            }
+
+            $html .= $data ? "<i><a href='{$route}'>{$title}</a></i>" : '';
         }
 
-        return $data ? ": <a href='{$route}'>{$title}</a>" : '';
+        if ($this->target && ($target = model(User::class, $this->target))) {
+            $html .= lang('TO').lang("ROLE_{$target->role}");
+            $html .= "<i><a href='/dep/users/{$target->id}'>{$target->name}</a></i>";
+        }
+
+        return $html;
     }
 
     public function makeEvent()

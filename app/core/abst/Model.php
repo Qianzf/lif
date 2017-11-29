@@ -8,7 +8,7 @@ namespace Lif\Core\Abst;
 
 use Lif\Core\Storage\SQL\Builder;
 
-abstract class Model
+abstract class Model implements \ArrayAccess
 {    
     // Child class confinable
     protected $table  = null;       // table name
@@ -173,7 +173,7 @@ abstract class Model
         return _json_encode($this->items());
     }
 
-    public function all(bool $model = true, bool $persistent = true)
+    public function all(bool $model = true, bool $persistent = false)
     {
         $query = $persistent ? $this : (clone $this);
 
@@ -479,5 +479,29 @@ abstract class Model
         }
 
         excp("Illegal {$relation} parameters(1)");
+    }
+
+    public function offsetExists($offset)
+    {
+        return isset($this->items[$offset]);
+    }
+
+    public function offsetGet($offset)
+    {
+        return $this->items[$offset] ?? null;
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        if (is_null($offset)) {
+            $this->items[] = $value;
+        } else {
+            $this->items[$offset] = $value;
+        }
+    }
+
+    public function offsetUnset($offset)
+    {
+        unset($this->items[$offset]);
     }
 }

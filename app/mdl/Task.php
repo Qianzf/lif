@@ -16,12 +16,67 @@ class Task extends Mdl
         'title'   => 'string',
     ];
 
-    public function getAssignableUsers()
+    public function assign(
+        int $user,
+        string $status,
+        string $notes = null
+    )
     {
-        $status = underline2camelcase($this->status);
+        db()->start();
+        
+        $this->status  = $status;
+        $this->current = $user;
+
+        if (($this->save() >= 0)
+            && ($this->addTrending('assign', $user, $notes) > 0)
+        ) {
+            db()->commit();
+
+            return true;
+        }
+
+        db()->rollback();
+
+        return false;
+    }
+
+    public function getActionString()
+    {
+        return implode(',', array_column(
+            db()
+            ->table('task_status')
+            ->select('`key`')
+            ->where('assignable', 'yes')
+            ->get(),
+            'key'
+        ));
+    }
+
+    public function getAssignableUsers(array $where = [])
+    {
+        $status = underline2camelcase(strtolower($this->status));
         $taskStatusHandler = "getAssignableUsersWhen{$status}";
 
-        return $this->$taskStatusHandler();
+        $query = db()
+        ->table('user')
+        ->select('id', 'name', 'role');
+
+        if ($where) {
+            $query = $query->where($where);
+        }
+
+        $users = $this->$taskStatusHandler($query);
+
+        array_walk($users, function (&$item) {
+            $item['name'] = $item['name']
+            .'( '
+            .lang("ROLE_{$item['role']}")
+            .' )'
+            ;
+            unset($item['role']);
+        });
+
+        return $users;
     }
 
     public function hasConflictTask(int $project, int $story = null)
@@ -49,16 +104,24 @@ class Task extends Mdl
 
     public function assigns()
     {
-        $status = underline2camelcase($this->status);
+        $status = underline2camelcase(strtolower($this->status));
         $taskStatusHandler = "getAssignActionsWhen{$status}";
 
         return $this->$taskStatusHandler();
     }
 
+    public function canEdit()
+    {
+        return (
+            ($this->creator == share('user.id'))
+            && (strtoupper($this->status) == 'CREATED')
+        );
+    }
+
     public function canBeAssignedBy(int $user = null)
     {
         if ($user = $user ?? (share('user.id') ?? null)) {
-            return true;
+            return ($user == $this->current);
         }
 
         excp('Missing user id.');
@@ -111,14 +174,20 @@ class Task extends Mdl
         );
     }
 
-    public function addTrending(string $action)
+    public function addTrending(
+        string $action,
+        int $target = null,
+        string $notes = null
+    )
     {
-        db()->table('trending')->insert([
-            'at'     => date('Y-m-d H:i:s'),
-            'user'   => share('user.id'),
-            'action' => $action,
+        return db()->table('trending')->insert([
+            'at'       => date('Y-m-d H:i:s'),
+            'user'     => share('user.id'),
+            'action'   => $action,
             'ref_type' => 'task',
             'ref_id'   => $this->id,
+            'target'   => $target,
+            'notes'    => $notes,
         ]);
     }
 }

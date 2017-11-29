@@ -10,14 +10,12 @@
             );
         ?>
         <?= $trending->at, ' , ', lang("ROLE_{$user->role}") ?>
-        <a href="/dep/users/<?= $user->id ?>">
-            <?= $user->name ?>
-        </a>
-        <?=
-            lang($trending->action),
-            lang($trending->ref_type),
-            $trending->genHTMLStringOfEvent()
-        ?>
+        <i>
+            <a href="/dep/users/<?= $user->id ?>">
+                <?= $user->name ?>
+            </a>
+        </i>
+        <?= $trending->genHTMLStringOfEvent($displayShort ?? null) ?>        
     </li>
 </ul>
 <?php endforeach ?>

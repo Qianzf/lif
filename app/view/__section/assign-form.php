@@ -9,22 +9,10 @@ class="invisible-default">
     <form method="POST" action="<?= $route ?>">
         <?= csrf_feild() ?>
         <label>
-            <span class="label-title">
-                <?= lang('TARGET') ?>
-            </span>
-            <input type="hidden" name="assign-to" required>
-            <?= $this->section('instant-search', [
-                'api' => $api,
-                'sresKeyInput' => 'assign-to',
-                // 'sresKey' => '/api',
-                // 'sresVal' => '/api',
-            ]) ?>
-        </label>
-        <label>
           <span class="label-title">
               <?= lang('ACTION') ?>
           </span>
-          <select name="type" required>
+          <select name="action" required>
             <option value="0">
               -- <?= lang('SELECT_ASSIGN_ACTION') ?> --
             </option>
@@ -36,6 +24,18 @@ class="invisible-default">
             <?php endforeach ?>
             <?php endif ?>
           </select>
+        </label>
+        <label>
+            <span class="label-title">
+                <?= lang('TARGET') ?>
+            </span>
+            <input type="hidden" name="assign-to" required>
+            <?= $this->section('instant-search', [
+                'api' => $api,
+                'sresKeyInput' => 'assign-to',
+                // 'sresKey' => '/api',
+                // 'sresVal' => '/api',
+            ]) ?>
         </label>
         <label>
             <span class="label-title">

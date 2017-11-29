@@ -285,7 +285,30 @@ class Validation
         : 'ILLEGAL_VALUE';
     }
 
+    // Case insensitive compare
+    public function ciin($value, $in)
+    {
+        return $this->__in($value, $in, function ($value, $in) {
+            $status = false;
+            $value  = strtolower($value);
+            foreach ($in as $item) {
+                if (strtolower($item) === $value) {
+                    $status = true;
+                }
+            }
+
+            return $status;
+        });
+    }
+
     public function in($value, $in)
+    {
+        return $this->__in($value, $in, function ($value, $in) {
+            return in_array($value, $in);
+        });
+    }
+
+    private function __in($value, $in, \Closure $validate)
     {
         if (!is_array($in) && !is_string($in)) {
             return 'ILLEGAL_VALUE_RANGE';
@@ -295,7 +318,7 @@ class Validation
             $in = explode(',', $in);
         }
 
-        return in_array($value, $in);
+        return $validate($value, $in);
     }
 
     public function when($value, $extra, array $data, string $key)

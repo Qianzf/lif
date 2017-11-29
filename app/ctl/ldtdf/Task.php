@@ -27,7 +27,13 @@ class Task extends Ctl
             ]);
         }
 
-        return response($task->getAssignableUsers());    
+        $where = [];
+        
+        if ($search = $this->request->get('search')) {
+            $where[] = ['name', 'like', "%{$search}%"];
+        }
+
+        return response($task->getAssignableUsers($where));    
     }
 
     public function assign()
@@ -39,7 +45,40 @@ class Task extends Ctl
 
     public function assignTo(TaskModel $task)
     {
-        dd($this->request->all());
+        if (! $task->isAlive()) {
+            share_error_i18n('NO_TASK');
+            return redirect($this->route);
+        }
+
+        if (! $task->canBeAssignedBy()) {
+            share_error_i18n('ASSIGN_PERMISSION_DENIED');
+            return redirect($this->route);
+        }
+
+        $user = $status = $notes = null;
+        
+        if (true !== ($err = legal_and($this->request->posts(), [
+            'assign-to' => ['int|min:1', &$user],
+            'action'    => [
+                "string|ciin:{$task->getActionString()}",
+                &$status
+            ],
+            'assign-notes' => ['string', &$notes],
+        ]))) {
+            share_error_i18n($err);
+
+            return redirect($this->route);
+        }
+
+        if (($task->assign($user, $status, $notes))) {
+            $msg = 'ASSIGN_OK';
+        } else {
+            $msg = 'ASSIGN_FAILED';
+        }
+
+        share_error_i18n($msg);
+
+        return redirect($this->route);
     }
 
     public function index(TaskModel $task, User $user)
@@ -85,7 +124,6 @@ class Task extends Ctl
         }
 
         share('hide-search-bar', true);
-
         view('ldtdf/task/edit')
         ->withTaskStoryProjectProjectsEditableTrendings(
             $task,
@@ -130,15 +168,15 @@ class Task extends Ctl
         ]);
 
         $user       = share('user.id');
-        $editable   = ($task->creator == $user);
+        $editable   = ($task->canEdit());
         $assignable = ($task->canBeAssignedBy($user));
 
         share('hide-search-bar', true);
-        
-        view("ldtdf/task/info")
-        ->withStoryTaskTasksProjectTrendingsEditableAssignableAssigns(
-            $task->story(),
+
+        view('ldtdf/task/info')
+        ->withTaskStoryTasksProjectTrendingsEditableAssignableAssigns(
             $task,
+            $task->story(),
             $task->relateTasks(),
             $task->project(),
             $task->trendings($querys),
@@ -160,7 +198,7 @@ class Task extends Ctl
         }
 
         $data['status']  = 'created';
-        $data['creator'] = share('user.id');
+        $data['creator'] = $data['current'] = share('user.id');
 
         if (($status = $task->create($data))
             && is_integer($status)

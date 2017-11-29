@@ -9,7 +9,7 @@
         T<?= $task->id ?>
     </code></small>
 
-    <em><?= $task->story()->title ?></em>
+    <em><?= $story->title ?></em>
 
     <?php if (isset($editable) && $editable): ?>
     <button>
@@ -17,7 +17,10 @@
     </button>
     <?php endif ?>
     <?php if (isset($assignable) && $assignable): ?>
-        <?= $this->section('assign-form', [
+        <?php $dependency = ('WAITTING_DEV' === strtoupper($task->status))
+            ? '-with-dependencies' : '';
+        ?>
+        <?= $this->section("assign-form{$dependency}", [
             'model' => $task,
             'key'   => 'TASK',
             'api'   => "/dep/tasks/{$task->id}/users/assignable",
@@ -55,9 +58,9 @@
     <span class="text-info">]</span>
 
     <i>
-        <a href="/dep/stories/<?= $task->story()->id ?>">
-            S<?= $task->story()->id ?>:
-            <?= $task->story()->title ?>
+        <a href="/dep/stories/<?= $story->id ?>">
+            S<?= $story->id ?>:
+            <?= $story->title ?>
         </a>
     </i>
 </p>
@@ -134,6 +137,7 @@ style="display:none"><?= $task->notes ?></textarea>
 
 <?= $this->section('trendings-with-sort', [
     'model' => $task,
+    'displayShort' => true,
 ]) ?>
 <?= $this->section('lib/editormd') ?>
 
