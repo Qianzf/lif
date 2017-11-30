@@ -100,6 +100,7 @@ if (! fe('load_user_helpers')) {
 }
 if (! fe('dd')) {
     function dd(...$args) {
+        $GLOBALS['LIF_DEBUGGING'] = true;
         if (0 < func_num_args()) {
             // $args = func_get_args();    // compatible with PHP < 5.6
             $func = extension_loaded('xdebug')
@@ -115,8 +116,18 @@ if (! fe('dd')) {
         exit;
     }
 }
+if (! fe('pt')) {
+    function pt(...$args) {
+        $GLOBALS['LIF_DEBUGGING'] = true;
+
+        foreach ($args as $arg) {
+            print_r($arg);
+        }
+    }
+}
 if (! fe('pr')) {
     function pr(...$args) {
+        $GLOBALS['LIF_DEBUGGING'] = true;
         if (0 < func_num_args()) {
             // $args = func_get_args();    // compatible with PHP < 5.6
             $func = extension_loaded('xdebug')
@@ -128,6 +139,7 @@ if (! fe('pr')) {
 }
 if (! fe('ee')) {
     function ee(...$scalars) {
+        $GLOBALS['LIF_DEBUGGING'] = true;
         foreach ($scalars as $value) {
             if (is_scalar($value)) {
                 echo $value, PHP_EOL;

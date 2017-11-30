@@ -54,31 +54,15 @@ class View
             extract($this->data, EXTR_OVERWRITE);
         }
 
-        try {
-            $level = ob_get_level();
-            
-            $content = $__MAIN__ = $this->include($this->tplPath);
+        $content = $__MAIN__ = $this->include($this->tplPath);
 
-            if ($this->layout) {
-                $content = $this->include($this->layout, [
-                    '__MAIN__' => $__MAIN__,
-                ]);
-            }
-
-            return $content;
-        } catch (Throwable $e) {
-            while (ob_get_level() > $level) {
-                ob_end_clean();
-            }
-
-            exception($e);
-        } catch (Exception $e) {
-            while (ob_get_level() > $level) {
-                ob_end_clean();
-            }
-
-            exception($e);
+        if ($this->layout) {
+            $content = $this->include($this->layout, [
+                '__MAIN__' => $__MAIN__,
+            ]);
         }
+
+        return $content;
     }
 
     protected function include($path, $data = []): string
@@ -96,11 +80,28 @@ class View
 
         $this->includes[] = $path;
 
-        ob_start();
+        try {
+            $level = ob_get_level();
+            ob_start();
 
-        include $path;
+            include $path;
 
-        return ob_get_clean();
+            return ob_get_clean();
+        } catch (Throwable $e) {
+            while (ob_get_level() > $level) {
+                ob_end_clean();
+            }
+
+            exception($e);
+        } catch (Exception $e) {
+            while (ob_get_level() > $level) {
+                ob_end_clean();
+            }
+
+            exception($e);
+        } catch (\Error $e) {
+            exception($e);
+        }
     }
 
     public function layout(string $layout): void
@@ -236,14 +237,18 @@ class View
 
     public function __destruct()
     {
-        if (!$this->outputed && (
-            (
-                !isset($GLOBALS['LIF_EXCP'])
-            ) || (
-                isset($GLOBALS['LIF_EXCP'])
-                && (true !== $GLOBALS['LIF_EXCP'])
+        if (!$this->outputed
+            && (!isset($GLOBALS['LIF_EXCP'])
+                || (isset($GLOBALS['LIF_EXCP'])
+                    && (true !== $GLOBALS['LIF_EXCP'])
+                )
             )
-        )) {
+            && (!isset($GLOBALS['LIF_DEBUGGING'])
+                || (isset($GLOBALS['LIF_DEBUGGING'])
+                    && (true !== $GLOBALS['LIF_DEBUGGING'])
+                )
+            )
+        ) {
             $this->output();
         }
 

@@ -164,7 +164,7 @@ class Task extends Ctl
 
         $querys = $this->request->gets;
         legal_or($querys, [
-            'trending' => ['in:asc,desc', 'asc']
+            'trending' => ['in:asc,desc', 'desc']
         ]);
 
         $user       = share('user.id');

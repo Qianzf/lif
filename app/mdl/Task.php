@@ -138,7 +138,7 @@ class Task extends Mdl
             ],
         ];
 
-        if ($order = ($querys['trending'] ?? null)) {
+        if ($order = ($querys['trending'] ?? 'desc')) {
             $relationship['sort'] = [
                 'at' => $order,
             ];
