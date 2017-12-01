@@ -109,7 +109,7 @@ if (! fe('prepare_task_status_data')) {
                 ],
                 [
                     'key' => 'waitting_dev',
-                    'val' => '待开发：被产品经理／测试人员安排给一位开发者负责人',
+                    'val' => '待开发：被任务创建者安排给一位开发者负责人',
                     'assignable' => 'yes',
                 ],
                 [
@@ -118,19 +118,14 @@ if (! fe('prepare_task_status_data')) {
                     'assignable' => 'no',
                 ],
                 [
-                    'key' => 'testing_1',
-                    'val' => '测试中：部署到测试环境成功且测试人员已在测试',
-                    'assignable' => 'no',
-                ],
-                [
-                    'key' => 'testing_2',
-                    'val' => '测试中：部署到预发布环境成功且测试人员已在测试',
-                    'assignable' => 'no',
-                ],
-                [
                     'key' => 'waitting_dep2test',
-                    'val' => '待部署：开发人员开发完成后指派给测试',
+                    'val' => '待部署：开发人员开发完成后指派给运维',
                     'assignable' => 'yes',
+                ],
+                [
+                    'key' => 'deploying_test',
+                    'val' => '部署中：到测试环境',
+                    'assignable' => 'no',
                 ],
                 [
                     'key' => 'waitting_1st_test',
@@ -143,8 +138,28 @@ if (! fe('prepare_task_status_data')) {
                     'assignable' => 'yes',
                 ],
                 [
+                    'key' => 'fixing_test',
+                    'val' => '解决中：解决在基本测试环境部署不通过的问题',
+                    'assignable' => 'no',
+                ],
+                [
+                    'key' => 'testing_1st',
+                    'val' => '测试中：部署到测试环境成功且测试人员已在测试',
+                    'assignable' => 'no',
+                ],
+                [
                     'key' => 'test_back2dev',
                     'val' => '已返工：基本测试环境测试不通过',
+                    'assignable' => 'yes',
+                ],
+                [
+                    'key' => 'fixing_testback',
+                    'val' => '解决中：解决在基本测试环境测试不通过的问题',
+                    'assignable' => 'no',
+                ],
+                [
+                    'key' => 'waitting_update2test',
+                    'val' => '待部署：开发人员申请重新部署到测试环境',
                     'assignable' => 'yes',
                 ],
                 [
@@ -153,9 +168,19 @@ if (! fe('prepare_task_status_data')) {
                     'assignable' => 'yes',
                 ],
                 [
+                    'key' => 'deploying_stage',
+                    'val' => '部署中：到预发布环境',
+                    'assignable' => 'no',
+                ],
+                [
                     'key' => 'waitting_2nd_test',
                     'val' => '待测试：成功部署到预发布环境',
                     'assignable' => 'yes',
+                ],
+                [
+                    'key' => 'testing_2nd',
+                    'val' => '测试中：部署到预发布环境成功且测试人员已在测试',
+                    'assignable' => 'no',
                 ],
                 [
                     'key' => 'waitting_fix_stage',
@@ -163,19 +188,19 @@ if (! fe('prepare_task_status_data')) {
                     'assignable' => 'yes',
                 ],
                 [
+                    'key' => 'fixing_stage',
+                    'val' => '解决中：解决在预发布环境部署不通过的问题',
+                    'assignable' => 'no',
+                ],
+                [
                     'key' => 'stage_back2dev',
                     'val' => '已返工：预发布环境测试不通过',
                     'assignable' => 'yes',
                 ],
                 [
-                    'key' => 'waitting_online',
-                    'val' => '待上线：测试人员申请上线',
-                    'assignable' => 'yes',
-                ],
-                [
-                    'key' => 'waitting_update2test',
-                    'val' => '待部署：开发人员申请重新部署到测试环境',
-                    'assignable' => 'yes',
+                    'key' => 'fixing_stageback',
+                    'val' => '解决中：解决在预发布环境测试不通过的问题',
+                    'assignable' => 'no',
                 ],
                 [
                     'key' => 'waitting_update2stage',
@@ -183,14 +208,9 @@ if (! fe('prepare_task_status_data')) {
                     'assignable' => 'yes',
                 ],
                 [
-                    'key' => 'deploying_test',
-                    'val' => '部署中：到测试环境',
-                    'assignable' => 'no',
-                ],
-                [
-                    'key' => 'deploying_stage',
-                    'val' => '部署中：到预发布环境',
-                    'assignable' => 'no',
+                    'key' => 'waitting_dep2prod',
+                    'val' => '待上线：预发布环境测试通过，测试人员申请上线',
+                    'assignable' => 'yes',
                 ],
                 [
                     'key' => 'deploying_prod',

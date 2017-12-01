@@ -98,7 +98,7 @@ class User extends Ctl
         if (! $user) {
             session()->delete('user');
             share_error_i18n('NO_USER');
-            return redirect('/dep/user/login');
+            return redirect('/dep/users/login');
         }
 
         $request    = $this->request->params;
@@ -151,7 +151,7 @@ class User extends Ctl
                 if ($request->passwordNew) {
                     session()->delete('user');
 
-                    redirect('/dep/user/login');
+                    redirect('/dep/users/login');
                 }
             } else {
                 $err = 'UPDATE_FAILED';
@@ -160,6 +160,6 @@ class User extends Ctl
 
         share_error_i18n($err);
 
-        redirect('/dep/user/profile');
+        redirect('/dep/users/profile');
     }
 }

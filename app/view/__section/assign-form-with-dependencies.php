@@ -99,7 +99,6 @@ class="invisible-default">
         $('input[name="assign_to"]').val('')
         $('textarea[name="branch"]').val('')
         $('textarea[name="assign_notes"]').val('')
-        $('#selected-search-res span').html('')
     }
 </script>
 <?= $this->section('lib/jqueryui') ?>

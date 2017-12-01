@@ -49,6 +49,8 @@
     <?php endif ?>
     <?php if (isset($assignable) && $assignable): ?>
         <?php $dependency = in_array(strtoupper($task->status), [
+            'DEVING',
+            'WAITTING_DEV',
             'WAITTING_FIX_TEST',
         ])
             ? '-with-dependencies' : '';
@@ -196,10 +198,12 @@ style="display:none"><?= $this->escape($task->notes) ?></textarea>
 
 <?= $this->section('trendings-with-sort', [
     'model' => $task,
-    'displayShort' => true,
+    'displayRefType'  => true,
+    'displayRefState' => true,
+    'displayComments'  => true,
 ]) ?>
 <?= $this->section('lib/editormd') ?>
-<?= $this->section('comment') ?>
+<!-- <?= $this->section('comment') ?> -->
 
 <script type="text/javascript">
     editormd.markdownToHTML("task-acceptances", {

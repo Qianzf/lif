@@ -5,10 +5,7 @@
     <small>
         <?php
             $user = $trending->user();
-            $name = (share('user.id') == $user->id)
-            ? L('YOU') : (
-                $user->name ?? L('UNKNOWN_USER')
-            );
+            $name = $user->name ?? L('UNKNOWN_USER');
         ?>
         <?= $trending->at, ' , ', L("ROLE_{$user->role}") ?>
         <i>
@@ -16,8 +13,14 @@
                 <?= $user->name ?>
             </a>
         </i>
-        <?= $trending->genHTMLStringOfEvent($displayShort ?? null) ?>        
+        <?= $trending->genHTMLStringOfEvent(
+                ($displayRefType ?? null),
+                ($displayRefState ?? null)
+            )
+        ?>
     </small>
+
+    <?php if ($displayComments ?? null): ?>
     <?php if (trim($trending->notes)): ?>
     <span class="stub"></span>
     <i class="fa fa-minus-square-o"
@@ -26,6 +29,7 @@
     id="comment-<?= $key ?>"
     class="comments"
     disabled><?= $trending->notes ?></textarea>
+    <?php endif ?>
     <?php endif ?>
     </li>
 </ul>

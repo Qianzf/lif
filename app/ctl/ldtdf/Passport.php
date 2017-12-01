@@ -27,11 +27,12 @@ class Passport extends Ctl
 
         if (!$user || !is_object($user)) {
             share('__error', sysmsg('NO_USER'));
-            redirect('/dep/user/login');
+            redirect('/dep/users/login');
         } elseif (! password_verify($passwd, $user->passwd)) {
             share('__error', sysmsg('ILLEGAL_USER_CREDENTIALS'));
-            redirect('/dep/user/login');
+            redirect('/dep/users/login');
         }
+        
         unset($user->passwd);
         $timestamp = time();
         

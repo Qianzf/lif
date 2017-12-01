@@ -38,7 +38,7 @@ class Task extends Mdl
             $this->manually = $params['manually'];
         }
 
-        $notes = $params['assign_notes'] ?? null;
+        $notes = ($params['assign_notes'] ?? null);
 
         if (($this->save() >= 0)
             && ($this->addTrending('assign', $this->current, $notes) > 0)
@@ -220,29 +220,28 @@ class Task extends Mdl
 
     public function canBeConfirmedBY(int $user = null)
     {
-        if (strtolower($this->status) == 'activated') {
-            return false;
+        if ($user = $user ?? (share('user.id') ?? null)) {
+            if (strtolower($this->status) == 'activated') {
+                return (strtolower($this->current()->role) == 'dev');
+            }
+
+            if (in_array(
+                strtolower($this->status),
+                $this->getStatusList('no')
+            )) {
+                return false;
+            }
+
+            return ($user == $this->current);
         }
 
-        return $this->isAssignable($user);
+        excp('Missing user id.');
     }
 
     public function canBeAssignedBy(int $user = null)
     {
-        return $this->isAssignable($user);
-    }
-
-    public function isAssignable(int $user = null, bool $status = false)
-    {
         if ($user = $user ?? (share('user.id') ?? null)) {
-            if ($status == false) {
-                $status = in_array(
-                    strtolower($this->status),
-                    $this->getStatusList()
-                );
-            }
-
-            return (($user == $this->current) && $status);
+            return ($user == $this->current);
         }
 
         excp('Missing user id.');
@@ -302,13 +301,14 @@ class Task extends Mdl
     )
     {
         return db()->table('trending')->insert([
-            'at'       => date('Y-m-d H:i:s'),
-            'user'     => share('user.id'),
-            'action'   => $action,
-            'ref_type' => 'task',
-            'ref_id'   => $this->id,
-            'target'   => $target,
-            'notes'    => $notes,
+            'at'        => date('Y-m-d H:i:s'),
+            'user'      => share('user.id'),
+            'action'    => $action,
+            'ref_state' => $this->status,
+            'ref_type'  => 'task',
+            'ref_id'    => $this->id,
+            'target'    => $target,
+            'notes'     => $notes,
         ]);
     }
 }

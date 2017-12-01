@@ -89,6 +89,7 @@
         $('#selected-search-res span').html(html)
     }
     function removeSelectedResult() {
+        $('#selected-search-res span').html('')
         removeAllSelectedResult()
         startInstantSearch()
     }

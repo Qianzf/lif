@@ -21,13 +21,19 @@ class CreateTrendingTable extends Dit
             
             $table
             ->string('ref_type', 32)
-            ->nullable();
+            ->nullable()
+            ->comment('Trending related object type');
 
             $table
             ->int('ref_id')
             ->unsigned()
             ->nullable()
             ->comment('Trending related object ID');
+
+            $table
+            ->string('ref_state')
+            ->nullable()
+            ->comment('Current state of this trending related object');
 
             $table
             ->int('target')

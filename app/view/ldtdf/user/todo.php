@@ -22,7 +22,7 @@
         <td class="text-task"><small><em><?= L('TASK') ?></em></small></td>
         <td>
             <a href="/dep/tasks/<?= $task->id ?>">
-                <?= $task->story()->title ?>
+                <?= $task->story()->title, "(T{$task->id})" ?>
             </a>
         </td>
         <td><?= $task->project()->name ?></td>

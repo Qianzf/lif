@@ -56,11 +56,14 @@ class Trending extends Mdl
         return $user->trendings($params['from'], $params['take']);
     }
 
-    public function genHTMLStringOfEvent(bool $displayShort = null) : string
+    public function genHTMLStringOfEvent(
+        bool $displayRefType = null,
+        bool $displayRefState = null
+    ) : string
     {
         $html = L($this->action);
 
-        if (! $displayShort) {
+        if (! $displayRefType) {
             $html .= L($this->ref_type);
             $event = $this->makeEvent();
             $data  = false;
@@ -83,6 +86,10 @@ class Trending extends Mdl
         if ($this->target && ($target = model(User::class, $this->target))) {
             $html .= L('TO').L("ROLE_{$target->role}");
             $html .= "<i><a href='/dep/users/{$target->id}'>{$target->name}</a></i>";
+        }
+
+        if ($displayRefState && ($status = trim($this->ref_state))) {
+            $html .= ' ( '.L("STATUS_{$status}").' )';
         }
 
         return $html;

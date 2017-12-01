@@ -64,11 +64,11 @@ class Event extends ModelBase
     {
         $story = db()
         ->table('story')
-        ->select('title')
+        ->select('title', 'id')
         ->whereId($id)
         ->first();
 
-        return $story['title'] ?? null;
+        return ($story['title'] ?? '')."(S{$story['id']})";
     }
 
     public function getTaskTitle($id)
@@ -77,12 +77,12 @@ class Event extends ModelBase
         ->table('task', 't')
         ->leftJoin('story s', 't.story', 's.id')
         ->leftJoin('project p', 't.project', 'p.id')
-        ->select('s.title', 'p.name')
+        ->select('s.title', 'p.name', 't.id as task_id')
         ->where([
             't.id' => $id,
         ])
         ->first();
 
-        return $task['title'] ?? null;
+        return ($task['title'] ?? '')."(T{$task['task_id']})";
     }
 }

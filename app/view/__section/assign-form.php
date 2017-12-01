@@ -62,11 +62,14 @@ class="invisible-default">
             }
           },
           close: function() {
-            $('input[name="assign_to"]').val('')
-            $('textarea[name="assign_notes"]').val('')
+              removeAllSelectedResult()
           }
         })
     })
+    function removeAllSelectedResult() {
+        $('input[name="assign_to"]').val('')
+        $('textarea[name="assign_notes"]').val('')
+    }
 </script>
 <?= $this->section('lib/jqueryui') ?>
 <?php endif ?>
