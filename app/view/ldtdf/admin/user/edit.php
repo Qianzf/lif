@@ -7,26 +7,26 @@
 
 <form method="POST" autocomplete="off">
     <?= csrf_feild() ?>
-    <label><?= lang('ACCOUNT') ?>
+    <label><?= L('ACCOUNT') ?>
         <input type="text" name="account" value="<?= $user->account ?>">
     </label>
-    <label><?= lang('NAME') ?>
+    <label><?= L('NAME') ?>
         <input type="text" name="name" value="<?= $user->name ?>">
     </label>
-    <label><?= lang('EMAIL') ?>
+    <label><?= L('EMAIL') ?>
         <input type="email" name="email" value="<?= $user->email ?>">
     </label>
-    <label><?= lang('PASSWORD') ?>
+    <label><?= L('PASSWORD') ?>
         <input type="password" name="passwd"
-        placeholder="<?= lang('PROVIDE_NEW_PASSWD') ?>">
+        placeholder="<?= L('PROVIDE_NEW_PASSWD') ?>">
     </label>
 
-    <label><?= lang('USER_ROLE') ?>
+    <label><?= L('USER_ROLE') ?>
         <select name="role">
             <?php foreach (share('system-roles') as $role) { ?>
             <?php $selected = ($role == $user->role) ? 'selected' : '' ?>
             <option value="<?= $role ?>" <?= $selected ?>>
-                <?= lang("ROLE_{$role}") ?>
+                <?= L("ROLE_{$role}") ?>
             </option>
             <?php } ?>
         </select>

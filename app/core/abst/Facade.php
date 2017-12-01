@@ -13,16 +13,20 @@ abstract class Facade
         if (empty_safe(static::$name)) {
             return strtoupper(ns2classname(static::class));
         }
+
+        return static::$name;
     }
 
     protected static function __getProxy()
     {
         if (empty_safe(static::$proxy)) {
-            if (!method_exists(get_called_class(), 'getProxy')
-                || empty_safe(static::$proxy = static::getProxy())
+            if (method_exists(get_called_class(), 'getProxy')
+                && ($proxy = static::getProxy())
             ) {
-                return null;
+                return $proxy;
             }
+
+            return null;
         }
 
         return static::$proxy;

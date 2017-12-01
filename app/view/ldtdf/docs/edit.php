@@ -1,5 +1,5 @@
 <?= $this->layout('main') ?>
-<?= $this->title([lang('BUG_LIST'), lang('LDTDFMS')]) ?>
+<?= $this->title([L('BUG_LIST'), L('LDTDFMS')]) ?>
 
 <?= $this->section('back2list', [
     'model'  => $doc,

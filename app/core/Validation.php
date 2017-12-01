@@ -301,6 +301,11 @@ class Validation
         });
     }
 
+    public function notin($value, $in)
+    {
+        return !in_array($value, explode(',', $in));
+    }
+
     public function in($value, $in)
     {
         return $this->__in($value, $in, function ($value, $in) {
@@ -315,7 +320,9 @@ class Validation
         }
 
         if (is_string($in)) {
-            $in = explode(',', $in);
+            if (! ($in = explode(',', $in))) {
+                return 'EMPTY_VALUE_RANGE';
+            }
         }
 
         return $validate($value, $in);

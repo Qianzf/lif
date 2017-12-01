@@ -1,63 +1,68 @@
 <?php if ($model->isAlive()): ?>
 <label><button id="assign-to">
-    <?= lang('ASSIGN') ?>
+    <?= L('ASSIGN') ?>
 </button></label>
 
 <div id="task-assign-form"
-title="<?= lang("ASSIGN_{$key}", $model->title) ?>"
+title="<?= L("ASSIGN_{$key}", $model->title) ?>"
 class="invisible-default">
     <form method="POST" action="<?= $route ?>">
         <?= csrf_feild() ?>
         <label>
+          <span class="label-title">
+              <?= L('ACTION') ?>
+          </span>
+          <select name="action" required>
+            <?php if (isset($assigns) && iteratable($assigns)): ?>
+            <?php foreach ($assigns as $order => $assign): ?>
+              <option value="<?= $assign ?>">
+                <?= L("ASSIGN_{$assign}") ?>
+              </option>
+            <?php endforeach ?>
+            <?php endif ?>
+          </select>
+        </label>
+        <label>
             <span class="label-title">
-                <?= lang('TARGET') ?>
+                <?= L('TARGET') ?>
             </span>
-            <input type="hidden" name="assign-to" required>
+            <input type="hidden" name="assign_to" required>
             <?= $this->section('instant-search', [
                 'api' => $api,
-                'sresKeyInput' => 'assign-to',
+                'sresKeyInput' => 'assign_to',
                 // 'sresKey' => '/api',
                 // 'sresVal' => '/api',
             ]) ?>
         </label>
         <label>
           <span class="label-title">
-              <?= lang('ACTION') ?>
-          </span>
-          <select name="action" required>
-            <option value="WAITTING_DEP2TEST">
-              <?= lang("ASSIGN_WAITTING_DEP2TEST") ?>
-            </option>
-          </select>
-        </label>
-        <label>
-          <span class="label-title">
-              <?= lang('TASK_BRANCH') ?>
+              <?= L('TASK_BRANCH') ?>
           </span>
           <input
-          placeholder="<?= lang('ENSURE_PROJECT_REMOTE_BRANCH_EXISTS') ?> !!!"
+          placeholder="<?= L('ENSURE_PROJECT_REMOTE_BRANCH_EXISTS') ?> !!!"
           type="text"
           name="branch"
+          value="<?= $branch ?? null ?>"
           required>
         </label>
 
         <label>
             <span class="label-title">
-                <?= lang('WHETHER_NEED_MANUALLY_HELP') ?>
+                <?= L('WHETHER_NEED_MANUALLY_HELP') ?>
             </span>
-            <span><?= lang('NO') ?></span>
+            <span><?= L('NO') ?></span>
             <input type="radio" name="manually" value="no" checked>
-            <span><?= lang('YES') ?></span>
+            <span><?= L('YES') ?></span>
             <input type="radio" name="manually" value="yes">
         </label>
 
         <label class="invisible-default" id="assign-notes">
             <span class="label-title">
-                <?= lang('REMARKS') ?>
+                <?= L('REMARKS') ?>
             </span>
             <textarea
-            placeholder="<?= lang('NOTE_STH_USEFUL') ?>"
-            name="assign-notes"></textarea>
+            placeholder="<?= L('NOTE_STH_USEFUL') ?>"
+            name="assign_notes"><?= $assignNotes ?? null ?></textarea>
         </label>
     </form>
 </div>
@@ -70,16 +75,15 @@ class="invisible-default">
           width: '70%',
           modal: true,
           buttons: {
-            '<?= lang('CONFIRM') ?>': function () {
+            '<?= L('CONFIRM') ?>': function () {
                 $(this).find('form').submit()
             },
-            '<?= lang('CANCEL') ?>': function() {
+            '<?= L('CANCEL') ?>': function() {
               dialog.dialog('close')
             }
           },
           close: function() {
-            $('#task-assign-form input,textarea').val('')
-            $('#selected-search-res span').html('')
+            removeAllSelectedResult()
           }
         })
     })
@@ -91,6 +95,12 @@ class="invisible-default">
             assignNotes.hide()
         }
     })
+    function removeAllSelectedResult() {
+        $('input[name="assign_to"]').val('')
+        $('textarea[name="branch"]').val('')
+        $('textarea[name="assign_notes"]').val('')
+        $('#selected-search-res span').html('')
+    }
 </script>
 <?= $this->section('lib/jqueryui') ?>
 <?php endif ?>

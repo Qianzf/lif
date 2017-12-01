@@ -1,3 +1,3 @@
 <?= $this->layout('main') ?>
-<?= $this->title([lang('HOMEPAGE'), lang('LDTDFMS')]) ?>
+<?= $this->title([L('HOMEPAGE'), L('LDTDFMS')]) ?>
 <?= $this->section('common') ?>

@@ -2,7 +2,7 @@
 
 return [
     'HOMEPAGE' => 'Home',
-    'LDTDFMS'  => 'LDTDF Taskflow Manage System',
+    'LDTDFMS'  => 'LDTDF Taskflow Management System',
     'USER' => 'User',
     'PROFILE' => 'Profile',
     'LOGIN'   => 'Login',
@@ -77,6 +77,8 @@ return [
     'VIEW_PERMISSION_DENIED' => 'You do not have permission to view this page',
     'UPDATE_PERMISSION_DENIED' => 'You do not have permission to update',
     'ASSIGN_PERMISSION_DENIED' => 'You do not have permission to assign',
+    'CANCEL_PERMISSION_DENIED' => 'You do not have permission to cancel',
+    'ACTIVATE_PERMISSION_DENIED' => 'You do not have permission to activate',
     'MANAGE' => 'Manage',
     'EDIT' => 'Edit',
     'MISSING' => 'Missing',
@@ -197,4 +199,7 @@ return [
     'NEED' => 'Need',
     'HELP' => 'Help',
     'NOTE_STH_USEFUL' => 'Note something useful',
+    'CANNT_ASSIGN_ACTION2ROLE' => 'Can not assign action to role',
+    'SURE' => 'Sure',
+    'ACTIVATE' => 'Activate',
 ];

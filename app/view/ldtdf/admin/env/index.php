@@ -1,32 +1,32 @@
 <?= $this->layout('main') ?>
-<?= $this->title([lang('ENVIRONMENT_MANAGE'), lang('LDTDFMS')]) ?>
+<?= $this->title([L('ENVIRONMENT_MANAGE'), L('LDTDFMS')]) ?>
 <?= $this->section('common') ?>
 
 <dl class="list">
     <dd>
         <button>
-            <a href="/dep/admin/envs/new"><?= lang('ADD_ENVIRONMENT') ?></a>
+            <a href="/dep/admin/envs/new"><?= L('ADD_ENVIRONMENT') ?></a>
         </button>
     </dd>
 </dl>
 
 <table>
     <caption class="table-title">
-        <?= lang('ENVIRONMENT_LIST') ?>
+        <?= L('ENVIRONMENT_LIST') ?>
     </caption>
 
     <tr>
-        <th><?= lang('ID') ?></th>
-        <th><?= lang('HOST') ?></th>
-        <th><?= lang('TITLE') ?></th>
+        <th><?= L('ID') ?></th>
+        <th><?= L('HOST') ?></th>
+        <th><?= L('TITLE') ?></th>
         <th>
-            <?= lang('TYPE') ?>
+            <?= L('TYPE') ?>
             <select
             name="type"
             class="filter-name-by-value-select"
             id="env-types-filter"
             required>
-                <option value="all"><?= lang('ALL') ?></option>
+                <option value="all"><?= L('ALL') ?></option>
                 <?php if (($types = share('env-types')) && iteratable($types)) { ?>
                 <?php foreach ($types as $_type) { ?>
                 <option
@@ -34,21 +34,21 @@
                 selected
                 <?php } ?>
                 value="<?= $_type ?>">
-                    <?= lang($_type) ?>
+                    <?= L($_type) ?>
                 </option>
                 <?php } ?>
                 <?php } ?>
             </select>
         </th>
-        <th><?= lang('BRANCH'), '/', lang('TASK') ?></th>
+        <th><?= L('BRANCH'), '/', L('TASK') ?></th>
         <th>
-            <?= lang('STATUS') ?>
+            <?= L('STATUS') ?>
             <select
             name="status"
             class="filter-name-by-value-select"
             id="env-status-filter"
             required>
-                <option value="all"><?= lang('ALL') ?></option>
+                <option value="all"><?= L('ALL') ?></option>
                 <?php if (($stat = share('env-status')) && iteratable($stat)) { ?>
                 <?php foreach ($stat as $_stat) { ?>
                 <option
@@ -56,13 +56,13 @@
                 selected
                 <?php } ?>
                 value="<?= $_stat ?>">
-                    <?= lang($_stat) ?>
+                    <?= L($_stat) ?>
                 </option>
                 <?php } ?>
                 <?php } ?>
             </select>
         </th>
-        <th><?= lang('OPERATIONS') ?></th>
+        <th><?= L('OPERATIONS') ?></th>
     </tr>
     
     <?php if (isset($envs) && iteratable($envs)) { ?>
@@ -71,17 +71,17 @@
         <td><?= $key+1 ?></td>
         <td><?= $env->host ?></td>
         <td><?= $env->name ?></td>
-        <td><?= lang($env->type) ?></td>
+        <td><?= L($env->type) ?></td>
         <td><?= $env->getTaskBranchHTML() ?></td>
         <td>
             <span class="status-<?= $env->status ?>">
-                <?= lang($env->status) ?>
+                <?= L($env->status) ?>
             </span>
         </td>
         <td>
             <button>
                 <a href="/dep/admin/envs/<?= $env->id ?>">
-                    <?= lang('MANAGE') ?>
+                    <?= L('MANAGE') ?>
                 </a>
             </button>
         </td>

@@ -1,23 +1,23 @@
 <?= $this->layout('main') ?>
-<?= $this->title([lang('GROUP_MANAGE'), lang('LDTDFMS')]) ?>
+<?= $this->title([L('GROUP_MANAGE'), L('LDTDFMS')]) ?>
 <?= $this->section('common') ?>
 
 <dl>
     <dd>
         <button>
-            <a href="/dep/admin/users/groups/new"><?= lang('ADD_GROUP') ?></a>
+            <a href="/dep/admin/users/groups/new"><?= L('ADD_GROUP') ?></a>
         </button>
     </dd>
 </dl>
 
 <table>
     <caption>
-        <?= lang('GROUP_LIST') ?>
+        <?= L('GROUP_LIST') ?>
     </caption>
 
     <tr>
-        <th><?= lang('TITLE') ?></th>
-        <th><?= lang('OPERATIONS') ?></th>
+        <th><?= L('TITLE') ?></th>
+        <th><?= L('OPERATIONS') ?></th>
     </tr>
 
     <?php if (isset($groups) && iteratable($groups)) : ?>
@@ -27,7 +27,7 @@
             <td>
                 <button>
                     <a href="/dep/admin/users/groups/<?= $group->id ?>">
-                        <?= lang('EDIT') ?>
+                        <?= L('EDIT') ?>
                     </a>
                 </button>
             </td>

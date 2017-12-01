@@ -15,14 +15,14 @@ trait SimpleJWT
             'alg' => 'SHA256',
         ]));
         $timestamp = time();
-        $claims = [
+        $confirms = [
             'exp' => $timestamp+3600,
             'nbf' => $timestamp,
             'iat' => $timestamp,
         ];
         $payload    = base64_encode(json_encode(array_merge(
             $params,
-            $claims
+            $confirms
         )));
         $signature  = base64_encode(hash_hmac(
             'sha256',

@@ -282,7 +282,7 @@ if (! fe('share_error')) {
 }
 if (! fe('share_error_i18n')) {
     function share_error_i18n(string $key) {
-        share('__error', lang($key));
+        share('__error', L($key));
     }
 }
 if (! fe('share_flush')) {
@@ -291,7 +291,7 @@ if (! fe('share_flush')) {
     }
 }
 if (! fe('syslang')) {
-    function syslang() {
+    function sysL() {
         return $_REQUEST['lang'] ?? (
             session()->get('__lang') ?? 'zh'
         );

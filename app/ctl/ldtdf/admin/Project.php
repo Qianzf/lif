@@ -34,7 +34,7 @@ class Project extends Ctl
         if (is_integer($status) && ($status >= 0)) {
             share_error_i18n('UPDATED_OK');
         } elseif (is_string($status)) {
-            share_error(lang('UPDATE_FAILED', $status));
+            share_error(L('UPDATE_FAILED', $status));
         }
 
         return redirect($this->route);
@@ -51,7 +51,7 @@ class Project extends Ctl
     {
         $error = $back2last = null;
         if (! $project->isAlive()) {
-            $error     = lang('NO_PROJECT');
+            $error     = L('NO_PROJECT');
             $back2last = share('url_previous');
         }
 

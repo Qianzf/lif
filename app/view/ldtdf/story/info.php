@@ -1,9 +1,9 @@
 <?= $this->layout('main') ?>
-<?= $this->title([lang('VIEW_STORY'), lang('LDTDFMS')]) ?>
+<?= $this->title([L('VIEW_STORY'), L('LDTDFMS')]) ?>
 <?= $this->section('common')  ?>
 
 <h4>
-    <?= lang('VIEW_STORY') ?>
+    <?= L('VIEW_STORY') ?>
 
     <span class="stub"></span>
     <small><code>
@@ -14,13 +14,13 @@
 
     <?php if (isset($editable) && $editable): ?>
     <button>
-        <a href="/dep/stories/<?= $story->id ?>/edit"><?= lang('EDIT') ?></a>
+        <a href="/dep/stories/<?= $story->id ?>/edit"><?= L('EDIT') ?></a>
     </button>
     <?php endif ?>
     <?php if (isset($assignable) && $assignable): ?>
         <button>
             <a href="/dep/tasks/new?story=<?= $story->id ?>">
-                <?= lang('DISPATCH_TASK') ?>
+                <?= L('DISPATCH_TASK') ?>
             </a>
         </button>
     <?php endif ?>
@@ -30,21 +30,21 @@
     <h5>
         <span class="stub-2"></span>
         <span class="text-info">[</span>
-        <?= lang('STORY_DETAILS') ?>
+        <?= L('STORY_DETAILS') ?>
         <span class="text-info">]</span>
     </h5>
 
     <blockquote><em>
         <p>
-            <?= lang('STORY_WHO') ?>
+            <?= L('STORY_WHO') ?>
             <span><?= $story->role ?></span>
         </p>
         <p>
-            <?= lang('STORY_WHAT') ?>
+            <?= L('STORY_WHAT') ?>
             <span><?= $story->activity ?></span>
         </p>
         <p>
-            <?= lang('STORY_FOR') ?>
+            <?= L('STORY_FOR') ?>
             <span><?= $story->value ?></span>
         </p>
     </em></blockquote>
@@ -53,7 +53,7 @@
 <div id="story-acceptances">
     <h5>
         <span class="text-info">[</span>
-        <?= lang('STORY_AC') ?>
+        <?= L('STORY_AC') ?>
         <span class="text-info">]</span>
     </h5>
 
@@ -65,7 +65,7 @@
 <div id="story-others">
     <h5>
         <span class="text-info">[</span>
-        <?= lang('OTHER_NOTES') ?>
+        <?= L('OTHER_NOTES') ?>
         <span class="text-info">]</span>
     </h5>
 
@@ -78,7 +78,7 @@
     <h5>
         <span class="stub-2"></span>
         <span class="text-info">[</span>
-        <?= lang('RELATED_TASK') ?>
+        <?= L('RELATED_TASK') ?>
         <span class="text-info">]</span>
     </h5>
 

@@ -1,7 +1,7 @@
 <header>
     <button class="btn-logo">
         <a href="/dep">
-            <em><?= lang('LDTDFMS') ?></em>
+            <em><?= L('LDTDFMS') ?></em>
         </a>
     </button>
 
@@ -10,7 +10,7 @@
     <select name="loggedin">
         <option>
             <?=
-                lang('ROLE_'.share('user.role'))
+                L('ROLE_'.share('user.role'))
                 .': '
                 .share('user.name')
                 .' ('
@@ -18,8 +18,8 @@
                 .')'
             ?>
         </option>
-        <option value="profile"><?= lang('USER_PROFILE') ?></option>
-        <option value="logout"><?= lang('LOGOUT') ?></option>
+        <option value="profile"><?= L('USER_PROFILE') ?></option>
+        <option value="logout"><?= L('LOGOUT') ?></option>
     </select>
 
     <span class="stub-3"></span>

@@ -8,12 +8,12 @@
 <form method="POST" autocomplete="off">
     <?= csrf_feild() ?>
     <label>
-        <?= lang('TITLE') ?>
+        <?= L('TITLE') ?>
         <input type="text" name="name" required value="<?= $project->name ?>">
     </label>
 
     <label>
-        <?= lang('TYPE') ?>
+        <?= L('TYPE') ?>
         <select name="type" required>
             <option
             value="web"
@@ -29,46 +29,46 @@
     </label>
 
     <label>
-        <?= lang('REPO_URL') ?>
+        <?= L('REPO_URL') ?>
          <input type="text" name="url" required value="<?= $project->url ?>">
     </label>
 
     <label>
-        <?= lang('VCS') ?>
+        <?= L('VCS') ?>
         <select name="vcs" required>
             <option value="git">git</option>
         </select>
     </label>
 
     <label>
-        <?= lang('DESCRIPTION') ?>
+        <?= L('DESCRIPTION') ?>
         <textarea name="desc"><?= $project->desc ?></textarea>
     </label>
 
     <label>
-        <?= lang('REPO_API_TOKEN') ?>
+        <?= L('REPO_API_TOKEN') ?>
         <input type="password" name="token" value="<?= $project->token ?>">
     </label>
 
     <label>
-        <?= lang('DEPLOY_SCRIPT') ?>
+        <?= L('DEPLOY_SCRIPT') ?>
         <ul>
             <li>
-                <span><?= lang('TYPE') ?></span>
+                <span><?= L('TYPE') ?></span>
                 <span class="stub"></span>
                 <select name="script_type">
                     <option>
-                        -- <?= lang('SELECT_DEPLOY_SCRIPT_TYPE') ?> --
+                        -- <?= L('SELECT_DEPLOY_SCRIPT_TYPE') ?> --
                     </option>
-                    <option value="local"><?= lang('LOCAL')  ?></option>
-                    <option value="remote"><?= lang('REMOTE')  ?></option>
+                    <option value="local"><?= L('LOCAL')  ?></option>
+                    <option value="remote"><?= L('REMOTE')  ?></option>
                 </select>   
             </li>
             <li>
-                <span><?= lang('PATH') ?></span>
+                <span><?= L('PATH') ?></span>
                 <span class="stub"></span>
                 <input
-                placeholder="<?= lang('SERVER_ABSOLUTE_PATH') ?>"
+                placeholder="<?= L('SERVER_ABSOLUTE_PATH') ?>"
                 type="text"
                 name="script_path"
                 value="<?= $project->script ?>">

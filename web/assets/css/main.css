@@ -178,11 +178,17 @@ input:focus {
 .status-stopped {
     background-color: red;
 }
+.text-todo {
+    color: coral;
+}
 .text-task {
     color: cornflowerblue;
 }
 .text-bug {
     color: crimson;
+}
+.text-danger {
+    color: red;
 }
 .text-info {
     color: lightgrey;
@@ -237,4 +243,15 @@ input:invalid {
 }
 .search-res-right-close {
     margin-left: 10px;
+}
+.inline {
+    display: inline;
+}
+.comments {
+    background-color: #F8FAFE;
+    display: inline-block;
+    width: 80%;
+    height: 24px;
+    padding: 10px 0 0 20px;
+    margin: 0;
 }

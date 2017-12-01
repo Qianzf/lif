@@ -27,6 +27,26 @@ class CreateTaskTable extends Dit
             ->comment('Project ID this task relate to => `project`.`id`');
 
             $table
+            ->string('status')
+            ->comment('Task status => `task_status`.`key`');
+
+            $table
+            ->string('branch')
+            ->nullable()
+            ->comment('Task related code branch in vcs');
+
+            $table
+            ->char('manually', 8)
+            ->default('no')
+            ->comment('Whether task deployment needs manually help: yes/no');
+
+            $table
+            ->int('current')
+            ->unsigned()
+            ->nullable()
+            ->comment('Current realted user of this task => `user`.`id`');
+
+            $table
             ->text('notes')
             ->nullable()
             ->comment('Notes of this task');
@@ -34,16 +54,6 @@ class CreateTaskTable extends Dit
             $table
             ->datetime('create_at')
             ->default('CURRENT_TIMESTAMP()', true);
-
-            $table
-            ->string('status')
-            ->comment('Task status => `task_status`.`key`');
-
-            $table
-            ->int('current')
-            ->unsigned()
-            ->nullable()
-            ->comment('Current realted user of this task => `user`.`id`');
         });
     }
 

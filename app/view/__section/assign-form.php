@@ -1,25 +1,25 @@
 <?php if ($model->isAlive()): ?>
 <label><button id="assign-to">
-    <?= lang('ASSIGN') ?>
+    <?= L('ASSIGN') ?>
 </button></label>
 
 <div id="task-assign-form"
-title="<?= lang("ASSIGN_{$key}", $model->title) ?>"
+title="<?= L("ASSIGN_{$key}", $model->title) ?>"
 class="invisible-default">
     <form method="POST" action="<?= $route ?>">
         <?= csrf_feild() ?>
         <label>
           <span class="label-title">
-              <?= lang('ACTION') ?>
+              <?= L('ACTION') ?>
           </span>
           <select name="action" required>
             <option value="0">
-              -- <?= lang('SELECT_ASSIGN_ACTION') ?> --
+              -- <?= L('SELECT_ASSIGN_ACTION') ?> --
             </option>
             <?php if (isset($assigns) && iteratable($assigns)): ?>
             <?php foreach ($assigns as $order => $assign): ?>
               <option value="<?= $assign ?>">
-                <?= lang("ASSIGN_{$assign}") ?>
+                <?= L("ASSIGN_{$assign}") ?>
               </option>
             <?php endforeach ?>
             <?php endif ?>
@@ -27,21 +27,21 @@ class="invisible-default">
         </label>
         <label>
             <span class="label-title">
-                <?= lang('TARGET') ?>
+                <?= L('TARGET') ?>
             </span>
-            <input type="hidden" name="assign-to" required>
+            <input type="hidden" name="assign_to" required>
             <?= $this->section('instant-search', [
                 'api' => $api,
-                'sresKeyInput' => 'assign-to',
+                'sresKeyInput' => 'assign_to',
                 // 'sresKey' => '/api',
                 // 'sresVal' => '/api',
             ]) ?>
         </label>
         <label>
             <span class="label-title">
-                <?= lang('REMARKS') ?>
+                <?= L('REMARKS') ?>
             </span>
-            <textarea name="assign-notes"></textarea>
+            <textarea name="assign_notes"></textarea>
         </label>
     </form>
 </div>
@@ -54,16 +54,16 @@ class="invisible-default">
           width: '70%',
           modal: true,
           buttons: {
-            '<?= lang('CONFIRM') ?>': function () {
+            '<?= L('CONFIRM') ?>': function () {
                 $(this).find('form').submit()
             },
-            '<?= lang('CANCEL') ?>': function() {
+            '<?= L('CANCEL') ?>': function() {
               dialog.dialog('close')
             }
           },
           close: function() {
-            $('input[name="assign-to"]').val('')
-            $('textarea[name="assign-notes"]').val('')
+            $('input[name="assign_to"]').val('')
+            $('textarea[name="assign_notes"]').val('')
           }
         })
     })

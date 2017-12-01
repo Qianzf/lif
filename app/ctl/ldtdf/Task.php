@@ -23,7 +23,7 @@ class Task extends Ctl
         if (! $task->isAlive()) {
             return response([
                 'err' => '403',
-                'msg' => lang('NO_TASK'),
+                'msg' => L('NO_TASK'),
             ]);
         }
 
@@ -36,11 +36,55 @@ class Task extends Ctl
         return response($task->getAssignableUsers($where));    
     }
 
-    public function assign()
+    public function activate(TaskModel $task)
     {
-        $id = $this->vars[0] ?? null;
+        return $this->updateStatus('ACTIVATE', $task, function () use ($task) {
+            $task->current = share('user.id');
 
-        return redirect("/dep/tasks/{$id}");
+            return ($task->save() >= 0);
+        });
+    }
+
+    public function cancel(TaskModel $task)
+    {
+        return $this->updateStatus('CANCEL', $task, function () use ($task) {
+            $task->branch = $task->current = null;
+
+            return ($task->save() >= 0);
+        });
+    }
+
+    public function confirm(TaskModel $task)
+    {
+        return $this->updateStatus('CONFIRM', $task);
+    }
+
+    private function updateStatus(
+        string $action,
+        TaskModel $task,
+        \Closure $callback = null
+    )
+    {
+        $msg = "{$action}_PERMISSION_DENIED";
+
+        if (call_user_func([$task, strtolower($action)], share('user.id'))) {
+            $msg = "{$action}_OK";
+
+            $task->addTrending($action);
+
+            if ($callback) {
+                $callback();
+            }
+        }
+
+        share_error_i18n($msg);
+
+        return redirect("/dep/tasks/{$task->id}");
+    }
+
+    public function assign(TaskModel $task)
+    {
+        return redirect("/dep/tasks/{$task->id}");
     }
 
     public function assignTo(TaskModel $task)
@@ -55,28 +99,28 @@ class Task extends Ctl
             return redirect($this->route);
         }
 
-        $user = $status = $notes = null;
+        $data = $this->request->posts();
         
-        if (true !== ($err = legal_and($this->request->posts(), [
-            'assign-to' => ['int|min:1', &$user],
-            'action'    => [
-                "string|ciin:{$task->getActionString()}",
-                &$status
-            ],
-            'assign-notes' => ['string', &$notes],
-        ]))) {
-            share_error_i18n($err);
+        if (true !== ($err = validate($data, [
+            'assign_to' => 'need|int|min:1',
+            'action'    => 'need|string|notin:0',
+            'branch'    => 'when:action=WAITTING_DEP2TEST|need|string|notin:0',
+            'manually'  => 'when:action=WAITTING_DEP2TEST|need|ciin:yes,no',
+            'assign_notes' => 'string',
+        ])) || !in_array(
+            $data['action'],
+            $task->getActionsOfRole($data['assign_to'])
+        )) {
+            share_error_i18n(
+                (true === $err) ? 'CANNT_ASSIGN_ACTION2ROLE' : $err
+            );
 
             return redirect($this->route);
         }
 
-        if (($task->assign($user, $status, $notes))) {
-            $msg = 'ASSIGN_OK';
-        } else {
-            $msg = 'ASSIGN_FAILED';
-        }
-
-        share_error_i18n($msg);
+        share_error_i18n(
+            $task->assign($data) ? 'ASSIGN_OK' : 'ASSIGN_FAILED'
+        );
 
         return redirect($this->route);
     }
@@ -115,7 +159,7 @@ class Task extends Ctl
         if ($sid = $data['story']) {
             if (! $story->find($sid)) {
                 shares([
-                    '__error'   => lang('STORY_NOT_FOUND', $sid),
+                    '__error'   => L('STORY_NOT_FOUND', $sid),
                     'back2last' => share('url_previous'),
                 ]);
 
@@ -167,19 +211,25 @@ class Task extends Ctl
             'trending' => ['in:asc,desc', 'desc']
         ]);
 
-        $user       = share('user.id');
-        $editable   = ($task->canEdit());
-        $assignable = ($task->canBeAssignedBy($user));
+        $user        = share('user.id');
+        $activeable  = ($task->canBeActivatedBy($user));
+        $cancelable  = ($task->canBeCanceledBy($user));
+        $confirmable = ($task->canBeConfirmedBY($user));
+        $editable    = ($task->canBeEditedBY());
+        $assignable  = ($task->canBeAssignedBy($user));
 
         share('hide-search-bar', true);
 
         view('ldtdf/task/info')
-        ->withTaskStoryTasksProjectTrendingsEditableAssignableAssigns(
+        ->withTaskStoryTasksProjectTrendingsActiveableCancelableConfirmableEditableAssignableAssigns(
             $task,
             $task->story(),
             $task->relateTasks(),
             $task->project(),
             $task->trendings($querys),
+            $activeable,
+            $cancelable,
+            $confirmable,
             $editable,
             $assignable,
             $task->assigns()
@@ -197,7 +247,7 @@ class Task extends Ctl
             return redirect($this->route);
         }
 
-        $data['status']  = 'created';
+        $data['status']  = 'activated';
         $data['creator'] = $data['current'] = share('user.id');
 
         if (($status = $task->create($data))
@@ -207,7 +257,7 @@ class Task extends Ctl
             $msg = 'CREATED_SUCCESS';
             $task->addTrending('create');
         } else {
-            $msg    = lang('CREATED_FAILED', lang($status));
+            $msg    = L('CREATED_FAILED', L($status));
             $status = 'new';
         }
 
@@ -242,9 +292,9 @@ class Task extends Ctl
             $status = 'UPDATE_FAILED';
         }
 
-        $err = is_integer($err) ? null : lang($err);
+        $err = is_integer($err) ? null : L($err);
 
-        share_error(lang($status, $err));
+        share_error(L($status, $err));
 
         redirect("{$this->route}/edit");
     }

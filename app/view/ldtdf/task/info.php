@@ -1,9 +1,9 @@
 <?= $this->layout('main') ?>
-<?= $this->title([lang('VIEW_TASK'), lang('LDTDFMS')]) ?>
+<?= $this->title([L('VIEW_TASK'), L('LDTDFMS')]) ?>
 <?= $this->section('common')  ?>
 
 <h4>
-    <?= lang('VIEW_TASK') ?>
+    <?= L('VIEW_TASK') ?>
     <span class="stub"></span>
     <small><code>
         T<?= $task->id ?>
@@ -11,38 +11,94 @@
 
     <em><?= $story->title ?></em>
 
+    <?php if (isset($activeable) && $activeable): ?>
+    <form
+    method="POST"
+    action="/dep/tasks/<?= $task->id ?>/activate"
+    class="inline" id="activate-task-form">
+        <?= csrf_feild() ?>
+        <input
+        onclick="activateTaskConfirm()"
+        type="button"
+        class="text-todo"
+        value="<?= L('ACTIVATE_TASK') ?>">
+    </form>
+    <script type="text/javascript">
+        function activateTaskConfirm() {
+            if (confirm("<?= L('SURE') ?> ?")) {
+                $('#activate-task-form').submit()
+            }
+        }
+    </script>
+    <?php endif ?>
+
     <?php if (isset($editable) && $editable): ?>
     <button>
-        <a href="/dep/tasks/<?= $task->id ?>/edit"><?= lang('EDIT') ?></a>
+        <a href="/dep/tasks/<?= $task->id ?>/edit"><?= L('EDIT') ?></a>
     </button>
     <?php endif ?>
+
+    <?php if (isset($confirmable) && $confirmable): ?>
+    <form
+    method="POST"
+    action="/dep/tasks/<?= $task->id?>/confirm"
+    class="inline">
+        <?= csrf_feild() ?>
+        <input type="submit" value="<?= L('CONFIRM') ?>">
+    </form>
+    <?php endif ?>
     <?php if (isset($assignable) && $assignable): ?>
-        <?php $dependency = ('WAITTING_DEV' === strtoupper($task->status))
+        <?php $dependency = in_array(strtoupper($task->status), [
+            'WAITTING_FIX_TEST',
+        ])
             ? '-with-dependencies' : '';
         ?>
         <?= $this->section("assign-form{$dependency}", [
-            'model' => $task,
+            'model'  => $task,
+            'branch' => $task->branch,
+            'assignNotes' => $task->notes,
             'key'   => 'TASK',
             'api'   => "/dep/tasks/{$task->id}/users/assignable",
             'route' => "/dep/tasks/{$task->id}/assign"
         ]) ?>
+    <?php endif ?>
+
+    <?php if (isset($cancelable) && $cancelable): ?>
+    <form
+    method="POST"
+    action="/dep/tasks/<?= $task->id ?>/cancel"
+    class="inline" id="cancel-task-form">
+        <?= csrf_feild() ?>
+        <input
+        onclick="cancelTaskConfirm()"
+        type="button"
+        class="text-danger"
+        value="<?= L('CANCEL_TASK') ?>">
+    </form>
+    <script type="text/javascript">
+        function cancelTaskConfirm() {
+            if (confirm("<?= L('SURE') ?> ?")) {
+                $('#cancel-task-form').submit()
+            }
+        }
+    </script>
     <?php endif ?>
 </h4>
 
 <p>
     <span class="stub-2"></span>
     <span class="text-info">[</span>
-    <small><?= lang('TASK_STATUS') ?></small>
+    <small><?= L('TASK_STATUS') ?></small>
     <span class="text-info">]</span>
     <?php if ($task->status) : ?>
-    <button class="btn-info"><?= lang("STATUS_{$task->status}") ?></button>
+    <button class="btn-info"><?= L("STATUS_{$task->status}") ?></button>
     <?php endif ?>
 </p>
 
 <p>
     <span class="stub-2"></span>
     <span class="text-info">[</span>
-    <small><?= lang('RELATED_PROJECT') ?></small>
+    <small><?= L('RELATED_PROJECT') ?></small>
     <span class="text-info">]</span>
     <i>
         <a href="/dep/projects/<?= $project->id ?>">
@@ -54,7 +110,7 @@
 <p>
     <span class="stub-2"></span>
     <span class="text-info">[</span>
-    <small><?= lang('RELATED_STORY') ?></small>
+    <small><?= L('RELATED_STORY') ?></small>
     <span class="text-info">]</span>
 
     <i>
@@ -68,57 +124,60 @@
 <p>
     <span class="stub-2"></span>
     <span class="text-info">[</span>
-    <small><?= lang('TASK_DETAILS') ?></small>
+    <small><?= L('TASK_DETAILS') ?></small>
     <span class="text-info">]</span>
 </p>
 
 <blockquote><em>
     <p>
-        <?= lang('STORY_WHO') ?>
+        <?= L('STORY_WHO') ?>
         <span><?= $story->role ?></span>
     </p>
     <p>
-        <?= lang('STORY_WHAT') ?>
+        <?= L('STORY_WHAT') ?>
         <span><?= $story->activity ?></span>
     </p>
     <p>
-        <?= lang('STORY_FOR') ?>
+        <?= L('STORY_FOR') ?>
         <span><?= $story->value ?></span>
     </p>
 </em></blockquote>
 
 <div id="task-acceptances">
     <span class="text-info">[</span>
-    <b><?= lang('STORY_AC') ?></b>
+    <b><?= L('STORY_AC') ?></b>
     <span class="text-info">]</span>
 </div>
-
-<div id="task-others">
-    <span class="text-info">[</span>
-    <b><?= lang('STORY_NOTES') ?></b>
-    <span class="text-info">]</span>
-</div>
-
-<div id="task-notes">
-    <span class="text-info">[</span>
-    <b><?= lang('TASK_NOTES') ?></b>
-    <span class="text-info">]</span>
-</div>
-
 <textarea
 id="task-acceptances-md"
-style="display:none"><?= $story->acceptances ?></textarea>
+style="display:none"><?= $this->escape($story->acceptances) ?></textarea>
+
+<?php if (trim($story->extras)): ?>
+<div id="task-others">
+    <span class="text-info">[</span>
+    <b><?= L('STORY_NOTES') ?></b>
+    <span class="text-info">]</span>
+</div>
 <textarea
 id="task-others-md"
-style="display:none"><?= $story->extra ?></textarea>
+style="display:none"><?= $this->escape($story->extra) ?></textarea>
+<?php endif ?>
+
+<?php if (trim($task->notes)): ?>
+<div id="task-notes">
+    <span class="text-info">[</span>
+    <b><?= L('TASK_NOTES') ?></b>
+    <span class="text-info">]</span>
+</div>
 <textarea
 id="task-notes-md"
-style="display:none"><?= $task->notes ?></textarea>
+style="display:none"><?= $this->escape($task->notes) ?></textarea>
+<?php endif ?>
 
 <p>
     <span class="stub-2"></span>
     <span class="text-info">[</span>
-    <small><?= lang('RELATED_TASK') ?></small>
+    <small><?= L('RELATED_TASK') ?></small>
     <span class="text-info">]</span>
 
     <?php if (isset($tasks) && iteratable($tasks)): ?>
@@ -140,6 +199,7 @@ style="display:none"><?= $task->notes ?></textarea>
     'displayShort' => true,
 ]) ?>
 <?= $this->section('lib/editormd') ?>
+<?= $this->section('comment') ?>
 
 <script type="text/javascript">
     editormd.markdownToHTML("task-acceptances", {
@@ -148,7 +208,7 @@ style="display:none"><?= $task->notes ?></textarea>
         // 开启 HTML 标签解析，为了安全性，默认不开启
         // htmlDecode      : true,
         // you can filter tags decode
-        htmlDecode      : "style,script,iframe",
+        // htmlDecode      : "style,script,iframe",
         
         // toc             : false,
         tocm            : true,    // Using [TOCM]
@@ -172,14 +232,14 @@ style="display:none"><?= $task->notes ?></textarea>
 
     editormd.markdownToHTML("task-others", {
         markdown : $('#task-others-md').val(),
-        htmlDecode : "style,script,iframe",
+        // htmlDecode : "style,script,iframe",
         tocm : true,
         markdownSourceCode : true
     });
 
     editormd.markdownToHTML("task-notes", {
         markdown : $('#task-notes-md').val(),
-        htmlDecode : "style,script,iframe",
+        // htmlDecode : "style,script,iframe",
         tocm : true,
         markdownSourceCode : true
     });

@@ -1193,9 +1193,13 @@ if (! fe('sysmsg')) {
         return $key;
     }
 }
+if (! fe('L')) {
+    function L($key, $msg = null, $lang = null) {
+        return lang($key, $msg, $lang);
+    }
+}
 if (! fe('lang')) {
-    function lang($key, $msg = null, $lang = null)
-    {
+    function lang($key, $msg = null, $lang = null) {
         return (mb_strlen(($_msg = stringify($msg))) > 0)
         ? sysmsg($key, $lang).': '.$_msg
         : sysmsg($key, $lang);

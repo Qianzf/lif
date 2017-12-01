@@ -32,7 +32,7 @@ class User extends Ctl
     {
         $error = $back2last = null;
         if (! $user->isAlive()) {
-            $error     = lang('NO_USER');
+            $error     = L('NO_USER');
             $back2last = share('url_previous');
         }
 

@@ -1,25 +1,25 @@
 <h4>
     <button class="btn-todo">
-        <a href="/dep/todo"><?= lang('TODO') ?></a>
+        <a href="/dep/todo"><?= L('TODO') ?></a>
     </button>
 
     <button class="btn-story">
-        <a href="/dep/stories"><?= lang('STORY') ?></a>
+        <a href="/dep/stories"><?= L('STORY') ?></a>
     </button>
     
     <button class="btn-alert">
-        <a href="/dep/tasks"><?= lang('TASK') ?></a>
+        <a href="/dep/tasks"><?= L('TASK') ?></a>
     </button>
 
     <button class="btn-emergency">
-        <a href="/dep/bugs"><?= lang('BUG') ?></a>
+        <a href="/dep/bugs"><?= L('BUG') ?></a>
     </button>
 
     <button class="btn-doc">
-        <a href="/dep/docs"><?= lang('DOCUMENTATION') ?></a>
+        <a href="/dep/docs"><?= L('DOCUMENTATION') ?></a>
     </button>
 
     <button class="btn-trending">
-        <a href="/dep/trending"><?= lang('TRENDING') ?></a>
+        <a href="/dep/trending"><?= L('TRENDING') ?></a>
     </button>
 </h4>

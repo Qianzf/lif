@@ -1,25 +1,25 @@
 <?= $this->layout('main') ?>
-<?= $this->title([lang('PROJECT_MANAGE'), lang('LDTDFMS')]) ?>
+<?= $this->title([L('PROJECT_MANAGE'), L('LDTDFMS')]) ?>
 <?= $this->section('common') ?>
 
 <dl class="list">
     <dd>
         <button>
-            <a href="/dep/admin/projects/new"><?= lang('ADD_PROJECT') ?></a>
+            <a href="/dep/admin/projects/new"><?= L('ADD_PROJECT') ?></a>
         </button>
     </dd>
 </dl>
 
 <table>
     <caption>
-        <?= lang('PROJECT_LIST') ?>
+        <?= L('PROJECT_LIST') ?>
     </caption>
 
     <tr>
-        <th><?= lang('TITLE') ?></th>
-        <th><?= lang('TYPE') ?></th>
-        <th><?= lang('REPO_URL') ?></th>
-        <th><?= lang('OPERATIONS') ?></th>
+        <th><?= L('TITLE') ?></th>
+        <th><?= L('TYPE') ?></th>
+        <th><?= L('REPO_URL') ?></th>
+        <th><?= L('OPERATIONS') ?></th>
     </tr>
 
     <?php if (isset($projects) && iteratable($projects)) { ?>
@@ -31,7 +31,7 @@
         <td>
             <button>
                 <a href="/dep/admin/projects/<?= $project->id ?>">
-                    <?= lang('DETAILS') ?>
+                    <?= L('DETAILS') ?>
                 </a>
             </button>
         </td>

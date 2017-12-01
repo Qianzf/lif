@@ -1,5 +1,5 @@
 <?= $this->layout('main') ?>
-<?= $this->title([lang('PROJECT_INFO'), lang('LDTDFMS')]) ?>
+<?= $this->title([L('PROJECT_INFO'), L('LDTDFMS')]) ?>
 <?= $this->section('common') ?>
 <?= $this->section('title', [
     'key' => 'PROJECT_INFO'
@@ -8,7 +8,7 @@
 <div class="form">
     <label>
         <button class="btn-info">
-            <?= lang('TITLE') ?>
+            <?= L('TITLE') ?>
         </button>
         <span class="stub"></span>
         <small><?= $project->name ?></small>
@@ -16,15 +16,15 @@
 
     <label>
         <button class="btn-info">
-            <?= lang('TYPE') ?>
+            <?= L('TYPE') ?>
         </button>
         <span class="stub"></span>
-        <small><?= lang($project->type) ?></small>
+        <small><?= L($project->type) ?></small>
     </label>
 
     <label>
         <button class="btn-info">
-            <?= lang('DESCRIPTION') ?>
+            <?= L('DESCRIPTION') ?>
         </button>
         <span class="stub"></span>
         <small><?= $project->desc ?></small>

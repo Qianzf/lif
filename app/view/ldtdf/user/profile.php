@@ -1,5 +1,5 @@
 <?= $this->layout('main') ?>
-<?= $this->title([lang('USER_PROFILE'), lang('LDTDFMS')]) ?>
+<?= $this->title([L('USER_PROFILE'), L('LDTDFMS')]) ?>
 <?= $this->section('back2list', [
     'model' => collect([
         'id' => true,
@@ -11,24 +11,24 @@
 <form method="POST">
     <?= csrf_feild() ?>
     
-    <label><?= lang('NAME') ?>
+    <label><?= L('NAME') ?>
         <input type="text" name="name" value="<?= $name ?>" required>
     </label> 
 
-    <label><?= lang('EMAIL') ?>
+    <label><?= L('EMAIL') ?>
         <input type="email" name="email" value="<?= $email ?>" required>
     </label> 
 
-    <label><?= lang('OLD_PASSWORD') ?>
+    <label><?= L('OLD_PASSWORD') ?>
         <input type="password" name="passwordOld"
-        placeholder="<?= lang('PROVIDE_OLD_PASSWD') ?>">
+        placeholder="<?= L('PROVIDE_OLD_PASSWD') ?>">
     </label> 
-    <label><?= lang('NEW_PASSWORD') ?>
+    <label><?= L('NEW_PASSWORD') ?>
         <input type="password" name="passwordNew"
-        placeholder="<?= lang('PROVIDE_NEW_PASSWD') ?>">
+        placeholder="<?= L('PROVIDE_NEW_PASSWD') ?>">
     </label> 
 
     <label>
-        <input type="submit" value="<?= lang('UPDATE') ?>">
+        <input type="submit" value="<?= L('UPDATE') ?>">
     </label>
 </form>

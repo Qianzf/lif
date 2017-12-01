@@ -1,5 +1,5 @@
 <?= $this->layout('main') ?>
-<?= $this->title([lang('BUG_LIST'), lang('LDTDFMS')]) ?>
+<?= $this->title([L('BUG_LIST'), L('LDTDFMS')]) ?>
 
 <?= $this->section('back2list', [
     'model'  => $story,
@@ -17,68 +17,68 @@
     <?php if ($story->status) : ?>
     <label>
         <span class="label-title">
-            <?= lang('STORY_STATUS') ?>
+            <?= L('STORY_STATUS') ?>
         </span>
-        <code><?= lang("STORY_{$story->status}") ?></code>
+        <code><?= L("STORY_{$story->status}") ?></code>
     </label>
     <?php endif ?>
 
     <label>
-        <span class="label-title"><?= lang('TITLE') ?></span>
+        <span class="label-title"><?= L('TITLE') ?></span>
         <input
         type="text"
         name="title"
         required
-        placeholder="<?= lang('STORY_TITLE') ?>"
+        placeholder="<?= L('STORY_TITLE') ?>"
         value="<?= $story->title ?>">
     </label>
 
     <label>
-        <span class="label-title"><?= lang('STORY_WHO') ?></span>
+        <span class="label-title"><?= L('STORY_WHO') ?></span>
         <input
         type="text"
         name="role"
         required
-        placeholder="<?= lang('WHAT_USER_ROLE') ?>"
+        placeholder="<?= L('WHAT_USER_ROLE') ?>"
         value="<?= $story->role ?>">
     </label>
 
     <label>
-        <span class="label-title"><?= lang('STORY_WHAT') ?></span>
+        <span class="label-title"><?= L('STORY_WHAT') ?></span>
         <textarea
         required
-        placeholder="<?= lang('WHAT_FUNCTIONALITIES') ?>"
+        placeholder="<?= L('WHAT_FUNCTIONALITIES') ?>"
         name="activity"><?= $story->activity ?></textarea>
     </label>
 
     <label>
-        <span class="label-title"><?= lang('STORY_FOR') ?></span>
+        <span class="label-title"><?= L('STORY_FOR') ?></span>
         <textarea
         required
-        placeholder="<?= lang('ACHIEVE_WHAT_VALUE') ?>"
+        placeholder="<?= L('ACHIEVE_WHAT_VALUE') ?>"
         name="value"><?= $story->value ?></textarea>
     </label>
 
     <label>
-        <span class="label-title"><?= lang('STORY_AC') ?></span>
+        <span class="label-title"><?= L('STORY_AC') ?></span>
         <div
         id="story-acceptances"
         class="editormd editormd-vertical">
             <textarea
             class="editormd-markdown-textarea"
-            placeholder="<?= lang('STORY_AC') ?>"
+            placeholder="<?= L('STORY_AC') ?>"
             name="acceptances"><?= $story->acceptances ?></textarea>
         </div>
     </label>
 
     <label>
-        <span class="label-title"><?= lang('OTHER_NOTES') ?></span>
+        <span class="label-title"><?= L('OTHER_NOTES') ?></span>
         <div
         id="story-others"
         class="editormd editormd-vertical">
             <textarea
             class="editormd-markdown-textarea"
-            placeholder="<?= lang('OTHERS') ?>"
+            placeholder="<?= L('OTHERS') ?>"
             name="extra"><?= $story->extra ?></textarea>
         </div>
     </label>
@@ -96,15 +96,15 @@
     {
         id : 'story-others',
         placeholder : "<?=
-            lang('OTHER_NOTES'),
+            L('OTHER_NOTES'),
             ' / ',
-            lang('ATTACHMENT'),
-            lang('ETC')
+            L('ATTACHMENT'),
+            L('ETC')
         ?>"
     },
     {
         id : 'story-acceptances',
-        placeholder : "<?= lang('STORY_AC') ?>"
+        placeholder : "<?= L('STORY_AC') ?>"
     }
     ]
     $(function() {

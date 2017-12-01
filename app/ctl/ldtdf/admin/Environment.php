@@ -96,13 +96,13 @@ class Environment extends Ctl
 
         // check if exists in code level
         if ($env->whereHost($this->request->get('host'))->count()) {
-            share_error(lang('CREATE_FAILED', lang('HOST_ALREADY_EXISTS')));
+            share_error(L('CREATE_FAILED', L('HOST_ALREADY_EXISTS')));
         } else {
             if (($id = $env->create($this->request->all())) > 0) {
                 share_error_i18n('CREATED_SUCCESS');
                 $redirect = '/dep/admin/envs/'.$id;
             } else {
-                share_error(lang('CREATE_FAILED', $id));
+                share_error(L('CREATE_FAILED', $id));
             }
         }
 
@@ -115,9 +115,9 @@ class Environment extends Ctl
         ? 'UPDATE_OK'
         : 'UPDATE_FAILED';
 
-        $err = !is_integer($err) ? lang($err) : null;
+        $err = !is_integer($err) ? L($err) : null;
 
-        share_error(lang($status, $err));
+        share_error(L($status, $err));
 
         redirect($this->route);
     }

@@ -8,8 +8,10 @@ namespace Lif\Core\Abst;
 
 use Lif\Core\Storage\SQL\Builder;
 
-abstract class Model implements \ArrayAccess
-{    
+abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
+{   
+    use \Lif\Core\Traits\DI;
+
     // Child class confinable
     protected $table  = null;       // table name
     protected $alias  = null;       // table alias
@@ -503,5 +505,10 @@ abstract class Model implements \ArrayAccess
     public function offsetUnset($offset)
     {
         unset($this->items[$offset]);
+    }
+
+    protected static function getProxy()
+    {
+        return static::class;
     }
 }

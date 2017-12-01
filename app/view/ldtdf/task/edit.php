@@ -15,7 +15,7 @@
 
     <label>
         <span class="label-title">
-            <?= lang('RELATED_STORY') ?>
+            <?= L('RELATED_STORY') ?>
         </span>
         <input type="hidden" name="story" value="<?= $story->id ?>">
         <?= $this->section('instant-search', [
@@ -29,10 +29,10 @@
 
     <label>
         <span class="label-title">
-            <?= lang('RELATED_PROJECT') ?>
+            <?= L('RELATED_PROJECT') ?>
         </span>
         <select name="project" required>
-            <option>-- <?= lang('SELECT_PROJECT') ?> --</option>
+            <option>-- <?= L('SELECT_PROJECT') ?> --</option>
             <?php foreach ($projects as $proj): ?>
                 <option
                 <?php if ($project->id == $proj->id): ?>
@@ -46,13 +46,13 @@
     </label>
 
     <label>
-        <span class="label-title"><?= lang('TASK_NOTES') ?></span>
+        <span class="label-title"><?= L('TASK_NOTES') ?></span>
         <div
         id="task-notes"
         class="editormd editormd-vertical">
             <textarea
             class="editormd-markdown-textarea"
-            placeholder="<?= lang('TASK_NOTES') ?>"
+            placeholder="<?= L('TASK_NOTES') ?>"
             name="notes"><?= $task->notes ?></textarea>
         </div>
     </label>
@@ -70,10 +70,10 @@
     {
         id : 'task-notes',
         placeholder : "<?=
-            lang('NOTES'),
+            L('NOTES'),
             ' / ',
-            lang('ATTACHMENT'),
-            lang('ETC')
+            L('ATTACHMENT'),
+            L('ETC')
         ?>"
     }
     ]

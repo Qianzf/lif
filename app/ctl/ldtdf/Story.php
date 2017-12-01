@@ -67,7 +67,7 @@ class Story extends Ctl
             $msg = 'CREATED_SUCCESS';
             $story->addTrending('create');
         } else {
-            share_error_i18n(lang('CREATED_FAILED', lang($status)));
+            share_error_i18n(L('CREATED_FAILED', L($status)));
 
             return $this->add($story->setItems($this->request->posts));
         }
@@ -103,9 +103,9 @@ class Story extends Ctl
             $status = 'UPDATE_FAILED';
         }
 
-        $err = is_integer($err) ? null : lang($err);
+        $err = is_integer($err) ? null : L($err);
 
-        share_error(lang($status, $err));
+        share_error(L($status, $err));
 
         redirect($this->route);
     }

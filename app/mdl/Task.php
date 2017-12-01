@@ -16,19 +16,32 @@ class Task extends Mdl
         'title'   => 'string',
     ];
 
-    public function assign(
-        int $user,
-        string $status,
-        string $notes = null
-    )
+    public function current()
+    {
+        return $this->belongsTo(
+            User::class,
+            'current',
+            'id'
+        );
+    }
+
+    public function assign(array $params)
     {
         db()->start();
         
-        $this->status  = $status;
-        $this->current = $user;
+        $this->current  = $params['assign_to'];
+        $this->status   = $params['action'];
+        if ($branch = ($params['branch'] ?? null)) {
+            $this->branch = $branch;
+        }
+        if ($manually = ($params['manually'] ?? null)) {
+            $this->manually = $params['manually'];
+        }
+
+        $notes = $params['assign_notes'] ?? null;
 
         if (($this->save() >= 0)
-            && ($this->addTrending('assign', $user, $notes) > 0)
+            && ($this->addTrending('assign', $this->current, $notes) > 0)
         ) {
             db()->commit();
 
@@ -40,16 +53,24 @@ class Task extends Mdl
         return false;
     }
 
-    public function getActionString()
+    // What actions can given user role do
+    public function getActionsOfRole(int $user = null)
     {
-        return implode(',', array_column(
-            db()
-            ->table('task_status')
-            ->select('`key`')
-            ->where('assignable', 'yes')
-            ->get(),
-            'key'
-        ));
+        if (is_null($user)) {
+            return array_column(
+                db()
+                ->table('task_status')
+                ->select('`key`')
+                ->where('assignable', 'yes')
+                ->get(),
+                'key'
+            );
+        }
+
+        $role    = ucfirst(model(User::class, $user)->role);
+        $handler = "getActionsOfRole{$role}";
+        
+        return $this->$handler();
     }
 
     public function getAssignableUsers(array $where = [])
@@ -59,7 +80,8 @@ class Task extends Mdl
 
         $query = db()
         ->table('user')
-        ->select('id', 'name', 'role');
+        ->select('id', 'name', 'role')
+        ->whereId('!=', share('user.id'));
 
         if ($where) {
             $query = $query->where($where);
@@ -70,7 +92,7 @@ class Task extends Mdl
         array_walk($users, function (&$item) {
             $item['name'] = $item['name']
             .'( '
-            .lang("ROLE_{$item['role']}")
+            .L("ROLE_{$item['role']}")
             .' )'
             ;
             unset($item['role']);
@@ -110,18 +132,117 @@ class Task extends Mdl
         return $this->$taskStatusHandler();
     }
 
-    public function canEdit()
+    public function canBeEditedBY(int $user = null)
     {
-        return (
-            ($this->creator == share('user.id'))
-            && (strtoupper($this->status) == 'CREATED')
-        );
+        if ($user = ($user ?? share('user.id'))) {
+            return (
+                ($this->creator == $user)
+                && (strtolower($this->status) == 'activated')
+            );
+        }
+
+        return false;
+    }
+
+    public function activate(int $user)
+    {
+        if ($this->canBeActivatedBy($user)) {
+            $this->status = 'activated';
+
+            return ($this->save() >= 0);
+        }
+
+        return false;
+    }
+
+    public function cancel(int $user)
+    {
+        if ($this->canBeCanceledBy($user)) {
+            $this->status = 'canceled';
+
+            return ($this->save() >= 0);
+        }
+
+        return false;
+    }
+
+    public function confirm(int $user)
+    {
+        if ($this->canBeConfirmedBY($user)) {
+            $role = ucfirst(strtolower($this->current()->role));
+            $confirmHandler  = "confirmWhen{$role}";
+            if ($status = $this->$confirmHandler()) {
+                $this->status = $status;
+
+                return ($this->save() >= 0);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public function getStatusList(string $assignable = 'yes')
+    {
+        $status = db()
+        ->table('task_status')
+        ->select('`key`')
+        ->whereAssignable($assignable)
+        ->get();
+
+        return array_column($status, 'key');
+    }
+
+    public function canBeActivatedBy(int $user = null)
+    {
+        return $this->canBeCanceledBy($user, ('canceled' == $this->status));
+    }
+
+    public function canBeCanceledBy(
+        int $user = null,
+        bool $status = null
+    )
+    {
+        if ($user = $user ?? (share('user.id') ?? null)) {
+            if (is_null($status)) {
+                $status = !in_array($this->status, [
+                    'finished',
+                    'canceled',
+                ]);
+            }
+
+            return (($this->creator()->id == $user) && $status);
+        }
+
+        return false;
+    }
+
+    public function canBeConfirmedBY(int $user = null)
+    {
+        if (strtolower($this->status) == 'activated') {
+            return false;
+        }
+
+        return $this->isAssignable($user);
     }
 
     public function canBeAssignedBy(int $user = null)
     {
+        return $this->isAssignable($user);
+    }
+
+    public function isAssignable(int $user = null, bool $status = false)
+    {
         if ($user = $user ?? (share('user.id') ?? null)) {
-            return ($user == $this->current);
+            if ($status == false) {
+                $status = in_array(
+                    strtolower($this->status),
+                    $this->getStatusList()
+                );
+            }
+
+            return (($user == $this->current) && $status);
         }
 
         excp('Missing user id.');

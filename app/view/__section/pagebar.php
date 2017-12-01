@@ -5,29 +5,29 @@
 
 <p class="pagination-bar">
     <input <?= ($page == 1) ? 'disabled' : '' ?>
-    type="button" data-page="_start" value="<?= lang('FIRST_PAGE') ?>">
+    type="button" data-page="_start" value="<?= L('FIRST_PAGE') ?>">
 
     <input <?= ($page >= $pages) ? 'disabled' : '' ?>
-    type="button" data-page="_next" value="<?= lang('NEXT_PAGE') ?>">
+    type="button" data-page="_next" value="<?= L('NEXT_PAGE') ?>">
 
     <input <?= ($page <= 1) ? 'disabled' : '' ?>
-    type="button" data-page="_prior" value="<?= lang('PRIOR_PAGE') ?>">
+    type="button" data-page="_prior" value="<?= L('PRIOR_PAGE') ?>">
 
     <input <?= ($page >= $pages) ? 'disabled' : '' ?>
-    type="button" data-page="_end" value="<?= lang('LAST_PAGE') ?>">
+    type="button" data-page="_end" value="<?= L('LAST_PAGE') ?>">
 
     <input type="number" name="pagination-number"
-    placeholder="<?= lang('INPUT_LEGAL_PAGE_NUMBER') ?>">
+    placeholder="<?= L('INPUT_LEGAL_PAGE_NUMBER') ?>">
 
     <input <?= ($pages <= 1) ? 'disabled' : '' ?>
-    type="button" name="goto-page" value="<?= lang('GOTO') ?>">
+    type="button" name="goto-page" value="<?= L('GOTO') ?>">
     <input type="hidden" name="records-count" value="<?= $records ?>">
     <input type="hidden" name="pagination-count" value="<?= $pages ?>">
 
     <p><i><code>(
-        <?= lang('PAGE_NOW', $page) ?>;
-        <?= lang('TOTAL_RECORDS', $records) ?>;
-        <?= lang('TOTAL_PAGES', $pages) ?>;
-        <?= lang('PAGE_SIZE', $offset) ?>
+        <?= L('PAGE_NOW', $page) ?>;
+        <?= L('TOTAL_RECORDS', $records) ?>;
+        <?= L('TOTAL_PAGES', $pages) ?>;
+        <?= L('PAGE_SIZE', $offset) ?>
     )</code></i></p>
 </p>

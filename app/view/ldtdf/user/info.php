@@ -1,5 +1,5 @@
 <?= $this->layout('main') ?>
-<?= $this->title([lang('USER_INFO'), lang('LDTDFMS')]) ?>
+<?= $this->title([L('USER_INFO'), L('LDTDFMS')]) ?>
 <?= $this->section('common') ?>
 <?= $this->section('title', [
     'key' => 'USER_INFO'
@@ -8,7 +8,7 @@
 <div class="form">
     <label>
         <button class="btn-info">
-            <?= lang('NAME') ?>
+            <?= L('NAME') ?>
         </button>
         <span class="stub"></span>
         <small><?= $user->name ?></small>
@@ -16,15 +16,15 @@
 
     <label>
         <button class="btn-info">
-            <?= lang('ROLE') ?>
+            <?= L('ROLE') ?>
         </button>
         <span class="stub"></span>
-        <small><?= lang("ROLE_{$user->role}") ?></small>
+        <small><?= L("ROLE_{$user->role}") ?></small>
     </label>
 
     <label>
         <button class="btn-info">
-            <?= lang('EMAIL') ?>
+            <?= L('EMAIL') ?>
         </button>
         <span class="stub"></span>
         <a href="mailto:<?= $user->email ?>">

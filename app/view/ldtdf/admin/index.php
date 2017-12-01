@@ -1,26 +1,26 @@
 <?= $this->layout('main') ?>
-<?= $this->title([lang('HOMEPAGE'), lang('LDTDFMS')]) ?>
+<?= $this->title([L('HOMEPAGE'), L('LDTDFMS')]) ?>
 <?= $this->section('common') ?>
 
 <dl class="list">
     <dd>
         <button>
-            <a href="admin/users"><?= lang('USER_MANAGE') ?></a>
+            <a href="admin/users"><?= L('USER_MANAGE') ?></a>
         </button>
     </dd>
     <dd>
         <button>
-            <a href="admin/projects"><?= lang('PROJECT_MANAGE') ?></a>
+            <a href="admin/projects"><?= L('PROJECT_MANAGE') ?></a>
         </button>
     </dd>
     <dd>
         <button>
-            <a href="admin/envs"><?= lang('ENVIRONMENT_MANAGE') ?></a>
+            <a href="admin/envs"><?= L('ENVIRONMENT_MANAGE') ?></a>
         </button>
     </dd>
     <dd>
         <button>
-            <a href="admin/servers"><?= lang('SERVER_MANAGE') ?></a>
+            <a href="admin/servers"><?= L('SERVER_MANAGE') ?></a>
         </button>
     </dd>
 </dl>

@@ -6,7 +6,7 @@
     <select name="system-lang">
     
         <?php foreach (share('languages') as $key => $lang) { ?>
-        <?php $selected = ($key == syslang()) ? 'selected' : '' ?>
+        <?php $selected = ($key == sysL()) ? 'selected' : '' ?>
         <option value="<?= $key ?>" <?= $selected ?>><?= $lang ?></option>
         <?php } ?>
 
@@ -21,7 +21,7 @@
 <input
 type="hidden"
 name="__error"
-value="<?= lang(share_flush('__error')) ?>">
+value="<?= L(share_flush('__error')) ?>">
 <input
 type="hidden"
 name="__back2last"

@@ -1,10 +1,10 @@
 <h4>
-    <?= lang($key) ?>
+    <?= L($key) ?>
     
     <sup><small>
         <button>
             <a href="<?= share('url_previous') ?>">
-                <?= lang('BACK_TO_LAST') ?>
+                <?= L('BACK_TO_LAST') ?>
             </a>
         </button>
     </small></sup>

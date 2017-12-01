@@ -24,7 +24,7 @@
         <input type="text"
         id="instant-search-bar"
         onkeyup="instantSearch()"
-        placeholder="<?= lang('PROVIDE_KEYWORDS') ?>">
+        placeholder="<?= L('PROVIDE_KEYWORDS') ?>">
         <ul id="instant-search-res-list"></ul>
     </div>
 </div>
@@ -59,7 +59,7 @@
             'search': search
         }, function (res) {
             let results = res.dat
-            ? '' : '<small><i><?= lang('NO_RESULT') ?></i></small>'
+            ? '' : '<small><i><?= L('NO_RESULT') ?></i></small>'
 
             let height  = 50
             for (let i in res.dat) {
@@ -89,7 +89,7 @@
         $('#selected-search-res span').html(html)
     }
     function removeSelectedResult() {
-        $('#selected-search-res span').html('')
+        removeAllSelectedResult()
         startInstantSearch()
     }
 </script>

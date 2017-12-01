@@ -58,10 +58,10 @@ class Trending extends Mdl
 
     public function genHTMLStringOfEvent(bool $displayShort = null) : string
     {
-        $html = lang($this->action);
+        $html = L($this->action);
 
         if (! $displayShort) {
-            $html .= lang($this->ref_type);
+            $html .= L($this->ref_type);
             $event = $this->makeEvent();
             $data  = false;
             
@@ -81,7 +81,7 @@ class Trending extends Mdl
         }
 
         if ($this->target && ($target = model(User::class, $this->target))) {
-            $html .= lang('TO').lang("ROLE_{$target->role}");
+            $html .= L('TO').L("ROLE_{$target->role}");
             $html .= "<i><a href='/dep/users/{$target->id}'>{$target->name}</a></i>";
         }
 

@@ -9,17 +9,17 @@
     <?= csrf_feild() ?>
 
     <label>
-        <?= lang('TITLE') ?>
+        <?= L('TITLE') ?>
         <input type="text" name="name" value="<?= $group->name ?>" required>
     </label>
 
     <label>
-        <?= lang('DESCRIPTION') ?>
+        <?= L('DESCRIPTION') ?>
         <textarea type="text" name="desc"><?= $group->desc ?></textarea>
     </label>
 
     <label>
-        <?= lang('PLEASE_SELECT_USER') ?>
+        <?= L('PLEASE_SELECT_USER') ?>
     
         <label>
         <?php if (isset($users) && iteratable($users)) : ?>

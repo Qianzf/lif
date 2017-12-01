@@ -235,6 +235,11 @@ class View
         $this->outputed = true;
     }
 
+    public function escape(string $text) : string
+    {
+        return htmlspecialchars($text);
+    }
+
     public function __destruct()
     {
         if (!$this->outputed

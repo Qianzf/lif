@@ -4,12 +4,12 @@
     <label>
         <input type="text" name="search"
         value="<?= ($keyword ?? '') ?>" required
-        placeholder="<?= lang('PROVIDE_KEYWORDS') ?>">
+        placeholder="<?= L('PROVIDE_KEYWORDS') ?>">
     </label>
     <button name="clear-search-btn">
-        <?= lang('CLEAR') ?>
+        <?= L('CLEAR') ?>
     </button>
     <button name="reset-all-btn">
-        <?= lang('RESET_ALL') ?>
+        <?= L('RESET_ALL') ?>
     </button>
 </span>

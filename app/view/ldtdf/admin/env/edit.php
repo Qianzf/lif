@@ -8,27 +8,27 @@
 <form method="POST">
     <?= csrf_feild() ?>
     <label>
-        <?= lang('TITLE') ?>
+        <?= L('TITLE') ?>
         <input type="text" name="name" value="<?= $env->name ?>" required>
     </label>
 
     <label>
-        <?= lang('HOST_ADDR') ?>
+        <?= L('HOST_ADDR') ?>
         <input type="text" name="host" value="<?= $env->host ?>" required>
     </label>
 
     <label>
-        <?= lang('PATH') ?>
+        <?= L('PATH') ?>
         <input
         type="text"
         name="path"
-        placeholder="<?= lang('SERVER_ABSOLUTE_PATH') ?>"
+        placeholder="<?= L('SERVER_ABSOLUTE_PATH') ?>"
         value="<?= $env->path ?>"
         required>
     </label>
 
     <label>
-        <?= lang('ENV_TYPE') ?>
+        <?= L('ENV_TYPE') ?>
         <select name="type" required>
             <?php if (($types = share('env-types')) && iteratable($types)) { ?>
             <?php foreach ($types as $type) { ?>
@@ -37,7 +37,7 @@
             selected
             <?php } ?>
             value="<?= $type ?>">
-                <?= lang($type) ?>
+                <?= L($type) ?>
             </option>
             <?php } ?>
             <?php } ?>
@@ -45,9 +45,9 @@
     </label>
 
     <label>
-        <?= lang('RELATED_PROJECT') ?>
+        <?= L('RELATED_PROJECT') ?>
         <select name="project" required>
-            <option>--<?= lang('PLEASE_SELECT_PROJECT') ?>--</option>
+            <option>--<?= L('PLEASE_SELECT_PROJECT') ?>--</option>
             <?php if (isset($projects) && iteratable($projects)) { ?>
             <?php foreach ($projects as $project) { ?>
             <option
@@ -64,9 +64,9 @@
     </label>
 
     <label>
-        <?= lang('RELATED_SERVER') ?>
+        <?= L('RELATED_SERVER') ?>
         <select name="server" required>
-            <option>--<?= lang('PLEASE_SELECT_SERVER') ?>--</option>
+            <option>--<?= L('PLEASE_SELECT_SERVER') ?>--</option>
             <?php if (isset($servers) && iteratable($servers)) { ?>
             <?php foreach ($servers as $server) { ?>
             <option
@@ -83,7 +83,7 @@
     </label>
 
     <label>
-        <?= lang('STATUS') ?>
+        <?= L('STATUS') ?>
         <select name="status" required>
             <?php if (($stat = share('env-status')) && iteratable($stat)) { ?>
             <?php foreach ($stat as $status) { ?>
@@ -92,7 +92,7 @@
             selected
             <?php } ?>
             value="<?= $status ?>">
-                <?= lang($status) ?>
+                <?= L($status) ?>
             </option>
             <?php } ?>
             <?php } ?>

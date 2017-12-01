@@ -1,12 +1,12 @@
 <?= $this->layout('main') ?>
-<?= $this->title([lang('STORY_LIST'), lang('LDTDFMS')]) ?>
+<?= $this->title([L('STORY_LIST'), L('LDTDFMS')]) ?>
 <?= $this->section('common') ?>
 
 <dl class="list">
     <dd>
         <button>
             <a href="/dep/stories/new">
-                <?= lang('ADD_STORY') ?>
+                <?= L('ADD_STORY') ?>
             </a>
         </button>
     </dd>
@@ -14,14 +14,14 @@
 
 <?php if (isset($stories) && iteratable($stories)): ?>
 <table>
-    <caption><?= lang('STORY_LIST') ?></caption>
+    <caption><?= L('STORY_LIST') ?></caption>
 
     <tr>
-        <th><?= lang('ID') ?></th>
-        <th><?= lang('TITLE') ?></th>
-        <th><?= lang('CREATOR') ?></th>
-        <th><?= lang('TIME') ?></th>
-        <th><?= lang('OPERATIONS') ?></th>
+        <th><?= L('ID') ?></th>
+        <th><?= L('TITLE') ?></th>
+        <th><?= L('CREATOR') ?></th>
+        <th><?= L('TIME') ?></th>
+        <th><?= L('OPERATIONS') ?></th>
     </tr>
     <?php foreach ($stories as $story): ?>
     <tr>
@@ -36,7 +36,7 @@
         <td>
             <button>
                 <a href="/dep/stories/<?= $story->id ?>">
-                    <?= lang('DETAILS') ?>
+                    <?= L('DETAILS') ?>
                 </a>
             </button>
         </td>

@@ -31,7 +31,7 @@ class UserGroup extends Ctl
     {
         $error = $back2last = null;
         if (! $group->isAlive()) {
-            $error     = lang('GROUP_NOT_EXISTS');
+            $error     = L('GROUP_NOT_EXISTS');
             $back2last = share('url_previous');
         }
 
@@ -54,7 +54,7 @@ class UserGroup extends Ctl
         if (($name = $this->request->get('name'))
             && $group->hasSameGroup($name)
         ) {
-            share_error(lang('GROUP_ALREADY_EXISTS', $name));
+            share_error(L('GROUP_ALREADY_EXISTS', $name));
 
             return redirect($this->route);
         }
@@ -76,7 +76,7 @@ class UserGroup extends Ctl
             && (strtoupper($group->name) !==  strtoupper($name))
             && $group->hasSameGroup($name)
         ) {
-            share_error(lang('GROUP_ALREADY_EXISTS', $name));
+            share_error(L('GROUP_ALREADY_EXISTS', $name));
         } else {
             $msg = $group->updateWithUsers($this->request->posts)
             ? 'UPDATED_OK' : 'UPDATE_FAILED';

@@ -4,7 +4,7 @@
         <h6>
             <span class="stub-2"></span>
             <span class="text-info">[</span>
-            <small><?= lang("{$object}_TRENDING") ?></small>
+            <small><?= L("{$object}_TRENDING") ?></small>
             <?php $sort = (isset($_GET['trending']) && in_array($_GET['trending'], [
                 'asc', 'desc',
                 ])) ? $_GET['trending'] : 'asc';

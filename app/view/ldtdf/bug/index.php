@@ -1,12 +1,12 @@
 <?= $this->layout('main') ?>
-<?= $this->title([lang('BUG_LIST'), lang('LDTDFMS')]) ?>
+<?= $this->title([L('BUG_LIST'), L('LDTDFMS')]) ?>
 <?= $this->section('common') ?>
 
 <dl class="list">
     <dd>
         <button>
             <a href="/dep/bugs/new">
-                <?= lang('ADD_BUG') ?>
+                <?= L('ADD_BUG') ?>
             </a>
         </button>
     </dd>

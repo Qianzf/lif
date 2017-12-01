@@ -1,25 +1,25 @@
 <?= $this->layout('main') ?>
-<?= $this->title([lang('SERVER_MANAGE'), lang('LDTDFMS')]) ?>
+<?= $this->title([L('SERVER_MANAGE'), L('LDTDFMS')]) ?>
 <?= $this->section('common') ?>
 
 <dl class="list">
     <dd>
         <button>
-            <a href="/dep/admin/servers/new"><?= lang('ADD_SERVER') ?></a>
+            <a href="/dep/admin/servers/new"><?= L('ADD_SERVER') ?></a>
         </button>
     </dd>
 </dl>
 
 <table>
     <caption>
-        <?= lang('SERVER_LIST') ?>
+        <?= L('SERVER_LIST') ?>
     </caption>
 
     <tr>
-        <th><?= lang('TITLE') ?></th>
-        <th><?= lang('ADDR') ?></th>
-        <th><?= lang('PORT') ?></th>
-        <th><?= lang('OPERATIONS') ?></th>
+        <th><?= L('TITLE') ?></th>
+        <th><?= L('ADDR') ?></th>
+        <th><?= L('PORT') ?></th>
+        <th><?= L('OPERATIONS') ?></th>
     </tr>
     
     <?php if (isset($servers) && iteratable($servers)) { ?>
@@ -31,7 +31,7 @@
         <td>
             <button>
                 <a href="/dep/admin/servers/<?= $server->id ?>">
-                    <?= lang('MANAGE') ?>
+                    <?= L('MANAGE') ?>
                 </a>
             </button>
         </td>
