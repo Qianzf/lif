@@ -193,6 +193,9 @@ input:focus {
 .text-info {
     color: lightgrey;
 }
+.text-status {
+    color: #6f6f6f;
+}
 input:invalid {
   border: 1px solid darkred;
 }

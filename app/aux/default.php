@@ -218,8 +218,33 @@ if (! fe('prepare_task_status_data')) {
                     'assignable' => 'no',
                 ],
                 [
+                    'key' => 'waitting_fix_prod',
+                    'val' => '待解决：部署到正式环境出现问题',
+                    'assignable' => 'yes',
+                ],
+                [
+                    'key' => 'fixing_prod',
+                    'val' => '解决中：解决部署到正式环境不通过的问题',
+                    'assignable' => 'no',
+                ],
+                [
+                    'key' => 'waitting_update2prod',
+                    'val' => '待部署：开发人员申请重新部署到正式环境',
+                    'assignable' => 'yes',
+                ],
+                [
+                    'key' => 'online',
+                    'val' => '已上线：该任务已成功部署到正式环境',
+                    'assignable' => 'no',
+                ],
+                [
                     'key' => 'finished',
-                    'val' => '已上线：任务生命周期结束',
+                    'val' => '已验收：任务创建者已验收该任务，任务生命周期结束',
+                    'assignable' => 'no',
+                ],
+                [
+                    'key' => 'unacceptable',
+                    'val' => '已返工：任务创建者验收不通过',
                     'assignable' => 'no',
                 ],
             ]);

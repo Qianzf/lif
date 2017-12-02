@@ -200,7 +200,7 @@ style="display:none"><?= $this->escape($task->notes) ?></textarea>
     'model' => $task,
     'displayRefType'  => true,
     'displayRefState' => true,
-    'displayComments'  => true,
+    'displayComments' => true,
 ]) ?>
 <?= $this->section('lib/editormd') ?>
 <!-- <?= $this->section('comment') ?> -->
@@ -208,25 +208,18 @@ style="display:none"><?= $this->escape($task->notes) ?></textarea>
 <script type="text/javascript">
     editormd.markdownToHTML("task-acceptances", {
         markdown        : $('#task-acceptances-md').val(),
-        
         // 开启 HTML 标签解析，为了安全性，默认不开启
         // htmlDecode      : true,
         // you can filter tags decode
-        // htmlDecode      : "style,script,iframe",
-        
+        // htmlDecode      : "style,script,iframe",      
         // toc             : false,
         tocm            : true,    // Using [TOCM]
-
         // 自定义 ToC 容器层
         //tocContainer    : "#custom-toc-container",
-
         //gfm             : false,
-
         //tocDropdown     : true,
-        
         // 是否保留 Markdown 源码，即是否删除保存源码的 Textarea 标签
         markdownSourceCode : true,
-
         // emoji           : true,
         // taskList        : true,
         // tex             : true,  // 默认不解析

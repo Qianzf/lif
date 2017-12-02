@@ -89,7 +89,7 @@ class Trending extends Mdl
         }
 
         if ($displayRefState && ($status = trim($this->ref_state))) {
-            $html .= ' ( '.L("STATUS_{$status}").' )';
+            $html .= ' <sup><i class="text-status">( '.L("STATUS_{$status}").' )</sup></i>';
         }
 
         return $html;

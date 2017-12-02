@@ -7,7 +7,7 @@
             <small><?= L("{$object}_TRENDING") ?></small>
             <?php $sort = (isset($_GET['trending']) && in_array($_GET['trending'], [
                 'asc', 'desc',
-                ])) ? $_GET['trending'] : 'asc';
+                ])) ? $_GET['trending'] : 'desc';
             ?>
             <button
             onclick="resortTrending('<?= $sort ?>')"

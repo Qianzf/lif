@@ -12,6 +12,7 @@ trait TaskStatus
             'WAITTING_DEV',
             'WAITTING_FIX_TEST',
             'WAITTING_FIX_STAGE',
+            'WAITTING_FIX_PROD',
             'TEST_BACK2DEV',
             'STAGE_BACK2DEV',
         ];
@@ -22,6 +23,7 @@ trait TaskStatus
         return [
             'WAITTING_UPDATE2TEST',
             'WAITTING_UPDATE2STAGE',
+            'WAITTING_UPDATE2PROD',
             'WAITTING_DEP2TEST',
             'WAITTING_DEP2STAGE',
             'WAITTING_DEP2PROD',
@@ -40,6 +42,7 @@ trait TaskStatus
     public function getActionsOfRoleAdmin()
     {
         return [
+            'FINISHED',
         ];
     }
 
@@ -47,6 +50,7 @@ trait TaskStatus
     {
         return $query
         ->whereId($this->creator)
+        ->orRole('dev')
         ->get();
     }
 
@@ -65,6 +69,17 @@ trait TaskStatus
 
     }
 
+    public function getAssignableUsersWhenTesting2nd(Builder $query)
+    {
+        return $query
+        ->whereRole([
+            'dev',
+            'ops',
+            'test',
+        ])
+        ->get();
+    }
+
     public function getAssignableUsersWhenTesting1st(Builder $query)
     {
         return $query
@@ -76,11 +91,71 @@ trait TaskStatus
         ->get();
     }
 
+    public function getAssignableUsersWhenDeployingStage(Builder $query)
+    {
+        return $query
+        ->whereRole([
+            'dev',
+            'test',
+        ])
+        ->get();
+    }
+
     public function getAssignableUsersWhenDeployingTest(Builder $query)
     {
         return $query
         ->whereRole([
             'dev',
+            'test',
+        ])
+        ->get();
+    }
+
+    public function getAssignableUsersWhenFixingProd(Builder $query)
+    {
+        return $query
+        ->whereRole([
+            'ops',
+            'test',
+        ])
+        ->get();
+    }
+
+    public function getAssignableUsersWhenFixingStage(Builder $query)
+    {
+        return $query
+        ->whereRole([
+            'ops',
+            'test',
+        ])
+        ->get();
+    }
+
+    public function getAssignableUsersWhenFixingStageback(Builder $query)
+    {
+        return $query
+        ->whereRole([
+            'ops',
+            'test',
+        ])
+        ->get();
+    }
+
+    public function getAssignableUsersWhenFixingTestback(Builder $query)
+    {
+        return $query
+        ->whereRole([
+            'ops',
+            'test',
+        ])
+        ->get();
+    }
+
+    public function getAssignableUsersWhenFixingTest(Builder $query)
+    {
+        return $query
+        ->whereRole([
+            'ops',
             'test',
         ])
         ->get();
@@ -182,6 +257,18 @@ trait TaskStatus
         ->get();
     }
 
+    public function getAssignableUsersWhenOnline(Builder $query)
+    {
+
+    }
+
+    public function getAssignableUsersWhenFinished(Builder $query)
+    {
+        return $query
+        ->whereRole('dev')
+        ->get();
+    }
+    
     public function getAssignableUsersWhenActivated(Builder $query)
     {
         return $query
@@ -189,10 +276,66 @@ trait TaskStatus
         ->get();
     }
 
+    public function getAssignActionsWhenFixingStageback()
+    {
+        return [
+            'WAITTING_UPDATE2STAGE',
+            'WAITTING_2ND_TEST',
+        ];
+    }
+
+    public function getAssignActionsWhenFixingTestback()
+    {
+        return [
+            'WAITTING_UPDATE2TEST',
+            'WAITTING_1ST_TEST',
+        ];
+    }
+
+    public function getAssignActionsWhenFixingProd()
+    {
+        return [
+            'WAITTING_UPDATE2PROD',
+            'WAITTING_2ND_TEST',
+        ];
+    }
+
+    public function getAssignActionsWhenFixingStage()
+    {
+        return [
+            'WAITTING_UPDATE2STAGE',
+            'WAITTING_2ND_TEST',
+        ];
+    }
+
+    public function getAssignActionsWhenFixingTest()
+    {
+        return [
+            'WAITTING_UPDATE2TEST',
+            'WAITTING_1ST_TEST',
+        ];
+    }
+
+    public function getAssignActionsWhenDeployingStage()
+    {
+        return [
+            'WAITTING_FIX_STAGE',
+            'WAITTING_2ND_TEST',
+        ];
+    }
+
     public function getAssignActionsWhenDeployingProd()
     {
         return [
             'FINISHED',
+            'WAITTING_FIX_PROD',
+        ];
+    }
+
+    public function getAssignActionsWhenFinished()
+    {
+        return [
+            'UNACCEPTABLE',
         ];
     }
 
@@ -206,6 +349,22 @@ trait TaskStatus
 
     }
 
+    public function getAssignActionsWhenWaittingFixProd()
+    {
+        return [
+            'FIXING_PROD',
+            'WAITTING_2ND_TEST',
+        ];
+    }
+
+    public function getAssignActionsWhenWaittingFixStage()
+    {
+        return [
+            'WAITTING_UPDATE2STAGE',
+            'WAITTING_2ND_TEST',
+        ];
+    }
+
     public function getAssignActionsWhenWaittingFixTest()
     {
         return [
@@ -214,12 +373,21 @@ trait TaskStatus
         ];
     }
 
+    public function getAssignActionsWhenTesting2nd()
+    {
+        return [
+            'WAITTING_DEP2PROD',
+            'WAITTING_2ND_TEST',
+            'STAGE_BACK2DEV',
+        ];
+    }
+
     public function getAssignActionsWhenTesting1st()
     {
         return [
+            'WAITTING_DEP2STAGE',
             'WAITTING_1ST_TEST',
             'TEST_BACK2DEV',
-            'WAITTING_DEP2STAGE',
         ];
     }
 
@@ -231,6 +399,14 @@ trait TaskStatus
         ];
     }
     
+    public function getAssignActionsWhenWaittingUpdate2prod()
+    {
+        return [
+            'WAITTING_FIX_PROD',
+            'WAITTING_2ND_TEST',
+        ];
+    }
+
     public function getAssignActionsWhenWaittingUpdate2stage()
     {
         return [
@@ -254,6 +430,11 @@ trait TaskStatus
         ];
     }
 
+    public function getAssignActionsWhenWaittingDep2prod()
+    {
+        return [
+        ];
+    }
     public function getAssignActionsWhenWaittingDep2stage()
     {
         return [
@@ -317,17 +498,35 @@ trait TaskStatus
 
     public function confirmWhenAdmin() : string
     {
-        return '';
+        switch (strtolower($this->status)) {
+            case 'deploying_prod':
+            default:
+                $status = 'ONLINE';
+                break;
+        }
+
+        return $status;
     }
 
     public function confirmWhenTest() : string
     {
-        return 'TESTING_1ST';
+        switch (strtolower($this->status)) {
+            case 'waitting_2nd_test':
+                $status = 'TESTING_2ND';
+                break;
+            case 'waitting_1st_test':
+            default:
+                $status = 'TESTING_1ST';
+                break;
+        }
+
+        return $status;
     }
 
     public function confirmWhenOps() : string
     {
         switch (strtolower($this->status)) {
+            case 'waitting_update2prod':
             case 'waitting_dep2prod':
                 $status = 'DEPLOYING_PROD';
                 break;
@@ -347,6 +546,28 @@ trait TaskStatus
 
     public function confirmWhenDev() : string
     {
-        return 'DEVING';
+        switch (strtolower($this->status)) {
+            case 'waitting_fix_test':
+                $status = 'FIXING_TEST';
+                break;
+            case 'test_back2dev':
+                $status = 'FIXING_TESTBACK';
+                break;
+            case 'waitting_fix_stage':
+                $status = 'FIXING_STAGE';
+                break;
+            case 'stage_back2dev':
+                $status = 'FIXING_STAGEBACK';
+                break;
+            case 'waitting_fix_prod':
+                $status = 'FIXING_PROD';
+                break;
+            case 'waitting_dev':
+            default:
+                $status = 'DEVING';
+                break;
+        }
+
+        return $status;
     }
 }
