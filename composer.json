@@ -6,7 +6,8 @@
     "type": "project",
     "require": {
         "php": "^7.0",
-        "swiftmailer/swiftmailer": "^6.0"
+        "swiftmailer/swiftmailer": "^6.0",
+        "qiniu/php-sdk": "^7.2"
     },
     "autoload": {
         "psr-4": {

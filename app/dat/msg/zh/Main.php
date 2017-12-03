@@ -258,4 +258,11 @@ return [
     'MISSING_OR_EMPTY_ASSIGN_TO' => '未选择指派对象',
     'REASON' => '原因',
     'OPTIONAL' => '可选',
+    'TOOL' => '工具',
+    'FILE' => '文件',
+    'UPLOAD' => '上传',
+    'SAVE' => '保存',
+    'SAVE_UPLOAD' => '保存上传结果到服务器',
+    'FILENAME' => '文件名称',
+    'MY' => '我的',
 ];

@@ -204,4 +204,11 @@ return [
     'ACTIVATE' => 'Activate',
     'REASON' => 'Reason',
     'OPTIONAL' => 'Optional',
+    'TOOL' => 'Tool',
+    'FILE' => 'File',
+    'UPLOAD' => 'Upload',
+    'SAVE' => 'Save',
+    'SAVE_UPLOAD' => 'Save upload result to server',
+    'FILENAME' => 'Filename',
+    'MY' => 'My',
 ];

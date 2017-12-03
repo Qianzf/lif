@@ -198,6 +198,17 @@ style="display:none"><?= $this->escape($task->notes) ?></textarea>
 </p>
 <?php endif ?>
 
+<?php if ($task->env): ?>
+<p>
+    <span class="stub-2"></span>
+    <span class="text-info">[</span>
+    <small><?= L('TASK_ENV') ?></small>
+    <span class="text-info">]</span>
+
+    <code><?= $task->env ?></code>
+</p>
+<?php endif ?>
+
 <p>
     <span class="stub-2"></span>
     <span class="text-info">[</span>
