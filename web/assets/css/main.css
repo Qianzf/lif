@@ -125,11 +125,17 @@ input:focus {
 .btn-alert {
     background-color: cornflowerblue;
 }
+.btn-danger {
+    background-color: indianred;
+}
 .btn-emergency {
     background-color: crimson;
 }
 .btn-todo {
     background-color: coral;
+}
+.btn-tool {
+    background-color: darkcyan;
 }
 .btn-story {
     background-color: violet;
@@ -165,7 +171,8 @@ input:focus {
 .btn-info a,
 .btn-edit a,
 .btn-delete a,
-.btn-todo a {
+.btn-todo a,
+.btn-tool a {
     color: gainsboro;
 }
 .list dd,
@@ -192,6 +199,9 @@ input:focus {
 }
 .text-info {
     color: lightgrey;
+}
+.text-ok {
+    color: lightgreen;
 }
 .text-status {
     color: #6f6f6f;
@@ -258,4 +268,9 @@ input:invalid {
     overflow: auto;
     padding: 10px 0 0 20px;
     margin: 0;
+}
+.upload-res {
+    display: block;
+    width: 80%;
+    height: 16px;
 }

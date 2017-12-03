@@ -31,9 +31,14 @@ class CreateTaskTable extends Dit
             ->comment('Task status => `task_status`.`key`');
 
             $table
-            ->string('branch')
+            ->string('branch', 64)
             ->nullable()
             ->comment('Task related code branch in vcs');
+
+            $table
+            ->string('env', 64)
+            ->nullable()
+            ->comment('Deployed enviornment of current task');
 
             $table
             ->char('manually', 8)

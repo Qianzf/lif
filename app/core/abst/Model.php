@@ -201,13 +201,13 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
     // - null   => nothing happend
     public function save(array $data = [], array $rules = [])
     {
-        if ($rules = ($rules ?: ($this->rules ?: []))) {
-            if (true !== ($err = validate($data, $rules))) {
-                return $err;
-            }
-        }
-
         if ($data = ($data ? $data : $this->items)) {
+            if ($rules = ($rules ?: ($this->rules ?: []))) {
+                if (true !== ($err = validate($data, $rules))) {
+                    return $err;
+                }
+            }
+            
             unset($data[$this->pk()]);    // Protected primary key
 
             $status = $this->alive
@@ -231,6 +231,8 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
 
             return $status;
         }
+
+        return true;
     }
 
     // Empty model items

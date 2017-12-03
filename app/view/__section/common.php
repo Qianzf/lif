@@ -15,11 +15,15 @@
         <a href="/dep/bugs"><?= L('BUG') ?></a>
     </button>
 
-    <button class="btn-doc">
+    <!-- <button class="btn-doc">
         <a href="/dep/docs"><?= L('DOCUMENTATION') ?></a>
-    </button>
+    </button> -->
 
     <button class="btn-trending">
         <a href="/dep/trending"><?= L('TRENDING') ?></a>
+    </button>
+
+    <button class="btn-tool">
+        <a href="/dep/tool"><?= L('TOOL') ?></a>
     </button>
 </h4>

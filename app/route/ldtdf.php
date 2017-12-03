@@ -19,6 +19,26 @@ $this->group([
     $this->get('todo', 'User@todo');
 
     $this->group([
+        'prefix' => 'tool',
+    ], function () {
+        $this->get('/', 'Tool@index');
+
+        $this->group([
+            'prefix' => 'uploads',
+            'ctl' => 'Upload',
+        ], function () {
+            $this->get('/', 'list');
+            $this->get('new', 'upload');
+            $this->post('new', 'add');
+            $this->get('{id}', 'edit');
+            $this->post('{id}', 'update');
+            $this->get('uptoken', [
+                'middleware' => 'auth.qiniu',
+            ], 'uptoken');
+        });
+    });
+
+    $this->group([
         'prefix' => 'users',
     ], function () {
         $this->get('login', 'Passport@login')->cancel('auth.web');

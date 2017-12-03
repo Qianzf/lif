@@ -134,9 +134,9 @@ class ConcreteColumn implements SQLSchemaWorker
         $this->exitIfUnGrammerable();
 
         $prefix  = $this->alter ? strtoupper($this->alter).' ' : '';
-        $prefix .= $this->old ? "`{$this->old}` " : '';
-        $prefix .= "`{$this->name}` ";
-        $prefix .= "{$this->type}";
+        $prefix .= $this->old ? " `{$this->old}` " : '';
+        $prefix .= " `{$this->name}` ";
+        $prefix .= " {$this->type}";
 
         return $prefix;
     }
@@ -159,13 +159,13 @@ class ConcreteColumn implements SQLSchemaWorker
     private function getComment()
     {
         return $this->comment
-        ? ('COMMENT '.(ldo()->quote($this->comment))) : '';
+        ? (' COMMENT '.(ldo()->quote($this->comment))) : '';
     }
 
     private function getFormat()
     {
         return $this->format
-        ? ('COLUMN_FORMAT '.(ldo()->quote($this->format))) : '';
+        ? (' COLUMN_FORMAT '.(ldo()->quote($this->format))) : '';
     }
 
     private function getStorage()

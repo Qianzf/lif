@@ -765,8 +765,10 @@ if (! fe('conf')) {
     }
 }
 if (! fe('config')) {
-    function config(string $key) {
-        return array_query_by_coherent_keys(conf_all(), $key);
+    function config(string $key, $default = null) {
+        $value = array_query_by_coherent_keys(conf_all(), $key);
+
+        return $value ?? $default;
     }
 }
 if (! fe('singleton')) {
