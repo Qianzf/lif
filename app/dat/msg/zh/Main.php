@@ -240,6 +240,7 @@ return [
     'ASSIGN_WAITTING_UPDATE2STAGE' => '重新部署到预发布环境',
     'ASSIGN_WAITTING_UPDATE2PROD' => '重新部署到正式环境',
     'ASSIGN_WAITTING_FIX_PROD' => '待解决：部署到正式环境出现问题',
+    'ASSIGN_FIXING_PROD' => '待解决：部署到正式环境出现问题',
     'ASSIGN_ONLINE' => '已上线',
     'ASSIGN_FINISHED' => '已上线',
     'ASSIGN_UNACCEPTABLE' => '本次验收不通过，请按需求完善',

@@ -203,6 +203,7 @@ class Task extends Mdl
         if ($user = $user ?? (share('user.id') ?? null)) {
             $status = in_array(strtolower($this->status), [
                 'online',
+                'finished',
                 'canceled',
             ]);
 
@@ -237,7 +238,9 @@ class Task extends Mdl
             if ('finished' == $status) {
                 return false;
             }
-            if (! in_array($status, $this->getStatusList('no'))) {
+            if (('online' == $status)
+                || !in_array($status, $this->getStatusList('no'))
+            ) {
                 return ($user == $this->current);
             }
 

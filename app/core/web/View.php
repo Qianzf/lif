@@ -235,7 +235,7 @@ class View
         $this->outputed = true;
     }
 
-    public function escape(string $text) : string
+    public function escape(string $text = null) : string
     {
         return htmlspecialchars($text);
     }

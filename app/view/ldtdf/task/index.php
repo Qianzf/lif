@@ -32,16 +32,8 @@
     <?php foreach ($tasks as $task) : ?>
     <tr>
         <td><?= $task->id ?></td>
-        <td>
-            <a href="/dep/stories/<?= $task->story()->id?>">
-                <?= $task->story()->title ?>
-            </a>
-        </td>
-        <td>
-            <a href="/dep/projects/<?= $task->project()->id ?>">
-                <?= $task->project()->name ?>
-            </a>
-        </td>
+        <td><?= $task->story()->title ?></td>
+        <td><?= $task->project()->name ?></td>
         <td><?= $task->creator()->name ?></td>
         <td><?= $task->create_at ?></td>
         <td><?= L("STATUS_{$task->status}") ?></td>

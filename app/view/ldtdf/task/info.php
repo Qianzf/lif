@@ -28,11 +28,10 @@
     <?php endif ?>
     <?php if (isset($assignable) && $assignable): ?>
         <?php $dependency = in_array(strtoupper($task->status), [
-            'DEVING',
-            'WAITTING_DEV',
-            'WAITTING_FIX_TEST',
-        ])
-            ? '-with-dependencies' : '';
+                'DEVING',
+                'WAITTING_DEV',
+                'WAITTING_FIX_TEST',
+            ]) ? '-with-dependencies' : '';
         ?>
         <?= $this->section("assign-form{$dependency}", [
             'model'  => $task,
@@ -186,6 +185,17 @@ style="display:none"><?= $this->escape($story->extra) ?></textarea>
 <textarea
 id="task-notes-md"
 style="display:none"><?= $this->escape($task->notes) ?></textarea>
+<?php endif ?>
+
+<?php if (trim($this->escape($task->branch))): ?>
+<p>
+    <span class="stub-2"></span>
+    <span class="text-info">[</span>
+    <small><?= L('TASK_BRANCH') ?></small>
+    <span class="text-info">]</span>
+
+    <code><?= $task->branch ?></code>
+</p>
 <?php endif ?>
 
 <p>
