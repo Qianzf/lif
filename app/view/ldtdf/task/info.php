@@ -11,27 +11,6 @@
 
     <em><?= $story->title ?></em>
 
-    <?php if (isset($activeable) && $activeable): ?>
-    <form
-    method="POST"
-    action="/dep/tasks/<?= $task->id ?>/activate"
-    class="inline" id="activate-task-form">
-        <?= csrf_feild() ?>
-        <input
-        onclick="activateTaskConfirm()"
-        type="button"
-        class="text-todo"
-        value="<?= L('ACTIVATE_TASK') ?>">
-    </form>
-    <script type="text/javascript">
-        function activateTaskConfirm() {
-            if (confirm("<?= L('SURE') ?> ?")) {
-                $('#activate-task-form').submit()
-            }
-        }
-    </script>
-    <?php endif ?>
-
     <?php if (isset($editable) && $editable): ?>
     <button>
         <a href="/dep/tasks/<?= $task->id ?>/edit"><?= L('EDIT') ?></a>
@@ -65,6 +44,33 @@
         ]) ?>
     <?php endif ?>
 
+    <?php if (isset($activeable) && $activeable): ?>
+    <form
+    method="POST"
+    action="/dep/tasks/<?= $task->id ?>/activate"
+    class="inline" id="activate-task-form">
+        <?= csrf_feild() ?>
+        <input
+        onclick="activateTaskConfirm()"
+        type="button"
+        class="text-todo"
+        value="<?= L('ACTIVATE_TASK') ?>">
+        <input type="hidden" name="activate_reason">
+    </form>
+    <script type="text/javascript">
+        function activateTaskConfirm() {
+            let reason = prompt(
+                "<?= L('INPUT_ACTIVATE_REASON'), ' (', L('OPTIONAL'), ')' ?>"
+            )
+
+            if (reason !== null) {
+                $('input[name="activate_reason"]').val(reason)
+                $('#activate-task-form').submit()
+            }
+        }
+    </script>
+    <?php endif ?>
+
     <?php if (isset($cancelable) && $cancelable): ?>
     <form
     method="POST"
@@ -76,10 +82,16 @@
         type="button"
         class="text-danger"
         value="<?= L('CANCEL_TASK') ?>">
+        <input type="hidden" name="cancel_reason">
     </form>
     <script type="text/javascript">
         function cancelTaskConfirm() {
-            if (confirm("<?= L('SURE') ?> ?")) {
+            let reason = prompt(
+                "<?= L('INPUT_CANCEL_REASON'), ' (', L('OPTIONAL'), ')' ?>"
+            )
+
+            if (reason !== null) {
+                $('input[name="cancel_reason"]').val(reason)
                 $('#cancel-task-form').submit()
             }
         }

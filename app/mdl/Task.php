@@ -174,6 +174,10 @@ class Task extends Mdl
             if ($status = $this->$confirmHandler()) {
                 $this->status = $status;
 
+                if ($status == 'FINISHED') {
+                    $this->current = 0;
+                }
+
                 return ($this->save() >= 0);
             }
 
@@ -196,22 +200,26 @@ class Task extends Mdl
 
     public function canBeActivatedBy(int $user = null)
     {
-        return $this->canBeCanceledBy($user, ('canceled' == $this->status));
+        if ($user = $user ?? (share('user.id') ?? null)) {
+            $status = in_array(strtolower($this->status), [
+                'online',
+                'canceled',
+            ]);
+
+            return (($this->creator()->id == $user) && $status);
+        }
+
+        return false;
     }
 
-    public function canBeCanceledBy(
-        int $user = null,
-        bool $status = null
-    )
+    public function canBeCanceledBy(int $user = null)
     {
         if ($user = $user ?? (share('user.id') ?? null)) {
-            if (is_null($status)) {
-                $status = !in_array(strtolower($this->status), [
-                    'canceled',
-                    'finished',
-                    'online',
-                ]);
-            }
+            $status = !in_array(strtolower($this->status), [
+                'canceled',
+                'finished',
+                'online',
+            ]);
 
             return (($this->creator()->id == $user) && $status);
         }
@@ -222,18 +230,18 @@ class Task extends Mdl
     public function canBeConfirmedBY(int $user = null)
     {
         if ($user = $user ?? (share('user.id') ?? null)) {
-            if (strtolower($this->status) == 'activated') {
+            $status = strtolower($this->status);
+            if ($status == 'activated') {
                 return (strtolower($this->current()->role) == 'dev');
             }
-
-            if (in_array(
-                strtolower($this->status),
-                $this->getStatusList('no')
-            )) {
+            if ('finished' == $status) {
                 return false;
             }
+            if (! in_array($status, $this->getStatusList('no'))) {
+                return ($user == $this->current);
+            }
 
-            return ($user == $this->current);
+            return false;
         }
 
         excp('Missing user id.');
@@ -242,6 +250,14 @@ class Task extends Mdl
     public function canBeAssignedBy(int $user = null)
     {
         if ($user = $user ?? (share('user.id') ?? null)) {
+
+            if (in_array(strtolower($this->status), [
+                'online',
+                'finished',
+            ])) {
+                return false;
+            }
+
             return ($user == $this->current);
         }
 

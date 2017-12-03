@@ -38,20 +38,28 @@ class Task extends Ctl
 
     public function activate(TaskModel $task)
     {
-        return $this->updateStatus('ACTIVATE', $task, function () use ($task) {
-            $task->current = share('user.id');
-
-            return ($task->save() >= 0);
-        });
+        return $this->updateStatus(
+            'ACTIVATE', 
+            $task,
+            $this->request->get('activate_reason'),
+            function () use ($task) {
+                $task->current = share('user.id');
+                return ($task->save() >= 0);
+            }
+        );
     }
 
     public function cancel(TaskModel $task)
     {
-        return $this->updateStatus('CANCEL', $task, function () use ($task) {
-            $task->branch = $task->current = null;
-
-            return ($task->save() >= 0);
-        });
+        return $this->updateStatus(
+            'CANCEL',
+            $task,
+            $this->request->get('cancel_reason'),
+            function () use ($task) {
+                $task->branch = $task->current = null;
+                return ($task->save() >= 0);
+            }
+        );
     }
 
     public function confirm(TaskModel $task)
@@ -62,6 +70,7 @@ class Task extends Ctl
     private function updateStatus(
         string $action,
         TaskModel $task,
+        string $notes = null,
         \Closure $callback = null
     )
     {
@@ -70,7 +79,7 @@ class Task extends Ctl
         if (call_user_func([$task, strtolower($action)], share('user.id'))) {
             $msg = "{$action}_OK";
 
-            $task->addTrending($action);
+            $task->addTrending($action, null, $notes);
 
             if ($callback) {
                 $callback();

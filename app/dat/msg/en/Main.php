@@ -202,4 +202,6 @@ return [
     'CANNT_ASSIGN_ACTION2ROLE' => 'Can not assign action to role',
     'SURE' => 'Sure',
     'ACTIVATE' => 'Activate',
+    'REASON' => 'Reason',
+    'OPTIONAL' => 'Optional',
 ];

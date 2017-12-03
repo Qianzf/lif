@@ -42,6 +42,7 @@ trait TaskStatus
     public function getActionsOfRoleAdmin()
     {
         return [
+            'ONLINE',
             'FINISHED',
         ];
     }
@@ -62,11 +63,6 @@ trait TaskStatus
             'test',
         ])
         ->get();
-    }
-
-    public function getAssignableUsersWhenWaittingOnline(Builder $query)
-    {
-
     }
 
     public function getAssignableUsersWhenTesting2nd(Builder $query)
@@ -200,6 +196,17 @@ trait TaskStatus
         ->get();
     }
 
+    public function getAssignableUsersWhenWaittingDep2prod(Builder $query)
+    {
+        return $query
+        ->whereId($this->creator)
+        ->orRole([
+            'dev',
+            'test',
+        ])
+        ->get();
+    }
+
     public function getAssignableUsersWhenWaittingDep2stage(Builder $query)
     {
         return $query
@@ -268,7 +275,7 @@ trait TaskStatus
         ->whereRole('dev')
         ->get();
     }
-    
+
     public function getAssignableUsersWhenActivated(Builder $query)
     {
         return $query
@@ -327,7 +334,7 @@ trait TaskStatus
     public function getAssignActionsWhenDeployingProd()
     {
         return [
-            'FINISHED',
+            'ONLINE',
             'WAITTING_FIX_PROD',
         ];
     }
@@ -344,7 +351,7 @@ trait TaskStatus
 
     }
     
-    public function getAssignActionsWhenWaittingOnline()
+    public function getAssignActionsWhenOnline()
     {
 
     }
@@ -425,16 +432,20 @@ trait TaskStatus
     public function getAssignActionsWhenWaitting2ndTest()
     {
         return [
-            'STAGE_BACK2DEV',
             'WAITTING_DEP2PROD',
+            'STAGE_BACK2DEV',
+            'WAITTING_2ND_TEST',
         ];
     }
 
     public function getAssignActionsWhenWaittingDep2prod()
     {
         return [
+            'ONLINE',
+            'WAITTING_FIX_PROD',
         ];
     }
+
     public function getAssignActionsWhenWaittingDep2stage()
     {
         return [
@@ -499,6 +510,9 @@ trait TaskStatus
     public function confirmWhenAdmin() : string
     {
         switch (strtolower($this->status)) {
+            case 'online':
+                $status = 'FINISHED';
+                break;
             case 'deploying_prod':
             default:
                 $status = 'ONLINE';
