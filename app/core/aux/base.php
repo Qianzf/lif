@@ -427,8 +427,8 @@ if (! fe('exception')) {
             'msg' => $exObj->getMessage(),
             'err' => $exObj->getCode(),
         ];
-        $_info['trace'] = $exObj->getTrace();
-        // $_info['trace'] = explode("\n", $exObj->getTraceAsString());
+        // $_info['trace'] = $exObj->getTrace();
+        $_info['trace'] = explode("\n", $exObj->getTraceAsString());
 
         // !!! Make sure check app conf path first
         // !!! Or infinite loop will occur when app conf file not exists

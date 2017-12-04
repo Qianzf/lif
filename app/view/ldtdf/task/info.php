@@ -9,7 +9,7 @@
         T<?= $task->id ?>
     </code></small>
 
-    <em><?= $story->title ?></em>
+    <em><?= $origin->title ?></em>
 
     <?php if (isset($editable) && $editable): ?>
     <button>
@@ -103,9 +103,17 @@
     <span class="text-info">[</span>
     <small><?= L('TASK_STATUS') ?></small>
     <span class="text-info">]</span>
-    <?php if ($task->status) : ?>
     <button class="btn-info"><?= L("STATUS_{$task->status}") ?></button>
-    <?php endif ?>
+</p>
+
+<p>
+    <span class="stub-2"></span>
+    <span class="text-info">[</span>
+    <small><?= L('TASK_ORIGIN') ?></small>
+    <span class="text-info">]</span>
+    <small class="text-task"><em>
+        <?= L($task->origin_type) ?>
+    </em></small>
 </p>
 
 <p>
@@ -120,81 +128,37 @@
     </i>
 </p>
 
-<p>
-    <span class="stub-2"></span>
-    <span class="text-info">[</span>
-    <small><?= L('RELATED_STORY') ?></small>
-    <span class="text-info">]</span>
+<?= $this->section("ldtdf/task/{$task->origin_type}", [], true) ?>
 
-    <i>
-        <a href="/dep/stories/<?= $story->id ?>">
-            S<?= $story->id ?>:
-            <?= $story->title ?>
-        </a>
-    </i>
-</p>
-
-<p>
-    <span class="stub-2"></span>
-    <span class="text-info">[</span>
-    <small><?= L('TASK_DETAILS') ?></small>
-    <span class="text-info">]</span>
-</p>
-
-<blockquote><em>
-    <p>
-        <?= L('STORY_WHO') ?>
-        <span><?= $story->role ?></span>
-    </p>
-    <p>
-        <?= L('STORY_WHAT') ?>
-        <span><?= $story->activity ?></span>
-    </p>
-    <p>
-        <?= L('STORY_FOR') ?>
-        <span><?= $story->value ?></span>
-    </p>
-</em></blockquote>
-
-<div id="task-acceptances">
-    <span class="text-info">[</span>
-    <b><?= L('STORY_AC') ?></b>
-    <span class="text-info">]</span>
-</div>
-<textarea
-id="task-acceptances-md"
-style="display:none"><?= $this->escape($story->acceptances) ?></textarea>
-
-<?php if (trim($story->extras)): ?>
-<div id="task-others">
-    <span class="text-info">[</span>
-    <b><?= L('STORY_NOTES') ?></b>
-    <span class="text-info">]</span>
-</div>
-<textarea
-id="task-others-md"
-style="display:none"><?= $this->escape($story->extra) ?></textarea>
-<?php endif ?>
-
-<?php if (trim($task->notes)): ?>
 <div id="task-notes">
+    <span class="stub-2"></span>
     <span class="text-info">[</span>
-    <b><?= L('TASK_NOTES') ?></b>
+    <small><?= L('TASK_NOTES') ?></small>
     <span class="text-info">]</span>
 </div>
 <textarea
 id="task-notes-md"
 style="display:none"><?= $this->escape($task->notes) ?></textarea>
-<?php endif ?>
 
-<?php if (trim($this->escape($task->branch))): ?>
+<?php if ($task->branch = trim($task->branch)): ?>
 <p>
     <span class="stub-2"></span>
     <span class="text-info">[</span>
     <small><?= L('TASK_BRANCH') ?></small>
     <span class="text-info">]</span>
 
-    <code><?= $task->branch ?></code>
+    <code><?= $this->escape($task->branch) ?></code>
+</p>
+<?php endif ?>
+
+<?php if ($task->deploy = trim($task->deploy)): ?>
+<p>
+    <span class="stub-2"></span>
+    <span class="text-info">[</span>
+    <small><?= L('MANUALLY_DEPLOY') ?></small>
+    <span class="text-info">]</span>
+
+    <blockquote><?= $this->escape($task->deploy) ?></blockquote>
 </p>
 <?php endif ?>
 
@@ -231,46 +195,8 @@ style="display:none"><?= $this->escape($task->notes) ?></textarea>
 
 <?= $this->section('trendings-with-sort', [
     'model' => $task,
-    'displayRefType'  => true,
-    'displayRefState' => true,
-    'displayComments' => true,
+    'object' => 'TASK',
+    'displayRefType' => false,
 ]) ?>
-<?= $this->section('lib/editormd') ?>
+
 <!-- <?= $this->section('comment') ?> -->
-
-<script type="text/javascript">
-    editormd.markdownToHTML("task-acceptances", {
-        markdown        : $('#task-acceptances-md').val(),
-        // 开启 HTML 标签解析，为了安全性，默认不开启
-        // htmlDecode      : true,
-        // you can filter tags decode
-        // htmlDecode      : "style,script,iframe",      
-        // toc             : false,
-        tocm            : true,    // Using [TOCM]
-        // 自定义 ToC 容器层
-        //tocContainer    : "#custom-toc-container",
-        //gfm             : false,
-        //tocDropdown     : true,
-        // 是否保留 Markdown 源码，即是否删除保存源码的 Textarea 标签
-        markdownSourceCode : true,
-        // emoji           : true,
-        // taskList        : true,
-        // tex             : true,  // 默认不解析
-        // flowChart       : true,  // 默认不解析
-        // sequenceDiagram : true,  // 默认不解析
-    })
-
-    editormd.markdownToHTML("task-others", {
-        markdown : $('#task-others-md').val(),
-        // htmlDecode : "style,script,iframe",
-        tocm : true,
-        markdownSourceCode : true
-    });
-
-    editormd.markdownToHTML("task-notes", {
-        markdown : $('#task-notes-md').val(),
-        // htmlDecode : "style,script,iframe",
-        tocm : true,
-        markdownSourceCode : true
-    });
-</script>

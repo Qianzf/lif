@@ -8,17 +8,17 @@
 <form method="POST">
     <?= csrf_feild() ?>
     <label>
-        <?= L('TITLE') ?>
+        <span class="label-title"><?= L('TITLE') ?></span>
         <input type="text" name="name" value="<?= $env->name ?>" required>
     </label>
 
     <label>
-        <?= L('HOST_ADDR') ?>
+        <span class="label-title"><?= L('HOST_ADDR') ?></span>
         <input type="text" name="host" value="<?= $env->host ?>" required>
     </label>
 
     <label>
-        <?= L('PATH') ?>
+        <span class="label-title"><?= L('PATH') ?></span>
         <input
         type="text"
         name="path"
@@ -28,7 +28,7 @@
     </label>
 
     <label>
-        <?= L('ENV_TYPE') ?>
+        <span class="label-title"><?= L('ENV_TYPE') ?></span>
         <select name="type" required>
             <?php if (($types = share('env-types')) && iteratable($types)) { ?>
             <?php foreach ($types as $type) { ?>
@@ -45,7 +45,7 @@
     </label>
 
     <label>
-        <?= L('RELATED_PROJECT') ?>
+        <span class="label-title"><?= L('RELATED_PROJECT') ?></span>
         <select name="project" required>
             <option>--<?= L('PLEASE_SELECT_PROJECT') ?>--</option>
             <?php if (isset($projects) && iteratable($projects)) { ?>
@@ -64,7 +64,7 @@
     </label>
 
     <label>
-        <?= L('RELATED_SERVER') ?>
+        <span class="label-title"><?= L('RELATED_SERVER') ?></span>
         <select name="server" required>
             <option>--<?= L('PLEASE_SELECT_SERVER') ?>--</option>
             <?php if (isset($servers) && iteratable($servers)) { ?>
@@ -83,7 +83,7 @@
     </label>
 
     <label>
-        <?= L('STATUS') ?>
+        <span class="label-title"><?= L('STATUS') ?></span>
         <select name="status" required>
             <?php if (($stat = share('env-status')) && iteratable($stat)) { ?>
             <?php foreach ($stat as $status) { ?>

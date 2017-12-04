@@ -63,7 +63,7 @@ class Trending extends Mdl
     {
         $html = L($this->action);
 
-        if (! $displayRefType) {
+        if ($displayRefType) {
             $html .= L($this->ref_type);
             $event = $this->makeEvent();
             $data  = false;
@@ -80,16 +80,18 @@ class Trending extends Mdl
                 $title = $data['title'] ?? null;
             }
 
-            $html .= $data ? "<i><a href='{$route}'>{$title}</a></i>" : '';
+            $html .= $data ? ": <i><a href='{$route}'>{$title}</a></i> " : '';
         }
 
         if ($this->target && ($target = model(User::class, $this->target))) {
             $html .= L('TO').L("ROLE_{$target->role}");
-            $html .= "<i><a href='/dep/users/{$target->id}'>{$target->name}</a></i>";
+            $html .= " <i><a href='/dep/users/{$target->id}'>{$target->name}</a></i>";
         }
 
         if ($displayRefState && ($status = trim($this->ref_state))) {
-            $html .= ' <sup><i class="text-status">( '.L("STATUS_{$status}").' )</sup></i>';
+            $html .= ' <sup><i class="text-status">( '
+            .L("STATUS_{$status}")
+            .' )</sup></i>';
         }
 
         return $html;

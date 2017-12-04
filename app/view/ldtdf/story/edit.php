@@ -1,10 +1,7 @@
 <?= $this->layout('main') ?>
-<?= $this->title([L('BUG_LIST'), L('LDTDFMS')]) ?>
-
 <?= $this->section('back2list', [
     'model'  => $story,
     'key'    => 'STORY',
-    'action' => ($editable ? null : 'VIEW'),
     'route'  => '/dep/stories',
 ]) ?>
 
@@ -13,15 +10,6 @@
 
 <form method="POST" action="/dep/stories/<?= $sid ?>">
     <?= csrf_feild() ?>
-
-    <?php if ($story->status) : ?>
-    <label>
-        <span class="label-title">
-            <?= L('STORY_STATUS') ?>
-        </span>
-        <code><?= L("STORY_{$story->status}") ?></code>
-    </label>
-    <?php endif ?>
 
     <label>
         <span class="label-title"><?= L('TITLE') ?></span>
@@ -61,29 +49,23 @@
 
     <label>
         <span class="label-title"><?= L('STORY_AC') ?></span>
-        <div
-        id="story-acceptances"
-        class="editormd editormd-vertical">
-            <textarea
-            class="editormd-markdown-textarea"
-            placeholder="<?= L('STORY_AC') ?>"
-            name="acceptances"><?= $story->acceptances ?></textarea>
-        </div>
+        <textarea
+        placeholder="<?= L('STORY_AC_STUB') ?>"
+        name="acceptances"><?= $story->acceptances ?></textarea>
     </label>
 
     <label>
-        <span class="label-title"><?= L('OTHER_NOTES') ?></span>
+        <span class="label-title"><?= L('REMARKS') ?></span>
         <div
         id="story-others"
         class="editormd editormd-vertical">
             <textarea
             class="editormd-markdown-textarea"
-            placeholder="<?= L('OTHERS') ?>"
             name="extra"><?= $story->extra ?></textarea>
         </div>
     </label>
 
-    <?php if ($editable) : ?>
+    <?php if ($editable ?? false) : ?>
     <?= $this->section('submit', [
         'model' => $story
     ]) ?>
@@ -95,16 +77,7 @@
     var EditorMDObjects = [
     {
         id : 'story-others',
-        placeholder : "<?=
-            L('OTHER_NOTES'),
-            ' / ',
-            L('ATTACHMENT'),
-            L('ETC')
-        ?>"
-    },
-    {
-        id : 'story-acceptances',
-        placeholder : "<?= L('STORY_AC') ?>"
+        placeholder : "<?= L('NOTES'), ' / ', L('ATTACHMENT_ETC') ?>"
     }
     ]
     $(function() {

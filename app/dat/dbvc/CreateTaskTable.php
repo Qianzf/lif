@@ -12,14 +12,19 @@ class CreateTaskTable extends Dit
             $table->pk('id');
 
             $table
+            ->char('origin_type', 8)
+            ->default('story')
+            ->comment('Task origin type: story/bug');
+
+            $table
+            ->int('origin_id')
+            ->unsigned()
+            ->comment('Task origin id');
+
+            $table
             ->int('creator')
             ->unsigned()
             ->comment('User who created this task => `user`.`id`');
-
-            $table
-            ->int('story')
-            ->unsigned()
-            ->comment('User story ID this task relate to => `story`.`id`');
 
             $table
             ->int('project')
@@ -27,8 +32,19 @@ class CreateTaskTable extends Dit
             ->comment('Project ID this task relate to => `project`.`id`');
 
             $table
+            ->text('notes')
+            ->nullable()
+            ->comment('Notes of this task creation');
+
+            $table
             ->string('status')
             ->comment('Task status => `task_status`.`key`');
+
+            $table
+            ->int('current')
+            ->unsigned()
+            ->nullable()
+            ->comment('Current realted user of this task => `user`.`id`');
 
             $table
             ->string('branch', 64)
@@ -46,15 +62,9 @@ class CreateTaskTable extends Dit
             ->comment('Whether task deployment needs manually help: yes/no');
 
             $table
-            ->int('current')
-            ->unsigned()
+            ->text('deploy')
             ->nullable()
-            ->comment('Current realted user of this task => `user`.`id`');
-
-            $table
-            ->text('notes')
-            ->nullable()
-            ->comment('Notes of this task');
+            ->comment('Notes of this task deployment, when `manually`=yes');
 
             $table
             ->datetime('create_at')

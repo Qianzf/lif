@@ -21,7 +21,8 @@
 
     <tr>
         <th><?= L('ID') ?></th>
-        <th><?= L('STORY') ?></th>
+        <th><?= L('ORIGIN') ?></th>
+        <th><?= L('TITLE') ?></th>
         <th><?= L('PROJECT') ?></th>
         <th><?= L('CREATOR') ?></th>
         <th><?= L('TIME') ?></th>
@@ -32,11 +33,18 @@
     <?php foreach ($tasks as $task) : ?>
     <tr>
         <td><?= $task->id ?></td>
-        <td><?= $task->story()->title ?></td>
+        <td class="text-task"><small><em>
+            <?= L($task->origin_type) ?>
+        </em></small></td>
+        <td><?= $task->origin()->title ?></td>
         <td><?= $task->project()->name ?></td>
         <td><?= $task->creator()->name ?></td>
         <td><?= $task->create_at ?></td>
-        <td><?= L("STATUS_{$task->status}") ?></td>
+        <td>
+            <button class="btn-info">
+                <?= L("STATUS_{$task->status}") ?>
+            </button>
+        </td>
         <td>
             <button>
                 <a href="tasks/<?= $task->id ?>"><?= L('DETAILS') ?></a>

@@ -8,27 +8,27 @@
 <form method="POST">
     <?= csrf_feild() ?>
     <label>
-        <?= L('TITLE') ?>
+        <span class="label-title"><?= L('TITLE') ?></span>
         <input type="text" name="name" value="<?= $server->name ?>" required>
     </label>
 
     <label>
-        <?= L('HOST_ADDR') ?>
+        <span class="label-title"><?= L('HOST_ADDR') ?></span>
         <input type="text" name="host" value="<?= $server->host ?>" required>
     </label>
 
     <label>
-        <?= L('PORT') ?>
+        <span class="label-title"><?= L('PORT') ?></span>
         <input type="number" name="port" value="<?= $server->port ?>" required>
     </label>
 
     <label>
-        <?= L('USER') ?>
+        <span class="label-title"><?= L('USER') ?></span>
         <input type="text" name="user" value="<?= $server->user ?>" required>
     </label>
 
     <label>
-        <?= L('PUBLIC_KEY') ?>
+        <span class="label-title"><?= L('PUBLIC_KEY') ?></span>
         <input
         type="text"
         name="pubk"
@@ -37,7 +37,7 @@
     </label>
 
     <label>
-        <?= L('PRIVATE_KEY') ?>
+        <span class="label-title"><?= L('PRIVATE_KEY') ?></span>
         <input
         type="text"
         name="prik"

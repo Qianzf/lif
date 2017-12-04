@@ -68,9 +68,9 @@ trait DI
         \ArgumentCountError $e,
         array $params
     ) : array {
-        if ((3 < ++$this->__recursion_ace)
+        if ((5 < ++$this->__recursion_ace)
         || !preg_match(
-            '/^Too\ few\ arguments\ to\ function ([\\\\\w]+)::.* (\d)+\ passed and\ exactly\ (\d)+\ expected$/u',
+            '/^Too\ few\ arguments\ to\ function ([\\\\\w]+)::.* (\d)+\ passed\ and\ .*\ (\d)+\ expected$/u',
             $e->getMessage(),
             $matches
         )
@@ -96,7 +96,7 @@ trait DI
         \TypeError $e,
         array $params
     ) : array {
-        if ((3 < ++$this->__recursion_te)
+        if ((5 < ++$this->__recursion_te)
         || !preg_match(
             '/Argument\ (\d+) passed to ([\\\\\w]+)::.*must\ be\ an?\ (.*)\ of\ ([\w\\\\]*),/u',
             $e->getMessage(),

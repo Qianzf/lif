@@ -3,11 +3,21 @@
 namespace Lif\Ctl\Ldtdf;
 
 use Lif\Mdl\Task as TaskModel;
-use Lif\Mdl\{User, Project, Story};
+use Lif\Mdl\{User, Project, Story, Bug};
 
 class Task extends Ctl
 {
     public function getAttachableStories(Story $story)
+    {
+        return $this->searchOriginType($story);
+    }
+
+    public function getAttachableBugs(Bug $bug)
+    {
+        return $this->searchOriginType($bug);
+    }
+
+    private function searchOriginType($origin)
     {
         $where = [];
         
@@ -15,7 +25,7 @@ class Task extends Ctl
             $where[] = ['title', 'like', "%{$search}%"];
         }
 
-        return response($story->list(['id', 'title'], $where, false));
+        return response($origin->list(['id', 'title'], $where, false));
     }
 
     public function getAssignableUsers(TaskModel $task)
@@ -115,7 +125,7 @@ class Task extends Ctl
             'action'    => 'need|string|notin:0',
             'branch'    => 'when:action=WAITTING_DEP2TEST|need|string|notin:0',
             'manually'  => 'when:action=WAITTING_DEP2TEST|need|ciin:yes,no',
-            'assign_notes' => 'string',
+            'assign_notes' => 'when:manually=yes|string',
         ])) || !in_array(
             $data['action'],
             $task->getActionsOfRole($data['assign_to'])
@@ -156,36 +166,51 @@ class Task extends Ctl
 
     public function add(
         TaskModel $task,
+        Project $project,
         Story $story,
-        Project $project
+        Bug $bug
     ) {
         $data = $this->request->all();
 
         legal_or($data, [
             'story' => ['int|min:1', null],
+            'bug'   => ['int|min:1', null],
         ]);
 
-        if ($sid = $data['story']) {
-            if (! $story->find($sid)) {
+        if (! $task->isAlive()) {
+            $error = false;
+            if (($sid = $data['story']) && (! $story->find($sid))) {
+                $error = L('STORY_NOT_FOUND', $sid);
+            }
+            if (($bid = $data['bug']) && (! $bug->find($bid))) {
+                $error = L('BUG_NOT_FOUND', $bid);
+            }
+
+            if (false !== $error) {
                 shares([
-                    '__error'   => L('STORY_NOT_FOUND', $sid),
+                    '__error'   => $error,
                     'back2last' => share('url_previous'),
                 ]);
 
                 return redirect($this->route);
             }
+        } else {
+            $project = $task->project();
+            $story   = $task->story();
+            $bug     = $task->bug();
         }
 
-        share('hide-search-bar', true);
         view('ldtdf/task/edit')
-        ->withTaskStoryProjectProjectsEditableTrendings(
+        ->withTaskStoryBugProjectProjectsEditableTrendings(
             $task,
-            $story,
+            ($story ?? model(Story::class)),
+            ($bug   ?? model(Bug::class)),
             $project,
-            $project->all(),
+            $project->all(true, false),
             true,
             $task->trendings()
-        );
+        )
+        ->share('hide-search-bar', true);
     }
 
     public function edit(TaskModel $task)
@@ -195,17 +220,29 @@ class Task extends Ctl
             return redirect(share('url_previous'));
         }
 
-        if (! ($story = $task->story())) {
+        $origin = strtolower($task->origin_type);
+
+        if ((!($story = $task->story())) && ($origin == 'story')) {
             share_error_i18n('NO_STORY');
-            return redirect(share('url_previous'));   
+            return redirect(share('url_previous'));
+        }
+
+        if ((!($bug = $task->bug())) && ($origin == 'bug')) {
+            share_error_i18n('NO_BUG');
+            return redirect(share('url_previous'));
         }
 
         if (! ($project = $task->project())) {
             share_error_i18n('NO_PROJECT');
-            return redirect(share('url_previous'));   
+            return redirect(share('url_previous'));
         }
 
-        return $this->add($task, $story, $project);
+        return $this->add(
+            $task,
+            $project,
+            ($story ?? model(Story::class)),
+            ($bug   ?? model(Bug::class))
+        );
     }
 
     public function info(TaskModel $task)
@@ -226,13 +263,27 @@ class Task extends Ctl
         $confirmable = ($task->canBeConfirmedBY($user));
         $editable    = ($task->canBeEditedBY());
         $assignable  = ($task->canBeAssignedBy($user));
+        $story = $bug = null;
+        if ('story' == strtolower($task->origin_type)) {
+            if (! ($story = $task->story())) {
+                share_error_i18n('NO_STORY');
+                return redirect(share('url_previous'));
+            }
+        } else {
+            if (! ($bug = $task->bug())) {
+                share_error_i18n('NO_BUG');
+                return redirect(share('url_previous'));
+            }
+        }
 
         share('hide-search-bar', true);
 
         view('ldtdf/task/info')
-        ->withTaskStoryTasksProjectTrendingsActiveableCancelableConfirmableEditableAssignableAssigns(
+        ->withOriginTaskBugStoryTasksProjectTrendingsActiveableCancelableConfirmableEditableAssignableAssigns(
+            $task->origin(),
             $task,
-            $task->story(),
+            $bug,
+            $story,
             $task->relateTasks(),
             $task->project(),
             $task->trendings($querys),
@@ -248,11 +299,17 @@ class Task extends Ctl
     public function create(TaskModel $task)
     {
         $data = $this->validate($this->request->all(), [
-            'story'   => 'int|min:1',
+            'origin_type' => 'need|ciin:story,bug',
+            'origin_id' => 'need|int|min:1',
             'project' => 'int|min:1',
         ]);
-        if ($task->hasConflictTask(intval($data['project']), intval($data['story']))) {
-            share_error_i18n('PROJECT_EXIST_IN_STORY');
+
+        if ($task->hasConflictTask(
+            intval($data['project']),
+            intval($data['origin_id']),
+            trim($data['origin_type'])
+        )) {
+            share_error_i18n("PROJECT_EXIST_IN_{$data['origin_type']}");
             return redirect($this->route);
         }
 
@@ -277,17 +334,33 @@ class Task extends Ctl
 
     public function update(TaskModel $task)
     {
+        $data = $this->request->posts;
+
+        $this->validate($data, [
+            'origin_type' => 'need|ciin:bug,story',
+            'origin_id' => 'need|int|min:1',
+            'project' => 'need|int|min:1',
+            'notes' => 'string',
+        ]);
+
         if ($task->creator != share('user.id')) {
             share_error_i18n('UPDATE_PERMISSION_DENIED');
-            redirect($this->route);
+            return redirect($this->route);
         }
 
-        if (! $task->items()) {
+        if (! $task->isAlive()) {
             share_error_i18n('TASK_NOT_FOUND');
-            redirect('/dep/tasks');
+            return redirect('/dep/tasks');
+        }
+        if (('bug' == $data['origin_type']) && (! $task->bug())) {
+            share_error_i18n('NO_BUG');
+            return redirect($this->route);
+        } elseif (('story' == $data['origin_type']) && (! $task->story())) {
+            share_error_i18n('NO_STORY');
+            return redirect($this->route);
         }
 
-        if (!empty_safe($err = $task->save($this->request->posts))
+        if (!empty_safe($err = $task->save($data, false))
             && is_numeric($err)
             && ($err >= 0)
         ) {

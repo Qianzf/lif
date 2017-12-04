@@ -78,7 +78,8 @@ $this->group([
         $this->get('/', 'index');
         $this->get('new', 'edit');
         $this->post('new', 'create');
-        $this->get('{id}', 'edit');
+        $this->get('{id}', 'info');
+        $this->get('{id}/edit', 'edit');
         $this->post('{id}', 'update');
     });
 
@@ -99,6 +100,7 @@ $this->group([
         $this->post('{id}/activate', 'activate');
         $this->get('{id}/users/assignable', 'getAssignableUsers');
         $this->get('stories/attachable', 'getAttachableStories');
+        $this->get('bugs/attachable', 'getAttachableBugs');
     });
 
     $this->group([

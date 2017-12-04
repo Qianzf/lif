@@ -7,6 +7,7 @@
 <?php $closeSelectedHTML = '<span class="search-res-right-close"><i class="fa fa-remove" onclick="removeSelectedResult()"></i></span>';
 ?>
 
+<input type="hidden" id="instant-search-api" value="<?= $api ?>">
 <div style="width:<?= $width?>px;display:inline-block;">
     <div id="selected-search-res">
         <label
@@ -55,7 +56,8 @@
         searchKeywords($('#instant-search-bar').val())
     }
     function searchKeywords(search) {
-        $.get('<?= $api ?>', {
+        let api = $('#instant-search-api').val()
+        $.get(api, {
             'search': search
         }, function (res) {
             let results = res.dat

@@ -81,7 +81,10 @@ class Story extends ModelBase
         $relationship = [
             'model' => Task::class,
             'lk' => 'id',
-            'fk' => 'story',
+            'fk' => 'origin_id',
+            'fwhere' => [
+                'origin_type' => 'story',
+            ],
         ];
 
         return $this->hasMany($relationship);
@@ -93,7 +96,7 @@ class Story extends ModelBase
             'model' => Trending::class,
             'lk' => 'id',
             'fk' => 'ref_id',
-            'where' => [
+            'fwhere' => [
                 'ref_type' => 'story',
             ],
         ];

@@ -9,11 +9,16 @@ class Task extends Mdl
     protected $table = 'task';
 
     protected $rules = [
-        'creator' => 'int|min:1',
-        'story'   => 'int|min:1',
-        'project' => 'int|min:1',
-        'status'  => 'string',
-        'title'   => 'string',
+        'creator'  => 'int|min:1',
+        'story'    => 'int|min:1',
+        'project'  => 'int|min:1',
+        'current'  => 'int|min:1',
+        'status'   => 'string',
+        'notes'    => 'string',
+        'branch'   => 'string',
+        'env'      => 'string',
+        'manually' => 'ciin:yes,no',
+        'deploy'   => 'string',
     ];
 
     public function current()
@@ -29,13 +34,18 @@ class Task extends Mdl
     {
         db()->start();
         
-        $this->current  = $params['assign_to'];
-        $this->status   = $params['action'];
+        $this->current = $params['assign_to'];
+        $this->status  = strtolower($params['action']);
+        if (('yes' == ($this->manually = ($params['manually'] ?? 'no')))
+            && in_array($this->status, [
+            'waitting_dep2test',
+            'waitting_update2test',
+        ])) {
+            $this->deploy = $params['assign_notes'];
+        }
+
         if ($branch = ($params['branch'] ?? null)) {
             $this->branch = $branch;
-        }
-        if ($manually = ($params['manually'] ?? null)) {
-            $this->manually = $params['manually'];
         }
 
         $notes = ($params['assign_notes'] ?? null);
@@ -101,27 +111,40 @@ class Task extends Mdl
         return $users;
     }
 
-    public function hasConflictTask(int $project, int $story = null)
+    public function hasConflictTask(
+        int $project,
+        int $origin = null,
+        string $type = 'story'
+    )
     {
-        if ($story = ($story ?? $this->story()->id)) {
+        if ($origin = ($origin ?? $this->$type()->id)) {
             return $this
-            ->whereProjectStory($project, $story)
+            ->whereProject($project)
+            ->where([
+                'origin_type' => $type,
+                'origin_id' => $origin,
+            ])
             ->get();
         }
 
         excp('No story parent to relate.');
     }
 
-    public function relateTasks(int $story = null)
+    public function relateTasks(int $origin = null, string $type = null)
     {
-        if ($story = ($story ?? $this->story()->id)) {
+        $type = $type ?? $this->origin_type;
+        
+        if ($origin = ($origin ?? ($this->$type()->id ?? null))) {
             return $this
-            ->whereStory($story)
             ->whereId('!=', $this->id)
+            ->where([
+                'origin_type' => $type,
+                'origin_id' => $origin,
+            ])
             ->get();
         }
 
-        excp('No story parent to relate.');
+        // excp('No story parent to relate.');
     }
 
     public function assigns()
@@ -273,7 +296,7 @@ class Task extends Mdl
             'model' => Trending::class,
             'lk' => 'id',
             'fk' => 'ref_id',
-            'where' => [
+            'fwhere' => [
                 'ref_type' => 'task',
             ],
         ];
@@ -287,13 +310,30 @@ class Task extends Mdl
         return $this->hasMany($relationship);
     }
 
+    public function bug()
+    {
+        return $this->origin('bug');
+    }
+
+    public function origin(string $type = null)
+    {
+        if ($type = ($type ?? ($this->origin_type ?: 'story'))) {
+            $class = ('story' == $type) ? Story::class : Bug::class;
+
+            return $this->belongsTo([
+                'model' => $class,
+                'lk' => 'origin_id',
+                'fk' => 'id',
+                'lwhere' => [
+                    'origin_type' => $type,
+                ],
+            ]);
+        }
+    }
+
     public function story()
     {
-        return $this->belongsTo(
-            Story::class,
-            'story',
-            'id'
-        );
+        return $this->origin('story');
     }
 
     public function project()

@@ -73,16 +73,12 @@ class Event extends ModelBase
 
     public function getTaskTitle($id)
     {
-        $task = db()
-        ->table('task', 't')
-        ->leftJoin('story s', 't.story', 's.id')
-        ->leftJoin('project p', 't.project', 'p.id')
-        ->select('s.title', 'p.name', 't.id as task_id')
-        ->where([
-            't.id' => $id,
-        ])
-        ->first();
-
-        return ($task['title'] ?? '')."(T{$task['task_id']})";
+        $task = model(Task::class, $id);
+        
+        if ($origin = $task->origin($task->origin_type)) {
+            $title = $origin->title;
+        }
+        
+        return ($title ?? '')."(T{$id})";
     }
 }

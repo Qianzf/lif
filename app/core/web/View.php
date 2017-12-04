@@ -114,9 +114,18 @@ class View
         $this->layout = $path;
     }
 
-    public function section($section, array $data = []): string
+    public function section(
+        string $section,
+        array $data = [],
+        bool $any = false
+    ): string
     {
-        $path = pathOf('view', '__section/'.$section.'.php');
+        if ($any) {
+        }
+
+        $section = $any ? $section : '__section/'.$section;
+
+        $path = pathOf('view', $section.'.php');
         if (! file_exists($path)) {
             excp('Section `'.$section.'` not exists.');
         }
@@ -146,6 +155,20 @@ class View
         if ($data) {
             $this->data = array_merge($this->data, $data);
         }
+
+        return $this;
+    }
+
+    public function shares(array $data = []): View
+    {
+        shares($data);
+
+        return $this;
+    }
+
+    public function share(string $key, $val = null, bool $delete = false): View
+    {
+        share($key, $val, $delete);
 
         return $this;
     }

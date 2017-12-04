@@ -1,10 +1,10 @@
 <?php if (isset($model) && $model->isAlive()): ?>
     <?php $object = $object ?? classname($model); ?>
     <div>
-        <h6>
+        <small>
             <span class="stub-2"></span>
             <span class="text-info">[</span>
-            <small><?= L("{$object}_TRENDING") ?></small>
+            <?= L("{$object}_TRENDING") ?>
             <?php $sort = (isset($_GET['trending']) && in_array($_GET['trending'], [
                 'asc', 'desc',
                 ])) ? $_GET['trending'] : 'desc';
@@ -13,10 +13,12 @@
             onclick="resortTrending('<?= $sort ?>')"
             class="fa fa-sort-<?= $sort ?>"></button>
             <span class="text-info">]</span>
-        </h6>
+        </small>
 
         <?= $this->section('trendings', [
-            'displayShort' => ($displayShort ?? false),
+            'displayRefType'  => $displayRefType  ?? true,
+            'displayRefState' => $displayRefState ?? true,
+            'displayComments' => $displayComments ?? true,
         ]) ?>
     </div>
 

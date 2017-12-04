@@ -8,12 +8,12 @@
 <form method="POST" autocomplete="off">
     <?= csrf_feild() ?>
     <label>
-        <?= L('TITLE') ?>
+        <span class="label-title"><?= L('TITLE') ?></span>
         <input type="text" name="name" required value="<?= $project->name ?>">
     </label>
 
     <label>
-        <?= L('TYPE') ?>
+        <span class="label-title"><?= L('TYPE') ?></span>
         <select name="type" required>
             <option
             value="web"
@@ -29,33 +29,36 @@
     </label>
 
     <label>
-        <?= L('REPO_URL') ?>
+        <span class="label-title"><?= L('REPO_URL') ?></span>
          <input type="text" name="url" required value="<?= $project->url ?>">
     </label>
 
     <label>
-        <?= L('VCS') ?>
+        <span class="label-title"><?= L('VCS') ?></span>
         <select name="vcs" required>
             <option value="git">git</option>
         </select>
     </label>
 
     <label>
-        <?= L('DESCRIPTION') ?>
+        <span class="label-title"><?= L('DESCRIPTION') ?></span>
         <textarea name="desc"><?= $project->desc ?></textarea>
     </label>
 
     <label>
-        <?= L('REPO_API_TOKEN') ?>
-        <input type="password" name="token" value="<?= $project->token ?>">
+        <span class="label-title"><?= L('API_TOKEN') ?></span>
+        <input
+        placeholder="<?= L('REPO_API_TOKEN') ?>"
+        type="password"
+        name="token"
+        value="<?= $project->token ?>">
     </label>
 
     <label>
-        <?= L('DEPLOY_SCRIPT') ?>
+        <span class="label-title"><?= L('DEPLOY_SCRIPT') ?></span>
         <ul>
-            <li>
-                <span><?= L('TYPE') ?></span>
-                <span class="stub"></span>
+            <ol>
+                <span class="label-title"><?= L('TYPE') ?></span>
                 <select name="script_type">
                     <option>
                         -- <?= L('SELECT_DEPLOY_SCRIPT_TYPE') ?> --
@@ -63,16 +66,15 @@
                     <option value="local"><?= L('LOCAL')  ?></option>
                     <option value="remote"><?= L('REMOTE')  ?></option>
                 </select>   
-            </li>
-            <li>
-                <span><?= L('PATH') ?></span>
-                <span class="stub"></span>
+            </ol>
+            <ol>
+                <span class="label-title"><?= L('PATH') ?></span>
                 <input
                 placeholder="<?= L('SERVER_ABSOLUTE_PATH') ?>"
                 type="text"
                 name="script_path"
                 value="<?= $project->script ?>">
-            </li>
+            </ol>
         </ul>
     </label>
 

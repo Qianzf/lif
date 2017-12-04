@@ -175,12 +175,12 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
         return _json_encode($this->items());
     }
 
-    public function all(bool $model = true, bool $persistent = false)
+    public function all(bool $model = true, bool $persistent = true)
     {
         $query = $persistent ? $this : (clone $this);
 
         $res = $query->query()->get();
-        
+
         if ($model) {
             $this->__toModel($res);
         }
@@ -188,9 +188,13 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
         return $res;
     }
 
-    public function create(array $data, array $rules = [])
+    public function create(
+        array $data,
+        bool $validate = true,
+        array $rules = []
+    )
     {
-        return $this->reset()->save($data, $rules);
+        return $this->reset()->save($data, $validate, $rules);
     }
 
     // If record exists then update or create
@@ -199,10 +203,14 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
     // - integer over 0 => success
     // - other  => failed
     // - null   => nothing happend
-    public function save(array $data = [], array $rules = [])
+    public function save(
+        array $data = [],
+        bool $validate = true,
+        array $rules = []
+    )
     {
         if ($data = ($data ? $data : $this->items)) {
-            if ($rules = ($rules ?: ($this->rules ?: []))) {
+            if ($validate && ($rules = ($rules ?: ($this->rules ?: [])))) {
                 if (true !== ($err = validate($data, $rules))) {
                     return $err;
                 }
@@ -370,9 +378,14 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
         )
         ->where($where, $value);
 
-        if ($_where = ($params['where'] ?? null)) {
-            foreach ($_where as $key => $val) {
-                $model = $model->where("{$model->getTable()}.{$key}", $val);
+        if ($fwhere = ($params['fwhere'] ?? null)) {
+            foreach ($fwhere as $fkey => $fval) {
+                $model = $model->where("{$model->getTable()}.{$fkey}", $fval);
+            }
+        }
+        if ($lwhere = ($params['lwhere'] ?? null)) {
+            foreach ($lwhere as $lkey => $lval) {
+                $model = $model->where("{$this->getTable()}.{$lkey}", $lval);
             }
         }
 
@@ -427,12 +440,18 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
     // One-to-One
     public function belongsTo(...$params)
     {
-        return $this->parseRelation(
+        $model = $this->parseRelation(
             'belongs-to',
             $params, function (&$params) {
                 $params['type'] = 2;
             }
         );
+
+        if ($model) {
+            $model->alive = true;
+        }
+        
+        return $model;
     }
 
     public function parseRelation(
@@ -451,11 +470,13 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
                 4 => 'from',     // Limit start
                 5 => 'take',     // Limit offset
                 6 => 'sort',     // Sort rules => array
-                7 => 'where',    // Where conditions => array
+                7 => 'lwhere',   // Where conditions of local model => array
+                8 => 'fwhere',   // Where conditions of foreign model => array
             ];
 
             if (is_array($params[0])) {
                 foreach ($params[0] as $key => $value) {
+                    // pr($key, isset($idxMap[$key]), in_array($key, $idxMap));
                     if (isset($idxMap[$key])) {
                         $_params[$idxMap[$key]] = $value;
                     } elseif (in_array($key, $idxMap)) {

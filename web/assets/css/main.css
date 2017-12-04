@@ -41,17 +41,24 @@ form label {
 }
 .label-title {
     display: inline-block;
-    width: 150px;
+    width: 100px;
     text-align: right;
     padding-right: 20px;
     margin-top: -20px;
 }
+.label-input {
+    width: 300px;
+}
 label input[type="text"],
+label input[type="email"],
 label input[type="password"] {
-    width: 200px;
+    width: 300px;
+}
+label input[type="password"] {
+    letter-spacing: 5px;
 }
 label textarea {
-    width: 400px;
+    width: 300px;
     height: 50px;
 }
 input,
@@ -273,4 +280,8 @@ input:invalid {
     display: block;
     width: 80%;
     height: 16px;
+}
+.bug-detail-list li span {
+    font-weight: bold;
+    font-size: 12px;
 }

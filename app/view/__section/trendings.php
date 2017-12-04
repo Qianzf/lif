@@ -14,13 +14,13 @@
             </a>
         </i>
         <?= $trending->genHTMLStringOfEvent(
-                ($displayRefType ?? null),
-                ($displayRefState ?? null)
+                ($displayRefType ?? true),
+                ($displayRefState ?? false)
             )
         ?>
     </small>
 
-    <?php if ($displayComments ?? null): ?>
+    <?php if ($displayComments ?? false): ?>
     <?php if (trim($trending->notes)): ?>
     <span class="stub"></span>
     <i class="fa fa-minus-square-o"
