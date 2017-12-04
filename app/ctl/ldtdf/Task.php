@@ -177,7 +177,14 @@ class Task extends Ctl
             'bug'   => ['int|min:1', null],
         ]);
 
-        if (! $task->isAlive()) {
+        $trendings = null;
+
+        if ($task->isAlive()) {
+            $project = $task->project();
+            $story   = $task->story();
+            $bug     = $task->bug();
+            $trendings = $task->trendings();
+        } else {
             $error = false;
             if (($sid = $data['story']) && (! $story->find($sid))) {
                 $error = L('STORY_NOT_FOUND', $sid);
@@ -194,10 +201,6 @@ class Task extends Ctl
 
                 return redirect($this->route);
             }
-        } else {
-            $project = $task->project();
-            $story   = $task->story();
-            $bug     = $task->bug();
         }
 
         view('ldtdf/task/edit')
@@ -208,7 +211,7 @@ class Task extends Ctl
             $project,
             $project->all(true, false),
             true,
-            $task->trendings()
+            $trendings
         )
         ->share('hide-search-bar', true);
     }

@@ -12,7 +12,7 @@
     <?= csrf_feild() ?>
 
     <label>
-        <span class="label-title"><?= L('TITLE') ?></span>
+        <span class="label-title">* <?= L('TITLE') ?></span>
         <input
         type="text"
         name="title"
@@ -22,7 +22,7 @@
     </label>
 
     <label>
-        <span class="label-title"><?= L('BUG_HOW') ?></span>
+        <span class="label-title">* <?= L('BUG_HOW') ?></span>
         <textarea
         name="how"
         required
@@ -30,7 +30,7 @@
     </label>
 
     <label>
-        <span class="label-title"><?= L('BUG_WHAT') ?></span>
+        <span class="label-title">* <?= L('BUG_WHAT') ?></span>
         <textarea
         name="what"
         required
@@ -43,7 +43,6 @@
         <input
         type="text"
         name="errmsg"
-        required
         placeholder="<?= L('EG'), ': ', L('SERVICE_BUSY') ?>"
         value="<?= $bug->errmsg ?>">
     </label>
@@ -53,13 +52,12 @@
         <input
         type="text"
         name="errcode"
-        required
         placeholder="<?= L('EG', '5001') ?>"
         value="<?= $bug->errcode ?>">
     </label>
 
     <label>
-        <span class="label-title"><?= L('OS') ?></span>
+        <span class="label-title">* <?= L('OS') ?></span>
         <select name="os">
             <?php if (isset($oses) && iteratable($oses)): ?>
                 <?php foreach ($oses as $os): ?>
@@ -73,7 +71,7 @@
     </label>
 
     <label>
-        <span class="label-title"><?= L('OS_VERSION') ?></span>
+        <span class="label-title">* <?= L('OS_VER') ?></span>
         <input
         type="text"
         name="os_ver"
@@ -83,7 +81,7 @@
     </label>
 
     <label>
-        <span class="label-title"><?= L('PLATFORM') ?></span>
+        <span class="label-title">* <?= L('PLATFORM') ?></span>
         <input
         type="text"
         name="platform"
@@ -93,7 +91,7 @@
     </label>
 
     <label>
-        <span class="label-title"><?= L('PLATFORM_VERSION') ?></span>
+        <span class="label-title">* <?= L('PLATFORM_VERSION') ?></span>
         <input
         type="text"
         name="platform_ver"

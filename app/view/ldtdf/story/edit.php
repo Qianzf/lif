@@ -12,7 +12,7 @@
     <?= csrf_feild() ?>
 
     <label>
-        <span class="label-title"><?= L('TITLE') ?></span>
+        <span class="label-title">* <?= L('TITLE') ?></span>
         <input
         type="text"
         name="title"
@@ -22,7 +22,7 @@
     </label>
 
     <label>
-        <span class="label-title"><?= L('STORY_WHO') ?></span>
+        <span class="label-title">* <?= L('STORY_WHO') ?></span>
         <input
         type="text"
         name="role"
@@ -32,7 +32,7 @@
     </label>
 
     <label>
-        <span class="label-title"><?= L('STORY_WHAT') ?></span>
+        <span class="label-title">* <?= L('STORY_WHAT') ?></span>
         <textarea
         required
         placeholder="<?= L('WHAT_FUNCTIONALITIES') ?>"
@@ -40,7 +40,7 @@
     </label>
 
     <label>
-        <span class="label-title"><?= L('STORY_FOR') ?></span>
+        <span class="label-title">* <?= L('STORY_FOR') ?></span>
         <textarea
         required
         placeholder="<?= L('ACHIEVE_WHAT_VALUE') ?>"
@@ -48,7 +48,7 @@
     </label>
 
     <label>
-        <span class="label-title"><?= L('STORY_AC') ?></span>
+        <span class="label-title">* <?= L('STORY_AC') ?></span>
         <textarea
         placeholder="<?= L('STORY_AC_STUB') ?>"
         name="acceptances"><?= $story->acceptances ?></textarea>

@@ -962,7 +962,7 @@ if (! fe('schema')) {
     }
 }
 if (! fe('escape_fields')) {
-    function escape_fields(string $raw) : string
+    function escape_fields(string $raw = null) : string
     {
         if (! $raw) {
             return '';

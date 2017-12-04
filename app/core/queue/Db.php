@@ -68,7 +68,7 @@ class Db implements Queue
             'try'       => 3,
             'tried'     => 0,
             'retried'   => 0,
-            'create_at' => time(),
+            'create_at' => date('Y-m-d H:i:s'),
             'timeout'   => 0,
             'restart'   => 0,
             'lock'      => 0,

@@ -49,7 +49,7 @@ class Run extends Command
     //  most common scnarios daemon is true will reduce framework
     //  rebooting times and save time and resources
     // -------------------------------------------------------------
-    private $daemon    = true;
+    private $daemon = true;
     // -------------------------------------------------------------
 
     // -------------------------------------------------------------
@@ -63,6 +63,11 @@ class Run extends Command
     // -------------------------------------------------------------
     
     private $timer = null;
+
+    public function __construct()
+    {
+        $this->prepare();
+    }
 
     public function fire()
     {

@@ -17,11 +17,6 @@ trait Queue
     private $queueConn = null;
     private $job       = null;
 
-    public function __construct()
-    {
-        $this->prepare();
-    }
-
     protected function prepare() : self
     {
         $this->config = conf('queue');

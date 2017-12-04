@@ -2,9 +2,12 @@
 
 namespace Lif\Mdl;
 
+use Lif\Job\Deploy;
+
 class Task extends Mdl
 {
     use \Lif\Traits\TaskStatus;
+    use \Lif\Core\Traits\Queue;
 
     protected $table = 'task';
 
@@ -30,29 +33,54 @@ class Task extends Mdl
         );
     }
 
+    private function enqueueDeployTaskJob(bool $deploy = false)
+    {
+        if (! $deploy) {
+            return true;
+        }
+
+        if ($this->isAlive()) {
+            $this->prepare();
+
+            $this
+            ->enqueue(
+                (new Deploy)->setTask($this->id)
+            )
+            ->on('deploy')
+            ->try(3)
+            ->timeout(30);
+        }
+
+        return true;
+    }
+
     public function assign(array $params)
     {
         db()->start();
         
         $this->current = $params['assign_to'];
         $this->status  = strtolower($params['action']);
-        if (('yes' == ($this->manually = ($params['manually'] ?? 'no')))
-            && in_array($this->status, [
+        $notes  = ($params['assign_notes'] ?? null);
+        $deploy = in_array($this->status, [
             'waitting_dep2test',
             'waitting_update2test',
-        ])) {
-            $this->deploy = $params['assign_notes'];
+        ]);
+
+        if (('yes' == ($this->manually = ($params['manually'] ?? 'no')))
+            && $deploy
+        ) {
+            $this->deploy = $notes;
         }
 
         if ($branch = ($params['branch'] ?? null)) {
             $this->branch = $branch;
         }
 
-        $notes = ($params['assign_notes'] ?? null);
-
         if (($this->save() >= 0)
+            && $this->enqueueDeployTaskJob($deploy)
             && ($this->addTrending('assign', $this->current, $notes) > 0)
         ) {
+
             db()->commit();
 
             return true;
@@ -114,9 +142,11 @@ class Task extends Mdl
     public function hasConflictTask(
         int $project,
         int $origin = null,
-        string $type = 'story'
+        string $type = null
     )
     {
+        $type = $type ?? ($this->origin_type ?: 'story');
+        
         if ($origin = ($origin ?? $this->$type()->id)) {
             return $this
             ->whereProject($project)

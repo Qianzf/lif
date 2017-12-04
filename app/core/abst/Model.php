@@ -23,14 +23,17 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
     protected $unreadable  = [];    // protected items that cann't read
 
     // Stacks for current query
-    private $items  = [];
-    private $query  = null;
-    private $alive  = false;
-    private $filter = [];
+    protected $items  = [];
+    protected $query  = null;
+    protected $alive  = false;
+    protected $filter = [];
 
+    // !!! Make sure initiate child class with parameters
+    // !!! to make parent constructor be called
+    // !!! Or will not auto find model when creating model
     public function __construct(int $id = null, string $pk = null)
     {
-        $this->pk = $pk ?? ($this->pk ?? 'id');
+        $this->pk = $pk ?? $this->pk();
         if ($this->id = $id) {
             $this->find($this->id);
         }
@@ -61,7 +64,7 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
         ->first();
 
         if ($model->items) {
-            $model->alive = true;
+            $model->setAlive(true);
 
             return $model;
         }
@@ -209,6 +212,8 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
         array $rules = []
     )
     {
+        $_pk = $this->pk();
+
         if ($data = ($data ? $data : $this->items)) {
             if ($validate && ($rules = ($rules ?: ($this->rules ?: [])))) {
                 if (true !== ($err = validate($data, $rules))) {
@@ -216,24 +221,26 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
                 }
             }
             
-            unset($data[$this->pk()]);    // Protected primary key
+            unset($data[$_pk]);    // Protected primary key
 
-            $status = $this->alive
-            ? $this
-            ->query()
-            ->where($this->pk, $this->items[$this->pk])
-            ->update($data)
+            if ($this->alive) {
+                $status = $this
+                ->query()
+                ->where($_pk, $this->items[$_pk])
+                ->update($data);
 
-            : $this->query()->insert($data);
+                $pk = $this->items($_pk);
+            } else {
+                $pk = $status = $this->query()->insert($data);
+            }
 
-            $pk = $this->alive ? $this->items[$this->pk] : $status;
-
-            if ($status > 0) {
+            if ($status >= 0) {
+                $this->setAlive(true);
                 $this->items = $this
                 ->query()
                 ->reset()
-                ->table($this->table)
-                ->where($this->pk, $pk)
+                ->table($this->getTable())
+                ->where($_pk, $pk)
                 ->first();
             }
 
@@ -263,7 +270,7 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
     // Clear status
     public function clear() : Model
     {
-        $this->alive = null;
+        $this->alive = false;
 
         return $this;
     }
@@ -296,6 +303,13 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
     public function setItems(array $items)
     {
         $this->items = $items;
+
+        return $this;
+    }
+
+    public function setAlive(bool $alive)
+    {
+        $this->alive = $alive;
 
         return $this;
     }

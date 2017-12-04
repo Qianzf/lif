@@ -47,6 +47,8 @@
         <?php endforeach ?>
     </ul>
     <?php endif ?>
+
+    <span class="vertical"></span>
 </div>
 
 <?= $this->section('trendings-with-sort', [
