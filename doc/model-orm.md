@@ -93,8 +93,18 @@ class User extends Mdl
             'sort' => [
                 'at' => 'desc',
             ],
+
+            // Dynamic where conditions in master join table
+            'lwhere' => [
+                'type' => 'story'
+            ],
+
+            // Dynamic where conditions in sub join table
+            'fwhere' => [
+                'status' => 1,
+            ],
         ]);
-    }   
+    }
 }
 class Trending extends Mdl
 {
