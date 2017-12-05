@@ -91,6 +91,39 @@ if (! fe('session_init')) {
         ini_set('session.cookie_httponly', true);
     }
 }
+if (! fe('init_dit_table')) {
+    function init_dit_table() {
+        schema()
+        ->setAutocommit(false)
+        ->createIfNotExists('__dit__', function ($table) {
+            $table->pk('id');
+
+            $table
+            ->string('name')
+            ->charset('utf8')
+            ->collate('utf8_unicode_ci')
+            ->unique();
+
+            $table
+            ->tinyint('version')
+            ->default(1);
+
+            $table
+            ->char('type', 8)
+            ->default('vc')
+            ->comment('Dit type => vc: version control; seed: database seed');
+
+            $table
+            ->timestamp('create_at')
+            ->default('CURRENT_TIMESTAMP()', true);
+
+            $table
+            ->charset('utf8')
+            ->collate('utf8_unicode_ci');
+        })
+        ->commit();
+    }
+}
 if (! fe('load_user_helpers')) {
     function load_user_helpers() {
         load_phps(pathOf('aux'), function ($file) {
@@ -272,9 +305,10 @@ if (! fe('nsOf')) {
 
         if (is_string($of)) {
             $nsArr = [
-                'ctl'  => 'Lif\Ctl\\',
-                'mdl'  => 'Lif\Mdl\\',
-                'dbvc' => 'Lif\Dat\\Dbvc\\',
+                'ctl'   => 'Lif\Ctl\\',
+                'mdl'   => 'Lif\Mdl\\',
+                'dbvc'  => 'Lif\Dat\\Dbvc\\',
+                'dbseed'=> 'Lif\Dat\\Dbseed\\',
                 'mdwr' => 'Lif\Mdwr\\',
                 'core' => 'Lif\Core\\',
                 'web'  => 'Lif\Core\Web\\',
@@ -302,6 +336,8 @@ if (! fe('pathOf')) {
             'root'   => $root.'/',
             'app'    => $root.'/app/',
             'dbvc'   => $root.'/app/dat/dbvc/',
+            'dbraw'  => $root.'/app/dat/dbraw/',
+            'dbseed' => $root.'/app/dat/dbseed/',
             'core'   => $root.'/app/core/',
             'aux'    => $root.'/app/aux/',
             '_aux'   => $root.'/app/core/aux/',
@@ -355,7 +391,7 @@ if (! fe('_json_decode')) {
     }
 }
 if (! fe('_json_encode')) {
-    function _json_encode(array $arr) : string {
+    function _json_encode($arr) : string {
         return ($json = json_encode(
             $arr,
             JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
@@ -942,6 +978,15 @@ if (! fe('db')) {
 if (! fe('db_conns')) {
     function db_conns() {
         return \Lif\Core\Factory\Storage::fetch('db', 'conns');
+    }
+}
+if (! fe('dbraw')) {
+    function dbraw(string $filename) {
+        $sql = pathOf('dbraw', "{$filename}.sql");
+
+        if (file_exists($sql)) {
+            db()->raw(file_get_contents($sql));
+        }
     }
 }
 if (! fe('model')) {

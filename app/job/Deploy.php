@@ -25,41 +25,33 @@ class Deploy extends \Lif\Core\Abst\Job
 
     public function getEnv($task, $project)
     {
-        switch (strtolower($task->status)) {
-            case 'waitting_dep2test': {
-                if ($env = $task->environment()) {
-                    return $env;
-                }
-
-                return $project->environments([], [
-                    'type'   => ['test', 'emrg'],
-                    'status' => 'running',
-                    'task'   => [
-                        'key' => '<',
-                        'val' => 1,
-                    ],
-                ], 1);
-            } break;
-
-            case 'waitting_update2test': {
-                // Check if task aleay deploy to a env already
-                if ($env = $task->environment()) {
-                    return $env;
-                }
-            } break;
-
-            case 'waitting_dep2stage': {
-
-            } break;
-
-            case 'waitting_update2stage': {
-
-            } break;
-            
-            default: break;
+        // Check if task aleay deploy to a env already
+        if ($env = $task->environment()) {
+            return $env;
         }
 
-        return false;
+        switch (strtolower($task->status)) {
+            case 'waitting_dep2test':
+            case 'waitting_update2test': {
+                $type = ['test', 'emrg'];
+            } break;
+
+            case 'waitting_dep2stage':
+            case 'waitting_update2stage': {
+                $type = 'stage';
+            } break;
+            
+            default: return false; break;
+        }
+
+        return $project->environments([], [
+            'type'   => $type,
+            'status' => 'running',
+            'task'   => [
+                'key' => '<',
+                'val' => 1,
+            ],
+        ], 1);
     }
 
     // 0. Find out task to deploy
@@ -71,19 +63,19 @@ class Deploy extends \Lif\Core\Abst\Job
     // 5. Switch deploy status and assign to proper person with remarks
     public function run() : bool
     {
-        if (! ($task = $this->getTask())->isAlive()) {
+        if (!($task = $this->getTask()) || !$task->isAlive()) {
             return true;
         }
 
-        if (! ($project = $task->project())->isAlive()) {
+        if (!($project = $task->project()) || !$project->isAlive()) {
             return true;
         }
 
-        if (! ($environment = $this->getEnv($task, $project))->isAlive()) {
+        if (!($env = $this->getEnv($task, $project)) || !$env->isAlive()) {
             return true;
         }
 
-        if (! ($server = $environment->server())->isAlive()) {
+        if (!($server = $env->server()) || !$server->isAlive()) {
             return true;
         }
         
@@ -94,9 +86,10 @@ class Deploy extends \Lif\Core\Abst\Job
             ->setPrikey($server->prik)
             ->connect([
                 'hostkey' => 'ssh-rsa',
-            ])->exec([
+            ])
+            ->exec([
                 'whoami',
-                "cd {$environment->path}",
+                "cd {$env->path}",
                 'pwd',
                 'git branch',
                 'git status',

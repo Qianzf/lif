@@ -8,7 +8,7 @@ class __DIT_CLASS_NAME__ extends Dit
 {
     public function commit()
     {
-        schema()->createIfNotExists('__NAME__', function ($table) {
+        schema()->createIfNotExists('__TABLE__', function ($table) {
             $table->pk('id');
 
             // more definitions ...
@@ -17,6 +17,6 @@ class __DIT_CLASS_NAME__ extends Dit
 
     public function revert()
     {
-        schema()->dropIfExists('__NAME__');
+        schema()->dropIfExists('__TABLE__');
     }
 }

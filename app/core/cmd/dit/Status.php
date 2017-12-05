@@ -11,9 +11,9 @@ class Status extends Command
     public function fire()
     {        
         $commited = db()->table('__dit__')->get();
-
+        $_dits = array_column($commited, 'name');
         $table = '-- Commited Dits --';
-        $title = 'ID | Name | Version | Create At';
+        $title = 'ID | Name | Version | Type | Create At';
         $this->info("{$table}\n{$title}", false);
 
         foreach ($commited as $dit) {
@@ -26,10 +26,15 @@ class Status extends Command
         $_title = 'Name';
         $this->info("{$_table}\n{$_title}", false);
 
-        load_object(pathOf('dbvc'), function ($dit) use ($commited) {
-            $_dits = array_column($commited, 'name');
+        load_object(pathOf('dbvc'), function ($dit) use (&$_dits) {
             if (! in_array($dit, $_dits)) {
-                $this->fails("- $dit", false);
+                $this->fails("- {$dit}", false);
+            }
+        });
+
+        load_object(pathOf('dbseed'), function ($dit) use (&$_dits) {
+            if (! in_array($dit, $_dits)) {
+                $this->fails("- {$dit}", false);
             }
         });
     }

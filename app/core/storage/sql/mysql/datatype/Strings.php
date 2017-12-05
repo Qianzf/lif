@@ -76,6 +76,10 @@ trait Strings
         int $length = 255
     ) : ConcreteColumn
     {
+        if ((db()->raw('SELECT VERSION() AS `VER`'))[0]['VER'] < 5.7) {
+            $length = 191;
+        }
+        
         return $this->strings($col, $length, 'varchar');
     }
 

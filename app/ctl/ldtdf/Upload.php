@@ -21,12 +21,14 @@ class Upload extends CtlBase
         $fileurl = "{$fileurl}/{$upload->filekey}";
 
         return view('ldtdf/tool/upload/edit')
-        ->withUploadFileurl($upload, $fileurl);
+        ->withUploadFileurl($upload, $fileurl)
+        ->share('hide-search-bar', true);
     }
 
     public function upload()
     {
-        return view('ldtdf/tool/upload/add');
+        return view('ldtdf/tool/upload/add')
+        ->share('hide-search-bar', true);
     }
 
     public function update(UploadModel $upload)
@@ -58,14 +60,15 @@ class Upload extends CtlBase
     public function uptoken()
     {
         $qiniu = $this->qiniu();
+        $token = $qiniu->uploadToken(
+            $qiniu->bucket,
+            null,
+            3600
+        );
 
-        return response([
-            'token' => $qiniu->uploadToken(
-                $qiniu->bucket,
-                null,
-                3600
-            ),
-        ]);
+        return $this->request->get('raw')
+        ? json_http_response(['uptoken' => $token])
+        : response(['token' => $token]);
     }
 
     private function qiniu()

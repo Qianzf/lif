@@ -1,0 +1,22 @@
+<?php
+
+namespace Lif\Dat\Dbseed;
+
+use Lif\Core\Storage\Dit;
+
+class __DIT_CLASS_NAME__ extends Dit
+{
+    public function commit()
+    {
+        if (schema()->hasTable('__TABLE__')) {
+            dbraw('__SEED__');
+        }
+    }
+
+    public function revert()
+    {
+        if (schema()->hasTable('__TABLE__')) {
+            dbraw('__SEED__.rollback');
+        }
+    }
+}

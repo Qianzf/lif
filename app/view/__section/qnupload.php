@@ -1,10 +1,20 @@
 <div id="qnupload-container">
-    <div>
-        <button id="pickfiles"><?= L('SELECT_FILE') ?></button>
+    <label>
+        <span class="label-title">
+            <button id="pickfiles"><?= L('SELECT_FILE') ?></button>
+        </span>
+
+        <span id="upload-progress-container">
+            <span id="upload-progress"></span>
+        </span>
+
         <i class="text-ok">
             <small class="invisible-default"><?= L('UPLOAD_OK') ?></small>
         </i>
-    </div>
+    </label>
+
+    <span class="vertical-2"></span>
+
     <div class="invisible-default">
         <textarea class="upload-res" id="upload-res"></textarea>
     </div>
@@ -33,7 +43,8 @@
     </button> -->
 </div>
 
-<!-- http://chaping.github.io/plupload/doc/#plupload_doc5 -->
+<!-- http://jssdk.demo.qiniu.io/ -->
+<!-- http://www.plupload.com/docs -->
 <?= $this->js([
     'plupload/moxie.min',
     'plupload/plupload.full.min',
@@ -56,27 +67,30 @@ var uploader = Qiniu.uploader({
     // uptoken : '<?= ($uptoken ?? null) ?>',
     
     // Ajax请求uptoken的Url，强烈建议设置（服务端提供）
-    // uptoken_url: 'http://lif.dev/dep/tool/uptoken',
-    uptoken_func: function(){    // 在需要获取uptoken时，该方法会被调用
-        var jqxhr = $.ajax({
-           url: '/dep/tool/uploads/uptoken',
-           type: 'GET',
-           dataType: 'json',
-           async: false,
-           headers: {
-                'Access-Control-Allow-Origin': '*',
-                'AUTHORIZATION': ''
-           },
-           success: function (res) {
-           },
-           error: function (xhr, status) {
-           }
-        });
+    // 需要返回 JSON 格式：uptoken => xxx
+    uptoken_url: '/dep/tool/uploads/uptoken?raw=true',
 
-        return ((typeof jqxhr.responseJSON == 'undefined')
-            || (typeof jqxhr.responseJSON.dat.token == 'undefined')
-        ) ? false : jqxhr.responseJSON.dat.token;
-    },
+    // 在需要获取uptoken时，该方法会被调用
+    // uptoken_func: function() {
+    //     var jqxhr = $.ajax({
+    //        url: '/dep/tool/uploads/uptoken',
+    //        type: 'GET',
+    //        dataType: 'json',
+    //        async: false,
+    //        headers: {
+    //             'Access-Control-Allow-Origin': '*',
+    //             'AUTHORIZATION': ''
+    //        },
+    //        success: function (res) {
+    //        },
+    //        error: function (xhr, status) {
+    //        }
+    //     });
+
+    //     return ((typeof jqxhr.responseJSON == 'undefined')
+    //         || (typeof jqxhr.responseJSON.dat.token == 'undefined')
+    //     ) ? false : jqxhr.responseJSON.dat.token;
+    // },
 
     // 设置上传文件的时候是否每次都重新获取新的 uptoken
     get_new_uptoken: false,
@@ -110,10 +124,10 @@ var uploader = Qiniu.uploader({
     max_retries: 3,
     
     // 开启可拖曳上传
-    dragdrop: true,
+    // dragdrop: true,
     
     // 拖曳上传区域元素的ID，拖曳文件或文件夹后可触发上传
-    drop_element: 'container',
+    // drop_element: 'container',
     
     // 分块上传时，每块的体积
     chunk_size: '4mb',
@@ -147,6 +161,12 @@ var uploader = Qiniu.uploader({
 
         // 每个文件上传时，处理相关的事情
         'UploadProgress': function(up, file) {
+            $('#upload-progress-container').width('200px')
+            var progress = this.total.percent + '%'
+            $('#upload-progress')
+            .html(progress)
+            .width(progress)
+            .css('padding-left', '10px')
         },
 
         // 每个文件上传成功后，处理相关的事情
@@ -167,6 +187,7 @@ var uploader = Qiniu.uploader({
 
         // 上传出错时，处理相关的事情
         'Error': function(up, err, errTip) {
+            alert(errTip)
         },
 
         // 队列文件处理完毕后，处理相关的事情
@@ -181,5 +202,5 @@ var uploader = Qiniu.uploader({
             // return key
         }
     }
-});
+})
 </script>

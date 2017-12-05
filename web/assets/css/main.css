@@ -188,9 +188,15 @@ input:focus {
 }
 .status-running {
     background-color: lightgreen;
+    font-size: 10px;
+}
+.status-locked {
+    background-color: lightblue;
+    font-size: 10px;
 }
 .status-stopped {
     background-color: red;
+    font-size: 10px;
 }
 .text-todo {
     color: coral;
@@ -278,10 +284,24 @@ input:invalid {
 }
 .upload-res {
     display: block;
-    width: 80%;
+    width: 60%;
     height: 16px;
 }
 .bug-detail-list li span {
     font-weight: bold;
     font-size: 12px;
+}
+#upload-progress-container {
+    display: inline-block;
+    max-width: 200px;
+    border: 0;
+    background-color: lightgrey;
+}
+#upload-progress {
+    display: inline-block;
+    width: 0;
+    border: 0;
+    color: grey;
+    max-width: 190px;
+    background-color: lightgreen;
 }
