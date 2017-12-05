@@ -2,9 +2,7 @@
 <?= $this->layout('login') ?>
 <?= $this->title($title) ?>
 
-<h4>
-    <?= $title ?>
-</h4>
+<h4><?= $title ?></h4>
 
 <form method="POST">
     <?= csrf_feild() ?>
@@ -12,18 +10,25 @@
     <input value="<?= ($_REQUEST['lang'] ?? null) ?>"
     type="hidden" name="lang">
 
-    <label><?= L('ACCOUNT') ?>
+    <label>
+        <span class="label-title"><?= L('ACCOUNT') ?></span>
         <input type="text" name="account" required>
     </label>
-    <label><?= L('PASSWORD') ?>
+    <label>
+        <span class="label-title"><?= L('PASSWORD') ?></span>
         <input type="password" name="passwd" required>
     </label>
 
-    <label><?= L('REMEMBER_ME') ?>
+    <label>
+        <span class="label-title">
+            <i><small><?= L('REMEMBER_ME') ?></small></i>
+        </span>
         <input type="checkbox" name="remember">
     </label>
 
     <label>
-        <input type="submit" value="<?= L('SIGNIN') ?>">
+        <span class="label-title">
+            <input type="submit" value="<?= L('SIGNIN') ?>">
+        </span>
     </label>
 </form>

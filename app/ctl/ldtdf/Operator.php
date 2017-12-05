@@ -8,6 +8,7 @@ class Operator extends CtlBase
 {
     public function index()
     {
-        return view('ldtdf/operator/index');
+        return view('ldtdf/operator/index')
+        ->share('hide-search-bar', true);
     }
 }

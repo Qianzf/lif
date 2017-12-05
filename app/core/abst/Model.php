@@ -132,7 +132,11 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
             if (! isset($res[0])) {
                 // If only one result
                 // Then return current model instance itself
+                if ($this->query()->isJoin()) {
+                    $this->clean();
+                }
                 $this->items = $res;
+                $this->alive = true;
 
                 return $this;
             }
@@ -229,7 +233,7 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
                 ->where($_pk, $this->items[$_pk])
                 ->update($data);
 
-                $pk = $this->items($_pk);
+                $pk = $this->items[$_pk];
             } else {
                 $pk = $status = $this->query()->insert($data);
             }
@@ -379,8 +383,6 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
         $cond    = $params['cond'] ?? '=';
         $selects = $model->getTable().'.*';
         $where   = $this->getTable().'.'.$lk;
-        $oneonly = isset($params['type']) && (1 === $params['type']);
-        $fetch   = $oneonly ? 'get' : 'first';
 
         $model = $model
         ->select($selects)
@@ -410,17 +412,19 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
             $model = call_user_func_array([$model, 'sort'], [$params['sort']]);
         }
 
-        if (! $oneonly) {
-            legal_or($params, [
-                'from' => ['int|min:1', 0],
-                'take' => ['int|min:1', 20],
-            ]);
+        legal_or($params, [
+            'from' => ['int|min:1', 0],
+            'take' => ['int|min:1', 20],
+        ]);
 
-            $model = $model->limit(
-                $params['from'],
-                $params['take']
-            );
-        }
+        $model = $model->limit(
+            $params['from'],
+            $params['take']
+        );
+
+        $fetch = (1 == $params['take']) ? 'first' : 'get';
+
+        // ee($model->$fetch(false, 2));
         
         return call_user_func_array([$model, $fetch], []);
     }
@@ -444,9 +448,7 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
     public function hasMany(...$params) {
         return $this->parseRelation(
             'has-many',
-            $params, function (&$params) {
-                $params['type'] = 1;
-            }
+            $params
         );
     }
 
@@ -457,7 +459,7 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
         $model = $this->parseRelation(
             'belongs-to',
             $params, function (&$params) {
-                $params['type'] = 2;
+                $params['take'] = 1;
             }
         );
 
@@ -471,7 +473,7 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
     public function parseRelation(
         string $relation,
         array $params,
-        \Closure $callback
+        \Closure $callback = null
     ) {
         if (isset($params[0])) {
             // !!! Parameter index order will affect result here
@@ -512,7 +514,9 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
                 excp("Illegal {$relation} parameters(3)");
             }
 
-            $callback($_params);
+            if ($callback) {
+                $callback($_params);
+            }
 
             return $this->join($_params);
         }

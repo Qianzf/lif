@@ -221,7 +221,7 @@ input:invalid {
     background-repeat: no-repeat;
     background-position: 10px 8px;
     padding-left: 40px;
-    width: 98%;
+    width: 134%;
     font-size: 12px !important;
     /*margin-bottom: 10px;*/
 }
@@ -253,7 +253,7 @@ input:invalid {
     background-color: #eee;
 }
 #selected-search-res {
-    width: 248px;
+    width: 320px;
     border: 1px solid #ddd;
 }
 #selected-search-res label {

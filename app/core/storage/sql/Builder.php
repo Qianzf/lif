@@ -15,6 +15,7 @@ class Builder implements \Lif\Core\Intf\DBConn
     protected $sql      = null;    // Used for prepare statement
     protected $_sql     = null;    // Used for debug
     protected $crud     = null;    // SQL query type
+    protected $join     = false;   // Whether SQL query join tables
     protected $status   = null;    // Statement execute status
     protected $result   = [];      // Statement execute result
 
@@ -75,6 +76,11 @@ class Builder implements \Lif\Core\Intf\DBConn
         if ($this->inTrans()) {
             $this->db()->rollBack();    // !!! `B` is uppercase
         }
+    }
+
+    public function isJoin()
+    {
+        return $this->join;
     }
 
     public function getTable()
@@ -310,16 +316,22 @@ class Builder implements \Lif\Core\Intf\DBConn
             $condOpWithVal      = " $condOp ?";
             $this->bindValues[] = $condVal;
         } elseif (is_array($condVal)) {
-            $stubs = '';
-            foreach ($condVal as $key => $val) {
-                $item   = escape_fields($val);
-                $this->bindValues[] = $val;
-                $stubs .= '?';
-                if (false !== next($condVal)) {
-                    $stubs .= ',';
+            if (($condVal['key'] ?? null)
+                && !empty_safe($condVal['val'] ?? null)
+            ) {
+                $condOpWithVal = " {$condVal['key']} {$condVal['val']}";
+            } else {
+                $stubs = '';
+                foreach ($condVal as $key => $val) {
+                    $item = escape_fields($val);
+                    $this->bindValues[] = $val;
+                    $stubs .= '?';
+                    if (false !== next($condVal)) {
+                        $stubs .= ',';
+                    }
                 }
+                $condOpWithVal = "in ($stubs)";
             }
-            $condOpWithVal = "in ($stubs)";
         } elseif (is_null($condVal)) {
             $condOpWithVal = ' is null';
         } elseif (is_closure($condVal)) {
@@ -672,6 +684,8 @@ class Builder implements \Lif\Core\Intf\DBConn
             .' '
             .escape_fields($fdRight);
         }
+
+        $this->join = true;
 
         return $this;
     }

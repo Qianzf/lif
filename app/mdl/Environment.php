@@ -30,4 +30,22 @@ class Environment extends Mdl
             'id'
         );
     }
+
+    public function projects()
+    {
+        return $this->hasMany(
+            Project::class,
+            'project',
+            'id'
+        );   
+    }
+
+    public function server()
+    {
+        return $this->belongsTo(
+            Server::class,
+            'server',
+            'id'
+        );
+    }
 }

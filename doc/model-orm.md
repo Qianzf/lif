@@ -101,7 +101,10 @@ class User extends Mdl
 
             // Dynamic where conditions in sub join table
             'fwhere' => [
-                'status' => 1,
+                'task' => [
+                    'cnd' => '>',
+                    'val' => 1,
+                ],
             ],
         ]);
     }

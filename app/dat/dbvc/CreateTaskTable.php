@@ -52,9 +52,10 @@ class CreateTaskTable extends Dit
             ->comment('Task related code branch in vcs');
 
             $table
-            ->string('env', 64)
-            ->nullable()
-            ->comment('Deployed enviornment of current task');
+            ->int('env')
+            ->unsigned()
+            ->default(0)
+            ->comment('Deployed env of current task => `enviornment`.`id`');
 
             $table
             ->char('manually', 8)

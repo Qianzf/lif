@@ -24,6 +24,15 @@ class Task extends Mdl
         'deploy'   => 'string',
     ];
 
+    public function environment()
+    {
+        return $this->belongsTo(
+            Environment::class,
+            'env',
+            'id'
+        );
+    }
+
     public function current()
     {
         return $this->belongsTo(
