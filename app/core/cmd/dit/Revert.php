@@ -70,7 +70,7 @@ class Revert extends Command
         // Find the dits class to be reverted
         $query = db()
         ->table('__dit__')
-        ->select('id', 'name')
+        ->select('id', 'name', 'type')
         ->whereVersion('>', $this->ditVersion);
 
         // Check if dit ID exists
@@ -78,17 +78,16 @@ class Revert extends Command
             $query = $query->whereId($this->ditID);
         }
         
-        if (! ($_dits = $query->get())) {
+        if (! ($dits = $query->get())) {
             $this->nothingHappened();
         }
 
-        $dits = array_column($_dits, 'name');
-        $ids  = $this->ditID ? $this->ditID : array_column($_dits, 'id');
+        $ids  = $this->ditID ? $this->ditID : array_column($dits, 'id');
         $text = $this->ditID ? implode(',', $ids) : '';
 
         // Revert dits
         foreach ($dits as $dit) {
-            $ns = nsOf('dbvc', $dit, false);
+            $ns = nsOf($dit['type'], $dit['name'], false);
             if (class_exists($ns)) {
                 if (($_dit = (new $ns)) instanceof \Lif\Core\Storage\Dit) {
                     $_dit->revert();

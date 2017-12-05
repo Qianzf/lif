@@ -12,6 +12,6 @@ class Commit extends Command
 
     public function fire()
     {
-        $this->__commit('dbvc');
+        $this->commit('dbvc');
     }
 }

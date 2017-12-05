@@ -13,6 +13,6 @@ class Seed extends Command
 
     public function fire()
     {
-        $this->__commit('dbseed');
+        $this->commit('dbseed');
     }
 }

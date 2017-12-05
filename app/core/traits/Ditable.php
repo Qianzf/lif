@@ -4,7 +4,7 @@ namespace Lif\Core\Traits;
 
 trait Ditable
 {
-    public function __commit(string $type = 'dbvc')
+    public function commit(string $type = null)
     {
         $dits = db()
         ->table('__dit__')
@@ -17,6 +17,19 @@ trait Ditable
         $committed = array_column($dits, 'name');
         $version   = intval($dits[0]['version'] ?? 0);
 
+        $types = ['dbvc', 'dbseed'];
+        // !!! Make sure Same commit same version number
+        if (!is_null($type) && in_array($type, $types)) {
+            $types = [$type];
+        }
+
+        foreach ($types as $_type) {
+            $this->__commit($committed, $version, $_type);
+        }
+    }
+
+    public function __commit(array $committed, int $version, string $type)
+    {
         load_object(pathOf($type),
             function (string $dit) use ($committed, $version, $type)
             {
