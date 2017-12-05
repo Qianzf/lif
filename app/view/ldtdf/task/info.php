@@ -133,7 +133,7 @@
 <div id="task-notes">
     <span class="stub-2"></span>
     <span class="text-info">[</span>
-    <small><?= L('TASK_NOTES') ?></small>
+    <small><?= L('TASK_REMARKS') ?></small>
     <span class="text-info">]</span>
 </div>
 <textarea

@@ -18,9 +18,9 @@
     </tr>
 
     <?php if (isset($tasks) && iteratable($tasks)): ?>
-    <?php foreach ($tasks as $task): ?>
+    <?php foreach ($tasks as $key => $task): ?>
     <tr>
-        <td><?= $task['id'] ?></td>
+        <td><?= $key+1 ?></td>
         <td class="text-task"><small><em>
             <?= L($task->origin_type) ?>
         </em></small></td>

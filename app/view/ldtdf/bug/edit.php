@@ -101,7 +101,7 @@
     </label>
 
     <label>
-        <span class="label-title"><?= L('RECURABLE') ?>？</span>
+        <span class="label-title"><?= L('RECURABLE') ?></span>
         <input type="radio" name="recurable" value="yes" checked>
         <span><?= L('YES') ?></span>
         <input type="radio" name="recurable" value="no">
