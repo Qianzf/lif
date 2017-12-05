@@ -9,7 +9,7 @@ class Seed extends Command
 
     use \Lif\Core\Traits\Ditable;
 
-    protected $intro = 'Commit new-added database seed';
+    protected $intro = 'Commit new-added database seeds';
 
     public function fire()
     {

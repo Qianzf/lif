@@ -8,7 +8,7 @@ class Commit extends Command
 {
     use \Lif\Core\Traits\Ditable;
 
-    protected $intro = 'Commit new-added dits';
+    protected $intro = 'Commit new-added database schemas';
 
     public function fire()
     {

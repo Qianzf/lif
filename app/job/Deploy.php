@@ -61,7 +61,7 @@ class Deploy extends \Lif\Core\Abst\Job
     // 3. Find server with project path `C` for environment `B`
     // 4. Connect to server and pull task branch and execute deploy script
     // 5. Switch deploy status and assign to proper person with remarks
-    public function run() : bool
+    public function run() : bool™
     {
         if (!($task = $this->getTask()) || !$task->isAlive()) {
             return true;
