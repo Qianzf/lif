@@ -223,6 +223,8 @@ return [
     'RECURABLE' => 'Recurable or not',
     'PLATFORM' => 'Platform',
     'VERSION' => 'Version',
+    'SYSTEM' => 'System',
+    'INNER' => 'Inner',
     'ERROR' => 'Error',
     'MSG' => 'Message',
     'CODE' => 'Code',

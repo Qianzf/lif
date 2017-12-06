@@ -43,7 +43,10 @@ class Task extends Ctl
             $where[] = ['name', 'like', "%{$search}%"];
         }
 
-        return response($task->getAssignableUsers($where));    
+        return response($task->getAssignableUsers(
+            $where,
+            share('user.id')
+        ));
     }
 
     public function activate(TaskModel $task)
@@ -113,13 +116,15 @@ class Task extends Ctl
             return redirect($this->route);
         }
 
-        if (! $task->canBeAssignedBy()) {
+        $user = share('user.id');
+
+        if (! $task->canBeAssignedBy($user)) {
             share_error_i18n('ASSIGN_PERMISSION_DENIED');
             return redirect($this->route);
         }
 
         $data = $this->request->posts();
-        $data['assign_from'] = share('user.id');
+        $data['assign_from'] = $user;
         
         if (true !== ($err = validate($data, [
             'assign_from' => 'need|int|min:1',
@@ -266,7 +271,7 @@ class Task extends Ctl
         $activeable  = ($task->canBeActivatedBy($user));
         $cancelable  = ($task->canBeCanceledBy($user));
         $confirmable = ($task->canBeConfirmedBY($user));
-        $editable    = ($task->canBeEditedBY());
+        $editable    = ($task->canBeEditedBY($user));
         $assignable  = ($task->canBeAssignedBy($user));
         $story = $bug = null;
         if ('story' == strtolower($task->origin_type)) {
@@ -326,7 +331,7 @@ class Task extends Ctl
             && ($status > 0)
         ) {
             $msg = 'CREATED_SUCCESS';
-            $task->addTrending('create');
+            $task->addTrending('create', $data['creator']);
         } else {
             $msg    = L('CREATED_FAILED', L($status));
             $status = 'new';

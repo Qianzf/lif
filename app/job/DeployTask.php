@@ -25,11 +25,6 @@ class DeployTask extends \Lif\Core\Abst\Job
 
     public function getEnv($task, $project)
     {
-        // Check if task aleay deploy to a env already
-        if ($env = $task->environment()) {
-            return $env;
-        }
-
         switch (strtolower($task->status)) {
             case 'waitting_dep2test':
             case 'waitting_update2test': {
@@ -42,6 +37,11 @@ class DeployTask extends \Lif\Core\Abst\Job
             } break;
             
             default: return false; break;
+        }
+
+        // Check if task aleay deploy to a env already
+        if ($env = $task->environment()) {
+            return $env;
         }
 
         return $project->environments([], [
@@ -63,39 +63,111 @@ class DeployTask extends \Lif\Core\Abst\Job
     // 5. Switch deploy status and assign to proper person with remarks
     public function run() : bool
     {
-        if (!($task = $this->getTask()) || !$task->isAlive()) {
+        if (!($task = $this->getTask())) {
             return true;
         }
 
-        if (!($project = $task->project()) || !$project->isAlive()) {
+        if ($task->isAlive()) {
+            if (! ($branch = trim($task->branch))) {
+                // Update task status and add into trending
+                if ($status = $this->getResponseTaskStatus($task)) {
+                    $task->assign([
+                        'assign_from'  => $task->current,
+                        'assign_to'    => $task->last,
+                        'status'       => $status,
+                        'assign_notes' => L('MISSING_TASK_BRANCH'),
+                    ]);
+                }
+
+                return true;
+            }
+        } else {
+            return true;
+        }
+
+        if (!($project = $task->project())
+            || !$project->isAlive()
+            || ('web' != strtolower($project->type))
+        ) {
             return true;
         }
 
         if (!($env = $this->getEnv($task, $project)) || !$env->isAlive()) {
+            pr($env);
             return true;
+        } else {
+            $env->task   = $task->id;
+            $env->status = 'locked';
+            $env->save();
         }
 
         if (!($server = $env->server()) || !$server->isAlive()) {
             return true;
         }
         
-        pr(
-            $this
-            ->getSSH2($server->host)
-            ->setPubkey($server->pubk)
-            ->setPrikey($server->prik)
-            ->connect([
-                'hostkey' => 'ssh-rsa',
-            ])
-            ->exec([
-                'whoami',
-                "cd {$env->path}",
-                'pwd',
-                'git branch',
-                'git status',
-            ])
-        );
+        $res = $this
+        ->getSSH2($server->host)
+        ->setPubkey($server->pubk)
+        ->setPrikey($server->prik)
+        ->connect([
+            'hostkey' => 'ssh-rsa',
+        ])
+        ->exec($this->getDeployCommands($env->path, $task->branch));
+
+        if (0 === ($res['num'] ?? false)) {
+            $from = $task->current;
+            $to   = $task->last;
+            $status = 'OK';
+            $notes = null;
+        } else {
+            $from = $task->current;
+            $to   = $task->last;
+            $status = $this->getResponseTaskStatus($task);
+            $notes  = $res['err'] ?? L('INNER_ERROR');
+        }
+
+        $task->assign([
+            'assign_from'  => $from,
+            'assign_to'    => $to,
+            'status'       => $status,
+            'assign_notes' => $notes,
+        ]);
 
         return true;
+    }
+
+    protected function getDeployCommands(string $path, string $branch) : array
+    {
+        return [
+            "cd {$path}",
+
+            'git adds -A',
+            'git resets --hard HEAD',
+            // 'git checkouts master',
+
+            // 'git branch | grep -v master | xargs git branch -D',
+            
+            // need newer version of git for `--no-edit` option
+            "git pulls origin {$branch} --no-edit",
+        ];
+    }
+
+    private function getResponseTaskStatus($task)
+    {
+        switch (strtolower($task->status)) {
+            case 'waitting_dep2test':
+            case 'waitting_update2test': {
+                return 'waitting_fix_test';
+            } break;
+
+            case 'waitting_dep2stage':
+            case 'waitting_update2stage': {
+                return 'waitting_fix_stage';
+            } break;
+            
+            default: return false; break;
+        }
+
+        return false;
     }
 }

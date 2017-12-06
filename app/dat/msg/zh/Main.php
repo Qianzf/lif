@@ -278,6 +278,8 @@ return [
     'VERSION' => '版本',
     'OS' => '操作系统',
     'OS_VER' => '系统版本',
+    'SYSTEM' => '系统',
+    'INNER' => '内部',
     'ERROR' => '错误',
     'MSG' => '信息',
     'CODE' => '代码',

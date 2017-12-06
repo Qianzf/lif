@@ -253,19 +253,6 @@ if (! fe('ip_of_client')) {
         return $clientIP ?? 'UNKNOWN';
     }
 }
-if (! fe('share')) {
-    function share(string $key, $val = null, bool $delete = false) {
-        $session = session();
-
-        if ($delete) {
-            return $session->delete($key);
-        } elseif (! is_null($val)) {
-            return $session->set($key, $val);
-        } else {
-            return $session->get($key);
-        }
-    }
-}
 if (! fe('shares')) {
     function shares(array $data = []) {
         return session()->sets($data);
@@ -286,13 +273,6 @@ if (! fe('share_flush')) {
         return session()->flush($key);
     }
 }
-if (! fe('syslang')) {
-    function sysL() {
-        return $_REQUEST['lang'] ?? (
-            session()->get('__lang') ?? 'zh'
-        );
-    }
-}
 if (! fe('session')) {
     function session() {
         $session = $GLOBALS['LIF_SESSION'] ?? null;
@@ -301,6 +281,26 @@ if (! fe('session')) {
         }
 
         return $session;
+    }
+}
+if (! fe('share')) {
+    function share(string $key, $val = null, bool $delete = false) {
+        $session = session();
+
+        if ($delete) {
+            return $session->delete($key);
+        } elseif (! is_null($val)) {
+            return $session->set($key, $val);
+        } else {
+            return $session->get($key);
+        }
+    }
+}
+if (! fe('syslang')) {
+    function syslang() {
+        return $_REQUEST['lang'] ?? (
+            session()->get('__lang') ?? 'zh'
+        );
     }
 }
 if (! fe('view')) {

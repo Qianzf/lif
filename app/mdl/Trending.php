@@ -8,12 +8,13 @@ class Trending extends Mdl
 
     public function add(
         string $aciton,
+        int $user,
         string $refType = null,
         string $refID = null
     ) {
         return $this->insert([
             'at'       => date('Y-m-d H:i:s'),
-            'user'     => share('user.id'),
+            'user'     => $user,
             'action'   => $aciton,
             'ref_type' => $refType,
             'ref_id'   => $refID,
@@ -22,8 +23,6 @@ class Trending extends Mdl
 
     public function list(array $params)
     {
-        // $role = (share('user.role') == 'admin') ? -1 : 'admin';
-
         legal_or($params, [
             'user' => ['int|min:1', null],
             'from' => ['int|min:0', 0],
@@ -36,7 +35,6 @@ class Trending extends Mdl
             ->sort([
                 'trending.at' => 'desc',
             ])
-            // ->where('user.role', '!=', $role)
             ->limit(
                 $params['from'],
                 $params['take']
@@ -48,9 +46,6 @@ class Trending extends Mdl
 
         if (! $user->items()) {
             client_error('USER_NOT_FOUND', 404);
-        }
-        if (($user->role == 'admin') && (share('user.role') != 'admin')) {
-            return [];
         }
 
         return $user->trendings($params['from'], $params['take']);

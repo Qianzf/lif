@@ -75,9 +75,7 @@ class Run extends Command
 
         while (true) {
             sleep(1);
-            if (is_null($this->run())
-                && !$this->daemon
-            ) {
+            if (is_null($this->run()) && !$this->daemon) {
                 exit(0);
             }
         }

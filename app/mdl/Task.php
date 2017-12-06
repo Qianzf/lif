@@ -2,7 +2,7 @@
 
 namespace Lif\Mdl;
 
-use Lif\Job\{DeployTask, SendMail};
+use Lif\Job\{DeployTask, SendMailWhenTaskAssign};
 
 class Task extends Mdl
 {
@@ -42,57 +42,30 @@ class Task extends Mdl
         );
     }
 
-    private function enqueueDeployTaskJob(bool $deploy = false)
+    private function enqueueTaskJobs(bool $deploy = false)
     {
-        if (! $deploy) {
-            return true;
-        }
-
         if ($this->isAlive()) {
             $this->prepare();
 
-            $this
-            ->enqueue(
-                (new DeployTask)->setTask($this->id)
-            )
-            ->on('task_deploy')
-            ->try(3)
-            ->timeout(30);
-        }
+            if ($deploy) {
+                $this
+                ->enqueue(
+                    (new DeployTask)->setTask($this->id)
+                )
+                ->on('task_deploy')
+                ->try(3)
+                ->timeout(30);
+            }
 
-        return true;
-    }
-
-    private function enqueueSendMailJob()
-    {
-        $current = $this->current();
-
-        if (! $current->isAlive()) {
-            return true;
-        }
-
-        if ($this->isAlive()) {
-            $this->prepare();
-
-            $url = url("dep/tasks/{$this->id}");
-
-            $this
-            ->enqueue(
-                (new SendMail)
-                ->setEmails([
-                    // $current->email => $current->name,
-                    'lcj@hcmchi.cn' => 'LCJ',
-                ])
-                ->setTitle(L("STATUS_$this->status"))
-                ->setBody(trim("
-                    <a href='{$url}'>
-                    {$this->origin()->title}
-                    </a>
-                "))
-            )
-            ->on('mail_send')
-            ->try(3)
-            ->timeout(30);
+            // if (($current = $this->current())->isAlive()) {
+            //     $this
+            //     ->enqueue(
+            //         (new SendMailWhenTaskAssign)->setTask($this->id)
+            //     )
+            //     ->on('mail_send')
+            //     ->try(3)
+            //     ->timeout(30);
+            // }
         }
 
         return true;
@@ -123,9 +96,13 @@ class Task extends Mdl
         }
 
         if (($this->save() >= 0)
-            && $this->enqueueDeployTaskJob($deploy)
-            && $this->enqueueSendMailJob()
-            && ($this->addTrending('assign', $this->current, $notes) > 0)
+            && $this->enqueueTaskJobs($deploy)
+            && ($this->addTrending(
+                'assign',
+                $params['assign_from'],
+                $params['assign_to'],
+                $notes
+            ) > 0)
         ) {
 
             db()->commit();
@@ -139,7 +116,7 @@ class Task extends Mdl
     }
 
     // What actions can given user role do
-    public function getActionsOfRole(int $user = null)
+    public function getActionsOfRole(int $user)
     {
         if (is_null($user)) {
             return array_column(
@@ -158,7 +135,7 @@ class Task extends Mdl
         return $this->$handler();
     }
 
-    public function getAssignableUsers(array $where = [])
+    public function getAssignableUsers(array $where = [], int $self)
     {
         $status = underline2camelcase(strtolower($this->status));
         $taskStatusHandler = "getAssignableUsersWhen{$status}";
@@ -166,7 +143,7 @@ class Task extends Mdl
         $query = db()
         ->table('user')
         ->select('id', 'name', 'role')
-        ->whereId('!=', share('user.id'));
+        ->whereId('!=', $self);
 
         if ($where) {
             $query = $query->where($where);
@@ -232,9 +209,9 @@ class Task extends Mdl
         return $this->$taskStatusHandler();
     }
 
-    public function canBeEditedBY(int $user = null)
+    public function canBeEditedBY(int $user)
     {
-        if ($user = ($user ?? share('user.id'))) {
+        if ($user) {
             return (
                 ($this->creator == $user)
                 && (strtolower($this->status) == 'activated')
@@ -298,9 +275,9 @@ class Task extends Mdl
         return array_column($status, 'key');
     }
 
-    public function canBeActivatedBy(int $user = null)
+    public function canBeActivatedBy(int $user)
     {
-        if ($user = $user ?? (share('user.id') ?? null)) {
+        if ($user) {
             $status = in_array(strtolower($this->status), [
                 'online',
                 'finished',
@@ -313,9 +290,9 @@ class Task extends Mdl
         return false;
     }
 
-    public function canBeCanceledBy(int $user = null)
+    public function canBeCanceledBy(int $user)
     {
-        if ($user = $user ?? (share('user.id') ?? null)) {
+        if ($user) {
             $status = !in_array(strtolower($this->status), [
                 'canceled',
                 'finished',
@@ -328,9 +305,9 @@ class Task extends Mdl
         return false;
     }
 
-    public function canBeConfirmedBY(int $user = null)
+    public function canBeConfirmedBY(int $user)
     {
-        if ($user = $user ?? (share('user.id') ?? null)) {
+        if ($user) {
             $status = strtolower($this->status);
             if ($status == 'activated') {
                 return (strtolower($this->current()->role) == 'dev');
@@ -350,9 +327,9 @@ class Task extends Mdl
         excp('Missing user id.');
     }
 
-    public function canBeAssignedBy(int $user = null)
+    public function canBeAssignedBy(int $user)
     {
-        if ($user = $user ?? (share('user.id') ?? null)) {
+        if ($user) {
 
             if (in_array(strtolower($this->status), [
                 'online',
@@ -433,13 +410,14 @@ class Task extends Mdl
 
     public function addTrending(
         string $action,
+        int $user,
         int $target = null,
         string $notes = null
     )
     {
         return db()->table('trending')->insert([
             'at'        => date('Y-m-d H:i:s'),
-            'user'      => share('user.id'),
+            'user'      => $user,
             'action'    => $action,
             'ref_state' => $this->status,
             'ref_type'  => 'task',

@@ -30,7 +30,7 @@ class Story extends Ctl
         }
 
         $user       = share('user.id');
-        $editable   = ($story->canEdit());
+        $editable   = ($story->canEdit($user));
         $assignable = ($story->canBeDispatchedBy($user));
 
         view('ldtdf/story/info')

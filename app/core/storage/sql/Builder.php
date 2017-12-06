@@ -330,7 +330,7 @@ class Builder implements \Lif\Core\Intf\DBConn
                         $stubs .= ',';
                     }
                 }
-                $condOpWithVal = "in ($stubs)";
+                $condOpWithVal = " in ($stubs)";
             }
         } elseif (is_null($condVal)) {
             $condOpWithVal = ' is null';

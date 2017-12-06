@@ -90,14 +90,17 @@ class Db implements Queue
         $job = $this->queue(true)
         ->whereLock(0)
         ->where(function ($db) {
-            $db->whereTried('<', $db->native('try'));
+            $db->whereTried('<', $db->native('`try`'));
         })
         ->sort([
             'create_at' => 'asc',
-        ])
-        ->first();
+        ]);
 
-        if (! $job) {
+        if ($queues) {
+            $job = $job->whereQueue($queues);
+        }
+
+        if (! ($job = $job->first())) {
             return false;
         }
 

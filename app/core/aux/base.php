@@ -2123,18 +2123,30 @@ if (! fe('ssh_exec_array')) {
     }
 }
 if (! fe('format_url')) {
-    function format_url(string $uri) {
+    function format_uri(string $uri) {
         return implode('/', array_filter(explode('/', $uri)));
     }
 }
 if (! fe('url')) {
     function url(string $uri = null) {
-        $schema = $_SERVER['REQUEST_SCHEME'] ?? 'http';
-        $host   = $_SERVER['HTTP_HOST'];
-        $uri    = $uri ?? ($_SERVER['REQUEST_URI'] ?? '/');
-        // $query  = $_SERVER['QUERY_STRING'] ?? '';
-        $url    = format_url("{$host}/{$uri}");
+        if ('web' == context()) {
+            $schema = $_SERVER['REQUEST_SCHEME'] ?? 'http';
+            $host   = $host ?? ($_SERVER['HTTP_HOST'] ?? null);
+            $uri    = $uri  ?? ($_SERVER['REQUEST_URI'] ?? '/');
+            // $query  = $_SERVER['QUERY_STRING'] ?? '';
+        } else {
+            $url    = parse_url(config('app.host').$uri);
+            $schema = $url['schema'] ?? 'http';
+            $host   = $url['host']   ?? null;
+            $uri    = $url['path']   ?? '/';
+        }
 
-        return "{$schema}://{$url}";
+        if (! $host) {
+            excp('Missing URL host.');
+        }
+
+        $uri = format_uri("{$host}/{$uri}");
+
+        return "{$schema}://{$uri}";
     }
 }

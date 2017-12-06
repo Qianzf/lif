@@ -26,11 +26,13 @@ class Init extends Command
             
             $table
             ->tinyint('try')
-            ->default(0)
+            ->default(3)
+            ->unsigned()
             ->comment('How many tried times to be consider as failed');
             
             $table
             ->tinyint('tried')
+            ->unsigned()
             ->default(0)
             ->comment('Tried times of this job in current try loop');
             

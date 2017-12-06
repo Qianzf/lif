@@ -6,7 +6,7 @@
     <select name="system-lang">
     
         <?php foreach (share('languages') as $key => $lang) { ?>
-        <?php $selected = ($key == sysL()) ? 'selected' : '' ?>
+        <?php $selected = ($key == syslang()) ? 'selected' : '' ?>
         <option value="<?= $key ?>" <?= $selected ?>><?= $lang ?></option>
         <?php } ?>
 

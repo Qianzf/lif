@@ -18,7 +18,7 @@ class Bug extends Ctl
         }
 
         $user       = share('user.id');
-        $editable   = ($bug->canEdit());
+        $editable   = ($bug->canEdit($user));
         $assignable = ($bug->canBeDispatchedBy($user));
 
         view('ldtdf/bug/info')
@@ -98,7 +98,7 @@ class Bug extends Ctl
             && ($status > 0)
         ) {
             $msg = 'CREATED_SUCCESS';
-            $bug->addTrending('create');
+            $bug->addTrending('create', $data['creator']);
         } else {
             share_error_i18n(L('CREATED_FAILED', L($status)));
 

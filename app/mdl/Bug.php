@@ -29,16 +29,16 @@ class Bug extends Mdl
         );
     }
 
-    public function canEdit()
+    public function canEdit(int $user)
     {
         return (
-            ($this->creator == share('user.id'))
+            ($this->creator == $user)
         );
     }
 
-    public function canBeDispatchedBy(int $user = null)
+    public function canBeDispatchedBy(int $user)
     {
-        if ($user = $user ?? (share('user.id') ?? null)) {
+        if ($user) {
             return (
                 ($this->creator == $user)
             );
@@ -104,11 +104,11 @@ class Bug extends Mdl
         ->all($model);
     }
 
-    public function addTrending(string $action)
+    public function addTrending(string $action, int $user)
     {
         db()->table('trending')->insert([
             'at'     => date('Y-m-d H:i:s'),
-            'user'   => share('user.id'),
+            'user'   => $user,
             'action' => $action,
             'ref_type' => 'bug',
             'ref_id'   => $this->id,

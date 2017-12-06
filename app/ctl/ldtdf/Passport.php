@@ -58,7 +58,7 @@ class Passport extends Ctl
 
         shares($shares);
 
-        $trend->add('login_sys');
+        $trend->add('login_sys', $user->id);
 
         redirect('/dep');
     }
