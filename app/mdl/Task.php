@@ -2,7 +2,7 @@
 
 namespace Lif\Mdl;
 
-use Lif\Job\Deploy;
+use Lif\Job\{DeployTask, SendMail};
 
 class Task extends Mdl
 {
@@ -53,9 +53,9 @@ class Task extends Mdl
 
             $this
             ->enqueue(
-                (new Deploy)->setTask($this->id)
+                (new DeployTask)->setTask($this->id)
             )
-            ->on('deploy')
+            ->on('task_deploy')
             ->try(3)
             ->timeout(30);
         }
@@ -63,10 +63,47 @@ class Task extends Mdl
         return true;
     }
 
+    private function enqueueSendMailJob()
+    {
+        $current = $this->current();
+
+        if (! $current->isAlive()) {
+            return true;
+        }
+
+        if ($this->isAlive()) {
+            $this->prepare();
+
+            $url = url("dep/tasks/{$this->id}");
+
+            $this
+            ->enqueue(
+                (new SendMail)
+                ->setEmails([
+                    // $current->email => $current->name,
+                    'lcj@hcmchi.cn' => 'LCJ',
+                ])
+                ->setTitle(L("STATUS_$this->status"))
+                ->setBody(trim("
+                    <a href='{$url}'>
+                    {$this->origin()->title}
+                    </a>
+                "))
+            )
+            ->on('mail_send')
+            ->try(3)
+            ->timeout(30);
+        }
+
+        return true;
+    }
+
+    // !!! $params should be validated before
     public function assign(array $params)
     {
         db()->start();
         
+        $this->last    = $params['assign_from'];
         $this->current = $params['assign_to'];
         $this->status  = strtolower($params['action']);
         $notes  = ($params['assign_notes'] ?? null);
@@ -87,6 +124,7 @@ class Task extends Mdl
 
         if (($this->save() >= 0)
             && $this->enqueueDeployTaskJob($deploy)
+            && $this->enqueueSendMailJob()
             && ($this->addTrending('assign', $this->current, $notes) > 0)
         ) {
 

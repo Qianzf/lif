@@ -119,6 +119,7 @@ class Run extends Command
                     @sem_acquire($signal);
                     shm_put_var($shm, JOB_STATUS, intval($status));
                     @sem_release($signal);
+                    @sem_remove($signal);
                     // Exit child process and let master process return result
                     exit(posix_kill(posix_getpid(), SIGKILL));
                 } else {
@@ -146,8 +147,7 @@ class Run extends Command
                     }
                 }
 
-                shm_remove($shm);
-                sem_remove($signal);
+                @shm_remove($shm);
 
                 return $success;
             } else {

@@ -36,7 +36,7 @@ class SwiftMailer implements \Lif\Core\Intf\Mailer
         $message = (new \Swift_Message($params['title']))
         ->setFrom([$config['sender_email'] => $config['sender_name']])
         ->setTo($params['to'])
-        ->setBody($params['body'])
+        ->setBody($params['body'], ($params['mime'] ?? 'text/html'))
         ;
 
         $count = count($params['to']);

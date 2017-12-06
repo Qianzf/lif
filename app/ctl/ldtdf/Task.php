@@ -119,8 +119,10 @@ class Task extends Ctl
         }
 
         $data = $this->request->posts();
+        $data['assign_from'] = share('user.id');
         
         if (true !== ($err = validate($data, [
+            'assign_from' => 'need|int|min:1',
             'assign_to' => 'need|int|min:1',
             'action'    => 'need|string|notin:0',
             'branch'    => 'when:action=WAITTING_DEP2TEST|need|string|notin:0',

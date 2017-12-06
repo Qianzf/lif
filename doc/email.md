@@ -32,7 +32,7 @@ email([
         'user2@example.com',
         ],
     'title' => 'Email Subject',
-    'body'  => 'Email context,
+    'body'  => 'Email context',
 ]);
 ```
 

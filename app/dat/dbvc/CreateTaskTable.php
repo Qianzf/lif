@@ -41,9 +41,15 @@ class CreateTaskTable extends Dit
             ->comment('Task status => `task_status`.`key`');
 
             $table
+            ->int('last')
+            ->unsigned()
+            ->default(0)
+            ->comment('Last realted user of this task => `user`.`id`');
+
+            $table
             ->int('current')
             ->unsigned()
-            ->nullable()
+            ->default(0)
             ->comment('Current realted user of this task => `user`.`id`');
 
             $table

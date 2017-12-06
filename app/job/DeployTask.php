@@ -2,7 +2,7 @@
 
 namespace Lif\Job;
 
-class Deploy extends \Lif\Core\Abst\Job
+class DeployTask extends \Lif\Core\Abst\Job
 {
     protected $task = null;
 

@@ -307,6 +307,7 @@ if (! fe('nsOf')) {
             $nsArr = [
                 'ctl'   => 'Lif\Ctl\\',
                 'mdl'   => 'Lif\Mdl\\',
+                'job'   => 'Lif\Job\\',
                 'dbvc'  => 'Lif\Dat\\Dbvc\\',
                 'dbseed'=> 'Lif\Dat\\Dbseed\\',
                 'mdwr' => 'Lif\Mdwr\\',
@@ -1071,11 +1072,12 @@ if (! fe('ns2classname')) {
 }
 if (! fe('classname')) {
     function classname($obj) {
-        if (!is_object($obj)) {
-            return false;
+        if (is_string($obj)) {
+            return underline2camelcase(str_replace('-', '_', $obj));
         }
-
-        return (new \ReflectionClass(get_class($obj)))->getShortName();
+        if (is_object($obj)) {
+            return (new \ReflectionClass(get_class($obj)))->getShortName();
+        }
     }
 }
 if (! fe('classns')) {
@@ -1604,7 +1606,7 @@ if (! fe('email')) {
         if (! isset($config['senders'][$sender])
             || ! ($sender = $config['senders'][$sender])
             || ! is_array($sender)
-       ) {
+        ) {
             excp('Missing configurations for mail sender: '.$sender);
         }
 
@@ -2118,5 +2120,21 @@ if (! fe('ssh_exec_array')) {
        }
 
        return true;
+    }
+}
+if (! fe('format_url')) {
+    function format_url(string $uri) {
+        return implode('/', array_filter(explode('/', $uri)));
+    }
+}
+if (! fe('url')) {
+    function url(string $uri = null) {
+        $schema = $_SERVER['REQUEST_SCHEME'] ?? 'http';
+        $host   = $_SERVER['HTTP_HOST'];
+        $uri    = $uri ?? ($_SERVER['REQUEST_URI'] ?? '/');
+        // $query  = $_SERVER['QUERY_STRING'] ?? '';
+        $url    = format_url("{$host}/{$uri}");
+
+        return "{$schema}://{$url}";
     }
 }

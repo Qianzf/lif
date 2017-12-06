@@ -1,0 +1,13 @@
+<?php
+
+namespace Lif\Job;
+
+class __JOB_CLASS_NAME__ extends \Lif\Core\Abst\Job
+{
+    public function run() : bool
+    {
+        // ...
+
+        return true;
+    }
+}
