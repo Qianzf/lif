@@ -5,6 +5,10 @@ namespace Lif\Job;
 class DeployTask extends \Lif\Core\Abst\Job
 {
     protected $task = null;
+    protected $statusSuccess = null;
+    protected $statusFail    = null;
+    protected $userSuccess   = null;
+    protected $userFail      = null;
 
     public function setTask(int $task)
     {
@@ -29,11 +33,27 @@ class DeployTask extends \Lif\Core\Abst\Job
             case 'waitting_dep2test':
             case 'waitting_update2test': {
                 $type = ['test', 'emrg'];
+                $this->userSuccess   = $this->userFail = $task->last;
+                $this->statusSuccess = 'waitting_confirm_env';
+                $this->statusFail    = 'waitting_fix_test';
             } break;
 
             case 'waitting_dep2stage':
             case 'waitting_update2stage': {
                 $type = 'stage';
+                $this->userSuccess   = $this->findLastTester($task);
+                $this->userFail      = $this->findLastDeveloper($task);
+                $this->statusSuccess = 'waitting_2nd_test';
+                $this->statusFail    = 'waitting_fix_stage';
+            } break;
+
+            case 'waitting_dep2prod':
+            case 'waitting_update2prod': {
+                $type = 'prod';
+                $this->userSuccess   = $task->creator;
+                $this->userFail      = $this->findLastDeveloper($task);
+                $this->statusSuccess = 'online';
+                $this->statusFail    = 'waitting_fix_prod';
             } break;
             
             default: return false; break;
@@ -54,6 +74,38 @@ class DeployTask extends \Lif\Core\Abst\Job
         ], 1);
     }
 
+    protected function findLastTester($task)
+    {
+        return $this->findNextUser($task, 'test');
+    }
+
+    protected function findLastDeveloper($task)
+    {
+        return $this->findNextUser($task, 'dev');
+    }
+
+    protected function findNextUser($task, string $role)
+    {
+        $last = db()
+        ->table('trending', 't')
+        ->leftJoin('user u', 't.user', 'u.id')
+        ->select('t.user')
+        ->where([
+            't.ref_type' => 'task',
+            't.ref_id'   => $task->id,
+            'u.role' => [
+                strtolower($role),
+                strtoupper($role),
+            ],
+        ])
+        ->sort([
+            't.at' => 'desc',
+        ])
+        ->first();
+
+        return $last['user'] ?? $task->last;
+    }
+
     // 0. Find out task to deploy
     // 1. Find task related project `A` and it's deploy script
     // 2. Select one available environment `B` for project `A`
@@ -69,15 +121,13 @@ class DeployTask extends \Lif\Core\Abst\Job
 
         if ($task->isAlive()) {
             if (! ($branch = trim($task->branch))) {
-                // Update task status and add into trending
-                if ($status = $this->getResponseTaskStatus($task)) {
-                    $task->assign([
-                        'assign_from'  => $task->current,
-                        'assign_to'    => $task->last,
-                        'status'       => $status,
-                        'assign_notes' => L('MISSING_TASK_BRANCH'),
-                    ]);
-                }
+                $this->assign(
+                    $task,
+                    $task->current,
+                    $this->findLastDeveloper($task),
+                    $this->statusFail,
+                    'TASK_BRANCH_NOT_FOUND'
+                );
 
                 return true;
             }
@@ -93,15 +143,47 @@ class DeployTask extends \Lif\Core\Abst\Job
         }
 
         if (!($env = $this->getEnv($task, $project)) || !$env->isAlive()) {
-            pr($env);
+            $this->assign(
+                $task,
+                $task->current,
+                $task->last,
+                $this->statusFail,
+                'NO_ENV_FOUND'
+            );
+
             return true;
         } else {
+            db()->start();
             $env->task   = $task->id;
             $env->status = 'locked';
-            $env->save();
+            $task->env   = $env->id;
+            if (($env->save() >= 0) && ($task->save() >= 0)) {
+                db()->commit();
+            } else {
+                // TODO ... add log
+                db()->rollback();
+
+                $this->assign(
+                    $task,
+                    $task->current,
+                    $task->last,
+                    $this->statusFail,
+                    'INNER_ERROR'
+                );
+
+                return true;
+            }
         }
 
         if (!($server = $env->server()) || !$server->isAlive()) {
+            $this->assign(
+                $task,
+                $task->current,
+                $task->last,
+                $this->statusFail,
+                'NO_SERVER_FOUND'
+            );
+
             return true;
         }
         
@@ -112,28 +194,38 @@ class DeployTask extends \Lif\Core\Abst\Job
         ->connect([
             'hostkey' => 'ssh-rsa',
         ])
-        ->exec($this->getDeployCommands($env->path, $task->branch));
+        ->exec($this->getDeployCommands(trim($env->path), $branch));
 
         if (0 === ($res['num'] ?? false)) {
-            $from = $task->current;
-            $to   = $task->last;
-            $status = 'OK';
-            $notes = null;
+            $user   = $this->userSuccess;
+            $status = $this->statusSuccess;
+            $notes  = null;
         } else {
-            $from = $task->current;
-            $to   = $task->last;
-            $status = $this->getResponseTaskStatus($task);
+            $user   = $this->userFail;
+            $status = $this->statusFail;
             $notes  = $res['err'] ?? L('INNER_ERROR');
         }
 
+        $this->assign($task, $task->current, $user, $status, $notes);
+
+        return true;
+    }
+
+    // Update task status and add into trending
+    private function assign(
+        $task, 
+        int $from, 
+        int $to, 
+        string $status,
+        string $notes = null
+    )
+    {
         $task->assign([
             'assign_from'  => $from,
             'assign_to'    => $to,
-            'status'       => $status,
+            'action'       => $status,
             'assign_notes' => $notes,
         ]);
-
-        return true;
     }
 
     protected function getDeployCommands(string $path, string $branch) : array
@@ -141,33 +233,16 @@ class DeployTask extends \Lif\Core\Abst\Job
         return [
             "cd {$path}",
 
-            'git adds -A',
-            'git resets --hard HEAD',
+            'git add -A',
+            'git reset --hard HEAD',
             // 'git checkouts master',
 
             // 'git branch | grep -v master | xargs git branch -D',
             
             // need newer version of git for `--no-edit` option
-            "git pulls origin {$branch} --no-edit",
+            // "git pull origin {$branch} --no-edit",
+
+            "git pull origin master --no-edit",
         ];
-    }
-
-    private function getResponseTaskStatus($task)
-    {
-        switch (strtolower($task->status)) {
-            case 'waitting_dep2test':
-            case 'waitting_update2test': {
-                return 'waitting_fix_test';
-            } break;
-
-            case 'waitting_dep2stage':
-            case 'waitting_update2stage': {
-                return 'waitting_fix_stage';
-            } break;
-            
-            default: return false; break;
-        }
-
-        return false;
     }
 }

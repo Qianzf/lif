@@ -33,7 +33,7 @@ class Trending extends Mdl
             return $this
             ->leftJoin('user', 'user.id', 'trending.user')
             ->sort([
-                'trending.at' => 'desc',
+                'trending.id' => 'desc',
             ])
             ->limit(
                 $params['from'],

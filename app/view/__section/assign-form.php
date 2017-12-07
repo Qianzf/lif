@@ -51,7 +51,7 @@ class="invisible-default">
         dialog = $("#task-assign-form" ).dialog({
           autoOpen: true,
           height: 450,
-          width: '30%',
+          width: '45%',
           modal: true,
           buttons: {
             '<?= L('CONFIRM') ?>': function () {

@@ -83,7 +83,7 @@ class Revert extends Command
         }
 
         $ids  = $this->ditID ? $this->ditID : array_column($dits, 'id');
-        $text = $this->ditID ? implode(',', $ids) : '';
+        $text = $this->ditID ? '' : implode(',', $ids);
 
         // Revert dits
         foreach ($dits as $dit) {

@@ -200,6 +200,8 @@ return [
     'STATUS_ACTIVATED' => '待安排',
     'STATUS_WAITTING_DEV' => '待开发／修复',
     'STATUS_WAITTING_DEP2TEST' => '待部署：测试环境',
+    'STATUS_WAITTING_CONFIRM_ENV' => '待提测：成功部署到测试环境，等待开发者确认环境可测试',
+    'STATUS_ENV_CONFIRMED' => '已确认：开发者已确认环境可测试',
     'STATUS_WAITTING_1ST_TEST' => '待测试：测试环境',
     'STATUS_WAITTING_FIX_TEST' => '待解决：部署到测试环境出现问题，请解决',
     'STATUS_FIXING_TEST' => '解决中：解决在基本测试环境部署不通过的问题',
@@ -285,4 +287,7 @@ return [
     'CODE' => '代码',
     'EG' => '比如',
     'LOCKED' => '已锁定',
+    'TASK_BRANCH_NOT_FOUND' => '找不到任务分支',
+    'NO_ENV_FOUND' => '找不到可用的测试环境',
+    'NO_SERVER_FOUND' => '找不到可用的服务器',
 ];

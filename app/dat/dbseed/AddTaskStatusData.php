@@ -43,8 +43,18 @@ class AddTaskStatusData extends Dit
                     'assignable' => 'no',
                 ],
                 [
+                    'key' => 'waitting_confirm_env',
+                    'val' => '待提测：成功部署到测试环境，等待开发者确认环境可测试',
+                    'assignable' => 'yes',
+                ],
+                [
+                    'key' => 'env_confirmed',
+                    'val' => '已确认：开发者已确认环境可测试',
+                    'assignable' => 'no',
+                ],
+                [
                     'key' => 'waitting_1st_test',
-                    'val' => '待测试：成功部署到基本测试环境',
+                    'val' => '待测试：开发人员确认测试环境后提测',
                     'assignable' => 'yes',
                 ],
                 [
@@ -89,7 +99,7 @@ class AddTaskStatusData extends Dit
                 ],
                 [
                     'key' => 'waitting_2nd_test',
-                    'val' => '待测试：成功部署到预发布环境',
+                    'val' => '待测试：成功部署到预发布环境，等待测试人员测试',
                     'assignable' => 'yes',
                 ],
                 [

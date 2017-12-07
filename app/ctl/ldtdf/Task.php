@@ -87,12 +87,13 @@ class Task extends Ctl
         \Closure $callback = null
     )
     {
-        $msg = "{$action}_PERMISSION_DENIED";
+        $msg  = "{$action}_PERMISSION_DENIED";
+        $user = share('user.id');
 
-        if (call_user_func([$task, strtolower($action)], share('user.id'))) {
+        if (call_user_func([$task, strtolower($action)], $user)) {
             $msg = "{$action}_OK";
 
-            $task->addTrending($action, null, $notes);
+            $task->addTrending($action, $user, null, $notes);
 
             if ($callback) {
                 $callback();
@@ -268,11 +269,13 @@ class Task extends Ctl
         ]);
 
         $user        = share('user.id');
-        $activeable  = ($task->canBeActivatedBy($user));
-        $cancelable  = ($task->canBeCanceledBy($user));
-        $confirmable = ($task->canBeConfirmedBY($user));
-        $editable    = ($task->canBeEditedBY($user));
-        $assignable  = ($task->canBeAssignedBy($user));
+        $activeable  = $task->canBeActivatedBy($user);
+        $cancelable  = $task->canBeCanceledBy($user);
+        $confirmable = $task->canBeConfirmedBY($user);
+        $editable    = $task->canBeEditedBY($user);
+        $assignable  = $task->canBeAssignedBy($user);
+        $deployable  = $task->deployable();
+
         $story = $bug = null;
         if ('story' == strtolower($task->origin_type)) {
             if (! ($story = $task->story())) {
@@ -289,7 +292,7 @@ class Task extends Ctl
         share('hide-search-bar', true);
 
         view('ldtdf/task/info')
-        ->withOriginTaskBugStoryTasksProjectTrendingsActiveableCancelableConfirmableEditableAssignableAssigns(
+        ->withOriginTaskBugStoryTasksProjectTrendingsActiveableCancelableConfirmableEditableAssignableDeployableAssigns(
             $task->origin(),
             $task,
             $bug,
@@ -302,6 +305,7 @@ class Task extends Ctl
             $confirmable,
             $editable,
             $assignable,
+            $deployable,
             $task->assigns()
         );
     }

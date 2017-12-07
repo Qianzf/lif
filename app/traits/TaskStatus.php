@@ -99,6 +99,26 @@ trait TaskStatus
         ->get();
     }
 
+    public function getAssignableUsersWhenEnvConfirmed(Builder $query)
+    {
+        return $query
+        ->whereRole([
+            'ops',
+            'test',
+        ])
+        ->get();
+    }
+
+    public function getAssignableUsersWhenWaittingConfirmEnv(Builder $query)
+    {
+        return $query
+        ->whereRole([
+            'ops',
+            'test',
+        ])
+        ->get();
+    }
+
     public function getAssignableUsersWhenTesting1st(Builder $query)
     {
         return $query
@@ -144,6 +164,7 @@ trait TaskStatus
     {
         return $query
         ->whereRole([
+            'dev',
             'ops',
             'test',
         ])
@@ -294,11 +315,10 @@ trait TaskStatus
 
     public function getAssignableUsersWhenWaittingDev(Builder $query)
     {
+        $roles = $this->isForWeb() ? ['ops','dev',] : ['dev', 'test'];
+
         return $query
-        ->whereRole([
-            'ops',
-            'dev',
-        ])
+        ->whereRole($roles)
         ->get();
     }
 
@@ -351,6 +371,7 @@ trait TaskStatus
         return [
             'WAITTING_UPDATE2STAGE',
             'WAITTING_2ND_TEST',
+            'WAITTING_FIX_STAGE',
         ];
     }
 
@@ -410,6 +431,7 @@ trait TaskStatus
         return [
             'WAITTING_UPDATE2STAGE',
             'WAITTING_2ND_TEST',
+            'WAITTING_FIX_STAGE',
         ];
     }
 
@@ -431,11 +453,31 @@ trait TaskStatus
         ];
     }
 
-    public function getAssignActionsWhenTesting1st()
+    public function getAssignActionsWhenEnvConfirmed()
     {
         return [
+            'WAITTING_UPDATE2TEST',
+            'WAITTING_1ST_TEST',
+        ];
+    }
+    
+    public function getAssignActionsWhenWaittingConfirmEnv()
+    {
+        return [
+            'WAITTING_UPDATE2TEST',
+            'WAITTING_1ST_TEST',
+        ];
+    }
+
+    public function getAssignActionsWhenTesting1st()
+    {
+        return $this->isForWeb()
+        ? [
             'WAITTING_DEP2STAGE',
             'WAITTING_1ST_TEST',
+            'TEST_BACK2DEV',
+        ] : [
+            'WAITTING_DEP2STAGE',
             'TEST_BACK2DEV',
         ];
     }
@@ -538,9 +580,12 @@ trait TaskStatus
 
     public function getAssignActionsWhenWaittingDev()
     {
-        return [
+        return $this->isForWeb()
+        ? [
             'WAITTING_DEP2TEST',
             'WAITTING_DEV',
+        ] : [
+            'WAITTING_1ST_TEST',
         ];
     }
 
@@ -619,6 +664,9 @@ trait TaskStatus
                 break;
             case 'waitting_fix_prod':
                 $status = 'FIXING_PROD';
+                break;
+            case 'waitting_confirm_env':
+                $status = 'ENV_CONFIRMED';
                 break;
             case 'waitting_dev':
             default:

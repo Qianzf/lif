@@ -74,7 +74,7 @@ class Bug extends Mdl
 
         if ($order = ($querys['trending'] ?? null)) {
             $relationship['sort'] = [
-                'at' => $order,
+                'trending.id' => $order,
             ];
         }
 

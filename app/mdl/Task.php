@@ -24,6 +24,29 @@ class Task extends Mdl
         'deploy'   => 'string',
     ];
 
+    public function isForWeb()
+    {
+        return (
+            ($project = $this->project())
+            && ('web' == strtolower($project->type))
+        );
+    }
+
+    public function deployable()
+    {
+        if ($this->isAlive() && in_array(strtolower($this->status), [
+            'deving',
+            'waitting_dev',
+            'waitting_fix_test',
+        ])) {
+            if (($project = $this->project())->isAlive()) {
+                return $project->deployable();
+            }
+        }
+
+        return false;
+    }
+
     public function environment()
     {
         return $this->belongsTo(
@@ -83,6 +106,8 @@ class Task extends Mdl
         $deploy = in_array($this->status, [
             'waitting_dep2test',
             'waitting_update2test',
+            'waitting_dep2stage',
+            'waitting_update2stage',
         ]);
 
         if (('yes' == ($this->manually = ($params['manually'] ?? 'no')))
@@ -357,7 +382,7 @@ class Task extends Mdl
 
         if ($order = ($querys['trending'] ?? 'desc')) {
             $relationship['sort'] = [
-                'at' => $order,
+                'trending.id' => $order,
             ];
         }
 

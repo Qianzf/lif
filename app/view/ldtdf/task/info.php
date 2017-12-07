@@ -27,11 +27,7 @@
     </form>
     <?php endif ?>
     <?php if (isset($assignable) && $assignable): ?>
-        <?php $dependency = in_array(strtoupper($task->status), [
-                'DEVING',
-                'WAITTING_DEV',
-                'WAITTING_FIX_TEST',
-            ]) ? '-with-dependencies' : '';
+        <?php $dependency = ($deployable ?? false) ? '-with-dependencies' : '';
         ?>
         <?= $this->section("assign-form{$dependency}", [
             'model'  => $task,
@@ -162,14 +158,14 @@ style="display:none"><?= $this->escape($task->notes) ?></textarea>
 </p>
 <?php endif ?>
 
-<?php if ($task->env): ?>
+<?php if ($task->env && ($env = $task->environment())->isAlive()): ?>
 <p>
     <span class="stub-2"></span>
     <span class="text-info">[</span>
     <small><?= L('TASK_ENV') ?></small>
     <span class="text-info">]</span>
 
-    <code><?= $task->env ?></code>
+    <code><?= $env->host ?></code>
 </p>
 <?php endif ?>
 

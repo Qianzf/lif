@@ -65,7 +65,7 @@ class Story extends Ctl
             && ($status > 0)
         ) {
             $msg = 'CREATED_SUCCESS';
-            $story->addTrending('create');
+            $story->addTrending('create', $data['creator']);
         } else {
             share_error_i18n(L('CREATED_FAILED', L($status)));
 
@@ -95,7 +95,7 @@ class Story extends Ctl
         ) {
             if ($err > 0) {
                 $status = 'UPDATE_OK';
-                $story->addTrending('update');
+                $story->addTrending('update', $story->creator);
             } else {
                 $status = 'UPDATED_NOTHING';
             }

@@ -16,6 +16,15 @@ class Project extends Mdl
         'script_path' => ['string', null],
     ];
 
+    public function deployable()
+    {
+        if ($this->isAlive()) {
+            return (strtolower($this->type) == 'web');
+        }
+
+        return false;
+    }
+
     public function environments(
         array $lwhere = [],
         array $fwhere = [],
