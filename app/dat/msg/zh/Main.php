@@ -282,6 +282,7 @@ return [
     'OS_VER' => '系统版本',
     'SYSTEM' => '系统',
     'INNER' => '内部',
+    'OUTER' => '外部',
     'ERROR' => '错误',
     'MSG' => '信息',
     'CODE' => '代码',
@@ -290,4 +291,5 @@ return [
     'TASK_BRANCH_NOT_FOUND' => '找不到任务分支',
     'NO_ENV_FOUND' => '找不到可用的测试环境',
     'NO_SERVER_FOUND' => '找不到可用的服务器',
+    'CONFIGRWAPI' => '配置读写接口',
 ];

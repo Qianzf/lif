@@ -225,8 +225,10 @@ return [
     'VERSION' => 'Version',
     'SYSTEM' => 'System',
     'INNER' => 'Inner',
+    'OUTER' => 'Outer',
     'ERROR' => 'Error',
     'MSG' => 'Message',
     'CODE' => 'Code',
     'EG' => 'eg',
+    'CONFIGRWAPI' => 'Config R/W API',
 ];

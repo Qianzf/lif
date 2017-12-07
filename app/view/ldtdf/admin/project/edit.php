@@ -34,6 +34,15 @@
     </label>
 
     <label>
+        <span class="label-title"><?= L('REPO_TOKEN') ?></span>
+        <input
+        placeholder="<?= L('REPO_API_TOKEN') ?>"
+        type="password"
+        name="token"
+        value="<?= $project->token ?>">
+    </label>
+
+    <label>
         <span class="label-title"><?= L('VCS') ?></span>
         <select name="vcs" required>
             <option value="git">git</option>
@@ -41,17 +50,12 @@
     </label>
 
     <label>
-        <span class="label-title"><?= L('DESCRIPTION') ?></span>
-        <textarea name="desc"><?= $project->desc ?></textarea>
-    </label>
-
-    <label>
-        <span class="label-title"><?= L('API_TOKEN') ?></span>
+        <span class="label-title"><?= L('CONFIGRWAPI') ?></span>
         <input
-        placeholder="<?= L('REPO_API_TOKEN') ?>"
-        type="password"
-        name="token"
-        value="<?= $project->token ?>">
+        placeholder="<?= L('SERVER_ABSOLUTE_PATH') ?>"
+        type="text"
+        name="script_path"
+        value="<?= $project->script ?>">
     </label>
 
     <label>
@@ -76,6 +80,11 @@
                 value="<?= $project->script ?>">
             </ol>
         </ul>
+    </label>
+
+    <label>
+        <span class="label-title"><?= L('DESCRIPTION') ?></span>
+        <textarea name="desc"><?= $project->desc ?></textarea>
     </label>
 
     <?= $this->section('submit', [

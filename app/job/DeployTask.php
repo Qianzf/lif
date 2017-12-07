@@ -126,7 +126,7 @@ class DeployTask extends \Lif\Core\Abst\Job
                     $task->current,
                     $this->findLastDeveloper($task),
                     $this->statusFail,
-                    'TASK_BRANCH_NOT_FOUND'
+                    L('TASK_BRANCH_NOT_FOUND')
                 );
 
                 return true;
@@ -148,7 +148,7 @@ class DeployTask extends \Lif\Core\Abst\Job
                 $task->current,
                 $task->last,
                 $this->statusFail,
-                'NO_ENV_FOUND'
+                L('NO_ENV_FOUND')
             );
 
             return true;
@@ -168,7 +168,7 @@ class DeployTask extends \Lif\Core\Abst\Job
                     $task->current,
                     $task->last,
                     $this->statusFail,
-                    'INNER_ERROR'
+                    L('INNER_ERROR')
                 );
 
                 return true;
@@ -181,7 +181,7 @@ class DeployTask extends \Lif\Core\Abst\Job
                 $task->current,
                 $task->last,
                 $this->statusFail,
-                'NO_SERVER_FOUND'
+                L('NO_SERVER_FOUND')
             );
 
             return true;

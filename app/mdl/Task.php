@@ -80,15 +80,15 @@ class Task extends Mdl
                 ->timeout(30);
             }
 
-            // if (($current = $this->current())->isAlive()) {
-            //     $this
-            //     ->enqueue(
-            //         (new SendMailWhenTaskAssign)->setTask($this->id)
-            //     )
-            //     ->on('mail_send')
-            //     ->try(3)
-            //     ->timeout(30);
-            // }
+            if (($current = $this->current())->isAlive()) {
+                $this
+                ->enqueue(
+                    (new SendMailWhenTaskAssign)->setTask($this->id)
+                )
+                ->on('mail_send')
+                ->try(3)
+                ->timeout(30);
+            }
         }
 
         return true;
@@ -129,7 +129,6 @@ class Task extends Mdl
                 $notes
             ) > 0)
         ) {
-
             db()->commit();
 
             return true;

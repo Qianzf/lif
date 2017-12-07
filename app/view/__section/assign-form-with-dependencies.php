@@ -83,7 +83,7 @@ class="invisible-default">
             }
           },
           close: function() {
-            removeAllSelectedResult()
+            removeSelectedResult()
           }
         })
     })
