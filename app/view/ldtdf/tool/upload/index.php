@@ -4,11 +4,9 @@
 
 <dd>
     <dl>
-        <button>
-            <a href="/dep/tool/uploads/new" target="_blank">
-                <?= L('ADD_UPLOAD') ?>
-            </a>
-        </button>
+        <a href="/dep/tool/uploads/new" target="_blank">
+            <button><?= L('ADD_UPLOAD') ?></button>
+        </a>
     </dl>
 </dd>
 
@@ -29,11 +27,9 @@
         <td><?= $upload->filekey ?></td>
         <td><?= $upload->filename ?></td>
         <td>
-            <button>
-                <a href="/dep/tool/uploads/<?= $upload->id ?>">
-                    <?= L('DETAILS') ?>
-                </a>
-            </button>
+            <a href="/dep/tool/uploads/<?= $upload->id ?>">
+                <button><?= L('DETAILS') ?></button>
+            </a>
         </td>
     </tr>
     <?php endforeach ?>

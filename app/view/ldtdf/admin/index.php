@@ -4,23 +4,23 @@
 
 <dl class="list">
     <dd>
-        <button>
-            <a href="admin/users"><?= L('USER_MANAGE') ?></a>
-        </button>
+        <a href="admin/users">
+            <button><?= L('USER_MANAGE') ?></button>
+        </a>
     </dd>
     <dd>
-        <button>
-            <a href="admin/projects"><?= L('PROJECT_MANAGE') ?></a>
-        </button>
+        <a href="admin/projects">
+            <button><?= L('PROJECT_MANAGE') ?></button>
+        </a>
     </dd>
     <dd>
-        <button>
-            <a href="admin/envs"><?= L('ENVIRONMENT_MANAGE') ?></a>
-        </button>
+        <a href="admin/envs">
+            <button><?= L('ENVIRONMENT_MANAGE') ?></button>
+        </a>
     </dd>
     <dd>
-        <button>
-            <a href="admin/servers"><?= L('SERVER_MANAGE') ?></a>
-        </button>
+        <a href="admin/servers">
+            <button><?= L('SERVER_MANAGE') ?></button>
+        </a>
     </dd>
 </dl>

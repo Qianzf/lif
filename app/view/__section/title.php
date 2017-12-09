@@ -2,10 +2,8 @@
     <?= L($key) ?>
     
     <sup><small>
-        <button>
-            <a href="<?= share('url_previous') ?>">
-                <?= L('BACK_TO_LAST') ?>
-            </a>
-        </button>
+        <a href="<?= share('url_previous') ?>">
+            <button><?= L('BACK_TO_LAST') ?></button>
+        </a>
     </small></sup>
 </h4>

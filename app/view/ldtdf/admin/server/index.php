@@ -4,9 +4,9 @@
 
 <dl class="list">
     <dd>
-        <button>
-            <a href="/dep/admin/servers/new"><?= L('ADD_SERVER') ?></a>
-        </button>
+        <a href="/dep/admin/servers/new">
+            <button><?= L('ADD_SERVER') ?></button>
+        </a>
     </dd>
 </dl>
 
@@ -29,11 +29,9 @@
         <td><?= $server->host ?></td>
         <td><?= $server->port ?></td>
         <td>
-            <button>
-                <a href="/dep/admin/servers/<?= $server->id ?>">
-                    <?= L('MANAGE') ?>
-                </a>
-            </button>
+            <a href="/dep/admin/servers/<?= $server->id ?>">
+                <button><?= L('MANAGE') ?></button>
+            </a>
         </td>
     </tr>
     <?php } ?>

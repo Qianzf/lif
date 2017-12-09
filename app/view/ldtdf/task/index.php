@@ -4,11 +4,9 @@
 
 <dl class="list">
     <dd>
-        <button>
-            <a href="/dep/tasks/new">
-                <?= L('ADD_TASK') ?>
-            </a>
-        </button>
+        <a href="/dep/tasks/new">
+            <button><?= L('ADD_TASK') ?></button>
+        </a>
     </dd>
 </dl>
 
@@ -46,9 +44,9 @@
             </button>
         </td>
         <td>
-            <button>
-                <a href="tasks/<?= $task->id ?>"><?= L('DETAILS') ?></a>
-            </button>
+            <a href="tasks/<?= $task->id ?>">
+                <button><?= L('DETAILS') ?></button>
+            </a>
         </td>
     </tr>
     <?php endforeach ?>

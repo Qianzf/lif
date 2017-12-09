@@ -1,9 +1,7 @@
 <header>
-    <button class="btn-logo">
-        <a href="/dep">
-            <em><?= L('LDTDFMS') ?></em>
-        </a>
-    </button>
+    <a href="/dep">
+        <button class="btn-logo"><em><?= L('LDTDFMS') ?></em></button>
+    </a>
 
     <span class="stub"></span>
 

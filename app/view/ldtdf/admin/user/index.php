@@ -4,14 +4,14 @@
 
 <dl>
     <dd>
-        <button>
-            <a href="users/new"><?= L('ADD_USER') ?></a>
-        </button>
+        <a href="users/new">
+            <button><?= L('ADD_USER') ?></button>
+        </a>
     </dd>
     <dd>
-        <button>
-            <a href="users/groups"><?= L('GROUP_MANAGE') ?></a>
-        </button>
+        <a href="users/groups">
+            <button><?= L('GROUP_MANAGE') ?></button>
+        </a>
     </dd>
 </dl>
 
@@ -36,16 +36,12 @@
         <td><?= $user->email ?></td>
         <td><?= L("ROLE_{$user->role}") ?></td>
         <td>
-            <button>
-                <a href="users/<?= $user->id ?>">
-                    <?= L('EDIT') ?>
-                </a>
-            </button>
-            <button class="btn-delete">
-                <a href="users/delete/<?= $user->id ?>">
-                    <?= L('DELETE') ?>
-                </a>
-            </button>
+            <a href="users/<?= $user->id ?>">
+                <button><?= L('EDIT') ?></button>
+            </a>
+            <a href="users/delete/<?= $user->id ?>">
+                <button class="btn-delete"><?= L('DELETE') ?></button>
+            </a>
         </td>
     </tr>
     <?php } ?>

@@ -4,11 +4,9 @@
 
 <dl class="list">
     <dd>
-        <button>
-            <a href="/dep/bugs/new">
-                <?= L('ADD_BUG') ?>
-            </a>
-        </button>
+        <a href="/dep/bugs/new">
+            <button><?= L('ADD_BUG') ?></button>
+        </a>
     </dd>
 </dl>
 
@@ -34,9 +32,9 @@
         <td><?= $bug->os ?></td>
         <td><?= $bug->platform ?></td>
         <td>
-            <button>
-                <a href="/dep/bugs/<?= $bug->id ?>"><?= L('DETAILS') ?></a>
-            </button>
+            <a href="/dep/bugs/<?= $bug->id ?>">
+                <button><?= L('DETAILS') ?></button>
+            </a>
         </td>
     </tr>
     <?php endforeach ?>

@@ -4,10 +4,8 @@
 
 <dl class="list">
     <dd>
-        <button>
-            <a href="/dep/docs/new">
-                <?= L('ADD_DOC') ?>
-            </a>
-        </button>
+        <a href="/dep/docs/new">
+            <button><?= L('ADD_DOC') ?></button>
+        </a>
     </dd>
 </dl>

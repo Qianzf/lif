@@ -133,8 +133,8 @@ class AddTaskStatusData extends Dit
                     'assignable' => 'yes',
                 ],
                 [
-                    'key' => 'prepare_dep2prod',
-                    'val' => '待上线：预发布环境测试通过，测试人员申请上线',
+                    'key' => 'waitting_dep2rc',
+                    'val' => '待部署：预发布环境测试通过，待部署到发布候选环境',
                     'assignable' => 'yes',
                 ],
                 [

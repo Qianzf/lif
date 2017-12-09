@@ -15,17 +15,15 @@
     <em><?= $taskOrigin->title ?></em>
 
     <?php if ($editable ?? false): ?>
-    <button>
-        <a href="<?= $originEditRoute ?>"><?= L('EDIT') ?></a>
-    </button>
+    <a href="<?= $originEditRoute ?>">
+        <button><?= L('EDIT') ?></button>
+    </a>
     <?php endif ?>
 
     <?php if ($assignable ?? false): ?>
-        <button>
-            <a href="<?= $taskAddRoute ?>">
-                <?= L('DISPATCH_TASK') ?>
-            </a>
-        </button>
+        <a href="<?= $taskAddRoute ?>">
+            <button><?= L('DISPATCH_TASK') ?></button>
+        </a>
     <?php endif ?>
 </h4>
 

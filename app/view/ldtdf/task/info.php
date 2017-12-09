@@ -12,9 +12,9 @@
     <em><?= $origin->title ?></em>
 
     <?php if (isset($editable) && $editable): ?>
-    <button>
-        <a href="/dep/tasks/<?= $task->id ?>/edit"><?= L('EDIT') ?></a>
-    </button>
+    <a href="/dep/tasks/<?= $task->id ?>/edit">
+        <button><?= L('EDIT') ?></button>
+    </a>
     <?php endif ?>
 
     <?php if (isset($confirmable) && $confirmable): ?>

@@ -4,9 +4,9 @@
 
 <dl class="list">
     <dd>
-        <button>
-            <a href="/dep/admin/projects/new"><?= L('ADD_PROJECT') ?></a>
-        </button>
+        <a href="/dep/admin/projects/new">
+            <button><?= L('ADD_PROJECT') ?></button>
+        </a>
     </dd>
 </dl>
 
@@ -29,11 +29,9 @@
         <td><?= $project->type ?></td>
         <td><?= $project->url ?></td>
         <td>
-            <button>
-                <a href="/dep/admin/projects/<?= $project->id ?>">
-                    <?= L('DETAILS') ?>
-                </a>
-            </button>
+            <a href="/dep/admin/projects/<?= $project->id ?>">
+                <button><?= L('DETAILS') ?></button>
+            </a>
         </td>
     </tr>
     <?php } ?>

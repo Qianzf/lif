@@ -4,11 +4,9 @@
 
 <dl class="list">
     <dd>
-        <button>
-            <a href="/dep/stories/new">
-                <?= L('ADD_STORY') ?>
-            </a>
-        </button>
+        <a href="/dep/stories/new">
+            <button><?= L('ADD_STORY') ?></button>
+        </a>
     </dd>
 </dl>
 
@@ -34,11 +32,9 @@
         </td>
         <td><?= $story->create_at ?></td>
         <td>
-            <button>
-                <a href="/dep/stories/<?= $story->id ?>">
-                    <?= L('DETAILS') ?>
-                </a>
-            </button>
+            <a href="/dep/stories/<?= $story->id ?>">
+                <button><?= L('DETAILS') ?></button>
+            </a>
         </td>
     </tr>
     <?php endforeach ?>

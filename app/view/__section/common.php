@@ -1,29 +1,29 @@
 <h4>
-    <button class="btn-todo">
-        <a href="/dep/todo"><?= L('MY_TODO') ?></a>
-    </button>
+    <a href="/dep/todo">
+        <button class="btn-todo"><?= L('MY_TODO') ?></button>
+    </a>
     
-    <button class="btn-alert">
-        <a href="/dep/tasks"><?= L('TASK') ?></a>
-    </button>
+    <a href="/dep/tasks">
+        <button class="btn-alert"><?= L('TASK') ?></button>
+    </a>
 
-    <button class="btn-story">
-        <a href="/dep/stories"><?= L('STORY') ?></a>
-    </button>
+    <a href="/dep/stories">
+        <button class="btn-story"><?= L('STORY') ?></button>
+    </a>
 
-    <button class="btn-emergency">
-        <a href="/dep/bugs"><?= L('BUG') ?></a>
-    </button>
+    <a href="/dep/bugs">
+        <button class="btn-emergency"><?= L('BUG') ?></button>
+    </a>
 
-    <!-- <button class="btn-doc">
-        <a href="/dep/docs"><?= L('DOCUMENTATION') ?></a>
-    </button> -->
+    <a href="/dep/docs">
+        <button class="btn-doc"><?= L('DOCUMENTATION') ?></button>
+    </a>
 
-    <button class="btn-trending">
-        <a href="/dep/trending"><?= L('TRENDING') ?></a>
-    </button>
+    <a href="/dep/trending">
+        <button class="btn-trending"><?= L('TRENDING') ?></button>
+    </a>
 
-    <button class="btn-tool">
-        <a href="/dep/tool"><?= L('TOOL') ?></a>
-    </button>
+    <a href="/dep/tool">
+        <button class="btn-tool"><?= L('TOOL') ?></button>
+    </a>
 </h4>

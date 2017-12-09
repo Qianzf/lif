@@ -4,9 +4,9 @@
 
 <dl>
     <dd>
-        <button>
-            <a href="/dep/admin/users/groups/new"><?= L('ADD_GROUP') ?></a>
-        </button>
+        <a href="/dep/admin/users/groups/new">
+            <button><?= L('ADD_GROUP') ?></button>
+        </a>
     </dd>
 </dl>
 
@@ -25,11 +25,9 @@
         <tr>
             <td><?= $group->name ?></td>
             <td>
-                <button>
-                    <a href="/dep/admin/users/groups/<?= $group->id ?>">
-                        <?= L('EDIT') ?>
-                    </a>
-                </button>
+                <a href="/dep/admin/users/groups/<?= $group->id ?>">
+                    <button><?= L('EDIT') ?></button>
+                </a>
             </td>
         </tr>
     <?php endforeach ?>

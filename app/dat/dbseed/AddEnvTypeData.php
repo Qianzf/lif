@@ -14,15 +14,19 @@ class AddEnvTypeData extends Dit
             db()->table('env_type')->insert([
                 [
                     'key' => 'test',
-                    'desc' => 'Basic testing environment',
+                    'desc' => 'Basic testing environment, should equals with production',
                 ],
                 [
                     'key' => 'emrg',
-                    'desc' => 'Same as testing environment, for emergency only',
+                    'desc' => 'Testing environment for emergency only',
                 ],
                 [
                     'key' => 'stage',
-                    'desc' => 'Same as testing environmnet, use production data copy',
+                    'desc' => 'Testing environmnet use production data copy',
+                ],
+                [
+                    'key' => 'rc',
+                    'desc' => 'Integration testing environmnet use production data copy',
                 ],
                 [
                     'key' => 'prod',

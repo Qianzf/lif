@@ -4,8 +4,8 @@
 
 <dl>
     <dd>
-        <button>
-            <a href="/dep/tool/uploads"><?= L('FILE_UPLOAD') ?></a>
-        </button>
+        <a href="/dep/tool/uploads">
+            <button><?= L('FILE_UPLOAD') ?></button>
+        </a>
     </dd>
 </dl>

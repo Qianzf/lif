@@ -4,9 +4,9 @@
 
 <dl class="list">
     <dd>
-        <button>
-            <a href="/dep/admin/envs/new"><?= L('ADD_ENVIRONMENT') ?></a>
-        </button>
+        <a href="/dep/admin/envs/new">
+            <button><?= L('ADD_ENVIRONMENT') ?></button>
+        </a>
     </dd>
 </dl>
 
@@ -79,11 +79,9 @@
             </span>
         </td>
         <td>
-            <button>
-                <a href="/dep/admin/envs/<?= $env->id ?>">
-                    <?= L('MANAGE') ?>
-                </a>
-            </button>
+            <a href="/dep/admin/envs/<?= $env->id ?>">
+                <button><?= L('MANAGE') ?></button>
+            </a>
         </td>
     </tr>
     <?php } ?>
