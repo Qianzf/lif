@@ -7,6 +7,7 @@
 namespace Lif\Core\Abst;
 
 use Lif\Core\Storage\SQL\Builder;
+use Lif\Core\Excp\NonExistsRelationship;
 
 abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
 {   
@@ -368,14 +369,13 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
         if (isset($params['lv'])) {
             $value = is_array($params['lv'])
             ? '('.implode(',', $params['lv']).')'
-            : ((string) ($params['lv']));
+            : stringify($params['lv']);
         } else {
             // Use local key mapped value of current model
-            if (! isset($this->items[$lk])) {
-                excp('Non-exists model can not has any relationship.');
+            // !!! Using is_null() to avoid unexcepted exception
+            if (! ($value = ($this->items[$lk] ?? null))) {
+                throw new NonExistsRelationship;
             }
-
-            $value = $this->items[$lk];
         }
 
         $model   = model($params['model']);
@@ -423,8 +423,6 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
         );
 
         $fetch = (1 == $params['take']) ? 'first' : 'get';
-
-        // ee($model->$fetch(false, 2));
         
         return call_user_func_array([$model, $fetch], []);
     }
@@ -518,7 +516,11 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
                 $callback($_params);
             }
 
-            return $this->join($_params);
+            try {
+                return $this->join($_params);
+            } catch (NonExistsRelationship $e) {
+                return null;
+            }
         }
 
         excp("Illegal {$relation} parameters(1)");

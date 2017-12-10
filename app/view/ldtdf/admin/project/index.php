@@ -30,7 +30,7 @@
         <td><?= $project->url ?></td>
         <td>
             <a href="/dep/admin/projects/<?= $project->id ?>">
-                <button><?= L('DETAILS') ?></button>
+                <button><?= L('EDIT') ?></button>
             </a>
         </td>
     </tr>

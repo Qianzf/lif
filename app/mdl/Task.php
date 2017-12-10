@@ -37,6 +37,8 @@ class Task extends Mdl
         if ($this->isAlive() && in_array(strtolower($this->status), [
             'deving',
             'waitting_dev',
+            'fixing_test',
+            'waitting_dep2test',
             'waitting_fix_test',
         ])) {
             if (($project = $this->project())->isAlive()) {
@@ -105,9 +107,9 @@ class Task extends Mdl
         $notes  = ($params['assign_notes'] ?? null);
         $deploy = in_array($this->status, [
             'waitting_dep2test',
-            'waitting_update2test',
             'waitting_dep2stage',
-            'waitting_update2stage',
+            'waitting_dep2stablerc',
+            'waitting_dep2prod',
         ]);
 
         if (('yes' == ($this->manually = ($params['manually'] ?? 'no')))
@@ -167,13 +169,18 @@ class Task extends Mdl
         $query = db()
         ->table('user')
         ->select('id', 'name', 'role')
-        ->whereId('!=', $self);
+        ->whereId('!=', $self)
+        ->whereRole('!=', 'admin');
 
         if ($where) {
             $query = $query->where($where);
         }
 
-        $users = $this->$taskStatusHandler($query);
+        if (method_exists($this, $taskStatusHandler)) {
+            $query = $this->$taskStatusHandler($query);
+        }
+
+        $users = $query->get();
 
         array_walk($users, function (&$item) {
             $item['name'] = $item['name']
@@ -225,10 +232,13 @@ class Task extends Mdl
         // excp('No story parent to relate.');
     }
 
-    public function assigns()
+    public function getAssignableStatuses()
     {
         $status = underline2camelcase(strtolower($this->status));
-        $taskStatusHandler = "getAssignActionsWhen{$status}";
+        $taskStatusHandler = "getAssignableStatusesWhen{$status}";
+
+        $taskStatusHandler = method_exists($this, $taskStatusHandler)
+        ? $taskStatusHandler : 'getAllStatus';
 
         return $this->$taskStatusHandler();
     }
@@ -271,8 +281,7 @@ class Task extends Mdl
     {
         if ($this->canBeConfirmedBY($user)) {
             $role = ucfirst(strtolower($this->current()->role));
-            $confirmHandler  = "confirmWhen{$role}";
-            if ($status = $this->$confirmHandler()) {
+            if ($status = $this->getStatusConfirmed()) {
                 $this->status = $status;
 
                 if ($status == 'FINISHED') {
@@ -317,13 +326,9 @@ class Task extends Mdl
     public function canBeCanceledBy(int $user)
     {
         if ($user) {
-            $status = !in_array(strtolower($this->status), [
-                'canceled',
-                'finished',
-                'online',
-            ]);
-
-            return (($this->creator()->id == $user) && $status);
+            return (
+                $this->statusIsOperable() && ($this->creator()->id == $user)
+            );
         }
 
         return false;
@@ -336,7 +341,10 @@ class Task extends Mdl
             if ($status == 'activated') {
                 return (strtolower($this->current()->role) == 'dev');
             }
-            if ('finished' == $status) {
+            if (in_array($status, [
+                'waitting_regression',
+                'finished',
+            ])) {
                 return false;
             }
             if (('online' == $status)
@@ -354,18 +362,20 @@ class Task extends Mdl
     public function canBeAssignedBy(int $user)
     {
         if ($user) {
-
-            if (in_array(strtolower($this->status), [
-                'online',
-                'finished',
-            ])) {
-                return false;
-            }
-
-            return ($user == $this->current);
+            return (
+                $this->statusIsOperable() && ($user == $this->current)
+            );
         }
 
         excp('Missing user id.');
+    }
+
+    public function statusIsOperable()
+    {
+        return !in_array(
+            strtolower($this->status),
+            $this->getUnoperatableStatus()
+        );
     }
 
     public function trendings(array $querys = [])
@@ -416,20 +426,32 @@ class Task extends Mdl
 
     public function project()
     {
-        return $this->belongsTo(
+        $project = $this->belongsTo(
             Project::class,
             'project',
             'id'
         );
+
+        if (! $project) {
+            excp(L('MISSING_TASK_RELATED_PROJECT'));
+        }
+
+        return $project;
     }
 
     public function creator()
     {
-        return $this->belongsTo(
+        $creator = $this->belongsTo(
             User::class,
             'creator',
             'id'
         );
+
+        if (! $creator) {
+            excp(L('MISSING_TASK_CREATOR'));
+        }
+
+        return $creator;
     }
 
     public function addTrending(

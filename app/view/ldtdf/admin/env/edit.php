@@ -7,10 +7,6 @@
 
 <form method="POST">
     <?= csrf_feild() ?>
-    <label>
-        <span class="label-title"><?= L('TITLE') ?></span>
-        <input type="text" name="name" value="<?= $env->name ?>" required>
-    </label>
 
     <label>
         <span class="label-title"><?= L('HOST_ADDR') ?></span>
@@ -97,6 +93,11 @@
             <?php } ?>
             <?php } ?>
         </select>
+    </label>
+
+    <label>
+        <span class="label-title"><?= L('DESCRIPTION') ?></span>
+        <textarea name="desc"><?= $env->desc ?></textarea>
     </label>
 
     <?= $this->section('submit', [

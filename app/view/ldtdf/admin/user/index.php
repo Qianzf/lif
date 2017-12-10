@@ -25,6 +25,16 @@
             <?= L('USER_ROLE') ?>
             <?= $this->section('filter/roles') ?>
         </th>
+        <th>
+            <?= L('STATUS') ?>
+            <?= $this->section('filter/common', [
+                'name' => 'status',
+                'list' => [
+                    'NORMAL'  => '1',
+                    'DISABLE' => '0',
+                ],
+            ]) ?>
+        </th>
         <th><?= L('OPERATIONS') ?></th>
     </tr>
 
@@ -36,11 +46,13 @@
         <td><?= $user->email ?></td>
         <td><?= L("ROLE_{$user->role}") ?></td>
         <td>
+            <small class="status-<?= $user->status ?>">
+                <?= L($user->status ? 'NORMAL' : 'DISABLE') ?>
+            </small>
+        </td>
+        <td>
             <a href="users/<?= $user->id ?>">
                 <button><?= L('EDIT') ?></button>
-            </a>
-            <a href="users/delete/<?= $user->id ?>">
-                <button class="btn-delete"><?= L('DELETE') ?></button>
             </a>
         </td>
     </tr>

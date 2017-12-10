@@ -99,10 +99,16 @@ class Trending extends Mdl
 
     public function user()
     {
-        return $this->belongsTo(
+        $user = $this->belongsTo(
             User::class,
             'user',
             'id'
         );
+
+        if (! $user) {
+            excp(L('NO_USER'));
+        }
+
+        return $user;
     }
 }

@@ -146,6 +146,7 @@ input:focus {
 }
 .btn-story {
     background-color: violet;
+    color: #eeeeee;
 }
 .btn-info {
     background-color: lightseagreen;
@@ -170,22 +171,23 @@ input:focus {
 }
 .btn-doc {
     background-color: floralwhite;
-    color: #darkcyan;
+    /*color: #darkcyan;*/
 }
-.btn-default a,
-.btn-alert a,
-.btn-emergency a,
-.btn-info a,
-.btn-edit a,
-.btn-delete a,
-.btn-todo a,
-.btn-tool a {
-    color: gainsboro;
+.btn-default,
+.btn-alert,
+.btn-emergency,
+.btn-info,
+.btn-edit,
+.btn-delete,
+.btn-todo,
+.btn-tool {
+    color: white;
 }
 .list dd,
 .list li {
     padding: 5px;
 }
+.status-1,
 .status-running {
     background-color: lightgreen;
     font-size: 10px;
@@ -194,6 +196,7 @@ input:focus {
     background-color: lightblue;
     font-size: 10px;
 }
+.status-0,
 .status-stopped {
     background-color: red;
     font-size: 10px;

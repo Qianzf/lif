@@ -157,8 +157,7 @@ $this->group([
             $this->post('new', 'add');
             $this->get('{id}', 'info');
             $this->post('{id}', 'update');
-            $this->get('delete/{id}', 'delete');
-
+            
             $this->group([
                 'prefix' => 'groups',
                 'ctl' => 'UserGroup',

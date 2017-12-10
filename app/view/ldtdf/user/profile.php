@@ -1,10 +1,9 @@
 <?= $this->layout('main') ?>
-<?= $this->title([L('USER_PROFILE'), L('LDTDFMS')]) ?>
 <?= $this->section('back2list', [
     'model' => collect([
         'id' => true,
     ]),
-    'key'   => 'PROFILE',
+    'key'   => 'USER_PROFILE',
     'route' => '/dep',
 ]) ?>
 

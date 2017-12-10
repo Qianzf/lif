@@ -66,7 +66,7 @@ class CreateTaskTable extends Dit
             $table
             ->int('env')
             ->unsigned()
-            ->default(0)
+            ->nullable()
             ->comment('Deployed env of current task => `enviornment`.`id`');
 
             $table

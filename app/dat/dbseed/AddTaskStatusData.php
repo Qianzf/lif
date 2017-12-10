@@ -83,11 +83,6 @@ class AddTaskStatusData extends Dit
                     'assignable' => 'no',
                 ],
                 [
-                    'key' => 'waitting_update2test',
-                    'val' => '待部署：开发人员申请重新部署到测试环境',
-                    'assignable' => 'yes',
-                ],
-                [
                     'key' => 'waitting_dep2stage',
                     'val' => '待部署：基本测试环境测试通过，申请提测到预发布环境',
                     'assignable' => 'yes',
@@ -128,23 +123,58 @@ class AddTaskStatusData extends Dit
                     'assignable' => 'no',
                 ],
                 [
-                    'key' => 'waitting_update2stage',
-                    'val' => '待部署：开发人员申请重新部署到预发布环境',
+                    'key' => 'waitting_dep2stablerc',
+                    'val' => '待集成：预发布环境测试通过，待集成到稳定候选版本',
                     'assignable' => 'yes',
                 ],
                 [
-                    'key' => 'waitting_dep2rc',
-                    'val' => '待部署：预发布环境测试通过，待部署到发布候选环境',
+                    'key' => 'waitting_fix_stablerc',
+                    'val' => '待解决：集成到稳定候选版本失败',
+                    'assignable' => 'yes',
+                ],
+                [
+                    'key' => 'fixing_stablerc',
+                    'val' => '解决中：解决集成到稳定候选版本失败的问题',
+                    'assignable' => 'no',
+                ],
+                [
+                    'key' => 'deploying_stablerc',
+                    'val' => '集成中：开发人员申请重新集成到稳定候选版本',
+                    'assignable' => 'no',
+                ],
+                [
+                    'key' => 'waitting_regression',
+                    'val' => '待回归：该任务已成功集成到稳定候选版本，等待回归测试',
+                    'assignable' => 'yes',
+                ],
+                [
+                    'key' => 'regression_testing',
+                    'val' => '回归中：系统级回归测试中',
+                    'assignable' => 'no',
+                ],
+                [
+                    'key' => 'stablerc_back2self',
+                    'val' => '已返工：回归测试失败，等待本任务解决',
+                    'assignable' => 'yes',
+                ],
+                [
+                    'key' => 'stablerc_back2other',
+                    'val' => '已返工：回归测试失败，等待其他已存在的任务解决',
+                    'assignable' => 'yes',
+                ],
+                [
+                    'key' => 'waitting_newfix_stablerc',
+                    'val' => '待解决：回归测试失败，等待新建任务解决',
                     'assignable' => 'yes',
                 ],
                 [
                     'key' => 'waitting_dep2prod',
-                    'val' => '待上线：',
+                    'val' => '待上线：回归测试通过，等待发布稳定候选版本',
                     'assignable' => 'yes',
                 ],
                 [
                     'key' => 'deploying_prod',
-                    'val' => '部署中：到正式环境',
+                    'val' => '发布中：正式环境',
                     'assignable' => 'no',
                 ],
                 [
@@ -158,13 +188,8 @@ class AddTaskStatusData extends Dit
                     'assignable' => 'no',
                 ],
                 [
-                    'key' => 'waitting_update2prod',
-                    'val' => '待部署：开发人员申请重新部署到正式环境',
-                    'assignable' => 'yes',
-                ],
-                [
                     'key' => 'online',
-                    'val' => '已上线：该任务已成功部署到正式环境',
+                    'val' => '已上线：该任务所属候选版本已发布到生产环境',
                     'assignable' => 'no',
                 ],
                 [

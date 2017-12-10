@@ -16,7 +16,9 @@ $db = db('local_sqlite');
 db()
 ->table('lif', 'a')
 ->leftJoin('lif b', 'a.id', '=', 'b.id')
-->select('a.id aid, b.id bid')
+->select('a.id aid, b.id bid', function () {
+    return 'UPPER(`key`)';
+})
 ->where('id', '>', 4)
 ->whereVal('like', '1%')
 ->whereAidBid(1, 2)

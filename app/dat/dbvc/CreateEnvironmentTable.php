@@ -10,9 +10,7 @@ class CreateEnvironmentTable extends Dit
     {
         schema()->createIfNotExists('environment', function ($table) {
             $table->pk('id');
-
-            $table->string('name');
-            $table->string('type', 32);
+            $table->string('type', 16);
             
             $table
             ->string('host', 128)
@@ -25,19 +23,18 @@ class CreateEnvironmentTable extends Dit
             $table
             ->int('project')
             ->unsigned()
+            ->default(0)
             ->comment('Project ID of this env bound to');
             
             $table
             ->int('server')
             ->unsigned()
+            ->default(0)
             ->comment('Server ID of this env bound to');
 
             $table
-            ->int('task')
-            ->unsigned()
-            ->nullable()
-            ->default(0)
-            ->comment('Task ID of this env assigned to');
+            ->string('desc')
+            ->nullable();
             
             $table
             ->string('status')

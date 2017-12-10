@@ -131,8 +131,9 @@ class Task extends Ctl
             'assign_from' => 'need|int|min:1',
             'assign_to' => 'need|int|min:1',
             'action'    => 'need|string|notin:0',
-            'branch'    => 'when:action=WAITTING_DEP2TEST|need|string|notin:0',
-            'manually'  => 'when:action=WAITTING_DEP2TEST|need|ciin:yes,no',
+            'dependency' => ['in|ciin:yes,no', 'no'],
+            'branch'    => 'when:dependency=yes|need|string|notin:0',
+            'manually'  => 'when:dependency=yes|need|ciin:yes,no',
             'assign_notes' => 'when:manually=yes|string',
         ])) || !in_array(
             $data['action'],
@@ -144,6 +145,8 @@ class Task extends Ctl
 
             return redirect($this->route);
         }
+
+        unset($data['dependency']);
 
         share_error_i18n(
             $task->assign($data) ? 'ASSIGN_OK' : 'ASSIGN_FAILED'
@@ -306,7 +309,7 @@ class Task extends Ctl
             $editable,
             $assignable,
             $deployable,
-            $task->assigns()
+            $task->getAssignableStatuses()
         );
     }
 

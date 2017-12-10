@@ -231,4 +231,6 @@ return [
     'CODE' => 'Code',
     'EG' => 'eg',
     'CONFIGRWAPI' => 'Config R/W API',
+    'DISABLE' => 'Disable',
+    'NORMAL' => 'Normal',
 ];

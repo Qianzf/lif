@@ -30,7 +30,7 @@
         <td><?= $server->port ?></td>
         <td>
             <a href="/dep/admin/servers/<?= $server->id ?>">
-                <button><?= L('MANAGE') ?></button>
+                <button><?= L('EDIT') ?></button>
             </a>
         </td>
     </tr>

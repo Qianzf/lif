@@ -18,7 +18,6 @@
     <tr>
         <th><?= L('ID') ?></th>
         <th><?= L('HOST') ?></th>
-        <th><?= L('TITLE') ?></th>
         <th>
             <?= L('TYPE') ?>
             <select
@@ -49,17 +48,17 @@
             id="env-status-filter"
             required>
                 <option value="all"><?= L('ALL') ?></option>
-                <?php if (($stat = share('env-status')) && iteratable($stat)) { ?>
-                <?php foreach ($stat as $_stat) { ?>
+                <?php if (iteratable(($stat = share('env-status')))) : ?>
+                <?php foreach ($stat as $_stat) : ?>
                 <option
-                <?php if ($status == $_stat) { ?>
+                <?php if ($status == $_stat) : ?>
                 selected
-                <?php } ?>
+                <?php endif ?>
                 value="<?= $_stat ?>">
                     <?= L($_stat) ?>
                 </option>
-                <?php } ?>
-                <?php } ?>
+                <?php endforeach ?>
+                <?php endif ?>
             </select>
         </th>
         <th><?= L('OPERATIONS') ?></th>
@@ -70,7 +69,6 @@
     <tr>
         <td><?= $key+1 ?></td>
         <td><?= $env->host ?></td>
-        <td><?= $env->name ?></td>
         <td><?= L($env->type) ?></td>
         <td><?= $env->getTaskBranchHTML() ?></td>
         <td>
@@ -80,7 +78,7 @@
         </td>
         <td>
             <a href="/dep/admin/envs/<?= $env->id ?>">
-                <button><?= L('MANAGE') ?></button>
+                <button><?= L('EDIT') ?></button>
             </a>
         </td>
     </tr>

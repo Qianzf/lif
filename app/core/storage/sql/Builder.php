@@ -1009,7 +1009,8 @@ class Builder implements \Lif\Core\Intf\DBConn
                     'CREATE',
                     'INSERT',
                     'UPDATE',
-                    'DELETE'
+                    'TRUNCATE',
+                    'DELETE',
                 ])) {
                     $this->result = intval(('INSERT' === $this->crud)
                     // Always return last insert ID when inserting

@@ -21,12 +21,14 @@ class User extends Ctl
             'search' => ['string', ''],
             'role'   => ["in:{$this->roles}", false],
             'page'   => ['int|min:1', 1],
+            'status' => ['int|min:-1', 1],
         ]);
-
-        $user = $user->whereStatus(1);
 
         if ($request['role']) {
             $user = $user->whereRole($request['role']);
+        }
+        if (-1 != $request['status']) {
+            $user = $user->whereStatus($request['status']);   
         }
         if ($keyword = $request['search']) {
             // TODO: Virtual table && full text search
@@ -146,23 +148,5 @@ class User extends Ctl
         share_error_i18n($sysmsg);
 
         return redirect('/dep/admin/users');
-    }
-
-    public function delete(UserModel $user)
-    {
-        $err = 'DELETED_FAILED';
-        $user->status = 0;
-
-        if ($user->save()) {
-            $err = 'DELETED_OK';
-            // Check if delete self
-            if ($user->id == share('user.id')) {
-                session()->delete('user');
-            }
-        }
-
-        share_error_i18n($err);
-
-        redirect('/dep/admin/users');
     }
 }

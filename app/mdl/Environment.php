@@ -6,11 +6,11 @@ class Environment extends Mdl
 {
     protected $table = 'environment';
     protected $rules = [
-        'name' => 'need|string',
         'host' => 'need|host',
         'type' => ['need|in:test,emrg,stage,prod', 'test'],
         'project' => 'need|int|min:1',
         'server'  => 'need|int|min:1',
+        'desc' => 'string',
     ];
 
     public function getTaskBranchHTML()
@@ -26,8 +26,8 @@ class Environment extends Mdl
     {
         return $this->belongsTo(
             Task::class,
-            'task',
-            'id'
+            'id',
+            'env'
         );
     }
 

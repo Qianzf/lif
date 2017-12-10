@@ -30,16 +30,14 @@ class DeployTask extends \Lif\Core\Abst\Job
     public function getEnv($task, $project)
     {
         switch (strtolower($task->status)) {
-            case 'waitting_dep2test':
-            case 'waitting_update2test': {
+            case 'waitting_dep2test': {
                 $type = ['test', 'emrg'];
                 $this->userSuccess   = $this->userFail = $task->last;
                 $this->statusSuccess = 'waitting_confirm_env';
                 $this->statusFail    = 'waitting_fix_test';
             } break;
 
-            case 'waitting_dep2stage':
-            case 'waitting_update2stage': {
+            case 'waitting_dep2stage': {
                 $type = 'stage';
                 $this->userSuccess   = $this->findLastTester($task);
                 $this->userFail      = $this->findLastDeveloper($task);
@@ -47,8 +45,15 @@ class DeployTask extends \Lif\Core\Abst\Job
                 $this->statusFail    = 'waitting_fix_stage';
             } break;
 
-            case 'waitting_dep2prod':
-            case 'waitting_update2prod': {
+            case 'waitting_dep2stablerc': {
+                $type = 'rc';
+                $this->userSuccess   = $task->creator;
+                $this->userFail      = $this->findLastDeveloper($task);
+                $this->statusSuccess = 'waitting_regression';
+                $this->statusFail    = 'waitting_fix_stablerc';
+            } break;
+
+            case 'waitting_dep2prod': {
                 $type = 'prod';
                 $this->userSuccess   = $task->creator;
                 $this->userFail      = $this->findLastDeveloper($task);
@@ -93,10 +98,7 @@ class DeployTask extends \Lif\Core\Abst\Job
         ->where([
             't.ref_type' => 'task',
             't.ref_id'   => $task->id,
-            'u.role' => [
-                strtolower($role),
-                strtoupper($role),
-            ],
+            'u.role' => $role,
         ])
         ->sort([
             't.at' => 'desc',
@@ -154,7 +156,6 @@ class DeployTask extends \Lif\Core\Abst\Job
             return true;
         } else {
             db()->start();
-            $env->task   = $task->id;
             $env->status = 'locked';
             $task->env   = $env->id;
             if (($env->save() >= 0) && ($task->save() >= 0)) {
@@ -186,7 +187,7 @@ class DeployTask extends \Lif\Core\Abst\Job
 
             return true;
         }
-        
+
         $res = $this
         ->getSSH2($server->host)
         ->setPubkey($server->pubk)
@@ -194,7 +195,7 @@ class DeployTask extends \Lif\Core\Abst\Job
         ->connect([
             'hostkey' => 'ssh-rsa',
         ])
-        ->exec($this->getDeployCommands(trim($env->path), $branch));
+        ->exec($this->getDeployCommands($env->path, $branch));
 
         if (0 === ($res['num'] ?? false)) {
             $user   = $this->userSuccess;

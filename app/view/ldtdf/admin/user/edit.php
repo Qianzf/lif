@@ -36,6 +36,15 @@
             <?php } ?>
         </select>
     </label>
+
+    <label>
+        <span class="label-title"><?= L('STATUS') ?></span>
+        <?= L('NORMAL') ?>
+        <input type="radio" name="status" value="1" checked>
+        <?= L('DISABLE') ?>
+        <input type="radio" name="status" value="0"
+        <?= $user->status ? '' : 'checked' ?>>
+    </label>
     
     <?= $this->section('submit', [
         'model' => $user,
