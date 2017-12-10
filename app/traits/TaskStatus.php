@@ -77,6 +77,14 @@ trait TaskStatus
         ];
     }
 
+    public function getAssignableStatusesWhenFixingStablerc()
+    {
+        return [
+            'WAITTING_DEP2STAGE',
+            'WAITTING_DEP2STABLERC',
+        ];
+    }
+
     public function getAssignableStatusesWhenFixingStageback()
     {
         return [
@@ -151,6 +159,14 @@ trait TaskStatus
     {
     }
 
+    public function getAssignableStatusesWhenWaittingFixStablerc()
+    {
+        return [
+            'WAITTING_DEP2STAGE',
+            'WAITTING_DEP2STABLERC',
+        ];
+    }
+    
     public function getAssignableStatusesWhenWaittingFixProd()
     {
         return [
@@ -311,22 +327,23 @@ trait TaskStatus
     {
         $before = strtolower($this->status);
         $map = [
-            'waitting_dev'         => 'DEVING',
-            'waitting_dep2test'    => 'DEPLOYING_TEST',
-            'waitting_confirm_env' => 'ENV_CONFIRMED',
-            'waitting_1st_test'    => 'TESTING_1ST',
-            'waitting_fix_test'    => 'FIXING_TEST',
-            'test_back2dev'        => 'FIXING_TESTBACK',
-            'waitting_dep2stage'   => 'DEPLOYING_STAGE',
-            'waitting_fix_stage'   => 'FIXING_STAGE',
-            'waitting_2nd_test'    => 'TESTING_2ND',
-            'stage_back2dev'       => 'FIXING_STAGEBACK',
+            'waitting_dev'          => 'DEVING',
+            'waitting_dep2test'     => 'DEPLOYING_TEST',
+            'waitting_confirm_env'  => 'ENV_CONFIRMED',
+            'waitting_1st_test'     => 'TESTING_1ST',
+            'waitting_fix_test'     => 'FIXING_TEST',
+            'test_back2dev'         => 'FIXING_TESTBACK',
+            'waitting_dep2stage'    => 'DEPLOYING_STAGE',
+            'waitting_fix_stage'    => 'FIXING_STAGE',
+            'waitting_2nd_test'     => 'TESTING_2ND',
+            'stage_back2dev'        => 'FIXING_STAGEBACK',
             'waitting_dep2stablerc' => 'DEPLOYING_STABLERC',
-            'waitting_dep2prod'    => 'DEPLOYING_PROD',
-            'waitting_regression'  => 'REGRESSION_TESTING',
-            'waitting_fix_prod'    => 'FIXING_PROD',
-            'online'               => 'FINISHED',
-            'deploying_prod'       => 'ONLINE',
+            'waitting_fix_stablerc' => 'FIXING_STABLERC',
+            'waitting_dep2prod'     => 'DEPLOYING_PROD',
+            'waitting_regression'   => 'REGRESSION_TESTING',
+            'waitting_fix_prod'     => 'FIXING_PROD',
+            'online'                => 'FINISHED',
+            'deploying_prod'        => 'ONLINE',
         ];
 
         return $map[$before] ?? 'UNKNOWN';

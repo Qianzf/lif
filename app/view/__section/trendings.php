@@ -27,8 +27,7 @@
     onclick="hideOrShow(this, <?= $key ?>)"></i>
     <textarea
     id="comment-<?= $key ?>"
-    class="comments"
-    disabled><?= $trending->notes ?></textarea>
+    class="comments"><?= $trending->notes ?></textarea>
     <?php endif ?>
     <?php endif ?>
     </li>

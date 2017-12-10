@@ -26,17 +26,17 @@
     <label>
         <span class="label-title"><?= L('ENV_TYPE') ?></span>
         <select name="type" required>
-            <?php if (($types = share('env-types')) && iteratable($types)) { ?>
-            <?php foreach ($types as $type) { ?>
+            <?php if (($types = share('env-types')) && iteratable($types)) : ?>
+            <?php foreach ($types as $type) : ?>
             <option
-            <?php if ($type == $env->type) { ?>
+            <?php if ($type == $env->type) : ?>
             selected
-            <?php } ?>
+            <?php endif ?>
             value="<?= $type ?>">
                 <?= L($type) ?>
             </option>
-            <?php } ?>
-            <?php } ?>
+            <?php endforeach; ?>
+            <?php endif ?>
         </select>
     </label>
 

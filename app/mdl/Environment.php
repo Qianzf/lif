@@ -7,7 +7,7 @@ class Environment extends Mdl
     protected $table = 'environment';
     protected $rules = [
         'host' => 'need|host',
-        'type' => ['need|in:test,emrg,stage,prod', 'test'],
+        'type' => ['need|ciin:test,emrg,stage,rc,prod', 'test'],
         'project' => 'need|int|min:1',
         'server'  => 'need|int|min:1',
         'desc' => 'string',
@@ -15,16 +15,25 @@ class Environment extends Mdl
 
     public function getTaskBranchHTML()
     {
-        if ($task = $this->task()) {
-            return "<a href='/dep/tasks/{$task->id}'>{$task->branch} / {$task->id}</a>";
+        if ($tasks = $this->tasks()) {
+            $html = '';
+            foreach ($tasks as $task) {
+               $html .= "<a href='/dep/tasks/{$task->id}'>{$task->branch} / {$task->id}</a>";
+
+               if (false !== next($tasks)) {
+                    $html .= '; ';
+               }
+            }
+
+            return $html;
         }
 
         return '-';
     }
 
-    public function task()
+    public function tasks()
     {
-        return $this->belongsTo(
+        return $this->hasMany(
             Task::class,
             'id',
             'env'

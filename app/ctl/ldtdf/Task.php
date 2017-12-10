@@ -128,12 +128,12 @@ class Task extends Ctl
         $data['assign_from'] = $user;
         
         if (true !== ($err = validate($data, [
-            'assign_from' => 'need|int|min:1',
-            'assign_to' => 'need|int|min:1',
-            'action'    => 'need|string|notin:0',
-            'dependency' => ['in|ciin:yes,no', 'no'],
-            'branch'    => 'when:dependency=yes|need|string|notin:0',
-            'manually'  => 'when:dependency=yes|need|ciin:yes,no',
+            'assign_from'  => 'need|int|min:1',
+            'assign_to'    => 'need|int|min:1',
+            'action'       => 'need|string|notin:0',
+            'dependency'   => ['ciin:yes,no', 'no'],
+            'branch'       => 'when:dependency=yes|need|string|notin:0',
+            'manually'     => 'when:dependency=yes|need|ciin:yes,no',
             'assign_notes' => 'when:manually=yes|string',
         ])) || !in_array(
             $data['action'],

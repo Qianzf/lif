@@ -9,6 +9,9 @@ class DeployTask extends \Lif\Core\Abst\Job
     protected $statusFail    = null;
     protected $userSuccess   = null;
     protected $userFail      = null;
+    protected $recycleEnv    = null;
+    protected $envStatus     = null;
+    protected $commands      = [];
 
     public function setTask(int $task)
     {
@@ -22,15 +25,28 @@ class DeployTask extends \Lif\Core\Abst\Job
         return new \Lif\Mdl\Task($this->task);
     }
 
-    public function getSSH2($host)
+    public function getSSH2($server)
     {
-        return new \Lif\Core\Lib\Connect\SSH2($host);
+        return (
+            new \Lif\Core\Lib\Connect\SSH2($server->host)
+        )
+        ->setPubkey($server->pubk)
+        ->setPrikey($server->prik)
+        ->connect([
+            'hostkey' => 'ssh-rsa',
+        ]);
     }
 
     public function getEnv($task, $project)
     {
+        $this->commands = [
+            "git checkout -b {$task->branch}",
+            // "git pull origin {$task->branch} --no-edit",
+        ];
+
         switch (strtolower($task->status)) {
             case 'waitting_dep2test': {
+                // Check if task aleay deploy to a env already
                 $type = ['test', 'emrg'];
                 $this->userSuccess   = $this->userFail = $task->last;
                 $this->statusSuccess = 'waitting_confirm_env';
@@ -51,6 +67,10 @@ class DeployTask extends \Lif\Core\Abst\Job
                 $this->userFail      = $this->findLastDeveloper($task);
                 $this->statusSuccess = 'waitting_regression';
                 $this->statusFail    = 'waitting_fix_stablerc';
+                $this->envStatus     = 'running';
+                $this->commands = [
+                    // "git pull origin {$task->branch} --no-edit",
+                ];
             } break;
 
             case 'waitting_dep2prod': {
@@ -59,23 +79,24 @@ class DeployTask extends \Lif\Core\Abst\Job
                 $this->userFail      = $this->findLastDeveloper($task);
                 $this->statusSuccess = 'online';
                 $this->statusFail    = 'waitting_fix_prod';
+                $this->commands = [
+                ];
             } break;
             
             default: return false; break;
         }
 
-        // Check if task aleay deploy to a env already
-        if ($env = $task->environment()) {
-            return $env;
+        if ($task->env) {
+            if ($env = $task->environment(['type' => $type])) {
+                return $env;
+            } else {
+                $this->recycleEnv = $task->env;
+            }
         }
 
         return $project->environments([], [
             'type'   => $type,
             'status' => 'running',
-            'task'   => [
-                'key' => '<',
-                'val' => 1,
-            ],
         ], 1);
     }
 
@@ -155,25 +176,8 @@ class DeployTask extends \Lif\Core\Abst\Job
 
             return true;
         } else {
-            db()->start();
-            $env->status = 'locked';
-            $task->env   = $env->id;
-            if (($env->save() >= 0) && ($task->save() >= 0)) {
-                db()->commit();
-            } else {
-                // TODO ... add log
-                db()->rollback();
-
-                $this->assign(
-                    $task,
-                    $task->current,
-                    $task->last,
-                    $this->statusFail,
-                    L('INNER_ERROR')
-                );
-
-                return true;
-            }
+            $env->status = $this->getEnvStatus();
+            $env->save();
         }
 
         if (!($server = $env->server()) || !$server->isAlive()) {
@@ -188,19 +192,16 @@ class DeployTask extends \Lif\Core\Abst\Job
             return true;
         }
 
-        $res = $this
-        ->getSSH2($server->host)
-        ->setPubkey($server->pubk)
-        ->setPrikey($server->prik)
-        ->connect([
-            'hostkey' => 'ssh-rsa',
-        ])
-        ->exec($this->getDeployCommands($env->path, $branch));
+        $ssh2 = $this->getSSH2($server);
+        $res  = $ssh2->exec($this->getDeployCommands($env->path, $branch));
 
         if (0 === ($res['num'] ?? false)) {
             $user   = $this->userSuccess;
             $status = $this->statusSuccess;
             $notes  = null;
+            $task->env = $env->id;
+            $task->save();
+            $this->recycleOtherEnvs();
         } else {
             $user   = $this->userFail;
             $status = $this->statusFail;
@@ -210,6 +211,11 @@ class DeployTask extends \Lif\Core\Abst\Job
         $this->assign($task, $task->current, $user, $status, $notes);
 
         return true;
+    }
+
+    protected function getEnvStatus()
+    {
+        return $this->envStatus ?? 'locked';
     }
 
     // Update task status and add into trending
@@ -229,21 +235,46 @@ class DeployTask extends \Lif\Core\Abst\Job
         ]);
     }
 
-    protected function getDeployCommands(string $path, string $branch) : array
+    public function recycleOtherEnvs()
+    {
+        if ($this->recycleEnv
+            && ($env = model(\Lif\Mdl\Environment::class, $this->recycleEnv))
+            && $env->isAlive()
+            && ($server = $env->server())
+            && ($server->isAlive())
+        ) {
+            $this
+            ->getSSH2($server)
+            ->exec($this->getEnvRecycleCommands($env->path));
+
+            $env->status = 'running';
+            $env->save();
+        }
+    }
+
+    protected function getEnvRecycleCommands(string $path)
     {
         return [
             "cd {$path}",
-
             'git add -A',
             'git reset --hard HEAD',
-            // 'git checkouts master',
-
-            // 'git branch | grep -v master | xargs git branch -D',
+            'git checkout master',
+            'git branch | grep -v "master" | xargs git branch -D &>/dev/null || echo skip &>/dev/null',
             
             // need newer version of git for `--no-edit` option
-            // "git pull origin {$branch} --no-edit",
-
-            "git pull origin master --no-edit",
+            'git pull origin master --no-edit',
         ];
+    }
+
+    protected function getDeployCommands(string $path, string $branch) : array
+    {
+        $commands = array_merge(
+            $this->getEnvRecycleCommands($path),
+            $this->commands
+        );
+
+        $commands[] = 'chown -R www:www `pwd`';
+
+        return $commands;
     }
 }

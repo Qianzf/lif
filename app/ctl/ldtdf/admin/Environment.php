@@ -11,6 +11,7 @@ class Environment extends Ctl
         'test',
         'emrg',
         'stage',
+        'rc',
         'prod',
     ];
 
