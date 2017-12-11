@@ -6,7 +6,6 @@ use Lif\Core\Abst\Command;
 
 class Seed extends Command
 {
-
     use \Lif\Core\Traits\Ditable;
 
     protected $intro = 'Commit new-added database seeds';

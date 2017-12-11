@@ -135,10 +135,16 @@ class User extends Ctl
 
         if ($needUpdate) {
             if ($user->save()) {
-                $sysmsg =  'UPDATED_OK';
                 // Check if update self
                 if ($user->id == share('user.id')) {
-                    share('user', $user->data());
+                    // dd($user->status == 1);
+                    if ($user->status == 1) {
+                        $sysmsg =  'UPDATED_OK';
+                        share('user', $user->items());
+                    } else {
+                        session()->destory();
+                        return redirect('/dep/users/login');
+                    }
                 }
             } else {
                 $sysmsg = 'UPDATE_FAILED';
