@@ -7,5 +7,9 @@
         <a href="/dep/docs/new">
             <button><?= L('ADD_DOC') ?></button>
         </a>
+
+        <a href="/dep/docs/new">
+            <button><?= L('ADD_DOC') ?></button>
+        </a>
     </dd>
 </dl>

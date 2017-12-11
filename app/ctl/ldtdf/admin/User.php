@@ -21,7 +21,7 @@ class User extends Ctl
             'search' => ['string', ''],
             'role'   => ["in:{$this->roles}", false],
             'page'   => ['int|min:1', 1],
-            'status' => ['int|min:-1', 1],
+            'status' => ['int|min:-1', -1],
         ]);
 
         if ($request['role']) {
@@ -30,6 +30,7 @@ class User extends Ctl
         if (-1 != $request['status']) {
             $user = $user->whereStatus($request['status']);   
         }
+
         if ($keyword = $request['search']) {
             // TODO: Virtual table && full text search
             $user = $user
@@ -37,7 +38,8 @@ class User extends Ctl
                 $table
                 ->whereAccount('like', '%'.$keyword.'%')
                 ->orEmail('like', '%'.$keyword.'%')
-                ->orName('like', '%'.$keyword.'%');
+                ->orName('like', '%'.$keyword.'%')
+                ->whereStatus('!=', '-1');
             });
         }
 
@@ -104,24 +106,26 @@ class User extends Ctl
         $conflict   = [];
         $oldData    = $user->items();
 
-        foreach ($this->request->all() as $key => $value) {
+        foreach ($this->request->posts() as $key => $value) {
             if (isset($oldData[$key]) && ($oldData[$key] != $value)) {
+                $needUpdate = true;
+
                 if ('passwd' == $key) {
                     if ($value) {
-                        $needUpdate = true;
                         $user->passwd = password_hash(
                             $value,
                             PASSWORD_DEFAULT
                         );
                     }
+
                     continue;
                 }
+
                 if (in_array($key, ['account', 'email'])) {
                     // check the unicity of user's unique attribution
                     $conflict[] = [$key => $value];
                 }
 
-                $needUpdate = true;
                 $user->$key = $value;
             }
         }
@@ -134,12 +138,12 @@ class User extends Ctl
         $sysmsg = 'UPDATED_NOTHING';
 
         if ($needUpdate) {
-            if ($user->save()) {
+            if ($user->save() >= 0) {
+                $sysmsg = 'UPDATED_OK';
                 // Check if update self
                 if ($user->id == share('user.id')) {
                     // dd($user->status == 1);
                     if ($user->status == 1) {
-                        $sysmsg =  'UPDATED_OK';
                         share('user', $user->items());
                     } else {
                         session()->destory();
