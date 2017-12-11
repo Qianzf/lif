@@ -14,19 +14,31 @@ abstract class Factory
         if (!$name && !$namespace) {
             excp('Missing class name.');
         }
+
         if (! $namespace) {
             // use `static` instead of `self`
             // because we need the namespace of sub class
             $namespace = static::$namespace;
         }
-        
-        $class = $namespace.ucfirst($name);
 
-        if (! class_exists($class)) {
-            excp('Class `'.$class.'` not exists.');
+        if (! ($class = self::classExists($namespace, $name))) {
+            excp("Class `{$class}` not exists.");
         }
 
         return new $class($data);
+    }
+
+    public static function classExists(string $ns, string $name)
+    {
+        if (class_exists($class = format_ns($ns.ucfirst($name)))) {
+            return $class;
+        }
+
+        if (class_exists($class = format_ns($ns.nslast2upper($name)))) {
+            return $class;
+        }
+
+        return false;
     }
 
     public static function fetch(

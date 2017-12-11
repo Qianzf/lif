@@ -42,6 +42,8 @@ class Restart extends Command
 
     public function fire()
     {
+        $this->prepare();
+        
         $queues = $this->queues ? implode(', ', $this->queues) : '*All*';
         $msg    = 'Queue workers (all or part of: '.$queues.')';
         if ($this->getQueue()->setRestart($this->queues)) {

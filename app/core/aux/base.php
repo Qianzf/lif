@@ -524,6 +524,16 @@ if (! fe('format_ns')) {
         return '\\';
     }
 }
+if (! fe('nslast2upper')) {
+    function nslast2upper(string $name) {
+        $name = explode('\\', $name);
+        $last = count($name) - 1;
+        $name[$last] = strtoupper($name[$last]);
+        $name = implode('\\', $name);
+
+        return $name;
+    }
+}
 if (! fe('subsets')) {
     // See: <https://stackoverflow.com/questions/6092781/finding-the-subsets-of-an-array-in-php>
     function subsets(array $data, int $minLen = 1) : array {
