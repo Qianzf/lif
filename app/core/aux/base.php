@@ -461,16 +461,19 @@ if (! fe('exception')) {
         }
 
         $info = $_info = [
-            'msg' => $exObj->getMessage(),
             'err' => $exObj->getCode(),
         ];
         // $_info['trace'] = $exObj->getTrace();
         $_info['trace'] = explode("\n", $exObj->getTraceAsString());
+        $_info['msg']   = $exObj->getMessage();
 
         // !!! Make sure check app conf path first
         // !!! Or infinite loop will occur when app conf file not exists
         if (('production' != app_env()) && app_debug()) {
             $info['dat']['trace'] = $_info['trace'];
+            $info['msg']          = $_info['msg'];
+        } else {
+            $info['msg']          = 'Inner Exception';
         }
 
         put2file(
