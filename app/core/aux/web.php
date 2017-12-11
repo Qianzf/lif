@@ -60,7 +60,7 @@ if (! fe('response')) {
         ];
 
         if ($dat) {
-            $info['dat'] = (array) $dat;
+            $info['dat'] = $dat;
         }
 
         if ('json' === $format) {
@@ -158,6 +158,23 @@ if (! fe('escape_route_name')) {
                 return '{?}';
             }
         }, $name);
+    }
+}
+if (! fe('uri')) {
+    function uri(string $route, array $params = []) {
+        if (! $params) {
+            return $route;
+        }
+
+        $idx = 0;
+        $uri = preg_replace_callback('/\?/u',
+            function ($matches) use ($params, &$idx) {
+                return $params[$idx++];
+        }, $route);
+
+        unset($idx);
+
+        return $uri;
     }
 }
 if (! fe('route')) {

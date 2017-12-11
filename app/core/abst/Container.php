@@ -54,6 +54,52 @@ abstract class Container
         return $this->__methodSafe($method, $params);
     }
 
+    public function responseOnUpdated($model, string $uri = null)
+    {
+        $uri = $uri ?? $this->route;
+
+        if (! $model->isAlive()) {
+            share_error_i18n('OBJECT_NOT_FOUND');
+            return redirect($uri);
+        }
+
+        if (!empty_safe($err = $model->save($this->request->posts()))
+            && is_numeric($err)
+            && ($err >= 0)
+        ) {
+            if ($err > 0) {
+                $status = 'UPDATE_OK';
+            } else {
+                $status = 'UPDATED_NOTHING';
+            }
+        } else {
+            $status = 'UPDATE_FAILED';
+        }
+
+        $err = is_integer($err) ? null : L($err);
+
+        share_error(L($status, $err));
+
+        redirect($uri);
+    }
+
+    public function responseOnCreated($model, string $uri)
+    {
+        if (($status = $model->create($this->request->posts()))
+            && is_integer($status)
+            && ($status > 0)
+        ) {
+            $msg = 'CREATED_SUCCESS';
+        } else {
+            $msg    = L('CREATED_FAILED', L($status));
+            $status = 'new';
+        }
+
+        share_error_i18n($msg);
+
+        return redirect(uri($uri, [$status]));
+    }
+
     public function validate(array $data, array $rules)
     {
         $prepare = validate($data, $rules);

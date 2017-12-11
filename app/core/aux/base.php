@@ -392,9 +392,20 @@ if (! fe('_json_decode')) {
     }
 }
 if (! fe('_json_encode')) {
-    function _json_encode($arr) : string {
+    function _json_encode($data) : string {
+        if (is_array($data)) {
+        } elseif (is_object($data)) {
+            if (! method_exists($data, '__toString')) {
+                excp('Can not encode an object without `__toString()`.');
+            }
+
+            $data = $data->__toString();
+        } else {
+            $data = (array) $data;
+        }
+
         return ($json = json_encode(
-            $arr,
+            $data,
             JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
         )) ? $json : '';
     }
@@ -470,8 +481,8 @@ if (! fe('exception')) {
         // !!! Make sure check app conf path first
         // !!! Or infinite loop will occur when app conf file not exists
         if (('production' != app_env()) && app_debug()) {
-            $info['dat']['trace'] = $_info['trace'];
             $info['msg']          = $_info['msg'];
+            $info['dat']['trace'] = $_info['trace'];
         } else {
             $info['msg']          = 'Inner Exception';
         }
@@ -2160,5 +2171,17 @@ if (! fe('url')) {
         $uri = format_uri("{$host}/{$uri}");
 
         return "{$schema}://{$uri}";
+    }
+}
+if (! fe('ispint')) {
+    function ispint($num = null) {
+        if ($num
+            && (($_num = intval($num)) == $num)
+            && ($_num > 0)
+        ) {
+            return $_num;
+        }
+
+        return false;
     }
 }

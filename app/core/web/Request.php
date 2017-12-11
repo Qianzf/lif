@@ -15,6 +15,7 @@ class Request extends Container implements Observable
     protected $type    = null;
     protected $headers = null;
     protected $params  = [];
+    protected $posts   = [];
     protected $magic   = [];
 
     public function __construct()
@@ -151,16 +152,29 @@ class Request extends Container implements Observable
 
     public function posts()
     {
-        $post = $_POST;
+        if ($this->posts) {
+            return $this->posts;
+        }
+
+        $posts = $_POST;
         
-        array_walk($post, function (&$val, $key) use (&$post) {
+        array_walk($posts, function (&$val, $key) use (&$posts) {
             if ('__' === mb_substr($key, 0, 2)) {
                 $this->magic[$key] = $val;
-                unset($post[$key]);
+                unset($posts[$key]);
             }
         });
 
-        return $post;
+        return $this->posts = $posts;
+    }
+
+    public function setPost(string $key, $value)
+    {
+        $this->posts();
+        
+        $this->posts[$key] = $value;
+
+        return $this;
     }
 
     public function unset(string $key = null)

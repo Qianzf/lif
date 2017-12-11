@@ -310,4 +310,10 @@ return [
     'START' => '开始',
     'SET' => '设置',
     'UNPASS' => '未通过',
+    'CATE' => '目录',
+    'PARENT' => '父级',
+    'WRITE' => '写',
+    'FOLDER' => '文件夹',
+    'OWNER' => '所有者',
+    'NULL' => '无',
 ];

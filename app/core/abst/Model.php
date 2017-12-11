@@ -225,6 +225,15 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
                     return $err;
                 }
             }
+
+            // Drop unruled data items
+            if ($this->rules) {
+                foreach ($data as $key => $val) {
+                    if (! isset($this->rules[$key])) {
+                        unset($data[$key]);
+                    }
+                }
+            }
             
             unset($data[$_pk]);    // Protected primary key
 

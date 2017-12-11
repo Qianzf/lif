@@ -308,3 +308,43 @@ input:invalid {
     max-width: 190px;
     background-color: lightgreen;
 }
+.doc-show-container {
+    /*height: 1000px;*/
+}
+.doc-show-folder {
+    background-color: #F4F3F4;
+    width: 20%;
+    position: absolute;
+    left: 0;
+    height: auto;
+    display: inline-block;
+    overflow: hidden;
+}
+.doc-show-content {
+    width: 70%;
+    position: absolute;
+    right: 0;
+    height: auto;
+    display: inline-block;
+    overflow: hidden;
+}
+.doc-menu-tree ol {
+    padding-left: 28px;
+}
+.doc-menu-tree dd, li, ol {
+    height: 30px;
+    line-height: 30px;
+    margin: 0 0 1px 5px;
+    padding: 5px;
+    cursor: pointer;
+    list-style: square;
+}
+.doc-menu-title-selected,
+.doc-menu-title-over {
+    background-color: lightgrey;
+    color: darkcyan;
+}
+.doc-menu-title-out {
+    background-color: #f4f3f4;
+    color: black;   
+}

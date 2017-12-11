@@ -4,22 +4,21 @@ namespace Lif\Dat\Dbvc;
 
 use Lif\Core\Storage\Dit;
 
-class CreateDocTable extends Dit
+class CreateDocFolderTable extends Dit
 {
     public function commit()
     {
-        schema()->createIfNotExists('doc', function ($table) {
+        schema()->createIfNotExists('doc_folder', function ($table) {
             $table->pk('id');
-
             $table->string('title');
-            $table->text('content');
+            $table->tinytext('desc');
 
             $table
             ->int('creator')
             ->unsigned();
 
             $table
-            ->int('folder')
+            ->int('parent')
             ->default(0)
             ->unsigned();
 
@@ -44,6 +43,6 @@ class CreateDocTable extends Dit
 
     public function revert()
     {
-        schema()->dropIfExists('doc');
+        schema()->dropIfExists('doc_folder');
     }
 }

@@ -68,7 +68,18 @@ $this->group([
         'ctl' => 'Doc',
     ], function () {
         $this->get('/', 'index');
-        $this->get('new', 'add');
+        $this->get('my', 'my');
+        $this->get('new', 'edit');
+        $this->get('{id}', 'viewDoc');
+        $this->get('{id}/edit', 'edit');
+        $this->post('{id}/edit', 'update');
+        $this->post('new', 'create');
+        $this->get('folders/{id}', 'viewFolder');
+        $this->get('folders/{id}/edit', 'editFolder');
+        $this->get('folders/new', 'editFolder');
+        $this->get('folders/{id}/unfold', 'queryFolderChildren');
+        $this->post('folders/new', 'createFolder');
+        $this->post('folders/{id}/edit', 'updateFolder');
     });
 
     $this->group([
