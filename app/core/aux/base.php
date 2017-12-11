@@ -75,7 +75,7 @@ if (! fe('init')) {
         ini_set('display_errors', $display_errors);
         ini_set('display_startup_errors', $display_startup_errors);
 
-        $timezone = conf('app')['timezone'] ?? 'UTC';
+        $timezone = conf('app', null, false)['timezone'] ?? 'UTC';
         date_default_timezone_set($timezone);
         mb_internal_encoding('UTF-8');
         mb_regex_encoding('UTF-8');

@@ -1,4 +1,6 @@
-<?php $action = $action ?? ($model->id ? 'EDIT' : 'ADD'); ?>
+<?php $mid    = $model ?? ($model->id ?? null) ?>
+<?php $action = $action ?? ($mid ? 'EDIT' : 'ADD'); ?>
+<?php $key    = $key ?? 'UNKNOWN'; ?>
 <?php $title  = L("{$action}_{$key}"); ?>
 
 <?= $this->title([
@@ -10,7 +12,7 @@
 <h4>
     <?= $title ?>
     <sup><small>[
-        <a href="<?= $route ?>"><?= L('BACK_TO_LIST') ?></a>
+        <a href="<?= $route ?? '/' ?>"><?= L('BACK_TO_LIST') ?></a>
     ]</small></sup>
 
     <sup><small>[

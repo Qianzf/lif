@@ -44,6 +44,7 @@ trait TaskStatus
             'WAITTING_DEV',
             'WAITTING_FIX_TEST',
             'WAITTING_FIX_STAGE',
+            'WAITTING_FIX_STABLERC',
             'WAITTING_FIX_PROD',
             'TEST_BACK2DEV',
             'STAGE_BACK2DEV',
@@ -65,6 +66,7 @@ trait TaskStatus
         return [
             'WAITTING_1ST_TEST',
             'WAITTING_2ND_TEST',
+            'WAITTING_REGRESSION',
             'WAITTING_DEP2PROD',
         ];
     }
@@ -81,6 +83,7 @@ trait TaskStatus
     {
         return [
             'WAITTING_DEP2STAGE',
+            'WAITTING_FIX_STABLERC',
             'WAITTING_DEP2STABLERC',
         ];
     }
@@ -163,6 +166,7 @@ trait TaskStatus
     {
         return [
             'WAITTING_DEP2STAGE',
+            'WAITTING_FIX_STABLERC',
             'WAITTING_DEP2STABLERC',
         ];
     }
@@ -341,6 +345,7 @@ trait TaskStatus
             'waitting_fix_stablerc' => 'FIXING_STABLERC',
             'waitting_dep2prod'     => 'DEPLOYING_PROD',
             'waitting_regression'   => 'REGRESSION_TESTING',
+            'stablerc_back2self'    => 'FIXING_STABLERCBACK',
             'waitting_fix_prod'     => 'FIXING_PROD',
             'online'                => 'FINISHED',
             'deploying_prod'        => 'ONLINE',

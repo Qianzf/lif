@@ -8,7 +8,7 @@ $this->group([
     'prefix'    => 'dep',
     'namespace' => 'Ldtdf',
     'filter' => [
-        'id' => 'int|min:1'
+        'id' => 'int|min:1',
     ],
     'middleware' => [
         'auth.web',
@@ -122,12 +122,28 @@ $this->group([
 
     $this->group([
         'prefix' => 'test',
+        'namespace' => 'Tester',
         'ctl' => 'Tester',
         'middleware' => [
             'auth.tester',
         ],
     ], function () {
         $this->get('/', 'index');
+
+        $this->group([
+            'prefix' => 'regressions',
+            'filter' => [
+                'env'  => 'int|min:1',
+                'task' => 'int|min:1',
+            ],
+            'ctl' => 'Regression',
+        ], function () {
+            $this->get('/', 'index');
+            $this->get('{id}', 'relateTasks');
+            $this->get('{id}/start', 'startTest');
+            $this->get('{env}/unpass', 'setUnpass');
+            $this->get('{env}/{task}/unpass', 'setTaskUnpass');
+        });
     });
 
     $this->group([

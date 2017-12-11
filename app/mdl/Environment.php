@@ -31,13 +31,103 @@ class Environment extends Mdl
         return '-';
     }
 
-    public function tasks()
+    public function setRegressionUnpass(Task $task = null)
     {
-        return $this->hasMany(
-            Task::class,
-            'id',
-            'env'
-        );
+        if (! $this->isAlive()) {
+            excp('Regression Environment not exists');
+        }
+
+        $query = db()
+        ->table('task')
+        ->whereStatus([
+            'REGRESSION_TESTING',
+            'regression_testing',
+        ])
+        ->whereEnv($this->id);
+
+        if ($task) {
+            if (! $task->isAlive()) {
+                excp('Regression Environment related task not exists');
+            }
+
+            $updateOther = $query->update('status', 'stablerc_back2other');
+            $updateSelf  = $query
+            ->whereId($task->id)
+            ->update('status', 'stablerc_back2self');
+
+            return (
+                ($updateOther >= 0) && ($updateSelf >= 0)
+            );
+        }
+
+        return $query->update('status', 'waitting_newfix_stablerc') >= 0;
+    }
+
+    public function startRegressionTest()
+    {
+        if (! $this->isAlive()) {
+            excp('Regression Environment not exists');
+        }
+
+        $res = db()
+        ->table('task')
+        ->whereStatus([
+            'WAITTING_REGRESSION',
+            'waitting_regression',
+        ])
+        ->whereEnv($this->id)
+        ->update('status', 'regression_testing');
+
+        return ($res >= 0);
+    }
+
+    public function getRegressionableStatus()
+    {
+        return [
+            'WAITTING_REGRESSION',
+            'waitting_regression',
+            'REGRESSION_TESTING',
+            'regression_testing',
+        ];
+    }
+
+    public function getRegressions(bool $model = true)
+    {
+        $regressions = db()
+        ->table($this->getTable(), 'e')
+        ->leftJoin(['task', 't'], 'e.id', 't.env')
+        ->select('e.*')
+        ->where('t.status', $this->getRegressionableStatus())
+        ->group('t.env')
+        ->get();
+
+        if ($model) {
+            $this->__toModel($regressions);
+        }
+
+        return $regressions;
+    }
+
+    public function tasks(array $fwhere = [], $lwhere = [])
+    {
+        return $this->hasMany([
+            'model' => Task::class,
+            'lk' => 'id',
+            'fk' => 'env',
+            'fwhere' => $fwhere,
+            'lwhere' => $lwhere,
+        ]);
+    }
+
+    public function project(string $attr = null)
+    {
+        if ($project = $this->belongsTo(
+            Project::class,
+            'project',
+            'id'
+        )) {
+            return $attr ? $project->$attr : $project;   
+        }
     }
 
     public function projects()

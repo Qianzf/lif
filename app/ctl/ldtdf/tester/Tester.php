@@ -1,8 +1,8 @@
 <?php
 
-namespace Lif\Ctl\Ldtdf;
+namespace Lif\Ctl\Ldtdf\Tester;
 
-class Tester extends Ctl
+class Tester extends \Lif\Ctl\Ldtdf\Ctl
 {
     public function index()
     {

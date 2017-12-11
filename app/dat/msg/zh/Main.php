@@ -230,6 +230,7 @@ return [
     'STATUS_TESTING_2ND' => '测试中：预发布环境',
     'STATUS_WAITTING_FIX_PROD' => '待解决：部署到正式环境出现问题',
     'STATUS_FIXING_STABLERC' => '解决中：解决集成到稳定候选版本失败的问题',
+    'STATUS_REGRESSION_TESTING' => '回归中：正在进行回归测试',
     'STATUS_FIXING_PROD' => '解决中：解决部署到正式环境不通过的问题',
     'STATUS_CANCELED' => '已取消',
     'STATUS_ONLINE' => '已上线',
@@ -304,4 +305,9 @@ return [
     'CONFIGRWAPI' => '配置读写接口',
     'DISABLE' => '禁用',
     'NORMAL' => '正常',
+    'REGRESSION' => '回归',
+    'WAITTING_REGRESSION_LIST' => '待回归列表',
+    'START' => '开始',
+    'SET' => '设置',
+    'UNPASS' => '未通过',
 ];

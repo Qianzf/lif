@@ -404,6 +404,14 @@ class Task extends Mdl
         return $this->origin('bug');
     }
 
+    public function title()
+    {
+        $origin = $this->origin();
+        $type   = ('story' == $this->origin_type) ? 'S' : 'B';
+
+        return "{$origin->title} ({$type}{$origin->id}/T{$this->id})";
+    }
+
     public function origin(string $type = null)
     {
         if ($type = ($type ?? ($this->origin_type ?: 'story'))) {
@@ -425,7 +433,7 @@ class Task extends Mdl
         return $this->origin('story');
     }
 
-    public function project()
+    public function project(string $attr = null)
     {
         $project = $this->belongsTo(
             Project::class,
@@ -437,7 +445,7 @@ class Task extends Mdl
             excp(L('MISSING_TASK_RELATED_PROJECT'));
         }
 
-        return $project;
+        return $attr ? $project->$attr : $project;
     }
 
     public function creator()

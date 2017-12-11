@@ -663,7 +663,7 @@ class Builder implements \Lif\Core\Intf\DBConn
     }
 
     public function leftJoin(
-        string $table,
+        $table,
         string $fdLeft,
         string $cond,
         string $fdRight = null
@@ -674,9 +674,29 @@ class Builder implements \Lif\Core\Intf\DBConn
             $cond = '=';
         }
 
+        if (is_array($table)) {
+            if (! ($name = ($table['name'] ?? ($table[0] ?? null)))
+                || !is_string($name)
+            ) {
+                excp(
+                    'Illgeal table when formatted with array: wrong name'
+                );
+            }
+            if ($alias = $table['alias'] ?? ($table[1] ?? null)) {
+                if (!is_string($alias)) {
+                    excp(
+                        'Illgeal table when formatted with array: wrong alias'
+                    );
+                }
+            }
+            $tableWithAlias = "`{$name}` AS `{$alias}`";
+        } elseif (is_string($table)) {
+            $tableWithAlias = $table;
+        }
+
         if ($this->table) {
             $this->table .= ' LEFT JOIN '
-            .$table
+            .$tableWithAlias
             .' ON '
             .escape_fields($fdLeft)
             .' '

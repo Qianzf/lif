@@ -139,7 +139,7 @@ class AddTaskStatusData extends Dit
                 ],
                 [
                     'key' => 'deploying_stablerc',
-                    'val' => '集成中：开发人员申请重新集成到稳定候选版本',
+                    'val' => '集成中：到稳定候选版本',
                     'assignable' => 'no',
                 ],
                 [
@@ -149,7 +149,7 @@ class AddTaskStatusData extends Dit
                 ],
                 [
                     'key' => 'regression_testing',
-                    'val' => '回归中：系统级回归测试中',
+                    'val' => '回归中：项目系统级回归测试中',
                     'assignable' => 'no',
                 ],
                 [
@@ -165,6 +165,11 @@ class AddTaskStatusData extends Dit
                 [
                     'key' => 'waitting_newfix_stablerc',
                     'val' => '待解决：回归测试失败，等待新建任务解决',
+                    'assignable' => 'yes',
+                ],
+                [
+                    'key' => 'fixing_stablercback',
+                    'val' => '解决中：正在解决回归测试失败的问题',
                     'assignable' => 'yes',
                 ],
                 [
@@ -184,7 +189,7 @@ class AddTaskStatusData extends Dit
                 ],
                 [
                     'key' => 'fixing_prod',
-                    'val' => '解决中：解决部署到正式环境不通过的问题',
+                    'val' => '解决中：正在解决部署到正式环境不通过的问题',
                     'assignable' => 'no',
                 ],
                 [
