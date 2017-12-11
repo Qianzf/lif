@@ -779,7 +779,6 @@ if (! fe('conf')) {
             return conf_all($cfgPath);
         }
 
-
         if (isset($GLOBALS['LIF_CFG'])
             && isset($GLOBALS['LIF_CFG'][$name])
             && $GLOBALS['LIF_CFG'][$name]

@@ -64,13 +64,10 @@ class Run extends Command
     
     private $timer = null;
 
-    public function __construct()
-    {
-        $this->prepare();
-    }
-
     public function fire()
     {
+        $this->prepare();
+        
         // sleep($this->startSecs);
 
         while (true) {
