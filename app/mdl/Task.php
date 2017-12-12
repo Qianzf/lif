@@ -399,11 +399,6 @@ class Task extends Mdl
         return $this->hasMany($relationship);
     }
 
-    public function bug()
-    {
-        return $this->origin('bug');
-    }
-
     public function title()
     {
         $origin = $this->origin();
@@ -417,20 +412,27 @@ class Task extends Mdl
         if ($type = ($type ?? ($this->origin_type ?: 'story'))) {
             $class = ('story' == $type) ? Story::class : Bug::class;
 
-            return $this->belongsTo([
+            if ($origin = $this->belongsTo([
                 'model' => $class,
                 'lk' => 'origin_id',
                 'fk' => 'id',
                 'lwhere' => [
                     'origin_type' => $type,
                 ],
-            ]);
+            ])) {
+                return $key ? $origin->$key : $origin;
+            }
         }
     }
 
-    public function story()
+    public function bug(string $key = null)
     {
-        return $this->origin('story');
+        return $this->origin('bug', $key);
+    }
+
+    public function story(string $key = null)
+    {
+        return $this->origin('story', $key);
     }
 
     public function project(string $attr = null)
@@ -448,7 +450,7 @@ class Task extends Mdl
         return $attr ? $project->$attr : $project;
     }
 
-    public function creator()
+    public function creator(string $key = null)
     {
         $creator = $this->belongsTo(
             User::class,
@@ -460,7 +462,7 @@ class Task extends Mdl
             excp(L('MISSING_TASK_CREATOR'));
         }
 
-        return $creator;
+        return $key ? $creator->$key : $creator;
     }
 
     public function addTrending(

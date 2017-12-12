@@ -26,11 +26,11 @@
         </em></small></td>
         <td>
             <a href="/dep/tasks/<?= $task->id ?>">
-                <?= $task->origin()->title, "(T{$task->id})" ?>
+                <?= $task->origin('title'), "(T{$task->id})" ?>
             </a>
         </td>
-        <td><?= $task->project()->name ?></td>
-        <td><?= $task->creator()->name ?></td>
+        <td><?= $task->project('name') ?></td>
+        <td><?= $task->creator('name') ?></td>
         <td><?= $task->create_at ?></td>
         <td>
             <button class="btn-info">

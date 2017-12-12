@@ -27,7 +27,7 @@
     <tr>
         <td><?= $bug->id ?></td>
         <td><?= $bug->title ?></td>
-        <td><?= $bug->creator()->name ?></td>
+        <td><?= $bug->creator('name') ?></td>
         <td><?= $bug->create_at ?></td>
         <td><?= $bug->os ?></td>
         <td><?= $bug->platform ?></td>

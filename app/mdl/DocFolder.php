@@ -85,7 +85,7 @@ class DocFolder extends ModelBase
         return $this->whereId('!=', $this->id)->get();
     }
 
-    public function creator(string $attr)
+    public function creator(string $attr = null)
     {
         if ($creator = $this->belongsTo(
             User::class,

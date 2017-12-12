@@ -67,13 +67,15 @@ class Story extends ModelBase
         excp('Missing user id.');
     }
 
-    public function creator()
+    public function creator(string $key = null)
     {
-        return $this->belongsTo(
+        if ($creator = $this->belongsTo(
             User::class,
             'creator',
             'id'
-        );
+        )) {
+            return $key ? $creator->$key : $creator;
+        }
     }
 
     public function tasks()

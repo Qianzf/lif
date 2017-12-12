@@ -120,12 +120,8 @@ class View
         bool $any = false
     ): string
     {
-        if ($any) {
-        }
-
-        $section = $any ? $section : '__section/'.$section;
-
-        $path = pathOf('view', $section.'.php');
+        $section = strtolower($any ? $section : '__section/'.$section);
+        $path    = pathOf('view', $section.'.php');
         if (! file_exists($path)) {
             excp('Section `'.$section.'` not exists.');
         }

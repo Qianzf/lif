@@ -20,13 +20,15 @@ class Bug extends Mdl
         'extra' => 'string',
     ];
 
-    public function creator()
+    public function creator(string $key = null)
     {
-        return $this->belongsTo(
+        if ($bug = $this->belongsTo(
             User::class,
             'creator',
             'id'
-        );
+        )) {
+            return $key ? $bug->$key : $bug;
+        }
     }
 
     public function canEdit(int $user)

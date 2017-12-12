@@ -139,12 +139,14 @@ class Environment extends Mdl
         );   
     }
 
-    public function server()
+    public function server(string $key = null)
     {
-        return $this->belongsTo(
+        if ($server = $this->belongsTo(
             Server::class,
             'server',
             'id'
-        );
+        )) {
+            return $key ? $server->$key : $server;
+        }
     }
 }

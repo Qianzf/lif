@@ -48,7 +48,7 @@ class Doc extends ModelBase
 
     }
 
-    public function creator(string $attr)
+    public function creator(string $attr = null)
     {
         if ($creator = $this->belongsTo(
             User::class,
