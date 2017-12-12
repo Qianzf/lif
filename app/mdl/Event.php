@@ -21,6 +21,44 @@ class Event extends ModelBase
     protected $unreadable  = [
     ];
 
+    public function genDetailsOfDoc($id)
+    {
+        return [
+            'route' => "/dep/docs/{$id}",
+            'title' => $this->getDocTitle($id),
+        ];
+    }
+
+    public function genDetailsOfDocFolder($id)
+    {
+        return [
+            'route' => "/dep/docs/folders/{$id}",
+            'title' => $this->getDocFolderTitle($id),
+        ];
+    }
+
+    public function getDocTitle($id)
+    {
+        $doc = db()
+        ->table('doc')
+        ->select('title', 'id')
+        ->whereId($id)
+        ->first();
+
+        return ($doc['title'] ?? '')."(D{$doc['id']})";
+    }
+
+    public function getDocFolderTitle($id)
+    {
+        $folder = db()
+        ->table('doc_folder')
+        ->select('title', 'id')
+        ->whereId($id)
+        ->first();
+
+        return ($folder['title'] ?? '')."(F{$folder['id']})";
+    }
+
     public function genDetailsOfLoginSys()
     {
     }

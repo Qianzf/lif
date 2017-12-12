@@ -54,7 +54,11 @@ abstract class Container
         return $this->__methodSafe($method, $params);
     }
 
-    public function responseOnUpdated($model, string $uri = null)
+    public function responseOnUpdated(
+        $model,
+        string $uri = null,
+        \Closure $callback = null
+    )
     {
         $uri = $uri ?? $this->route;
 
@@ -78,12 +82,20 @@ abstract class Container
 
         $err = is_integer($err) ? null : L($err);
 
+        if ($callback) {
+            $callback();
+        }
+
         share_error(L($status, $err));
 
         redirect($uri);
     }
 
-    public function responseOnCreated($model, string $uri)
+    public function responseOnCreated(
+        $model,
+        string $uri,
+        \Closure $callback = null
+    )
     {
         if (($status = $model->create($this->request->posts()))
             && is_integer($status)
@@ -93,6 +105,10 @@ abstract class Container
         } else {
             $msg    = L('CREATED_FAILED', L($status));
             $status = 'new';
+        }
+
+        if ($callback) {
+            $callback();
         }
 
         share_error_i18n($msg);

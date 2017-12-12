@@ -53,12 +53,18 @@ class Doc extends Ctl
     {
         $this->request->setPost('creator', share('user.id'));
 
-        return $this->responseOnCreated($doc, '/dep/docs/?');
+        return $this->responseOnCreated(
+            $doc, '/dep/docs/?', function () use ($doc) {
+            $doc->addTrending('create', share('user.id'));
+        });
     }
 
     public function update(DocModel $doc)
     {
-        return $this->responseOnUpdated($doc);
+        return $this->responseOnUpdated(
+            $doc, null, function () use ($doc) {
+            $doc->addTrending('update', share('user.id'));
+        });
     }
 
     public function viewFolder(DocFolder $folder)
@@ -90,13 +96,22 @@ class Doc extends Ctl
 
     public function updateFolder(DocFolder $folder)
     {
-        return $this->responseOnUpdated($folder);
+        return $this->responseOnUpdated(
+        $folder, null, function () use ($folder) {
+            $folder->addTrending('update', share('user.id'));
+        });
     }
 
     public function createFolder(DocFolder $folder)
     {
         $this->request->setPost('creator', share('user.id'));
 
-        return $this->responseOnCreated($folder, '/dep/docs/folders/?/edit');
+        return $this->responseOnCreated(
+            $folder,
+            '/dep/docs/folders/?/edit',
+            function () use ($folder) {
+                $folder->addTrending('create', share('user.id'));
+            }
+        );
     }
 }

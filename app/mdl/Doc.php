@@ -25,6 +25,24 @@ class Doc extends ModelBase
     protected $unreadable  = [
     ];
 
+    public function addTrending(
+        string $action,
+        int $user,
+        int $target = null,
+        string $notes = null
+    )
+    {
+        return db()->table('trending')->insert([
+            'at'        => date('Y-m-d H:i:s'),
+            'user'      => $user,
+            'action'    => $action,
+            'ref_type'  => 'doc',
+            'ref_id'    => $this->id,
+            'target'    => $target,
+            'notes'     => $notes,
+        ]);
+    }
+
     public function ofUser(int $user)
     {
 

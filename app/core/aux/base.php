@@ -1787,9 +1787,9 @@ if (! fe('lcase_char')) {
     }
 }
 if (! fe('underline2camelcase')) {
-    function underline2camelcase(string $underline) {
-        if (!is_string($underline)) {
-            return false;
+    function underline2camelcase(string $underline = null) {
+        if (! $underline) {
+            return '';
         }
         $arr = str_split($underline);
         $len = count($arr);

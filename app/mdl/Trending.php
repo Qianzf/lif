@@ -63,7 +63,7 @@ class Trending extends Mdl
             $event = $this->makeEvent();
             $data  = false;
             
-            if ($key = ucfirst($this->ref_type)) {
+            if ($key = ucfirst(underline2camelcase($this->ref_type))) {
                 $handler = "genDetailsOf{$key}";
                 if (! method_exists($event, $handler)) {
                     excp("Event string generator not found: {$handler}()");
