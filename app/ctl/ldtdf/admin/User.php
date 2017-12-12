@@ -107,26 +107,24 @@ class User extends Ctl
         $oldData    = $user->items();
 
         foreach ($this->request->posts() as $key => $value) {
-            if (isset($oldData[$key]) && ($oldData[$key] != $value)) {
-                $needUpdate = true;
-
-                if ('passwd' == $key) {
-                    if ($value) {
-                        $user->passwd = password_hash(
-                            $value,
-                            PASSWORD_DEFAULT
-                        );
+            if ('passwd' == $key) {
+                if ($value) {
+                    $user->passwd = password_hash(
+                        $value,
+                        PASSWORD_DEFAULT
+                    );
+                    $needUpdate = true;
+                }
+            } else {
+                if (isset($oldData[$key]) && ($oldData[$key] != $value)) {
+                    if (in_array($key, ['account', 'email'])) {
+                        // check the unicity of user's unique attribution
+                        $conflict[] = [$key => $value];
                     }
 
-                    continue;
+                    $user->$key = $value;
+                    $needUpdate = true;
                 }
-
-                if (in_array($key, ['account', 'email'])) {
-                    // check the unicity of user's unique attribution
-                    $conflict[] = [$key => $value];
-                }
-
-                $user->$key = $value;
             }
         }
 
