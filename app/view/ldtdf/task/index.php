@@ -35,7 +35,7 @@
             <?= L($task->origin_type) ?>
         </em></small></td>
         <td><?= $task->origin('title') ?></td>
-        <td><?= $task->project('name')-> ?></td>
+        <td><?= $task->project('name') ?></td>
         <td><?= $task->creator('name') ?></td>
         <td><?= $task->create_at ?></td>
         <td>

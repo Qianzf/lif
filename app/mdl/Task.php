@@ -407,7 +407,7 @@ class Task extends Mdl
         return "{$origin->title} ({$type}{$origin->id}/T{$this->id})";
     }
 
-    public function origin(string $type = null)
+    public function origin(string $key = null, string $type = null)
     {
         if ($type = ($type ?? ($this->origin_type ?: 'story'))) {
             $class = ('story' == $type) ? Story::class : Bug::class;
@@ -427,12 +427,12 @@ class Task extends Mdl
 
     public function bug(string $key = null)
     {
-        return $this->origin('bug', $key);
+        return $this->origin($key, 'bug');
     }
 
     public function story(string $key = null)
     {
-        return $this->origin('story', $key);
+        return $this->origin($key, 'story');
     }
 
     public function project(string $attr = null)
