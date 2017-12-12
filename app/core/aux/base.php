@@ -2174,10 +2174,12 @@ if (! fe('url')) {
     }
 }
 if (! fe('ispint')) {
-    function ispint($num = null) {
+    function ispint($num = null, bool $zero = true) {
+        $zero = $zero ? -1 : 0;
         if ($num
+            && is_numeric($num)
             && (($_num = intval($num)) == $num)
-            && ($_num > 0)
+            && ($_num > $zero)
         ) {
             return $_num;
         }

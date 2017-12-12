@@ -136,11 +136,10 @@ class User extends Ctl
         $sysmsg = 'UPDATED_NOTHING';
 
         if ($needUpdate) {
-            if ($user->save() >= 0) {
-                $sysmsg = 'UPDATED_OK';
+            if (ispint($err = $user->save())) {
+                share_error_i18n('UPDATED_OK');
                 // Check if update self
                 if ($user->id == share('user.id')) {
-                    // dd($user->status == 1);
                     if ($user->status == 1) {
                         share('user', $user->items());
                     } else {
@@ -149,11 +148,9 @@ class User extends Ctl
                     }
                 }
             } else {
-                $sysmsg = 'UPDATE_FAILED';
+                share_error(L('UPDATE_FAILED'), $err);
             }
         }
-
-        share_error_i18n($sysmsg);
 
         return redirect('/dep/admin/users');
     }

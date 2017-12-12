@@ -14,7 +14,7 @@ class InitRootUser extends Dit
             ->insert([
                 'name'    => 'root',
                 'account' => 'root',
-                'email'   => 'root@localhost',
+                'email'   => 'root@ldtdf.localhost',
                 'passwd'  => '$2y$10$O77zcVwW8NC1Kcs.qg00Ye.ORy0mHwczCSIHarkBeUr9pBpMKLqRK',
                 'role'    => 'admin',
                 'status'  => 1,
