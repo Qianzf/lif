@@ -309,16 +309,16 @@ input:invalid {
     background-color: lightgreen;
 }
 .doc-show-container {
-    /*height: 1000px;*/
 }
 .doc-show-folder {
     background-color: #F4F3F4;
     width: 20%;
-    position: absolute;
-    left: 0;
-    height: auto;
+    /*position: absolute;
+    left: 0;*/
+    height: 100%;
     display: inline-block;
     overflow: hidden;
+    padding-bottom: 30px;
 }
 .doc-show-content {
     width: 70%;
@@ -328,14 +328,11 @@ input:invalid {
     display: inline-block;
     overflow: hidden;
 }
-.doc-menu-tree ol {
-    padding-left: 28px;
-}
-.doc-menu-tree dd, li, ol {
+.doc-menu-tree dd {
     height: 30px;
     line-height: 30px;
     margin: 0 0 1px 5px;
-    padding: 5px;
+    padding: 5px 15px;
     cursor: pointer;
     list-style: square;
 }

@@ -25,70 +25,14 @@
 
 <div class="doc-show-container">
     <div class="doc-show-folder">
-        <dl class="doc-menu-tree">
-        <?php if (isset($docs) && iteratable($docs)): ?>
-        <?php foreach ($docs as $_doc): ?>
-        <ol
-        <?php if ($doc->id == $_doc->id): ?>
-        class="doc-menu-title-selected"
-        <?php endif ?>
-        onclick="reloadUseQuery('doc', <?= $_doc->id ?>)">
-            <?= $_doc->title ?>
-        </ol>
-        <?php endforeach ?>
-        <?php endif ?>
-
-        <?php if (isset($children) && iteratable($children)): ?>
-        <?php foreach ($children as $child): ?>
-        <li onclick="unfoldChild(this, <?= $child->id ?>)">
-            <?= $child->title ?>
-        </li>
-        <?php endforeach ?>
-        <?php endif ?>
-        </dl>
+        <?= $this->section('doc-treeview') ?>
     </div>
 
     <div class="doc-show-content">
+        <?php if ($doc->isAlive()): ?>
         <?= $this->section('doc', [
             'display' => false,
         ]) ?>
+        <?php endif ?>
     </div>
 </div>
-
-<script type="text/javascript">
-    $(function () {
-        $('.doc-menu-tree dd, li, ol').bind({
-            mouseover: function () {
-                var item = $(this)
-                if (! item.hasClass('doc-menu-title-selected')) {
-                    item.removeClass('doc-menu-title-out')
-                    item.addClass('doc-menu-title-over')
-                }
-            },
-            mouseout: function () {
-                var item = $(this)
-                if (! $(this).hasClass('doc-menu-title-selected')) {
-                    item.removeClass('doc-menu-title-over')
-                    item.addClass('doc-menu-title-out')
-                }
-            }
-        })
-    })
-    function unfoldChild(obj, id) {
-        console.log($(obj))
-        var headers = new Headers();
-        headers.append('Access-Control-Allow-Origin', '*');
-        headers.append('AUTHORIZATION', '');
-        var init = {
-            method: 'GET',
-            credentials: 'include',
-            headers: headers
-        };
-        var request = new Request('/dep/docs/folders/' + id + '/unfold', init);
-        fetch(request).then(function (res) {
-            res.json().then(function (ret) {
-                console.log(ret.dat)
-            });
-        });
-    }
-</script>

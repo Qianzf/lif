@@ -68,6 +68,7 @@ $this->group([
         'ctl' => 'Doc',
     ], function () {
         $this->get('/', 'index');
+        $this->get('folders', 'index');
         $this->get('my', 'my');
         $this->get('new', 'edit');
         $this->get('{id}', 'viewDoc');

@@ -24,10 +24,11 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
     protected $unreadable  = [];    // protected items that cann't read
 
     // Stacks for current query
-    protected $items  = [];
-    protected $query  = null;
-    protected $alive  = false;
-    protected $filter = [];
+    private $items     = [];
+    private $query     = null;
+    private $alive     = false;
+    private $filter    = [];
+    private $automodel = true;
 
     // !!! Make sure initiate child class with parameters
     // !!! to make parent constructor be called
@@ -142,7 +143,9 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
                 return $this;
             }
 
-            $this->__toModel($res);
+            if ($this->automodel) {
+                $this->__toModel($res);
+            }
         }
 
         if (('delete' == $name) && $res) {
@@ -303,6 +306,14 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
         return $this;
     }
 
+    public function setAutoModel(bool $automodel) : Model
+    {
+        $this->automodel = $automodel;
+
+
+        return $this;
+    }
+
     public function setAlias(string $alias) : Model
     {
         if (is_numeric($alias)) {
@@ -390,8 +401,17 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
         $model   = model($params['model']);
         $fk      = $params['fk'] ?? 'id';
         $cond    = $params['cond'] ?? '=';
-        $selects = $model->getTable().'.*';
         $where   = $this->getTable().'.'.$lk;
+        $table   = $model->getTable();
+        if ($selects = ($params['selects'] ?? null)) {
+            if (is_array($selects)) {
+                array_walk($selects, function (&$item) use ($table) {
+                    $item = "{$table}.{$item}";
+                });
+            }
+        } else {
+            $selects = "{$table}.*";
+        }
 
         $model = $model
         ->select($selects)
@@ -432,6 +452,8 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
         );
 
         $fetch = (1 == $params['take']) ? 'first' : 'get';
+
+        $model->setAutoModel($params['tomodel'] ?? true);
         
         return call_user_func_array([$model, $fetch], []);
     }
@@ -470,7 +492,7 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
             }
         );
 
-        if ($model) {
+        if ($model && is_object($model)) {
             $model->alive = true;
         }
         
@@ -486,15 +508,17 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
             // !!! Parameter index order will affect result here
             // 2 => Local key
             $idxMap = [
-                0 => 'model',    // Model class namespace
-                1 => 'lk',       // Foreign key
-                2 => 'fk',       // Local key
-                3 => 'lv',       // Local value mapping to local key
-                4 => 'from',     // Limit start
-                5 => 'take',     // Limit offset
-                6 => 'sort',     // Sort rules => array
-                7 => 'lwhere',   // Where conditions of local model => array
-                8 => 'fwhere',   // Where conditions of foreign model => array
+                0  => 'model',    // Model class namespace
+                1  => 'lk',       // Foreign key
+                2  => 'fk',       // Local key
+                3  => 'lv',       // Local value mapping to local key
+                4  => 'from',     // Limit start
+                5  => 'take',     // Limit offset
+                6  => 'sort',     // Sort rules => array
+                7  => 'lwhere',   // Where conditions of local model => array
+                8  => 'fwhere',   // Where conditions of foreign model => array
+                9  => 'selects',  // Selectes items
+                10 => 'tomodel',  // Whether query result needs __toModel()
             ];
 
             if (is_array($params[0])) {
@@ -528,7 +552,7 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
             try {
                 return $this->join($_params);
             } catch (NonExistsRelationship $e) {
-                return null;
+                return ($relation == 'belongs-to') ? null : [];
             }
         }
 

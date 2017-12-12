@@ -13,7 +13,7 @@ class Doc extends Ctl
         }
 
         return response([
-            'docs'     => $folder->docs(),
+            'docs'     => $folder->docs(false),
             'children' => $folder->children(['id', 'title'], false),
         ]);
     }
@@ -63,8 +63,7 @@ class Doc extends Ctl
 
     public function viewFolder(DocFolder $folder)
     {
-        if ($doc = ispint($this->request->get('doc'))
-        ) {
+        if ($doc = ispint($this->request->get('doc'))) {
             $doc = model(DocModel::class, $doc);
         } else {
             $doc = $folder->firstDoc() ?? model(DocModel::class);

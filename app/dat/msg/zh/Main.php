@@ -316,4 +316,5 @@ return [
     'FOLDER' => '文件夹',
     'OWNER' => '所有者',
     'NULL' => '无',
+    'TREE' => '树',
 ];

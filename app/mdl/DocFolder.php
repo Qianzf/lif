@@ -26,14 +26,17 @@ class DocFolder extends ModelBase
     protected $unreadable  = [
     ];
 
-    public function docs()
+    public function docs(bool $model = true)
     {
         if ($this->isAlive()) {
-            return $this->hasMany(
-                Doc::class,
-                'id',
-                'folder'
-            );
+            return $this
+            ->hasMany([
+                'model' => Doc::class,
+                'lk' => 'id',
+                'fk' => 'folder',
+                'selects' => ['id', 'title'],
+                'tomodel' => $model,
+            ]);
         }
     }
 
