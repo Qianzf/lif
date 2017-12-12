@@ -22,13 +22,13 @@
 
     <label>
         <span class="label-title"><?= L('OLD_PASSWORD') ?></span>
-        <input type="password" name="passwordOld"
+        <input type="password" name="pswdold"
         placeholder="<?= L('PROVIDE_OLD_PASSWD') ?>">
     </label>
 
     <label>
         <span class="label-title"><?= L('NEW_PASSWORD') ?></span>
-        <input type="password" name="passwordNew"
+        <input type="password" name="pswdnew"
         placeholder="<?= L('PROVIDE_NEW_PASSWD') ?>">
     </label>
 

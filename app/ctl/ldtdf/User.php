@@ -101,29 +101,28 @@ class User extends Ctl
             return redirect('/dep/users/login');
         }
 
-        $request    = $this->request->params;
+        $request    = $this->request->params();
         $oldData    = $user->items();
         $needUpdate = false;
         $conflict   = [];
 
         foreach ($request as $key => $value) {
-            if (isset($oldData[$key]) && ($user->$key != $value)) {
-                if ('passwordNew' == $key) {
-                    if (! $request->passwordOld) {
-                        return sysmsg('PROVIDE_OLD_PASSWD');
-                    }
-                    if (! password_verify($request->passwordOld, $user->passwd)) {
-                        return sysmsg('ILLEGAL_OLD_PASSWD');
-                    }
-                    if (! password_verify($request->passwordNew, $user->passwd)) {
-                        $needUpdate = true;
-                        $user->passwd = password_hash(
-                            $request->passwordNew,
-                            PASSWORD_DEFAULT
-                        );
-                    }
-                    continue;
+            if ('pswdnew' == $key) {
+                if (! $request->pswdold) {
+                    share_error_i18n('PROVIDE_OLD_PASSWD');
+                    return redirect($this->route);
                 }
+                if (! password_verify($request->pswdold, $user->passwd)) {
+                    share_error_i18n('ILLEGAL_OLD_PASSWD');
+                    return redirect($this->route);
+                }
+
+                $needUpdate   = true;
+                $user->passwd = password_hash(
+                    $request->pswdnew,
+                    PASSWORD_DEFAULT
+                );
+            } elseif (isset($oldData[$key]) && ($user->$key != $value)) {
                 if (in_array($key, ['account', 'email'])) {
                     // check the unicity of user's unique attribution
                     $conflict[] = [$key => $value];
@@ -142,7 +141,7 @@ class User extends Ctl
         $err = 'UPDATED_NOTHING';
 
         if ($needUpdate) {
-            if ($user->save()) {
+            if ($user->save() >= 0) {
                 unset($user->passwd);
                 share('user', $user->items());
 

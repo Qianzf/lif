@@ -15,7 +15,7 @@ class InitRootUser extends Dit
                 'name'    => 'root',
                 'account' => 'root',
                 'email'   => 'root@localhost',
-                'passwd'  => '$2y$10$8s.A665uEoKew7Zc2zNYAuI3Qk3hiQPV7/Ix0XjrtXTSHFp0xHd3e',
+                'passwd'  => '$2y$10$O77zcVwW8NC1Kcs.qg00Ye.ORy0mHwczCSIHarkBeUr9pBpMKLqRK',
                 'role'    => 'admin',
                 'status'  => 1,
             ]);
