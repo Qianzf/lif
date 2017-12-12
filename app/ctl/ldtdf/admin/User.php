@@ -71,7 +71,7 @@ class User extends Ctl
             return redirect('/dep/admin/user/'.$user->id);
         }
 
-        $request = $this->request->all();
+        $request = $this->request->posts();
 
         $this->validate($request, [
             'account' => 'need',
