@@ -1,4 +1,4 @@
-<footer style="position: absolute; bottom: 10px">
+<footer>
     <button class="btn-shadow" disabled><i>
         <?= sysmsg('SWITCH_LANG') ?>
     </i></button>

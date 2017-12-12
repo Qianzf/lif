@@ -7,6 +7,7 @@ class Bug extends Mdl
     protected $table = 'bug';
 
     protected $rules = [
+        'creator' => 'int|min:1',
         'title' => 'need|string',
         'how' => 'need|string',
         'what' => 'need|string',

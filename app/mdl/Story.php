@@ -13,6 +13,7 @@ class Story extends ModelBase
     protected $alias  = null;
     // validation rules for fields
     protected $rules  = [
+        'title'    => 'need|string',
         'role'     => 'need|string',
         'activity' => 'need|string',
         'value'    => 'need|string',

@@ -317,8 +317,8 @@ class Task extends Ctl
     {
         $data = $this->validate($this->request->all(), [
             'origin_type' => 'need|ciin:story,bug',
-            'origin_id' => 'need|int|min:1',
-            'project' => 'int|min:1',
+            'origin_id'   => 'need|int|min:1',
+            'project'     => 'int|min:1',
         ]);
 
         if ($task->hasConflictTask(

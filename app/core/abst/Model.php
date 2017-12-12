@@ -232,7 +232,9 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
             // Drop unruled data items
             if ($this->rules) {
                 foreach ($data as $key => $val) {
-                    if (! isset($this->rules[$key])) {
+                    if (!isset($this->rules[$key])
+                        && !isset($this->items[$key])
+                    ) {
                         unset($data[$key]);
                     }
                 }

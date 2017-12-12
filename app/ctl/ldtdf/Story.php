@@ -89,7 +89,7 @@ class Story extends Ctl
             redirect('/dep/tasks');
         }
 
-        if (!empty_safe($err = $story->save($this->request->posts))
+        if (!empty_safe($err = $story->save($this->request->posts()))
             && is_numeric($err)
             && ($err >= 0)
         ) {

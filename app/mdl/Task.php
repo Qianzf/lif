@@ -22,6 +22,8 @@ class Task extends Mdl
         'env'      => 'string',
         'manually' => 'ciin:yes,no',
         'deploy'   => 'string',
+        'origin_type' => 'ciin:story,bug',
+        'origin_id'   => 'int|min:1',
     ];
 
     public function isForWeb()
