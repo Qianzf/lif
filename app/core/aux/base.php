@@ -480,7 +480,7 @@ if (! fe('http_response')) {
 }
 if (! fe('xml_http_response')) {
     function xml_http_response($data) {
-        http_response(
+        return http_response(
             arr2xml($data),
             'application/xml'
         );

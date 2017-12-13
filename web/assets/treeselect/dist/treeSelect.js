@@ -106,7 +106,7 @@ var TreeSelect = (function () {
                     }
                 }
             };
-
+            
             self.ztree = $.fn.zTree.init(panel, setting, data);
         }
     }, {

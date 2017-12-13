@@ -41,6 +41,22 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
         }
     }
 
+    public function make($pk = null)
+    {
+        $model = clone $this;
+
+        $model->items = $model
+        ->query()
+        ->where($model->pk(), $pk)
+        ->first();
+
+        if ($model->items) {
+            $model->setAlive(true);
+        }
+
+        return $model;
+    }
+
     // Find model via primary key
     public function find($pk = null)
     {
