@@ -13,12 +13,14 @@ var/cache/*
 var/log/*
 var/db/*
 var/upload/*
+var/script/*
 web/*
 !app/conf/.gitkeep
 !var/cache/.gitkeep
 !var/log/.gitkeep
 !var/db/.gitkeep
 !var/upload/.gitkeep
+!var/script/.gitkeep
 !web/assets/
 !web/index.php
 

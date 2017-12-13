@@ -27,6 +27,17 @@ class Doc extends ModelBase
     protected $unreadable  = [
     ];
 
+    public function folder(string $key = null)
+    {
+        if ($folder = $this->belongsTo(
+            DocFolder::class,
+            'folder',
+            'id'
+        )) {
+            return $key ? $folder->$key : $folder;
+        }
+    }
+
     public function addTrending(
         string $action,
         int $user,

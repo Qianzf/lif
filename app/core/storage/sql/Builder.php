@@ -745,11 +745,16 @@ class Builder implements \Lif\Core\Intf\DBConn
             foreach ($fields as $field => $order) {
                 if (is_array($order)) {
                     foreach ($order as $_field => $_order) {
+                        if (is_integer($_field)) {
+                            $_field = $_order;
+                            $_order = 'ASC';
+                        }
+
                         if (!is_string($_order)
                             || !($_order = strtoupper($_order))
-                            || !in_array($_order, ['DESC', 'ASC'])
+                            || !in_array($_order, ['ASC', 'DESC'])
                         ) {
-                            excp('Illgeal sort order.');
+                            excp('Illgeal sort order(1).');
                         }
 
                         $sort .= (is_string($_field) && $_field)
@@ -763,7 +768,7 @@ class Builder implements \Lif\Core\Intf\DBConn
                 } elseif (is_string($order)) {
                     $sort .= escape_fields($order);
                 } else {
-                    excp('Illgeal sort order.');
+                    excp('Illgeal sort order(2).');
                 }
 
                 if (false !== next($fields)) {

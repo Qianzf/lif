@@ -28,6 +28,13 @@ class DocFolder extends ModelBase
     protected $unreadable  = [
     ];
 
+    public function parent(string $key = null)
+    {
+        if ($parent = $this->find($this->parent)) {
+            return $key ? $parent->$key : $parent;
+        }
+    }
+
     public function getTreeSelectFormattedList(int $pid = 0) {
         $list = $this
         ->select('title as name','id')
@@ -69,20 +76,24 @@ class DocFolder extends ModelBase
                 'lk' => 'id',
                 'fk' => 'folder',
                 'selects' => ['id', 'title'],
+                'sort' => [
+                    'order' => 'asc',
+                ],
                 'tomodel' => $model,
             ]);
         }
     }
 
-    public function children(
-        $selects = '*',
-        bool $model = true
-    )
+    public function children($selects = '*', bool $model = true)
     {
         if ($this->isAlive()) {
             return $this
             ->select($selects)
             ->whereParent($this->id)
+            ->sort([
+                'order',
+                'id',
+            ])
             ->all($model);
         }
     }

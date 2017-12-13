@@ -440,7 +440,20 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
             && is_array($params['sort'])
             && $params['sort']
         ) {
-            $model = call_user_func_array([$model, 'sort'], [$params['sort']]);
+            $sort = [];
+            
+            array_walk(
+                $params['sort'],
+                function ($item, $key) use (&$sort, $table) {
+                    if (is_string($key)) {
+                        $sort["{$table}.{$key}"] = $item;
+                    } else {
+                        $sort[$key] = "{$table}.{$item}";
+                    }
+                }
+            );
+            
+            $model = call_user_func_array([$model, 'sort'], [$sort]);
         }
 
         legal_or($params, [

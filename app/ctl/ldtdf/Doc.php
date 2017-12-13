@@ -109,6 +109,10 @@ class Doc extends Ctl
 
     public function updateFolder(DocFolder $folder)
     {
+        if ($folder->id == $this->request->get('parent')) {
+            $this->request->setPost('parent', $folder->parent);
+        }
+
         return $this->responseOnUpdated(
         $folder, null, function () use ($folder) {
             $folder->addTrending('update', share('user.id'));

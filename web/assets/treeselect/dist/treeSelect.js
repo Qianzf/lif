@@ -25,9 +25,14 @@ var TreeSelect = (function () {
 
         self.options = options = $.extend(defaultOptions, options);
         var uid = TreeSelect.getUniquId();
+        var inputDefaultOutput = options.inputDefaultOutput
         var tpl=`
-            <input type="text" class="form-control treeSelect-input "/>
-             <div class="ztree treeSelect-panel" id="treeSelect_panel_${uid}"></div>
+            <input
+            value="${inputDefaultOutput}"
+            type="text"
+            class="form-control
+            treeSelect-input">
+            <div class="ztree treeSelect-panel" id="treeSelect_panel_${uid}"></div>
         `;
         var ele = $(options.element);
         ele.html(tpl);

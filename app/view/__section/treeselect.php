@@ -25,6 +25,8 @@ new TreeSelect({
     data: <?= _json_encode($treeData ?? []) ?>,
     valueKey: 'id',
     inputName: '<?= $inputName ?? "tree-selected-leaf" ?>',
+    inputDefaultValue: '<?= $inputName ?? "tree-selected-leaf" ?>',
+    inputDefaultOutput: '<?= $inputDefaultOutput ?? '-- '.L('SELECT_CATE').' --' ?>',
     async: {
         enable: true,
         type: 'get',
