@@ -57,9 +57,10 @@ class Doc extends Ctl
         view('ldtdf/docs/edit')
         ->withDocFolderFolders(
             $doc,
-            $this->request->get('folder'),
+            $folder->find($this->request->get('folder')),
             $folder->getTreeSelectFormattedList()
-        );
+        )
+        ->share('hide-search-bar', true);
     }
 
     public function create(DocModel $doc)
@@ -102,7 +103,7 @@ class Doc extends Ctl
         view('ldtdf/docs/folder/edit')
         ->withFolderParentFolders(
             $folder,
-            $this->request->get('parent'),
+            model(DocFolder::class, $this->request->get('parent')),
             $folder->getTreeSelectFormattedList()
         );
     }

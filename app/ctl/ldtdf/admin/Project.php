@@ -16,28 +16,12 @@ class Project extends Ctl
 
     public function create(ProjectModel $project)
     {
-        $id = $project->create($this->request->posts());
-
-        if (is_integer($id)) {
-            share_error_i18n('CREATED_SUCCESS');
-            redirect('/dep/admin/projects/'.$id);
-        }
-
-        share_error_i18n('CREATE_FAILED');
-        redirect($this->route);
+        return $this->responseOnCreated($project, '/dep/admin/projects/?');
     }
 
     public function update(ProjectModel $project)
     {
-        $status = $project->save($this->request->posts());
-
-        if (is_integer($status) && ($status >= 0)) {
-            share_error_i18n('UPDATED_OK');
-        } elseif (is_string($status)) {
-            share_error(L('UPDATE_FAILED', $status));
-        }
-
-        return redirect($this->route);
+        return $this->responseOnUpdated($project);
     }
 
     public function add(ProjectModel $project)

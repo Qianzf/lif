@@ -51,8 +51,7 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
         }
 
         if ($this->alive) {
-            $__pk = $this->items[$_pk] ?? false;
-            if ($pk == $__pk) {
+            if ($pk == ($this->items[$_pk] ?? false)) {
                 return $this;
             }
             $model = clone $this;

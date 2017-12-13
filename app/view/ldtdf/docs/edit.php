@@ -23,8 +23,8 @@
     <?= $this->section('treeselect', [
         'inputTitle' => L('FOLDER'),
         'inputName'  => 'folder',
-        'inputDefaultValue' => $doc->folder,
-        'inputDefaultOutput' => $doc->folder('title'),
+        'inputDefaultValue'  => ($doc->isAlive() ? $doc->folder : $folder->id),
+        'inputDefaultOutput' => ($doc->isAlive() ? $doc->folder('title') : $folder->title),
         'treeData' => $folders,
     ]) ?>
 
