@@ -20,28 +20,20 @@
         name="title">
     </label>
 
-    <label>
-        <span class="label-title"><?= L('FOLDER') ?></span>
-        <select name="folder">
-            <option value="0">-- <?= L('SELECT_FOLDER') ?> --</option>
+    <?= $this->section('treeselect', [
+        'inputTitle' => L('FOLDER'),
+        'inputName'  => 'folder',
+        'inputDefaultValue' => 0,
+        'treeData' => $folders,
+    ]) ?>
 
-            <?php if (isset($folders) && iteratable($folders)): ?>
-            <?php foreach ($folders as $_folder): ?>
-            <option
-            <?php if ($folder && ($folder == $_folder->id)): ?>
-            selected
-            <?php elseif ($doc->folder == $_folder->id) : ?>
-            selected
-            <?php endif ?>
-            value="<?= $_folder->id ?>">
-                <?= "{$_folder->title} ({$_folder->id})" ?>
-            </option>
-            <?php endforeach ?>
-            <?php endif ?>
-        </select>
+    <label>
+        <span class="label-title"><?= L('SORT') ?></span>
+        <input type="number" name="order" min="0" value="<?= $doc->order ?>">
     </label>
 
     <label>
+        <span class="label-title"><?= L('DETAILS') ?></span>
         <div
         id="doc-contents"
         class="editormd editormd-vertical">
@@ -49,11 +41,6 @@
             class="editormd-markdown-textarea"
             name="content"><?= $doc->content ?></textarea>
         </div>
-    </label>
-
-    <label>
-        <span class="label-title"><?= L('SORT') ?></span>
-        <input type="number" name="order" min="0" value="<?= $doc->order ?>">
     </label>
 
     <?= $this->section('submit', [

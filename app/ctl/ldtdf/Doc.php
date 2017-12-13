@@ -6,16 +6,29 @@ use Lif\Mdl\{Doc as DocModel, DocFolder, User};
 
 class Doc extends Ctl
 {
+    public function getChildren(DocFolder $folder)
+    {
+        $children = $folder->getTreeSelectFormattedList(
+            $this->request->get('id')
+        );
+
+        return $this->request->has('dat-only')
+        ? json_http_response($children)
+        : response($children);
+    }
+
     public function queryFolderChildren(DocFolder $folder)
     {
         if (! $folder->isAlive()) {
             return client_error('DOC_FOLDER_NOT_FOUND', 404);
         }
 
-        return response([
-            'docs'     => $folder->docs(false),
-            'children' => $folder->children(['id', 'title'], false),
-        ]);
+        $data['children'] = $folder->children(['id', 'title'], false);
+        if (! $this->request->has('folder-only')) {
+            $data['docs'] = $folder->docs(false);
+        }
+
+        return response($data);
     }
 
     public function my(DocModel $doc)
@@ -45,7 +58,7 @@ class Doc extends Ctl
         ->withDocFolderFolders(
             $doc,
             $this->request->get('folder'),
-            $folder->all()
+            $folder->getTreeSelectFormattedList()
         );
     }
 
@@ -90,7 +103,7 @@ class Doc extends Ctl
         ->withFolderParentFolders(
             $folder,
             $this->request->get('parent'),
-            $folder->listOthers()
+            $folder->getTreeSelectFormattedList()
         );
     }
 

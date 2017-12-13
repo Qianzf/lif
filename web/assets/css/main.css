@@ -272,6 +272,9 @@ input:invalid {
 .inline {
     display: inline;
 }
+.inblock {
+    display: inline-block;   
+}
 .comments {
     background-color: #F8FAFE;
     display: inline-block;

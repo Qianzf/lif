@@ -23,7 +23,14 @@ class Request extends Container implements Observable
         $this->init();
     }
 
-    public function get($key)
+    public function has(string $key)
+    {
+        $this->params();
+
+        return isset($this->params[$key]);
+    }
+
+    public function get(string $key)
     {
         return $this->params()->$key ?? null;
     }
@@ -116,9 +123,9 @@ class Request extends Container implements Observable
             $rawInput = file_get_contents('php://input');
 
             if (false !== mb_strpos($cntType, 'application/json')) {
-                $_params = json_decode($rawInput, true);
+                $_params = (array) json_decode($rawInput, true);
             } elseif (false !== mb_strpos($cntType, 'application/xml')) {
-                $_params = xml2arr($rawInput);
+                $_params = (array) xml2arr($rawInput);
             } else {
                 parse_str($rawInput, $_params);
             }

@@ -278,3 +278,20 @@ function getATag(url) {
 
     return a
 }
+function asyncr(uri, type, auth, json) {
+    type = type ? type : 'GET'
+    auth = auth ? auth : ''
+
+    let headers = new Headers()
+    headers.append('Access-Control-Allow-Origin', '*')
+    headers.append('AUTHORIZATION', auth)
+    headers.append('X-REQUESTED-WITH', 'XMLHTTPREQUEST')
+
+    return fetch(
+        new Request(uri, {
+            method: type,
+            credentials: 'include',
+            headers: headers
+        })
+    )
+}

@@ -28,6 +28,20 @@ class DocFolder extends ModelBase
     protected $unreadable  = [
     ];
 
+    public function getTreeSelectFormattedList(int $pid = 0) {
+        $list = $this
+        ->select('title as name','id')
+        ->whereParent($pid)
+        ->all(false);
+
+        array_walk($list, function (&$item) {
+            $item['open']      = false;
+            $item['isParent']  = true;
+        });
+
+        return $list;
+    }
+
     public function addTrending(
         string $action,
         int $user,
@@ -84,7 +98,10 @@ class DocFolder extends ModelBase
 
     public function listOthers()
     {
-        return $this->whereId('!=', $this->id)->get();
+        return $this
+        ->select('title as name','id')
+        ->whereId('!=', $this->id)
+        ->get();
     }
 
     public function creator(string $attr = null)

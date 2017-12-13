@@ -34,25 +34,12 @@
         <textarea type="text" name="desc"><?= $folder->desc ?></textarea>
     </label>
 
-    <label>
-        <span class="label-title"><?= L('PARENT_CATE') ?></span>
-        <select name="parent">
-            <option value="0"><?= L('NULL') ?></option>
-            <?php if (isset($folders) && iteratable($folders)): ?>
-            <?php foreach ($folders as $_folder): ?>
-            <option
-            <?php if ($_folder->id == $folder->parent): ?>
-            selected
-            <?php elseif ($parent == $_folder->id): ?>
-            selected
-            <?php endif ?>
-            value="<?= $_folder->id ?>">
-                <?="{$_folder->title} ({$_folder->id})" ?>
-            </option>
-            <?php endforeach ?>
-            <?php endif ?>
-        </select>
-    </label>
+    <?= $this->section('treeselect', [
+        'inputTitle' => L('PARENT_CATE'),
+        'inputName'  => 'parent',
+        'inputDefaultValue' => 0,
+        'treeData' => ($folders ?? []),
+    ]) ?>
 
     <label>
         <span class="label-title"><?= L('SORT') ?></span>

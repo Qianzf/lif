@@ -75,6 +75,7 @@ $this->group([
         $this->get('{id}/edit', 'edit');
         $this->post('{id}/edit', 'update');
         $this->post('new', 'create');
+        $this->get('folders/children', 'getChildren');
         $this->get('folders/{id}', 'viewFolder');
         $this->get('folders/{id}/edit', 'editFolder');
         $this->get('folders/new', 'editFolder');

@@ -41,9 +41,9 @@
 <script type="text/javascript">
 $(document).ready(function(){
     $("#treeview-container").treeview({
-        toggle: function() {
-            console.log("%s was toggled.", $(this).find(">span").text())
-        }
+        // toggle: function() {
+        //     console.log("%s was toggled.", $(this).find(">span").text())
+        // }
     })
 })
 function unfoldChild(id) {
@@ -51,42 +51,33 @@ function unfoldChild(id) {
     if ('fold' == folder.data('status')) {
         return true
     }
-
-    var headers = new Headers()
-    headers.append('Access-Control-Allow-Origin', '*')
-    headers.append('AUTHORIZATION', '')
-    headers.append('X-REQUESTED-WITH', 'XMLHTTPREQUEST')
-    var init = {
-        method: 'GET',
-        credentials: 'include',
-        headers: headers
-    }
-    var request = new Request('/dep/docs/folders/' + id + '/unfold', init)
-    fetch(request).then(function (res) {
+    asyncr('/dep/docs/folders/' + id + '/unfold').then(function (res) {
         res.json().then(function (ret) {
             var html = ''
             if (ret.dat.docs) {
                 ret.dat.docs.forEach(function (val, key) {
-                    html += 
-                    '<li onclick="reloadUseQuery(\'doc\', ' + val.id + ')">\
-                        <span class="file">' + val.title + '</span>\
-                    </li>'
+                    html += `
+                    <li onclick="reloadUseQuery('doc', ${val.id})">
+                        <span class="file">${val.title}</span>
+                    </li>
+                    `
                 })
             }
             if (ret.dat.children) {
                 ret.dat.children.forEach(function (val, key) {
-                    html += 
-                    '<li class="closed expandable" onclick="unfoldChild(' + val.id + ')">\
-                        <div class="hitarea collapsable-hitarea"></div>\
-                        <span class="folder">' + val.title +
-                        '<sup>\
-                        <a href="/dep/docs/folders/' + val.id + '/edit">\
-                            <button><?= L('EDIT') ?></button>\
-                        </a>\
-                        </sup>\
-                    </span>\
-                        <ul id="treeview-folder-' + val.id + '"></ul>\
-                    </li>'
+                    html += `
+                    <li class="closed expandable" onclick="unfoldChild(${val.id})">
+                        <div class="hitarea collapsable-hitarea"></div>
+                        <span class="folder">
+                            ${val.title}
+                            <sup>
+                            <a href="/dep/docs/folders/${val.id}/edit">
+                                <button><?= L('EDIT') ?></button>
+                            </a>
+                            </sup>
+                        </span>
+                        <ul id="treeview-folder-${val.id}"></ul>
+                    </li>`
                 })
             }
 

@@ -593,6 +593,18 @@ class Builder implements \Lif\Core\Intf\DBConn
     //     Read/Retrieve
     // ---------------------
 
+    public function select(...$fields): Builder
+    {
+        if (false === ($selects = $this->legalSqlSelects($fields))) {
+            excp('Illgeal select values.');
+        }
+
+        $this->crud('READ');
+        $this->selects = $selects;
+
+        return $this;
+    }
+
     protected function legalSqlSelects($fields)
     {
         if ($fields instanceof \Closure) {
@@ -610,17 +622,15 @@ class Builder implements \Lif\Core\Intf\DBConn
         $selects   = (array) $fields;
         $selectStr = '';
 
-        foreach ($selects as $alias => $select) {
+        foreach ($selects as $select) {
             if (is_array($select)) {
                 foreach ($select as $_alias => $_select) {
                     if (! is_string($_select)) {
                         return false;
                     }
-
                     $selectStr .= is_string($_alias)
                     ? escape_fields($_select).' AS '.escape_fields($_alias)
                     : escape_fields($_select);
-
                     $selectStr .= (false === next($select))
                     ? '' : ', ';
                 }
@@ -632,8 +642,7 @@ class Builder implements \Lif\Core\Intf\DBConn
                 excp('Illgeal select field.');
             }
 
-            $selectStr .= (false === next($selects))
-            ? '' : ', ';
+            $selectStr .= (false === next($selects)) ? '' : ', ';
         }
 
         return $selectStr;
@@ -648,18 +657,6 @@ class Builder implements \Lif\Core\Intf\DBConn
         return isset($res[0]['count'])
         ? intval($res[0]['count'])
         : $res;
-    }
-
-    public function select(...$fields): Builder
-    {
-        if (false === ($selects = $this->legalSqlSelects($fields))) {
-            excp('Illgeal select values.');
-        }
-
-        $this->crud('READ');
-        $this->selects = $selects;
-
-        return $this;
     }
 
     public function leftJoin(
