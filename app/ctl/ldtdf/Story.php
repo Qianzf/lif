@@ -30,8 +30,8 @@ class Story extends Ctl
         }
 
         $user       = share('user.id');
-        $editable   = ($story->canEdit($user));
-        $assignable = ($story->canBeDispatchedBy($user));
+        $editable   = $story->canBeEditedBy($user);
+        $assignable = $story->canBeDispatchedBy($user);
 
         view('ldtdf/story/info')
         ->withStoryEditableAssignableTasksTrendings(
@@ -57,24 +57,9 @@ class Story extends Ctl
 
     public function create(StoryModel $story)
     {
-        $data = $this->request->all();
-        $data['creator'] = share('user.id');
+        $this->request->setPost('creator', share('user.id'));
 
-        if (($status = $story->create($data))
-            && is_integer($status)
-            && ($status > 0)
-        ) {
-            $msg = 'CREATED_SUCCESS';
-            $story->addTrending('create', $data['creator']);
-        } else {
-            share_error_i18n(L('CREATED_FAILED', L($status)));
-
-            return $this->add($story->setItems($this->request->posts));
-        }
-
-        share_error_i18n($msg);
-
-        return redirect("/dep/stories/{$status}");
+        return $this->responseOnCreated($story, '/dep/stories/?');
     }
 
     public function update(StoryModel $story)

@@ -75,9 +75,9 @@ abstract class Command extends Container implements CMD
         return $this;
     }
 
-    protected function json(string $json, string $option = 'json') : CMD
+    protected function json(string $json, string $option = '--json') : CMD
     {
-        if ('--json' == $option) {
+        if ('--json' == strtolower($option)) {
             $this->params = _json_decode($json, true) ?? [];
         } else {
             if (! file_exists($json)) {
@@ -90,9 +90,9 @@ abstract class Command extends Container implements CMD
         return $this;
     }
 
-    protected function xml(string $xml, string $option = 'xml') : CMD
+    protected function xml(string $xml, string $option = '--xml') : CMD
     {
-        if ('--xml' == $option) {
+        if ('--xml' == strtolower($option)) {
             $this->params = xml2arr($xml) ?? [];
         } else {
             if (! file_exists($xml)) {
@@ -105,9 +105,9 @@ abstract class Command extends Container implements CMD
         return $this;
     }
 
-    protected function query(string $query, string $option = 'query') : CMD
+    protected function query(string $query, string $option = '--query') : CMD
     {
-        if ('--query' == $option) {
+        if ('--query' == strtolower($option)) {
             parse_str($query, $this->params);
         } else {
             if (! file_exists($query)) {

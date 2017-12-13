@@ -461,30 +461,37 @@ if (! fe('_json_encode')) {
         )) ? $json : '';
     }
 }
-if (! fe('xml_http_response')) {
-    function xml_http_response($data) {
+if (! fe('http_response')) {
+    function http_response(string $content, string $ctype = 'json') {
+        ob_start();
+        ob_end_clean();
+
         if (! headers_sent()) {
-            ob_start();
-            ob_end_clean();
             mb_http_output('UTF-8');
-            header('Content-type: application/xml; charset=UTF-8');
+            header("Content-type: {$ctype}; charset=UTF-8");
         }
         
-        echo arr2xml($data);
+        echo $content;
+
+        flush();
+
         exit;
+    }
+}
+if (! fe('xml_http_response')) {
+    function xml_http_response($data) {
+        http_response(
+            arr2xml($data),
+            'application/xml'
+        );
     }
 }
 if (! fe('json_http_response')) {
     function json_http_response($data) {
-        if (! headers_sent()) {
-            ob_start();
-            ob_end_clean();
-            mb_http_output('UTF-8');
-            header('Content-type: application/json; charset=UTF-8');
-        }
-        
-        echo _json_encode($data);
-        exit;
+        return http_response(
+            _json_encode($data),
+            'application/json'
+        );
     }
 }
 if (! fe('put2file')) {

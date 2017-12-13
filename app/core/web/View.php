@@ -33,7 +33,7 @@ class View
         $this->data     = $data;
         
         $this->cache = $cache ?? (
-            conf('app')['view']['cache'] ?? false
+            config('app.view.cache') ?? false
         );
 
         unset($data);
@@ -246,12 +246,17 @@ class View
         }
 
         if (! headers_sent()) {
-            header('Content-Type: text/html; charset=UTF-8');
+            header('Content-Type: text/html; Charset=UTF-8');
         }
 
-        echo $this->output;
+        if (($GLOBALS['LIF_EXCP'] ?? false)
+            || ($GLOBALS['LIF_DEBUGGING'] ?? false)
+        ) {
+        } else {
+            echo $this->output;
 
-        $this->outputed = true;
+            $this->outputed = true;
+        }
     }
 
     public function escape(string $text = null) : string
@@ -261,18 +266,7 @@ class View
 
     public function __destruct()
     {
-        if (!$this->outputed
-            && (!isset($GLOBALS['LIF_EXCP'])
-                || (isset($GLOBALS['LIF_EXCP'])
-                    && (true !== $GLOBALS['LIF_EXCP'])
-                )
-            )
-            && (!isset($GLOBALS['LIF_DEBUGGING'])
-                || (isset($GLOBALS['LIF_DEBUGGING'])
-                    && (true !== $GLOBALS['LIF_DEBUGGING'])
-                )
-            )
-        ) {
+        if (! $this->outputed) {
             $this->output();
         }
 

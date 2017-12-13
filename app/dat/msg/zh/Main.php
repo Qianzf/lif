@@ -55,7 +55,7 @@ return [
     'PAGE' => '页',
     'ALL_ROLES' => '所有角色',
     'CREATE' => '创建',
-    'AND' => '并',
+    'AND' => '且',
     'CREATED' => '创建',
     'UPDATE' => '更新',
     'UPDATED' => '更新',
@@ -318,4 +318,7 @@ return [
     'NULL' => '无',
     'TREE' => '树',
     'SORT' => '排序',
+    'EXECUTABLE' => '可执行',
+    'LOCATION' => '位置',
+    'ACCESSIBLE' => '可访问',
 ];

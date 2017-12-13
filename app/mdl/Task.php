@@ -121,7 +121,7 @@ class Task extends Mdl
             $this->deploy = $notes;
         }
 
-        if ($branch = ($params['branch'] ?? null)) {
+        if ($branch = ($params['branch'] ?: $this->getDefaultBranch())) {
             $this->branch = $branch;
         }
 
@@ -142,6 +142,15 @@ class Task extends Mdl
         db()->rollback();
 
         return false;
+    }
+
+    public function getDefaultBranch()
+    {
+        if ($this->isAlive()) {
+            $flag = substr($this->origin_type, 0, 1);
+
+            return "{$flag}{$this->origin_id}t{$this->id}";
+        }
     }
 
     // What actions can given user role do
@@ -394,7 +403,7 @@ class Task extends Mdl
 
         if ($order = ($querys['trending'] ?? 'desc')) {
             $relationship['sort'] = [
-                'trending.id' => $order,
+                'id' => $order,
             ];
         }
 

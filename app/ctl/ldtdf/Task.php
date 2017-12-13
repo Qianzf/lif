@@ -132,7 +132,7 @@ class Task extends Ctl
             'assign_to'    => 'need|int|min:1',
             'action'       => 'need|string|notin:0',
             'dependency'   => ['ciin:yes,no', 'no'],
-            'branch'       => 'when:dependency=yes|need|string|notin:0',
+            'branch'       => 'when:dependency=yes|string|notin:0',
             'manually'     => 'when:dependency=yes|need|ciin:yes,no',
             'assign_notes' => 'when:manually=yes|string',
         ])) || !in_array(
@@ -267,8 +267,9 @@ class Task extends Ctl
         }
 
         $querys = $this->request->gets;
+
         legal_or($querys, [
-            'trending' => ['in:asc,desc', 'desc']
+            'trending' => ['ciin:asc,desc', 'desc']
         ]);
 
         $user        = share('user.id');

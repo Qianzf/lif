@@ -72,7 +72,9 @@ if (! fe('abort')) {
     function abort(int $status = 403, string $msg = '') {
         ob_start();
         ob_end_clean();
-        header('HTTP/1.1 '.$status);
+
+        // header("HTTP/1.1 {$status}");
+        http_response_code($status);
 
         $data = [
             'err' => $status,

@@ -11,6 +11,11 @@ class CreateServerTable extends Dit
         schema()->createIfNotExists('server', function ($table) {
             $table->pk('id');
             $table->string('name');
+
+            $table
+            ->char('location', 8)
+            ->default('remote')
+            ->comment('Location relative to inner system: local/remote');
             
             $table
             ->string('host', 128)

@@ -52,9 +52,9 @@
     <label>
         <span class="label-title"><?= L('CONFIGRWAPI') ?></span>
         <input
-        placeholder="<?= L('SERVER_ABSOLUTE_PATH') ?>"
+        placeholder="<?= L('PROJECT_ABSOLUTE_PATH_AND_EXECUTABLE') ?>"
         type="text"
-        name="script_path"
+        name="config_api"
         value="<?= $project->script ?>">
     </label>
 
@@ -64,11 +64,11 @@
             <ol>
                 <span class="label-title"><?= L('TYPE') ?></span>
                 <select name="script_type">
-                    <option>
+                    <option value="nil">
                         -- <?= L('SELECT_DEPLOY_SCRIPT_TYPE') ?> --
                     </option>
-                    <option value="local"><?= L('LOCAL')  ?></option>
-                    <option value="remote"><?= L('REMOTE')  ?></option>
+                    <option value="inner"><?= L('INNER')  ?></option>
+                    <option value="outer"><?= L('OUTER')  ?></option>
                 </select>   
             </ol>
             <ol>

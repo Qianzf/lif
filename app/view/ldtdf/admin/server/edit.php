@@ -13,18 +13,30 @@
     </label>
 
     <label>
+        <span class="label-title"><?= L('LOCATION') ?></span>
+        <select name="location">
+            <option value="remote"><?= L('REMOTE') ?></option>
+            <option value="local"><?= L('LOCAL') ?></option>
+        </select>
+    </label>
+
+    <label>
         <span class="label-title"><?= L('HOST_ADDR') ?></span>
-        <input type="text" name="host" value="<?= $server->host ?>" required>
+        <input
+        type="text"
+        name="host"
+        placeholder="<?= L('ENSURE_ADDR_ACCESSIBLE') ?>"
+        value="<?= $server->host ?>" required>
     </label>
 
     <label>
         <span class="label-title"><?= L('PORT') ?></span>
-        <input type="number" name="port" value="<?= $server->port ?>" required>
+        <input type="number" name="port" value="<?= $server->port ?: 22 ?>" required>
     </label>
 
     <label>
         <span class="label-title"><?= L('USER') ?></span>
-        <input type="text" name="user" value="<?= $server->user ?>" required>
+        <input type="text" name="user" value="<?= $server->user ?: 'root' ?>" required>
     </label>
 
     <label>

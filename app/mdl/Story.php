@@ -14,6 +14,7 @@ class Story extends ModelBase
     // validation rules for fields
     protected $rules  = [
         'title'    => 'need|string',
+        'creator'  => 'int|min:1',
         'role'     => 'need|string',
         'activity' => 'need|string',
         'value'    => 'need|string',
@@ -50,7 +51,7 @@ class Story extends ModelBase
         ->all($model);
     }
 
-    public function canEdit(int $user)
+    public function canBeEditedBy(int $user)
     {
         return (
             ($this->creator == $user)

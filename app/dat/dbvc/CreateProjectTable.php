@@ -37,6 +37,10 @@ class CreateProjectTable extends Dit
             ->comment('Integration with vcs APIs used token');
 
             $table
+            ->string('config_api')
+            ->comment('Project config read/write interface');
+
+            $table
             ->char('script_type', 8)
             ->nullable()
             ->comment('Deploy type of this project');
