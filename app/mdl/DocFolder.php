@@ -18,6 +18,8 @@ class DocFolder extends ModelBase
         'desc'    => 'string',
         'creator' => 'int|min:1',
         'parent'  => ['int|min:0', 0],
+        'order'   => 'int',
+        'visibility' => 'string|ciin:world,group,pswd,owner',
     ];
     // protected items that cann't update
     protected $unwriteable = [

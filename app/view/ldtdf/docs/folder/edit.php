@@ -54,6 +54,11 @@
         </select>
     </label>
 
+    <label>
+        <span class="label-title"><?= L('SORT') ?></span>
+        <input type="number" name="order" min="0" value="<?= $folder->order ?>">
+    </label>
+
     <?= $this->section('submit', [
         'model' => $folder,
     ])  ?>

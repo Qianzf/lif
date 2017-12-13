@@ -32,15 +32,16 @@
     <?php foreach ($folders as $folder): ?>
     <tr>
         <td><?= $folder->id ?></td>
-        <td><?= $folder->title ?></td>
+        <td>
+            <a href="/dep/docs/folders/<?= $folder->id ?>">
+                <?= $folder->title ?>
+            </a>
+        </td>
         <td><small><?= L('FOLDER') ?></small></td>
         <td><?= $folder->creator('name') ?></td>
         <td><?= $folder->create_at ?></td>
         <td><?= $folder->update_at ?></td>
         <td>
-            <a href="/dep/docs/folders/<?= $folder->id ?>">
-                <button class="btn-info"><?= L('VIEW') ?></button>
-            </a>
             <a href="/dep/docs/folders/<?= $folder->id ?>/edit">
                 <button><?= L('EDIT') ?></button>
             </a>
@@ -53,15 +54,16 @@
     <?php foreach ($docs as $doc): ?>
     <tr>
         <td><?= $doc->id ?></td>
-        <td><?= $doc->title ?></td>
-        <td><small><?= L('DOC') ?></small></td>
-        <td><?= $doc->creator('name') ?></td>
-        <td><?= $folder->create_at ?></td>
-        <td><?= $folder->update_at ?></td>
         <td>
             <a href="/dep/docs/<?= $doc->id ?>">
-                <button class="btn-info"><?= L('VIEW') ?></button>
+                <?= $doc->title ?>
             </a>
+        </td>
+        <td><small><?= L('DOC') ?></small></td>
+        <td><?= $doc->creator('name') ?></td>
+        <td><?= $doc->create_at ?></td>
+        <td><?= $doc->update_at ?></td>
+        <td>
             <a href="/dep/docs/<?= $doc->id ?>/edit">
                 <button><?= L('EDIT') ?></button>
             </a>

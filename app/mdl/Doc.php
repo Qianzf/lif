@@ -17,6 +17,8 @@ class Doc extends ModelBase
         'content' => 'string',
         'creator' => 'int|min:1',
         'folder'  => 'int|min:0',
+        'order'   => 'int',
+        'visibility' => 'string|ciin:world,group,pswd,owner',
     ];
     // protected items that cann't update
     protected $unwriteable = [

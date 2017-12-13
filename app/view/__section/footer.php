@@ -4,16 +4,15 @@
     </i></button>
 
     <select name="system-lang">
-    
-        <?php foreach (share('languages') as $key => $lang) { ?>
+        <?php foreach (share('languages') as $key => $lang) : ?>
         <?php $selected = ($key == syslang()) ? 'selected' : '' ?>
         <option value="<?= $key ?>" <?= $selected ?>><?= $lang ?></option>
-        <?php } ?>
-
+        <?php endforeach ?>
     </select>
 
     <span class="stub"></span>
-    <sub><small><i>
+    <sub><small class="text-info"><i>
+        <span>LiF Core</span>
         <?= 'v ', get_lif_ver() ?>
     </small></i></sub>
 </footer>
