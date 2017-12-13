@@ -35,10 +35,10 @@ class DocFolder extends ModelBase
         }
     }
 
-    public function getTreeSelectFormattedList(int $pid = 0) {
+    public function getTreeSelectFormattedList(int $pid = null) {
         $list = $this
         ->select('title as name','id')
-        ->whereParent($pid)
+        ->whereParent($pid ?? 0)
         ->all(false);
 
         array_walk($list, function (&$item) {
