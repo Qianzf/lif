@@ -12,9 +12,8 @@ class Project extends Mdl
         'vcs'   => ['need|ciin:git', 'git'],
         'desc'  => 'string',
         'token' => ['string', null],
-        'config_api'  => 'string',
-        'script_type' => 'ciin:inner,outer,nil',
-        'script_path' => ['string', null],
+        'config_api'    => 'string',
+        'deploy_script' => ['string', null],
     ];
 
     public function deployable()

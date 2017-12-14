@@ -38,17 +38,12 @@ class CreateProjectTable extends Dit
 
             $table
             ->string('config_api')
-            ->comment('Project config read/write interface');
-
-            $table
-            ->char('script_type', 8)
-            ->nullable()
-            ->comment('Deploy type of this project');
+            ->comment('Project config read/write interface (executable)');
 
             $table
             ->string('script_path')
             ->nullable()
-            ->comment('Absolute path on server of this project deploy script');
+            ->comment('Deploy script, absolute path of project (executable)');
         });
     }
 

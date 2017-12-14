@@ -321,4 +321,5 @@ return [
     'EXECUTABLE' => '可执行',
     'LOCATION' => '位置',
     'ACCESSIBLE' => '可访问',
+    'CONFIG' => '配置',
 ];

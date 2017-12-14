@@ -1515,7 +1515,11 @@ if (! fe('request_xml_api')) {
 if (! fe('is_json')) {
     // Return an array or object if $json is legal
     // Return an integer number if $json is illegal
-    function is_json(string $json, bool $array = true) {
+    function is_json($json, bool $array = true) {
+        if (! is_string($json)) {
+            return false;
+        }
+        
         $res = json_decode($json, $array);
 
         return (($err = json_last_error()) == JSON_ERROR_NONE)
@@ -1889,6 +1893,25 @@ if (! fe('camelcase2underline')) {
 if (! fe('between')) {
     function between($num, $start, $end) : bool {
         return (($start <= $num) && ($num <= $end));
+    }
+}
+if (! fe('queue')) {
+    function queue() {
+        return singleton('queue', function () {
+            return (new class() {
+                use \Lif\Core\Traits\Queue;
+                    public function __construct()
+                    {
+                        $this->prepare();
+                    }
+                }
+            );
+        });
+    }
+}
+if (! fe('enqueue')) {
+    function enqueue(\Lif\Core\Abst\Job $job) {
+        return queue()->enqueue($job);
     }
 }
 if (! fe('queue_default_defs_get')) {

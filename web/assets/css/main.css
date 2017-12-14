@@ -23,8 +23,8 @@ code {
     color: maroon;
     background-color: #eeeeee;
 }
-header {
-    margin-top: 10px;
+header, footer {
+    margin-top: 20px;
 }
 form, section {
     margin: 10px;

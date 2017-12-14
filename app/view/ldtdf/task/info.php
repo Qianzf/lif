@@ -30,12 +30,14 @@
         <?php $dependency = ($deployable ?? false) ? '-with-dependencies' : '';
         ?>
         <?= $this->section("assign-form{$dependency}", [
-            'model'  => $task,
-            'branch' => $task->branch,
-            'assignNotes' => $task->notes,
-            'key'   => 'TASK',
-            'api'   => "/dep/tasks/{$task->id}/users/assignable",
-            'route' => "/dep/tasks/{$task->id}/assign"
+            'model'    => $task,
+            'branch'   => $task->branch,
+            'config'   => $task->config,
+            'remarks'  => $task->deploy,
+            'manually' => (strtolower($task->manually) == 'yes'),
+            'key'      => 'TASK',
+            'api'      => "/dep/tasks/{$task->id}/users/assignable",
+            'route'    => "/dep/tasks/{$task->id}/assign"
         ]) ?>
     <?php endif ?>
 

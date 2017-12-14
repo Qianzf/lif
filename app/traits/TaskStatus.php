@@ -19,6 +19,11 @@ trait TaskStatus
         return array_column($status, 'status');
     }
 
+    public function getAssignableUsersWhenEnvConfirmed($query)
+    {
+        return $query->whereRole('test');
+    }
+
     public function getUnoperatableStatus()
     {
         return [
@@ -193,7 +198,6 @@ trait TaskStatus
     {
         return [
             'WAITTING_DEP2TEST',
-            'WAITTING_1ST_TEST',
             'WAITTING_DEV',
         ];
     }
@@ -211,7 +215,6 @@ trait TaskStatus
     {
         return [
             'WAITTING_1ST_TEST',
-            'WAITTING_DEP2TEST',
         ];
     }
     

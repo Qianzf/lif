@@ -4,7 +4,7 @@ namespace Lif\Job;
 
 class DeployTask extends \Lif\Core\Abst\Job
 {
-    protected $task = null;
+    protected $task          = null;
     protected $statusSuccess = null;
     protected $statusFail    = null;
     protected $userSuccess   = null;
@@ -41,7 +41,7 @@ class DeployTask extends \Lif\Core\Abst\Job
     {
         $this->commands = [
             "git checkout -b {$task->branch}",
-            // "git pull origin {$task->branch} --no-edit",
+            "git pull origin {$task->branch} --no-edit",
         ];
 
         switch (strtolower($task->status)) {
@@ -68,8 +68,8 @@ class DeployTask extends \Lif\Core\Abst\Job
                 $this->statusSuccess = 'waitting_regression';
                 $this->statusFail    = 'waitting_fix_stablerc';
                 $this->envStatus     = 'running';
-                $this->commands = [
-                    // "git pull origin {$task->branch} --no-edit",
+                $this->commands      = [
+                    "git pull origin {$task->branch} --no-edit",
                 ];
             } break;
 
@@ -80,6 +80,7 @@ class DeployTask extends \Lif\Core\Abst\Job
                 $this->statusSuccess = 'online';
                 $this->statusFail    = 'waitting_fix_prod';
                 $this->commands = [
+                    // TODO: specialize production deploy commands
                 ];
             } break;
             
@@ -138,7 +139,11 @@ class DeployTask extends \Lif\Core\Abst\Job
     // 5. Switch deploy status and assign to proper person with remarks
     public function run() : bool
     {
-        if (!($task = $this->getTask())) {
+        if (! ($task = $this->getTask())) {
+            return true;
+        }
+
+        if ('ops' != (strtolower($task->current('role')))) {
             return true;
         }
 
@@ -170,7 +175,7 @@ class DeployTask extends \Lif\Core\Abst\Job
                 $task,
                 $task->current,
                 $task->last,
-                $this->statusFail,
+                ($this->statusFail ?? 'waitting_fix_test'),
                 L('NO_ENV_FOUND')
             );
 
@@ -192,25 +197,47 @@ class DeployTask extends \Lif\Core\Abst\Job
             return true;
         }
 
-        $ssh2 = $this->getSSH2($server);
-        $res  = $ssh2->exec($this->getDeployCommands($env->path, $branch));
+        $res = $this->deploy(
+            $server, $this->getDeployCommands(
+                $env->path,
+                $project,
+                $task->config
+            )
+        );
 
         if (0 === ($res['num'] ?? false)) {
             $user   = $this->userSuccess;
             $status = $this->statusSuccess;
             $notes  = null;
             $task->env = $env->id;
-            $task->save();
             $this->recycleOtherEnvs();
         } else {
             $user   = $this->userFail;
             $status = $this->statusFail;
+            $task->env   = null;
+            $env->status = 'running';
+            $env->save();
             $notes  = $res['err'] ?? L('INNER_ERROR');
         }
 
         $this->assign($task, $task->current, $user, $status, $notes);
 
         return true;
+    }
+
+    public function deploy($server, $commands)
+    {
+        $location = strtolower($server->location);
+
+        if ('remote' == $location) {
+            return $this->getSSH2($server)->exec($commands);
+        } elseif ('local' == $location) {
+            return proc_exec($commands);
+        }
+
+        return [
+            'err' => L('ILLEGAL_SERVER_LOCATION_CONFIG'),
+        ];
     }
 
     protected function getEnvStatus()
@@ -221,18 +248,28 @@ class DeployTask extends \Lif\Core\Abst\Job
     // Update task status and add into trending
     private function assign(
         $task, 
-        int $from, 
-        int $to, 
+        int $from,
+        int $to,
         string $status,
         string $notes = null
     )
     {
-        $task->assign([
-            'assign_from'  => $from,
-            'assign_to'    => $to,
-            'action'       => $status,
-            'assign_notes' => $notes,
-        ]);
+        $task->last    = $from;
+        $task->current = $to;
+        $task->status  = $status;
+
+        if ($task->save()
+            && $task->addTrending('assign', $from, $to, $notes)
+        ) {
+            enqueue(
+                (new SendMailWhenTaskAssign)->setTask($task->id)
+            )
+            ->on('mail_send')
+            ->try(3)
+            ->timeout(30);
+
+            return true;
+        }
     }
 
     public function recycleOtherEnvs()
@@ -243,9 +280,7 @@ class DeployTask extends \Lif\Core\Abst\Job
             && ($server = $env->server())
             && ($server->alive())
         ) {
-            $this
-            ->getSSH2($server)
-            ->exec($this->getEnvRecycleCommands($env->path));
+            $this->deploy($server, $this->getEnvRecycleCommands($env->path));
 
             $env->status = 'running';
             $env->save();
@@ -266,12 +301,32 @@ class DeployTask extends \Lif\Core\Abst\Job
         ];
     }
 
-    protected function getDeployCommands(string $path, string $branch) : array
+    public function getProjectBuildCommands(
+        $project = null,
+        string $config = null
+    ) : array
     {
-        $commands = array_merge(
+        if (!$project || !$project->alive()) {
+            return [];
+        }
+
+        return [
+            trim($project->deploy_script),
+            trim("{$project->config_api} '{$config}'"),
+        ];
+    }
+
+    protected function getDeployCommands(
+        string $path,
+        $project = null,
+        string $config = null
+    ) : array
+    {
+        $commands = array_filter(array_merge(
             $this->getEnvRecycleCommands($path),
-            $this->commands
-        );
+            $this->commands,
+            $this->getProjectBuildCommands($project, $config)
+        ));
 
         $commands[] = 'chown -R www:www `pwd`';
 

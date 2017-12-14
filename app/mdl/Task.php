@@ -7,7 +7,6 @@ use Lif\Job\{DeployTask, SendMailWhenTaskAssign};
 class Task extends Mdl
 {
     use \Lif\Traits\TaskStatus;
-    use \Lif\Core\Traits\Queue;
 
     protected $table = 'task';
 
@@ -21,6 +20,7 @@ class Task extends Mdl
         'branch'   => 'string',
         'env'      => 'string',
         'manually' => 'ciin:yes,no',
+        'config'   => 'json',
         'deploy'   => 'string',
         'origin_type' => 'ciin:story,bug',
         'origin_id'   => 'int|min:1',
@@ -39,6 +39,7 @@ class Task extends Mdl
         if ($this->alive() && in_array(strtolower($this->status), [
             'deving',
             'waitting_dev',
+            'waitting_confirm_env',
             'fixing_test',
             'waitting_dep2test',
             'waitting_fix_test',
@@ -61,23 +62,22 @@ class Task extends Mdl
         ]);
     }
 
-    public function current()
+    public function current(string $key = null)
     {
-        return $this->belongsTo(
+        if ($current = $this->belongsTo(
             User::class,
             'current',
             'id'
-        );
+        )) {
+            return $key ? $current->$key : $current;
+        }
     }
 
     private function enqueueTaskJobs(bool $deploy = false)
     {
         if ($this->alive()) {
-            $this->prepare();
-
             if ($deploy) {
-                $this
-                ->enqueue(
+                enqueue(
                     (new DeployTask)->setTask($this->id)
                 )
                 ->on('task_deploy')
@@ -85,9 +85,8 @@ class Task extends Mdl
                 ->timeout(30);
             }
 
-            if (($current = $this->current())->alive()) {
-                $this
-                ->enqueue(
+            if (($current = $this->current()) && $current->alive()) {
+                enqueue(
                     (new SendMailWhenTaskAssign)->setTask($this->id)
                 )
                 ->on('mail_send')
@@ -121,7 +120,11 @@ class Task extends Mdl
             $this->deploy = $notes;
         }
 
-        if ($branch = ($params['branch'] ?: $this->getDefaultBranch())) {
+        if ($config = ($params['config'] ?? null)) {
+            $this->config = $config;
+        }
+
+        if ($branch = ($this->getDefaultBranch($params['branch'] ?? null))) {
             $this->branch = $branch;
         }
 
@@ -144,8 +147,12 @@ class Task extends Mdl
         return false;
     }
 
-    public function getDefaultBranch()
+    public function getDefaultBranch(string $branch = null)
     {
+        if ($branch = trim($branch)) {
+            return $branch;
+        }
+
         if ($this->alive()) {
             $flag = substr($this->origin_type, 0, 1);
 

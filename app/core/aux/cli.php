@@ -5,7 +5,7 @@
 // ------------------------------------------
 
 if (! fe('output')) {
-    function output($params) : void {
+    function output($params, int $err = 0) : void {
         $output = '';
         if ($params) {
             if (iteratable($params)) {
@@ -26,7 +26,8 @@ if (! fe('output')) {
         }
 
         echo $output, linewrap();
-        exit;
+
+        exit($err);
     }
 }
 if (! fe('console')) {
@@ -116,11 +117,7 @@ if (! fe('is_cmd_option')) {
 }
 if (! fe('cli_excp')) {
     function cli_excp($excp) {
-        return output(segstr(
-            color('Command execution error!', 'LIGHT_RED')
-            .linewrap(2)
-            .color($excp->getMessage(), 'RED')
-        ));
+        return output(segstr(color($excp->getMessage(), 'RED')), 1);
     }
 }
 if (! fe('fname2cname')) {

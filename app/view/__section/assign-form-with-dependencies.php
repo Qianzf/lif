@@ -35,6 +35,7 @@ class="invisible-default">
                 // 'sresVal' => '/api',
             ]) ?>
         </label>
+
         <label>
           <span class="label-title">
               <?= L('TASK_BRANCH') ?>
@@ -49,21 +50,47 @@ class="invisible-default">
 
         <label>
             <span class="label-title">
+                <?= L('PROJECT_CONFIG') ?>
+            </span>
+            <textarea
+            placeholder="<?= L('JSON') ?>"
+            name="config"><?= $config ?? null ?></textarea>
+        </label>
+
+        <?php $manually = $manually ?? false; ?>
+        <?php  ?>
+        <label>
+            <span class="label-title">
                 <?= L('NEED_MANUALLY_HELP') ?>
             </span>
             <span><?= L('NO') ?></span>
-            <input type="radio" name="manually" value="no" checked>
+            <input
+            <?php if (! $manually): ?>
+            checked
+            <?php endif ?>
+            type="radio"
+            name="manually"
+            value="no">
             <span><?= L('YES') ?></span>
-            <input type="radio" name="manually" value="yes">
+            <input
+            <?php if ($manually): ?>
+            checked
+            <?php endif ?>
+            type="radio"
+            name="manually"
+            value="yes">
         </label>
-
-        <label class="invisible-default" id="assign-notes">
+        <label
+        <?php if (! $manually): ?>
+        class="invisible-default"
+        <?php endif ?>
+        id="assign-notes">
             <span class="label-title">
                 <?= L('REMARKS') ?>
             </span>
             <textarea
             placeholder="<?= L('NOTE_STH_USEFUL') ?>"
-            name="assign_notes"><?= $assignNotes ?? null ?></textarea>
+            name="assign_notes"><?= $remarks ?? null ?></textarea>
         </label>
     </form>
 </div>
@@ -72,7 +99,7 @@ class="invisible-default">
         e.preventDefault()
         dialog = $("#task-assign-form" ).dialog({
           autoOpen: true,
-          height: 450,
+          height: 550,
           width: '45%',
           modal: true,
           buttons: {

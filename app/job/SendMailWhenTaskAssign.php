@@ -4,33 +4,58 @@ namespace Lif\Job;
 
 class SendMailWhenTaskAssign extends \Lif\Core\Abst\Job
 {
-    private $task = null;
+    private $task    = null;
+    private $content = null;
 
     public function run() : bool
     {
-        if (($task = $this->getTask())->alive()) {
+        if (($task = $this->getTask()) && $task->alive()) {
+            if (('ops' == strtolower($task->current('role')))
+                && !$this->needNotifyOperator($task)
+            ) {
+                return true;
+            }
+
             if (($current = $task->current())->alive()) {
                 $url    = url("dep/tasks/{$task->id}");
+                
                 $title  = L('PROJECT')
                 .': '
-                .$task->project()->name
+                .$task->project('name')
                 .'; '
                 .L($task->origin_type)
-                .': '.$task->origin()->title;
+                .': '.$task->origin('title');
+
+                $content = "<pre>{$this->content}</pre>";
 
                 $this
                 ->getSendMail()
                 ->setEmails([
-                    // $current->email => $current->name,
-                    'lcj@hcmchi.cn' => 'LCJ',
+                    $current->email => $current->name,
                 ])
-                ->setTitle("(T{$task->id})".L("STATUS_{$task->status}"))
-                ->setBody("<a href='{$url}'>{$title}</a>")
+                ->setTitle(L("STATUS_{$task->status}")."(T{$task->id})")
+                ->setBody("<a href='{$url}'>{$title}</a>{$content}")
                 ->run();
             }
         }
 
         return true;
+    }
+
+    public function needNotifyOperator($task)
+    {
+        if (in_array(strtolower($task->status), [
+                'waitting_dep2test',
+                'waitting_dep2stage',
+                'waitting_dep2stablerc',
+            ])
+            && 'yes' == strtolower($task->manually)
+            && ($this->content = trim($task->deploy))
+        ) {
+            return true;
+        }
+
+        return false;
     }
 
     public function getTask()

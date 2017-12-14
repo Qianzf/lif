@@ -201,7 +201,7 @@ class Validation
                         $data[$key] = $hasDefault;
                     }
 
-                    if (!$hasKey && !$necessary) {
+                    if (!$hasKey || !$necessary) {
                         break;
                     }
 
@@ -243,6 +243,11 @@ class Validation
         }
 
         return true;
+    }
+
+    public function json($value)
+    {
+        return !is_numeric(is_json($value));
     }
 
     public function string($value, $extra = null)

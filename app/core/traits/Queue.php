@@ -121,7 +121,7 @@ trait Queue
     }
 
     // Push job into queue
-    protected function enqueue(Job $job) : QueueMedium
+    public function enqueue(Job $job) : QueueMedium
     {
         return $this->getQueue()->push($job);
     }
