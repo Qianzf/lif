@@ -182,9 +182,9 @@ $this->group([
             'ctl' => 'User',
         ], function () {
             $this->get('/', 'index');
-            $this->get('new', 'info');
-            $this->post('new', 'add');
-            $this->get('{id}', 'info');
+            $this->get('new', 'edit');
+            $this->post('new', 'create');
+            $this->get('{id}', 'edit');
             $this->post('{id}', 'update');
             
             $this->group([

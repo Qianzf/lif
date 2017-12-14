@@ -94,25 +94,29 @@ abstract class Container
     public function responseOnCreated(
         $model,
         string $uri,
-        \Closure $callback = null
+        \Closure $before = null,
+        \Closure $after = null
     )
     {
-        if (($status = $model->create($this->request->posts()))
-            && is_integer($status)
-            && ($status > 0)
+        if (($before && $before())
+            || (! ispint(
+                $status = $model->create($this->request->posts()),
+                false
+            ))
         ) {
-            $msg = 'CREATED_SUCCESS';
-        } else {
-            $msg    = L('CREATED_FAILED', L($status));
+            $msg = L('CREATED_FAILED', L($status));
             $status = 'new';
+        } else {
+            $msg = L('CREATED_SUCCESS');
+
+            if ($after) {
+                $after();
+            }
         }
 
-        if ($callback) {
-            $callback();
-        }
+        share_error($msg);
 
-        share_error_i18n($msg);
-
+        // PRG: POST - Redirect - GET
         return redirect(uri($uri, [$status]));
     }
 

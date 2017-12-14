@@ -8,10 +8,19 @@ class Environment extends Mdl
     protected $rules = [
         'host' => 'need|host',
         'type' => ['need|ciin:test,emrg,stage,rc,prod', 'test'],
+        'path' => 'string',
         'project' => 'need|int|min:1',
         'server'  => 'need|int|min:1',
-        'desc' => 'string',
+        'desc'    => 'string',
+        'status'  => 'ciin:running,stopped,locked'
     ];
+
+    public function hasHostBefore(string $host = null)
+    {
+        return $this
+        ->whereHost($host)
+        ->count() > 0;
+    }
 
     public function getTaskBranchHTML()
     {

@@ -14,16 +14,6 @@
     </label>
 
     <label>
-        <span class="label-title"><?= L('PATH') ?></span>
-        <input
-        type="text"
-        name="path"
-        placeholder="<?= L('SERVER_ABSOLUTE_PATH') ?>"
-        value="<?= $env->path ?>"
-        required>
-    </label>
-
-    <label>
         <span class="label-title"><?= L('ENV_TYPE') ?></span>
         <select name="type" required>
             <?php if (($types = share('env-types')) && iteratable($types)) : ?>
@@ -76,6 +66,16 @@
             <?php } ?>
             <?php } ?>
         </select>
+    </label>
+
+    <label>
+        <span class="label-title"><?= L('PATH') ?></span>
+        <input
+        type="text"
+        name="path"
+        placeholder="<?= L('SERVER_ABSOLUTE_PATH') ?>"
+        value="<?= $env->path ?>"
+        required>
     </label>
 
     <label>

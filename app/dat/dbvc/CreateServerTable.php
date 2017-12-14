@@ -22,7 +22,7 @@ class CreateServerTable extends Dit
             ->comment('Server Host: IP/Domain');
 
             $table
-            ->tinyint('port')
+            ->medint('port')
             ->default(22)
             ->comment('Server Port');
             

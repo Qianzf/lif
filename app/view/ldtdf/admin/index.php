@@ -14,13 +14,13 @@
         </a>
     </dd>
     <dd>
-        <a href="admin/envs">
-            <button><?= L('ENVIRONMENT_MANAGE') ?></button>
+        <a href="admin/servers">
+            <button><?= L('SERVER_MANAGE') ?></button>
         </a>
     </dd>
     <dd>
-        <a href="admin/servers">
-            <button><?= L('SERVER_MANAGE') ?></button>
+        <a href="admin/envs">
+            <button><?= L('ENVIRONMENT_MANAGE') ?></button>
         </a>
     </dd>
 </dl>

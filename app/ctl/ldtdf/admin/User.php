@@ -59,45 +59,28 @@ class User extends Ctl
         ->withPages($pages);
     }
 
-    public function info(UserModel $user)
+    public function edit(UserModel $user)
     {
-        view('ldtdf/admin/user/edit')->withUser($user);
+        return view('ldtdf/admin/user/edit')->withUser($user);
     }
 
-    public function add(UserModel $user)
+    public function create(UserModel $user)
     {
-        // PRG: POST - Redirect - GET
-        if (is_object($user) && $user->id) {
-            return redirect('/dep/admin/user/'.$user->id);
-        }
-
-        $request = $this->request->posts();
-
-        $this->validate($request, [
-            'account' => 'need',
-            'name'    => 'need',
-            'email'   => 'need|email',
-            'passwd'  => 'need',
-            'role'    => "need|in:{$this->roles}",
-        ]);
-
-        foreach ($request as $key => $value) {
-            if ('passwd' == $key) {
-                $value = password_hash($value, PASSWORD_DEFAULT);
+        return $this->responseOnCreated(
+            $user,
+            '/dep/admin/users/?',
+            function () {
+                if ($this->request->has('passwd')) {
+                    $this->request->setPost(
+                        'passwd',
+                        password_hash(
+                            $this->request->has('passwd'),
+                            PASSWORD_DEFAULT
+                        )
+                    );
+                }
             }
-
-            $user->$key = $value;
-        }
-
-        if ($user->save()) {
-            share_error_i18n('CREATED_SUCCESS');
-
-            redirect('/dep/admin/users');
-        }
-
-        share_error_i18n('CREATE_FAILED');
-
-        return redirect($this->route);
+        );
     }
 
     public function update(UserModel $user)
