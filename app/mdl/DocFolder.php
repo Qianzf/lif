@@ -69,7 +69,7 @@ class DocFolder extends ModelBase
 
     public function docs(bool $model = true)
     {
-        if ($this->isAlive()) {
+        if ($this->alive()) {
             return $this
             ->hasMany([
                 'model' => Doc::class,
@@ -86,7 +86,7 @@ class DocFolder extends ModelBase
 
     public function children($selects = '*', bool $model = true)
     {
-        if ($this->isAlive()) {
+        if ($this->alive()) {
             return $this
             ->select($selects)
             ->whereParent($this->id)

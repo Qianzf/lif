@@ -356,7 +356,7 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
         return $this;
     }
 
-    public function isAlive()
+    public function alive()
     {
         return $this->alive;
     }

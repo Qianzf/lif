@@ -1,9 +1,9 @@
 <?= $this->layout('main') ?>
 
 <?php if (isset($task) && is_object($task)) { ?>
-<?php $tid = $task->isAlive()      ? $task->id : 'new'; ?>
-<?php $origin = $story->isAlive()  ? $story : $bug; ?>
-<?php $searchAPI = $bug->isAlive() ? 'bugs' : 'stories'; ?>
+<?php $tid = $task->alive()      ? $task->id : 'new'; ?>
+<?php $origin = $story->alive()  ? $story : $bug; ?>
+<?php $searchAPI = $bug->alive() ? 'bugs' : 'stories'; ?>
 
 <?= $this->section('back2list', [
     'model'  => $task,

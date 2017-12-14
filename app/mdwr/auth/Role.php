@@ -8,7 +8,11 @@ class Role extends \Lif\Core\Abst\Middleware
 
     public function passing($app)
     {
-        if ($this->getRole() !== strtolower(share('user.role'))) {
+        if (($this->getRole() !== strtolower(share('user.role')))
+            && (! model(\Lif\Mdl\User::class, share('user.id'))
+                ->hasPermission($app->request->type, $app->request->route)
+            )
+        ) {
             share_error_i18n('VIEW_PERMISSION_DENIED');
             
             session()->delete('user');

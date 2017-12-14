@@ -8,8 +8,8 @@ class SendMailWhenTaskAssign extends \Lif\Core\Abst\Job
 
     public function run() : bool
     {
-        if (($task = $this->getTask())->isAlive()) {
-            if (($current = $task->current())->isAlive()) {
+        if (($task = $this->getTask())->alive()) {
+            if (($current = $task->current())->alive()) {
                 $url    = url("dep/tasks/{$task->id}");
                 $title  = L('PROJECT')
                 .': '

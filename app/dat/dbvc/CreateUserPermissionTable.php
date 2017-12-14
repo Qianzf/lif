@@ -9,15 +9,8 @@ class CreateUserPermissionTable extends Dit
     public function commit()
     {
         schema()->createIfNotExists('user_permission', function ($table) {
-            $table->pk('id');
-
-            $table
-            ->string('key')
-            ->comment('User permission key');
-
-            $table
-            ->string('desc')
-            ->comment('User permission description');
+            $table->int('user')->unsigned();
+            $table->int('permission')->unsigned();
         });
     }
 

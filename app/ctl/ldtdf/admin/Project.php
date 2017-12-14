@@ -34,7 +34,7 @@ class Project extends Ctl
     public function edit(ProjectModel $project)
     {
         $error = $back2last = null;
-        if (! $project->isAlive()) {
+        if (! $project->alive()) {
             $error     = L('NO_PROJECT');
             $back2last = share('url_previous');
         }

@@ -36,14 +36,14 @@ class Task extends Mdl
 
     public function deployable()
     {
-        if ($this->isAlive() && in_array(strtolower($this->status), [
+        if ($this->alive() && in_array(strtolower($this->status), [
             'deving',
             'waitting_dev',
             'fixing_test',
             'waitting_dep2test',
             'waitting_fix_test',
         ])) {
-            if (($project = $this->project())->isAlive()) {
+            if (($project = $this->project())->alive()) {
                 return $project->deployable();
             }
         }
@@ -72,7 +72,7 @@ class Task extends Mdl
 
     private function enqueueTaskJobs(bool $deploy = false)
     {
-        if ($this->isAlive()) {
+        if ($this->alive()) {
             $this->prepare();
 
             if ($deploy) {
@@ -85,7 +85,7 @@ class Task extends Mdl
                 ->timeout(30);
             }
 
-            if (($current = $this->current())->isAlive()) {
+            if (($current = $this->current())->alive()) {
                 $this
                 ->enqueue(
                     (new SendMailWhenTaskAssign)->setTask($this->id)
@@ -146,7 +146,7 @@ class Task extends Mdl
 
     public function getDefaultBranch()
     {
-        if ($this->isAlive()) {
+        if ($this->alive()) {
             $flag = substr($this->origin_type, 0, 1);
 
             return "{$flag}{$this->origin_id}t{$this->id}";

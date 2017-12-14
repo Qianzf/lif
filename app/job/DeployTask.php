@@ -142,7 +142,7 @@ class DeployTask extends \Lif\Core\Abst\Job
             return true;
         }
 
-        if ($task->isAlive()) {
+        if ($task->alive()) {
             if (! ($branch = trim($task->branch))) {
                 $this->assign(
                     $task,
@@ -159,13 +159,13 @@ class DeployTask extends \Lif\Core\Abst\Job
         }
 
         if (!($project = $task->project())
-            || !$project->isAlive()
+            || !$project->alive()
             || ('web' != strtolower($project->type))
         ) {
             return true;
         }
 
-        if (!($env = $this->getEnv($task, $project)) || !$env->isAlive()) {
+        if (!($env = $this->getEnv($task, $project)) || !$env->alive()) {
             $this->assign(
                 $task,
                 $task->current,
@@ -180,7 +180,7 @@ class DeployTask extends \Lif\Core\Abst\Job
             $env->save();
         }
 
-        if (!($server = $env->server()) || !$server->isAlive()) {
+        if (!($server = $env->server()) || !$server->alive()) {
             $this->assign(
                 $task,
                 $task->current,
@@ -239,9 +239,9 @@ class DeployTask extends \Lif\Core\Abst\Job
     {
         if ($this->recycleEnv
             && ($env = model(\Lif\Mdl\Environment::class, $this->recycleEnv))
-            && $env->isAlive()
+            && $env->alive()
             && ($server = $env->server())
-            && ($server->isAlive())
+            && ($server->alive())
         ) {
             $this
             ->getSSH2($server)

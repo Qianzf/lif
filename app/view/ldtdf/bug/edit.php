@@ -6,7 +6,7 @@
 ]) ?>
 
 <?php if (isset($bug) && is_object($bug)): ?>
-<?php $bid = $bug->isAlive() ? $bug->id : 'new'; ?>
+<?php $bid = $bug->alive() ? $bug->id : 'new'; ?>
 
 <form method="POST" action="/dep/bugs/<?= $bid ?>">
     <?= csrf_feild() ?>

@@ -19,7 +19,7 @@ class Project extends Mdl
 
     public function deployable()
     {
-        if ($this->isAlive()) {
+        if ($this->alive()) {
             return (strtolower($this->type) == 'web');
         }
 

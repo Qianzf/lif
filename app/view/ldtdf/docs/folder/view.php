@@ -29,7 +29,7 @@
     </div>
 
     <div class="doc-show-content">
-        <?php if ($doc->isAlive()): ?>
+        <?php if ($doc->alive()): ?>
         <?= $this->section('doc', [
             'display' => false,
         ]) ?>

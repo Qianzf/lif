@@ -62,7 +62,7 @@ abstract class Container
     {
         $uri = $uri ?? $this->route;
 
-        if (! $model->isAlive()) {
+        if (! $model->alive()) {
             share_error_i18n('OBJECT_NOT_FOUND');
             return redirect($uri);
         }

@@ -158,7 +158,7 @@ style="display:none"><?= $this->escape($task->notes) ?></textarea>
 </p>
 <?php endif ?>
 
-<?php if (($env = $task->environment()) && $env->isAlive()): ?>
+<?php if (($env = $task->environment()) && $env->alive()): ?>
 <p>
     <span class="stub-2"></span>
     <span class="text-info">[</span>

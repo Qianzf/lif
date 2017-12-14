@@ -1,6 +1,6 @@
+<?php if (($pages = ($pages ?? 1)) > 1): ?>
 <?php $page    = $_GET['page'] ?? 1; ?>
 <?php $records = $records ?? 0; ?>
-<?php $pages   = $pages ?? 1; ?>
 <?php $offset  = $offset ?? 16; ?>
 
 <p class="pagination-bar">
@@ -31,3 +31,4 @@
         <?= L('PAGE_SIZE', $offset) ?>
     )</code></i></p>
 </p>
+<?php endif ?>

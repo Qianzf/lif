@@ -33,7 +33,7 @@ class Environment extends Mdl
 
     public function setRegressionUnpass(Task $task = null)
     {
-        if (! $this->isAlive()) {
+        if (! $this->alive()) {
             excp('Regression Environment not exists');
         }
 
@@ -46,7 +46,7 @@ class Environment extends Mdl
         ->whereEnv($this->id);
 
         if ($task) {
-            if (! $task->isAlive()) {
+            if (! $task->alive()) {
                 excp('Regression Environment related task not exists');
             }
 
@@ -65,7 +65,7 @@ class Environment extends Mdl
 
     public function startRegressionTest()
     {
-        if (! $this->isAlive()) {
+        if (! $this->alive()) {
             excp('Regression Environment not exists');
         }
 

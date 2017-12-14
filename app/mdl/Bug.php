@@ -19,6 +19,7 @@ class Bug extends Mdl
         'platform_ver' => 'need|string',
         'recurable' => 'need|ciin:yes,no',
         'extra' => 'string',
+        'contact' => 'string',
     ];
 
     public function creator(string $key = null)

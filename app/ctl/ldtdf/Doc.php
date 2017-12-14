@@ -19,7 +19,7 @@ class Doc extends Ctl
 
     public function queryFolderChildren(DocFolder $folder)
     {
-        if (! $folder->isAlive()) {
+        if (! $folder->alive()) {
             return client_error('DOC_FOLDER_NOT_FOUND', 404);
         }
 

@@ -30,7 +30,7 @@ class UserGroup extends Ctl
     public function edit(Group $group, User $user)
     {
         $error = $back2last = null;
-        if (! $group->isAlive()) {
+        if (! $group->alive()) {
             $error     = L('GROUP_NOT_EXISTS');
             $back2last = share('url_previous');
         }

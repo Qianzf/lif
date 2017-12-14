@@ -13,7 +13,7 @@ class Bug extends Ctl
 
     public function info(BugModel $bug)
     {
-        if (! $bug->isAlive()) {
+        if (! $bug->alive()) {
             return redirect('/dep/bugs');
         }
 
@@ -61,7 +61,7 @@ class Bug extends Ctl
             redirect($this->route);
         }
 
-        if (! $bug->isAlive()) {
+        if (! $bug->alive()) {
             share_error_i18n('NO_BUG');
             redirect('/dep/bugs');
         }

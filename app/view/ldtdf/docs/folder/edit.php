@@ -37,8 +37,8 @@
     <?= $this->section('treeselect', [
         'inputTitle' => L('PARENT_CATE'),
         'inputName'  => 'parent',
-        'inputDefaultValue'  => ($folder->isAlive() ? $folder->parent : $parent->id),
-        'inputDefaultOutput' => ($folder->isAlive() ? $folder->parent('title') : $parent->title),
+        'inputDefaultValue'  => ($folder->alive() ? $folder->parent : $parent->id),
+        'inputDefaultOutput' => ($folder->alive() ? $folder->parent('title') : $parent->title),
         'treeData' => ($folders ?? []),
     ]) ?>
 

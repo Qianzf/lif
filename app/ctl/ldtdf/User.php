@@ -31,7 +31,7 @@ class User extends Ctl
     public function info(UserModel $user)
     {
         $error = $back2last = null;
-        if (! $user->isAlive()) {
+        if (! $user->alive()) {
             $error     = L('NO_USER');
             $back2last = share('url_previous');
         }

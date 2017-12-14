@@ -30,7 +30,7 @@ class Task extends Ctl
 
     public function getAssignableUsers(TaskModel $task)
     {
-        if (! $task->isAlive()) {
+        if (! $task->alive()) {
             return response([
                 'err' => '403',
                 'msg' => L('NO_TASK'),
@@ -112,7 +112,7 @@ class Task extends Ctl
 
     public function assignTo(TaskModel $task)
     {
-        if (! $task->isAlive()) {
+        if (! $task->alive()) {
             share_error_i18n('NO_TASK');
             return redirect($this->route);
         }
@@ -190,7 +190,7 @@ class Task extends Ctl
 
         $trendings = null;
 
-        if ($task->isAlive()) {
+        if ($task->alive()) {
             $project = $task->project();
             $story   = $task->story();
             $bug     = $task->bug();
@@ -229,7 +229,7 @@ class Task extends Ctl
 
     public function edit(TaskModel $task)
     {
-        if (! $task->isAlive()) {
+        if (! $task->alive()) {
             share_error_i18n('NO_TASK');
             return redirect(share('url_previous'));
         }
@@ -261,7 +261,7 @@ class Task extends Ctl
 
     public function info(TaskModel $task)
     {
-        if (! $task->isAlive()) {
+        if (! $task->alive()) {
             share_error_i18n('NO_TASK');
             return redirect(share('url_previous'));
         }
@@ -366,7 +366,7 @@ class Task extends Ctl
             return redirect($this->route);
         }
 
-        if (! $task->isAlive()) {
+        if (! $task->alive()) {
             share_error_i18n('TASK_NOT_FOUND');
             return redirect('/dep/tasks');
         }

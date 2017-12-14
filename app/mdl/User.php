@@ -63,7 +63,7 @@ class User extends Mdl
 
     public function inGroup($gid) : bool
     {
-        if (! $this->isAlive()
+        if (! $this->alive()
             || !($user = $this->getPK())
         ) {
             excp('Can not determine if user in group when user is not alive.');
@@ -114,5 +114,15 @@ class User extends Mdl
                 }
             })->count() > 0
         );
+    }
+
+    public function hasPermission(string $action, string $route)
+    {
+        if (! $this->alive()) {
+            return false;
+        }
+
+        // TODO
+        return false;
     }
 }

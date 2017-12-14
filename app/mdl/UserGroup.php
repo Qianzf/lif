@@ -76,7 +76,7 @@ class UserGroup extends ModelBase
 
     public function updateWithUsers(array $data) : bool
     {
-        if (! $this->isAlive() || !($group = $this->getPK())) {
+        if (! $this->alive() || !($group = $this->getPK())) {
             excp('Can not update user group when group is not alive.');
         }
 

@@ -1,4 +1,4 @@
-<?php if ($model->isAlive()): ?>
+<?php if ($model->alive()): ?>
 <label><button id="assign-to">
     <?= L('ASSIGN') ?>
 </button></label>

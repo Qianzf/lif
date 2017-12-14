@@ -1,4 +1,4 @@
-<?php if (isset($model) && $model->isAlive()): ?>
+<?php if (isset($model) && $model->alive()): ?>
     <?php $object = $object ?? classname($model); ?>
     <div>
         <small>

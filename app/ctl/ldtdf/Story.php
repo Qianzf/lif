@@ -25,7 +25,7 @@ class Story extends Ctl
 
     public function info(StoryModel $story)
     {
-        if (! $story->isAlive()) {
+        if (! $story->alive()) {
             return redirect('/dep/stories');
         }
 
@@ -69,7 +69,7 @@ class Story extends Ctl
             redirect($this->route);
         }
 
-        if (! $story->isAlive()) {
+        if (! $story->alive()) {
             share_error_i18n('TASK_NOT_FOUND');
             redirect('/dep/tasks');
         }
