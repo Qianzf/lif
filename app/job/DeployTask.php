@@ -306,14 +306,30 @@ class DeployTask extends \Lif\Core\Abst\Job
         string $config = null
     ) : array
     {
+        $commands = [];
+
         if (!$project || !$project->alive()) {
-            return [];
+            return$commands;
         }
 
-        return [
-            trim($project->deploy_script),
-            trim("{$project->config_api} '{$config}'"),
-        ];
+        if ($deployScript = trim($project->deploy_script)) {
+            if (! preg_match('/(\ )+/u', $deployScript)) {
+                $commands[] = "chmod +x {$deployScript}";
+            }
+
+            $commands[] = "{$deployScript}";
+        }
+
+        if ($configApi = trim($project->config_api)
+            && ($config = trim($config))
+        ) {
+            if (! preg_match('/(\ )+/u', $configApi)) {
+                $commands[] = "chmod +x {$configApi}";
+            }
+            $commands[] = "{$configApi} '{$config}'";
+        }
+
+        return $commands;
     }
 
     protected function getDeployCommands(

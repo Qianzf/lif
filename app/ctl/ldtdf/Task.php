@@ -317,86 +317,56 @@ class Task extends Ctl
 
     public function create(TaskModel $task)
     {
-        $data = $this->validate($this->request->all(), [
-            'origin_type' => 'need|ciin:story,bug',
-            'origin_id'   => 'need|int|min:1',
-            'project'     => 'int|min:1',
-        ]);
+        $user = share('user.id');
 
-        if ($task->hasConflictTask(
-            intval($data['project']),
-            intval($data['origin_id']),
-            trim($data['origin_type'])
-        )) {
-            share_error_i18n("PROJECT_EXIST_IN_{$data['origin_type']}");
-            return redirect($this->route);
-        }
+        $this->request
+        ->setPost('status', 'activated')
+        ->setPost('creator', $user)
+        ->setPost('current', $user);
 
-        $data['status']  = 'activated';
-        $data['creator'] = $data['current'] = share('user.id');
-
-        if (($status = $task->create($data))
-            && is_integer($status)
-            && ($status > 0)
-        ) {
-            $msg = 'CREATED_SUCCESS';
-            $task->addTrending('create', $data['creator']);
-        } else {
-            $msg    = L('CREATED_FAILED', L($status));
-            $status = 'new';
-        }
-
-        share_error_i18n($msg);
-
-        return redirect("/dep/tasks/{$status}");
+        return $this->responseOnCreated(
+            $task,
+            '/dep/tasks/?',
+            function () use ($task) {
+                if($task->hasConflictTask(
+                    intval($this->request->get('project')),
+                    intval($this->request->get('origin_id')),
+                    ($type = trim($this->request->get('origin_type')))
+                )) {
+                    return "PROJECT_EXIST_IN_{$type}";
+                }
+            },
+            function () use ($task, $user) {
+                $task->addTrending('create', $user);
+            }
+        );
     }
 
     public function update(TaskModel $task)
     {
-        $data = $this->request->posts;
+        return $this->responseOnUpdated(
+            $task,
+            '/dep/tasks',
+            function () use ($task) {
+                if ($task->creator != share('user.id')) {
+                    return 'UPDATE_PERMISSION_DENIED';
+                }
 
-        $this->validate($data, [
-            'origin_type' => 'need|ciin:bug,story',
-            'origin_id' => 'need|int|min:1',
-            'project' => 'need|int|min:1',
-            'notes' => 'string',
-        ]);
+                $type = strtolower(
+                    $this->request->get('origin_type')
+                );
 
-        if ($task->creator != share('user.id')) {
-            share_error_i18n('UPDATE_PERMISSION_DENIED');
-            return redirect($this->route);
-        }
+                if (('bug' == $type) && (! $task->bug())) {
+                    return 'NO_BUG';
+                }
 
-        if (! $task->alive()) {
-            share_error_i18n('TASK_NOT_FOUND');
-            return redirect('/dep/tasks');
-        }
-        if (('bug' == $data['origin_type']) && (! $task->bug())) {
-            share_error_i18n('NO_BUG');
-            return redirect($this->route);
-        } elseif (('story' == $data['origin_type']) && (! $task->story())) {
-            share_error_i18n('NO_STORY');
-            return redirect($this->route);
-        }
-
-        if (!empty_safe($err = $task->save($data, false))
-            && is_numeric($err)
-            && ($err >= 0)
-        ) {
-            if ($err > 0) {
-                $status = 'UPDATE_OK';
-                $task->addTrending('update');
-            } else {
-                $status = 'UPDATED_NOTHING';
+                if (('story' == $type) && (! $task->story())) {
+                    return 'NO_STORY';
+                }
+            },
+            function () use ($task) {
+                $task->addTrending('update', share('user.id'));
             }
-        } else {
-            $status = 'UPDATE_FAILED';
-        }
-
-        $err = is_integer($err) ? null : L($err);
-
-        share_error(L($status, $err));
-
-        redirect("{$this->route}/edit");
+        );
     }
 }

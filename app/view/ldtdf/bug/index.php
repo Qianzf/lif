@@ -20,22 +20,20 @@
         <th><?= L('TIME') ?></th>
         <th><?= L('OS') ?></th>
         <th><?= L('PLATFORM') ?></th>
-        <th><?= L('OPERATIONS') ?></th>
     </tr>
     <?php if (isset($bugs) && iteratable($bugs)) : ?>
     <?php foreach ($bugs as $bug) : ?>
     <tr>
         <td><?= $bug->id ?></td>
-        <td><?= $bug->title ?></td>
+        <td>
+            <a href="/dep/bugs/<?= $bug->id ?>">
+                <?= $bug->title ?>
+            </a>
+        </td>
         <td><?= $bug->creator('name') ?></td>
         <td><?= $bug->create_at ?></td>
         <td><?= $bug->os ?></td>
         <td><?= $bug->platform ?></td>
-        <td>
-            <a href="/dep/bugs/<?= $bug->id ?>">
-                <button><?= L('DETAILS') ?></button>
-            </a>
-        </td>
     </tr>
     <?php endforeach ?>
     <?php endif ?>

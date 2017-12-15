@@ -25,7 +25,6 @@
         <th><?= L('CREATOR') ?></th>
         <th><?= L('TIME') ?></th>
         <th><?= L('STATUS') ?></th>
-        <th><?= L('OPERATIONS') ?></th>
     </tr>
     <?php if (isset($tasks) && iteratable($tasks)) : ?>
     <?php foreach ($tasks as $task) : ?>
@@ -34,7 +33,11 @@
         <td class="text-task"><small><em>
             <?= L($task->origin_type) ?>
         </em></small></td>
-        <td><?= $task->origin('title') ?></td>
+        <td>
+            <a href="tasks/<?= $task->id ?>">
+                <?= $task->origin('title') ?>
+            </a>
+        </td>
         <td><?= $task->project('name') ?></td>
         <td><?= $task->creator('name') ?></td>
         <td><?= $task->create_at ?></td>
@@ -42,11 +45,6 @@
             <button class="btn-info">
                 <?= L("STATUS_{$task->status}") ?>
             </button>
-        </td>
-        <td>
-            <a href="tasks/<?= $task->id ?>">
-                <button><?= L('DETAILS') ?></button>
-            </a>
         </td>
     </tr>
     <?php endforeach ?>

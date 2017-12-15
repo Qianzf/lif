@@ -75,6 +75,7 @@ return [
     'FAILED' => '失败',
     'UPDATED_NOTHING' => '无更新项',
     'VIEW_PERMISSION_DENIED' => '抱歉，你无权查看本页面',
+    'CREATE_PERMISSION_DENIED' => '抱歉，你无权执行本次新增操作',
     'UPDATE_PERMISSION_DENIED' => '抱歉，你无权执行本次更新操作',
     'ASSIGN_PERMISSION_DENIED' => '抱歉，你无权执行本次指派操作',
     'CONFIRM_PERMISSION_DENIED' => '抱歉，你无权执行本次确认操作',

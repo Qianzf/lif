@@ -98,7 +98,9 @@ class Environment extends Ctl
             '/dep/admin/envs/?',
             function () use ($env) {
                 // check if exists in code level
-                return $env->hasHostBefore($this->request->get('host'));
+                if ($env->hasHostBefore($this->request->get('host'))) {
+                    return 'HOST_ALREADY_EXISTS';
+                }
             }
         );
     }

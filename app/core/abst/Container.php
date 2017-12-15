@@ -57,7 +57,8 @@ abstract class Container
     public function responseOnUpdated(
         $model,
         string $uri = null,
-        \Closure $callback = null
+        \Closure $before = null,
+        \Closure $after = null
     )
     {
         $uri = $uri ?? $this->route;
@@ -67,26 +68,19 @@ abstract class Container
             return redirect($uri);
         }
 
-        if (!empty_safe($err = $model->save($this->request->posts()))
-            && is_numeric($err)
-            && ($err >= 0)
+        if (($before && ($status = $before()) && is_string($status))
+            || !ispint($status = $model->save($this->request->posts()))
         ) {
-            if ($err > 0) {
-                $status = 'UPDATE_OK';
-            } else {
-                $status = 'UPDATED_NOTHING';
-            }
+            $msg = L('UPDATE_FAILED', L($status));
         } else {
-            $status = 'UPDATE_FAILED';
+            $msg = L(($status > 0) ? 'UPDATE_OK' : 'UPDATED_NOTHING');
+
+            if ($after) {
+                $after();
+            }
         }
 
-        $err = is_integer($err) ? null : L($err);
-
-        if ($callback) {
-            $callback();
-        }
-
-        share_error(L($status, $err));
+        share_error($msg);
 
         redirect($uri);
     }
@@ -98,7 +92,7 @@ abstract class Container
         \Closure $after = null
     )
     {
-        if (($before && $before())
+        if (($before && ($status = $before()) && is_string($status))
             || (! ispint(
                 $status = $model->create($this->request->posts()),
                 false

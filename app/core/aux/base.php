@@ -2257,14 +2257,12 @@ if (! fe('url')) {
 if (! fe('ispint')) {
     function ispint($num = null, bool $zero = true) {
         $zero = $zero ? -1 : 0;
-        if ($num
-            && is_numeric($num)
-            && (($_num = intval($num)) == $num)
-            && ($_num > $zero)
-        ) {
-            return $_num;
-        }
+        $_num = $num;
 
-        return false;
+        return (!empty_safe($num)
+            && is_numeric($num)
+            && (($num = intval($num)) == $_num)
+            && ($num > $zero)
+        );
     }
 }

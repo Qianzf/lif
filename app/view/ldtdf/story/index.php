@@ -19,23 +19,21 @@
         <th><?= L('TITLE') ?></th>
         <th><?= L('CREATOR') ?></th>
         <th><?= L('TIME') ?></th>
-        <th><?= L('OPERATIONS') ?></th>
     </tr>
     <?php foreach ($stories as $story): ?>
     <tr>
         <td><?= $story->id ?></td>
-        <td><?= $story->title ?></td>
+        <td>
+            <a href="/dep/stories/<?= $story->id ?>">
+                <?= $story->title ?>
+            </a>
+        </td>
         <td>
             <a href="/dep/users/<?= $story->creator('id') ?>">
                 <?= $story->creator('name') ?>
             </a>
         </td>
         <td><?= $story->create_at ?></td>
-        <td>
-            <a href="/dep/stories/<?= $story->id ?>">
-                <button><?= L('DETAILS') ?></button>
-            </a>
-        </td>
     </tr>
     <?php endforeach ?>
 </table>

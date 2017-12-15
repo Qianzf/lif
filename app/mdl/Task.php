@@ -106,26 +106,25 @@ class Task extends Mdl
         $this->last    = $params['assign_from'];
         $this->current = $params['assign_to'];
         $this->status  = strtolower($params['action']);
-        $notes  = ($params['assign_notes'] ?? null);
-        $deploy = in_array($this->status, [
+        $notes         = ($params['assign_notes'] ?? null);
+
+        if ($deploy = in_array($this->status, [
             'waitting_dep2test',
             'waitting_dep2stage',
             'waitting_dep2stablerc',
             'waitting_dep2prod',
-        ]);
+        ])) {
+            if (('yes' == ($this->manually = ($params['manually'] ?? 'no')))) {
+                $this->deploy = $notes;
+            }
 
-        if (('yes' == ($this->manually = ($params['manually'] ?? 'no')))
-            && $deploy
-        ) {
-            $this->deploy = $notes;
-        }
+            if ($config = ($params['config'] ?? null)) {
+                $this->config = $config;
+            }
 
-        if ($config = ($params['config'] ?? null)) {
-            $this->config = $config;
-        }
-
-        if ($branch = ($this->getDefaultBranch($params['branch'] ?? null))) {
-            $this->branch = $branch;
+            if ($branch = ($this->getDefaultBranch($params['branch'] ?? null))) {
+                $this->branch = $branch;
+            }
         }
 
         if (($this->save() >= 0)

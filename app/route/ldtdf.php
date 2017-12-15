@@ -17,6 +17,7 @@ $this->group([
     $this->get('/', 'LDTDF@index');
     $this->get('trending', 'User@trending');
     $this->get('todo', 'User@todo');
+    $this->post('gitlab/webhook', 'LDTDF@updateTask');
 
     $this->group([
         'prefix' => 'tool',

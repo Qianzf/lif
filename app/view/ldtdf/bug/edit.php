@@ -22,41 +22,6 @@
     </label>
 
     <label>
-        <span class="label-title">* <?= L('BUG_HOW') ?></span>
-        <textarea
-        name="how"
-        required
-        placeholder="<?= L('BUG_HOW_STUB') ?>"><?= $bug->how ?></textarea>
-    </label>
-
-    <label>
-        <span class="label-title">* <?= L('BUG_WHAT') ?></span>
-        <textarea
-        name="what"
-        required
-        placeholder="<?= L('BUG_WHAT_STUB') ?>"
-        ><?= $bug->what ?></textarea>
-    </label>
-
-    <label>
-        <span class="label-title"><?= L('ERROR_MSG') ?></span>
-        <input
-        type="text"
-        name="errmsg"
-        placeholder="<?= L('EG'), ': ', L('SERVICE_BUSY') ?>"
-        value="<?= $bug->errmsg ?>">
-    </label>
-
-    <label>
-        <span class="label-title"><?= L('ERROR_CODE') ?></span>
-        <input
-        type="text"
-        name="errcode"
-        placeholder="<?= L('EG', '5001') ?>"
-        value="<?= $bug->errcode ?>">
-    </label>
-
-    <label>
         <span class="label-title">* <?= L('OS') ?></span>
         <select name="os">
             <?php if (isset($oses) && iteratable($oses)): ?>
@@ -86,7 +51,7 @@
         type="text"
         name="platform"
         required
-        placeholder="<?= L('EG', L('CLIENT')) ?>"
+        placeholder="<?= L('EG', L('CLIENT')), 'A / Chrome' ?>"
         value="<?= $bug->platform ?>">
     </label>
 
@@ -101,11 +66,46 @@
     </label>
 
     <label>
+        <span class="label-title"><?= L('ERROR_MSG') ?></span>
+        <input
+        type="text"
+        name="errmsg"
+        placeholder="<?= L('EG'), ': ', L('SERVICE_BUSY') ?>"
+        value="<?= $bug->errmsg ?>">
+    </label>
+
+    <label>
+        <span class="label-title"><?= L('ERROR_CODE') ?></span>
+        <input
+        type="text"
+        name="errcode"
+        placeholder="<?= L('EG', '5001') ?>"
+        value="<?= $bug->errcode ?>">
+    </label>
+
+    <label>
+        <span class="label-title">* <?= L('BUG_HOW') ?></span>
+        <textarea
+        name="how"
+        required
+        placeholder="<?= L('BUG_HOW_STUB') ?>"><?= $bug->how ?></textarea>
+    </label>
+
+    <label>
         <span class="label-title"><?= L('RECURABLE') ?></span>
         <input type="radio" name="recurable" value="yes" checked>
         <span><?= L('YES') ?></span>
         <input type="radio" name="recurable" value="no">
         <span><?= L('NO') ?></span>
+    </label>
+
+    <label>
+        <span class="label-title">* <?= L('BUG_WHAT') ?></span>
+        <textarea
+        name="what"
+        required
+        placeholder="<?= L('BUG_WHAT_STUB') ?>"
+        ><?= $bug->what ?></textarea>
     </label>
 
     <label>

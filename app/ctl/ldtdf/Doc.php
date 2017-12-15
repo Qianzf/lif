@@ -79,9 +79,17 @@ class Doc extends Ctl
     public function update(DocModel $doc)
     {
         return $this->responseOnUpdated(
-            $doc, null, function () use ($doc) {
-            $doc->addTrending('update', share('user.id'));
-        });
+            $doc,
+            null,
+            function () use ($doc) {
+                if ($doc->creator('id') != share('user.id')) {
+                    return 'UPDATE_PERMISSION_DENIED';
+                }
+            },
+            function () use ($doc) {
+                $doc->addTrending('update', share('user.id'));
+            }
+        );
     }
 
     public function viewFolder(DocFolder $folder)
@@ -113,14 +121,22 @@ class Doc extends Ctl
 
     public function updateFolder(DocFolder $folder)
     {
-        if ($folder->id == $this->request->get('parent')) {
-            $this->request->setPost('parent', $folder->parent);
-        }
-
         return $this->responseOnUpdated(
-        $folder, null, function () use ($folder) {
-            $folder->addTrending('update', share('user.id'));
-        });
+            $folder,
+            null,
+            function () use ($folder) {
+                if ($folder->creator('id') != share('user.id')) {
+                    return 'UPDATE_PERMISSION_DENIED';
+                }
+
+                if ($folder->id == $this->request->get('parent')) {
+                    $this->request->setPost('parent', $folder->parent);
+                }
+            },
+            function () use ($folder) {
+                $folder->addTrending('update', share('user.id'));
+            }
+        );
     }
 
     public function createFolder(DocFolder $folder)

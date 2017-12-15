@@ -8,10 +8,12 @@
         [
             'name'  => 'CREATE_DOC',
             'route' => "/dep/docs/new?folder={$folder->id}",
+            'alive' => 'true',
         ],
         [
             'name'  => 'CREATE_FOLDER',
             'route' => "/dep/docs/folders/new?parent={$folder->id}",
+            'alive' => 'true',
         ],
     ],
 ]) ?>

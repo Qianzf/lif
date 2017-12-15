@@ -25,7 +25,6 @@
         <th><?= L('CREATOR') ?></th>
         <th><?= L('CREATE_TIME') ?></th>
         <th><?= L('LAST_UPDATE') ?></th>
-        <th><?= L('OPERATIONS') ?></th>
     </tr>
 
     <?php if (isset($folders) && iteratable($folders)): ?>
@@ -41,11 +40,6 @@
         <td><?= $folder->creator('name') ?></td>
         <td><?= $folder->create_at ?></td>
         <td><?= $folder->update_at ?></td>
-        <td>
-            <a href="/dep/docs/folders/<?= $folder->id ?>/edit">
-                <button><?= L('EDIT') ?></button>
-            </a>
-        </td>
     </tr>
     <?php endforeach ?>
     <?php endif ?>

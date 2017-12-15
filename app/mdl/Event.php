@@ -111,11 +111,8 @@ class Event extends ModelBase
 
     public function getTaskTitle($id)
     {
-        $task = model(Task::class, $id);
-        
-        if ($origin = $task->origin($task->origin_type)) {
-            $title = $origin->title;
-        }
+        $task  = model(Task::class, $id);
+        $title = $task->origin('title', $task->origin_type);
         
         return ($title ?? '')."(T{$id})";
     }
