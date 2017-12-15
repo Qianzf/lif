@@ -17,8 +17,7 @@ class CSRF extends \Lif\Core\Abst\Middleware
 
     public function passing($app)
     {
-        if (in_array(server('REQUEST_METHOD'), $this->allowedMethods)) {
-        } else {
+        if (! in_array(server('REQUEST_METHOD'), $this->allowedMethods)) {
             if ($token = $app->request->magic('__rftkn__')) {
                 list($data, $hash)  = explode('.', $token);
                 list($time, $nonce) = explode(':', $data);

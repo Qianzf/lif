@@ -52,6 +52,10 @@ class Route extends Container implements Observable
         return $this;
     }
 
+    public function rest()
+    {
+    }
+
     protected function match($methods, ...$args): Route
     {
         if (($attrsIf = exists($args, 1)) && exists($attrsIf, 'alias')) {
@@ -240,18 +244,22 @@ class Route extends Container implements Observable
         $this->groupDepth   = 0;
     }
 
-    // Cancel some middlewares for current single route
+    // Cancel some global middlewares for current single route
+    public function unset(...$middlewares): Route
+    {
+        $this->routes[$this->route][$this->type]['blacklist']
+        = arr_unzip($middlewares);
+
+        return $this;
+    }
+
+    // Cancel some scope middlewares for current single route
     public function cancel(...$middlewares): Route
     {
-        if ((1 == count($middlewares))
-            && isset($middlewares[0])
-            && is_array($middlewares[0])
-        ) {
-            $middlewares = $middlewares[0];
-        }
-        
-        if ($middlewares) {
-            $tmpRoutes = $this->routes[$this->route][$this->type]['middlewares'];
+        if ($middlewares = arr_unzip($middlewares)) {
+            $tmpRoutes = $this->routes
+            [$this->route][$this->type]['middlewares'];
+
             foreach ($tmpRoutes as $idx => $middleware) {
                 if (in_array($middleware, $middlewares)) {
                     unset($tmpRoutes[$idx]);

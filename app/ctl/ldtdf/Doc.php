@@ -6,6 +6,11 @@ use Lif\Mdl\{Doc as DocModel, DocFolder, User};
 
 class Doc extends Ctl
 {
+    public function __construct()
+    {
+        share('hide-search-bar', true);
+    }
+
     public function getChildren(DocFolder $folder)
     {
         $children = $folder->getTreeSelectFormattedList(
@@ -42,7 +47,8 @@ class Doc extends Ctl
         ->withFoldersDocs(
             $folder->whereParent(0)->get(),
             $doc->whereFolder(0)->get()
-        );
+        )
+        ->share('hide-search-bar', false);
     }
 
     public function viewDoc(DocModel $doc)
@@ -94,7 +100,7 @@ class Doc extends Ctl
 
     public function viewFolder(DocFolder $folder)
     {
-        if ($doc = ispint($this->request->get('doc'))) {
+        if (ispint($doc = $this->request->get('doc'))) {
             $doc = model(DocModel::class, $doc);
         } else {
             $doc = $folder->firstDoc() ?? model(DocModel::class);

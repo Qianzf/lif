@@ -103,10 +103,16 @@ $this->group([
         'auth.web'
     ],
 ], function () {
-    // Cancel middleware for specific route
     $this->get('/', 'User@info');
+
+    // Cancel scope middleware for specific route
     $this->get('login', 'Passport@login')->cancel('auth.web');
     $this->post('login', 'Passport@loginAction')->cancel('auth.web');
+
+    // Cancel global middleware for specific route
+    $this->post('gitlab/webhook', 'Task@update')
+    ->cancel('auth.web')
+    ->unset('safty.csrf');
 });
 ```
 

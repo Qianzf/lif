@@ -4,6 +4,8 @@ $this->any('/sys_msg', function () {
     response(sysmsgs());
 });
 
+// $this->post('gitlab/webhook', 'LDTDF@updateTask');
+
 $this->group([
     'prefix'    => 'dep',
     'namespace' => 'Ldtdf',
@@ -17,7 +19,6 @@ $this->group([
     $this->get('/', 'LDTDF@index');
     $this->get('trending', 'User@trending');
     $this->get('todo', 'User@todo');
-    $this->post('gitlab/webhook', 'LDTDF@updateTask');
 
     $this->group([
         'prefix' => 'tool',

@@ -2266,3 +2266,12 @@ if (! fe('ispint')) {
         );
     }
 }
+if (! fe('arr_unzip')) {
+    function arr_unzip(array $array) : array {
+        if ((1 == count($array)) && isset($array[0]) && is_array($array[0])) {
+            $array = $array[0];
+        }
+
+        return $array;
+    }
+}

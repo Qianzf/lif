@@ -118,28 +118,34 @@ class Web extends Container implements Observer, Strategy
         $type  = $this->request->type();
         $key   = $this->escape(format_route_key($name));
 
-        if (!in_array($type, array_keys($this->routes[$key]))) {
+        if (! in_array($type, array_keys($this->routes[$key]))) {
             client_error(
-                '`'.$type.'` for route `'.$name.'` not found.',
+                "`{$type}` for route `{$name}` not found.",
                 404
             );
         }
-        if (!isset($this->routes[$key][$type]['handle'])) {
+        if (! isset($this->routes[$key][$type]['handle'])) {
             excp(
-                'Handler for route `'.$name.'` (`'.$type.'`) not found.'
+                "Handler for route `{$name}` (`{$type}`) not found."
             );
         }
 
+        $route = $this->routes[$key][$type];
         // Filter route parameters
-        $needFilter = $this->routes[$key][$type]['filters'];
-        if ($needFilter) {
-            $this->filter($needFilter, $this->routes[$key][$type]['params']);
+        if ($needFilter = ($route['filters'] ?? false)) {
+            $this->filter($needFilter, $route['params']);
+        }
+
+        if ($needUnset = ($route['blacklist'] ?? false)) {
+            $this->unset($needUnset);
         }
 
         // !!! Hander must set before middlewares be executed
-        $this->handler   = $this->routes[$key][$type]['handle'];
-        $this->routeVars = $this->assign($this->routes[$key][$type]['params']);
-        $this->passingMiddlewares(exists($this->routes[$key][$type], 'middlewares'));
+        $this->handler   = $route['handle'];
+        $this->routeVars = $this->assign($route['params']);
+        $this->passingMiddlewares(
+            exists($route, 'middlewares')
+        );
 
         return $this;
     }
@@ -163,6 +169,17 @@ class Web extends Container implements Observer, Strategy
 
         if (true !== ($err = validate($_params, $filters))) {
             client_error('Route parameter validation failed: '.$err);
+        }
+
+        return $this;
+    }
+
+    protected function unset($blacklist)
+    {
+        foreach ($this->globalMiddlewares as $idx => $middleware) {
+            if (in_array($middleware, $blacklist)) {
+                unset($this->globalMiddlewares[$idx]);
+            }
         }
 
         return $this;
