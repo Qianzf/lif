@@ -4,7 +4,9 @@ $this->any('/sys_msg', function () {
     response(sysmsgs());
 });
 
-// $this->post('gitlab/webhook', 'LDTDF@updateTask');
+$this
+->post('dep/gitlab/webhook', 'Ldtdf\LDTDF@gitlabWebhook')
+->unset('safty.csrf');
 
 $this->group([
     'prefix'    => 'dep',

@@ -22,7 +22,7 @@ abstract class Factory
         }
 
         if (! ($class = self::classExists($namespace, $name))) {
-            excp("Class `{$class}` not exists.");
+            excp("Class not exists: {$namespace}{$name}");
         }
 
         return new $class($data);
