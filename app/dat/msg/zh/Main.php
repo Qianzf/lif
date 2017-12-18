@@ -237,6 +237,8 @@ return [
     'STATUS_ONLINE' => '已上线',
     'STATUS_FINISHED' => '已验收',
     'STATUS_UNACCEPTABLE' => '已返工：任务创建者验收不通过',
+    'STATUS_UPDATE_TASK_BRANCH_SUCCESS' => '已更新：任务代码更新成功',
+    'STATUS_UPDATE_TASK_BRANCH_FAILED' => '待解决：任务代码更新失败',
     'ASSIGN_ACTIVATED' => '请重新开发／修复',
     'ASSIGN_WAITTING_DEV' => '请开发／修复',
     'ASSIGN_WAITTING_CONFIRM_ENV' => '请确认测试环境可用性',

@@ -39,10 +39,14 @@ class UpdateTaskBranch extends \Lif\Core\Abst\Job
                 && ($server = $env->server())
                 && $server->alive()
             ) {
+                if (! ($user = $this->findOneOperator())) {
+                    excp('Missing system operator');
+                }
+
                 $res = $this
                 ->makeDeployer()
                 ->setRecyclable(false)
-                // ->setBuildable(false)
+                ->setBuildable(false)
                 // ->setCommands([
                 // ])
                 ->deploy($server, [
@@ -58,7 +62,7 @@ class UpdateTaskBranch extends \Lif\Core\Abst\Job
 
                 db()->table('trending')->insert([
                     'at'        => date('Y-m-d H:i:s'),
-                    'user'      => 1,
+                    'user'      => $user,
                     'action'    => 'update_branch',
                     'ref_state' => $status,
                     'ref_type'  => 'task',
@@ -69,6 +73,17 @@ class UpdateTaskBranch extends \Lif\Core\Abst\Job
         }
 
         return true;
+    }
+
+    public function findOneOperator()
+    {
+        $operator = db()
+        ->table('user')
+        ->select('id')
+        ->whereRole('ops')
+        ->first();
+
+        return $operator['id'] ?? false;
     }
 
     public function makeDeployer()
