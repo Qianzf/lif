@@ -9,14 +9,14 @@ class AddUserData extends Dit
     public function commit()
     {
         if (schema()->hasTable('user')) {
-            dbraw('insert_user_data');
+            dbraw('add_user_data');
         }
     }
 
     public function revert()
     {
         if (schema()->hasTable('user')) {
-            dbraw('insert_user_data.rollback');
+            dbraw('add_user_data.rollback');
         }
     }
 }

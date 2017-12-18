@@ -19,5 +19,6 @@ class LDTDF extends Ctl
     // 4. Update task env when status is correct
     public function gitlabWebhook(Task $task)
     {
+        
     }
 }

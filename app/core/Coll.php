@@ -122,6 +122,11 @@ class Coll implements
         return $this->data;
     }
 
+    public function __toString()
+    {
+        return $this->toString();
+    }
+
     public function toString()
     {
         return _json_encode($this->data);

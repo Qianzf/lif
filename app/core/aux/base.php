@@ -2070,6 +2070,9 @@ if (! fe('stringify')) {
 
                 return $ret;
             }
+            if ($origin instanceof \JsonSerializable) {
+                return _json_encode($origin);
+            }
 
             excp(
                 'Object of '
