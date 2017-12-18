@@ -8,6 +8,8 @@ namespace Lif\Core\Web;
 
 class Session
 {
+    private $data = [];
+
     public function __construct()
     {
         if (context('web') && !session_id()) {
@@ -16,6 +18,9 @@ class Session
                     'Session starting failed: HTTP headers sent already.'
                 );
             }
+
+            $this->data = $_SESSION;
+
             session_start();
         }
     }
@@ -23,9 +28,9 @@ class Session
     public function set($key, $val)
     {
         if (false === mb_strpos($key, '.')) {
-            $_SESSION[$key] = $val;
+            $this->data[$key] = $val;
         } else {
-            $_SESSION = array_update_by_coherent_keys($key, $_SESSION, $val);
+            $this->data = array_update_by_coherent_keys($key, $this->data, $val);
         }
 
         return true;
@@ -42,12 +47,12 @@ class Session
 
     public function get($key)
     {
-        return array_query_by_coherent_keys($_SESSION, $key);
+        return array_query_by_coherent_keys($this->data, $key);
     }
 
     public function all()
     {
-        return $_SESSION;
+        return $this->data;
     }
 
     public function destory()
@@ -61,8 +66,8 @@ class Session
 
     public function delete($key)
     {
-        if (isset($_SESSION[$key])) {
-            unset($_SESSION[$key]);
+        if (isset($this->data[$key])) {
+            unset($this->data[$key]);
         }
 
         return true;
