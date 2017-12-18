@@ -86,9 +86,11 @@ if (! fe('init')) {
 }
 if (! fe('session_init')) {
     function session_init() : void {
-        ini_set('session.name', 'LIFSESSID');
-        ini_set('session.cookie_lifetime', 3600);
-        ini_set('session.cookie_httponly', true);
+        if (context('web')) {
+            ini_set('session.name', 'LIFSESSID');
+            ini_set('session.cookie_lifetime', 3600);
+            ini_set('session.cookie_httponly', true);
+        }
     }
 }
 if (! fe('init_dit_table')) {
@@ -262,9 +264,13 @@ if (! fe('app_env')) {
     }
 }
 if (! fe('context')) {
-    function context() {
-        return ('cli' === php_sapi_name())
-        ? 'cli' : 'web';
+    function context(string $context = null) {
+        $sapi = php_sapi_name();
+        if ($context) {
+            return ($sapi == strtolower($context));
+        }
+
+        return ('cli' === $sapi) ? 'cli' : 'web';
     }
 }
 if (! fe('validate')) {
@@ -550,9 +556,7 @@ if (! fe('exception')) {
             build_log_str($_info, 'exception')
         );
         
-        return ('cli' === context())
-        ? cli_excp($exObj)
-        : $response($info);
+        return context('cli') ? cli_excp($exObj) : $response($info);
     }
 }
 if (! fe('excp')) {

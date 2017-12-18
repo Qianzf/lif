@@ -10,7 +10,7 @@ class Session
 {
     public function __construct()
     {
-        if (! session_id()) {
+        if (context('web') && !session_id()) {
             if (headers_sent()) {
                 excp(
                     'Session starting failed: HTTP headers sent already.'
@@ -79,7 +79,7 @@ class Session
 
     public function update()
     {
-        if (headers_sent()) {
+        if (context('web') && headers_sent()) {
             excp(
                 'Update session failed: HTTP headers sent already.'
             );

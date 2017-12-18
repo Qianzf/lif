@@ -82,7 +82,7 @@ class Task extends Mdl
                 )
                 ->on('task_deploy')
                 ->try(3)
-                ->timeout(30);
+                ->timeout(10);
             }
 
             if (($current = $this->current()) && $current->alive()) {
@@ -91,7 +91,7 @@ class Task extends Mdl
                 )
                 ->on('mail_send')
                 ->try(3)
-                ->timeout(30);
+                ->timeout(3);
             }
         }
 
