@@ -12,11 +12,34 @@ class DeployTask extends \Lif\Core\Abst\Job
     protected $recycleEnv    = null;
     protected $envStatus     = null;
     protected $commands      = [];
+    protected $buildable     = true;
+    protected $recyclable    = true;
 
     public function setTask(int $task)
     {
         $this->task = $task;
 
+        return $this;
+    }
+
+    public function setCommands(array $commands)
+    {
+        $this->commands = $commands;
+
+        return $this;
+    }
+
+    public function setBuildable(bool $buildable = true)
+    {
+        $this->buildable = $buildable;
+
+        return $this;
+    }
+
+    public function setRecyclable(bool $recyclable = true)
+    {
+        $this->recyclable = $recyclable;
+        
         return $this;
     }
 
@@ -289,6 +312,10 @@ class DeployTask extends \Lif\Core\Abst\Job
 
     protected function getEnvRecycleCommands(string $path)
     {
+        if (! $this->recyclable) {
+            return [];
+        }
+
         return [
             "cd {$path}",
             'git add -A',
@@ -308,7 +335,7 @@ class DeployTask extends \Lif\Core\Abst\Job
     {
         $commands = [];
 
-        if (!$project || !$project->alive()) {
+        if (!$this->buildAble || !$project || !$project->alive()) {
             return$commands;
         }
 

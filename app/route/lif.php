@@ -9,6 +9,18 @@
 $this->get('/', 'lif');
 
 $this->get('test', function () {
+    $task = db()
+    ->table('task', 't')
+    ->leftJoin(['project', 'p'], 't.project', 'p.id')
+    ->select('t.id', 't.env')
+    ->where('t.env', '>', 0)
+    ->where([
+        't.branch' => 1,
+        'p.url'    => 1,
+    ])
+    ->get(false, 2);
+
+    ee($task);
     // $status = db()
     // ->table('task_status')
     // ->select(function () {
