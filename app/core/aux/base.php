@@ -265,12 +265,11 @@ if (! fe('app_env')) {
 }
 if (! fe('context')) {
     function context(string $context = null) {
-        $sapi = php_sapi_name();
-        if ($context) {
-            return ($sapi == strtolower($context));
-        }
-
-        return ('cli' === $sapi) ? 'cli' : 'web';
+        $short = ('cli' === php_sapi_name()) ? 'cli' : 'web';
+        
+        return $context
+        ? (strtolower($context) === $short)
+        : $short;
     }
 }
 if (! fe('validate')) {
@@ -724,7 +723,7 @@ if (! fe('array_query_by_coherent_keys')) {
         if (! $haystack) {
             return null;
         }
-        
+
         if (!$key || false === mb_strpos($key, '.')) {
             return $haystack[$key] ?? null;
         }
