@@ -17,13 +17,15 @@ class UpdateTaskBranch extends \Lif\Core\Abst\Job
             return true;
         }
 
+        $branch = str_replace('refs/heads/', '', $this->branch);
+
         if ($task = db()
             ->table('task', 't')
             ->leftJoin(['project', 'p'], 't.project', 'p.id')
             ->select('t.id', 't.env', 'p.token')
             ->where('t.env', '>', 0)
             ->where([
-                't.branch' => str_replace('refs/heads/', '', $this->branch),
+                't.branch' => $branch,
                 'p.url'    => $this->url,
                 // 'status'   => [
                 // ],
@@ -41,13 +43,14 @@ class UpdateTaskBranch extends \Lif\Core\Abst\Job
                 ->makeDeployer()
                 ->setRecyclable(false)
                 // ->setBuildable(false)
-                ->setCommands([
+                // ->setCommands([
+                // ])
+                ->deploy($server, [
                     "cd {$env->path}",
                     'git add -A',
                     'git reset --hard HEAD',
-                    "git pull origin {$this->branch} --no-edit"
-                ])
-                ->deploy($server);
+                    "git pull origin {$branch} --no-edit"
+                ]);
 
                 $status = (0 == $res['num'])
                 ? 'UPDATE_TASK_BRANCH_SUCCESS'
