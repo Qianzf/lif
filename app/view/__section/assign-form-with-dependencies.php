@@ -53,7 +53,7 @@ class="invisible-default">
                 <?= L('PROJECT_CONFIG') ?>
             </span>
             <textarea
-            placeholder="<?= L('JSON') ?>"
+            placeholder="<?= L('OPTIONAL') ?>"
             name="config"><?= $config ?? null ?></textarea>
         </label>
 

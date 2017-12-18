@@ -23,6 +23,8 @@ class Session
 
     public function set($key, $val)
     {
+        $_SESSION = $_SESSION ?? [];
+        
         if (false === mb_strpos($key, '.')) {
             $_SESSION[$key] = $val;
         } else {
@@ -43,12 +45,12 @@ class Session
 
     public function get($key)
     {
-        return array_query_by_coherent_keys($_SESSION, $key);
+        return array_query_by_coherent_keys(($_SESSION ?? []), $key);
     }
 
     public function all()
     {
-        return $_SESSION;
+        return $_SESSION ?? [];
     }
 
     public function destory()
@@ -59,7 +61,7 @@ class Session
 
     public function delete($key)
     {
-        if (isset($_SESSION[$key])) {
+        if (($_SESSION ?? false) && isset($_SESSION[$key])) {
             unset($_SESSION[$key]);
         }
 

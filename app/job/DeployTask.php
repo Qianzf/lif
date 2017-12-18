@@ -62,10 +62,14 @@ class DeployTask extends \Lif\Core\Abst\Job
 
     public function getEnv($task, $project)
     {
-        $this->commands = [
-            "git checkout -b {$task->branch}",
-            "git pull origin {$task->branch} --no-edit",
-        ];
+        $notMaster = ('master' != strtolower($task->branch));
+
+        if ($notMaster) {
+            $this->commands = [
+                "git checkout -b {$task->branch}",
+                "git pull origin {$task->branch} --no-edit",
+            ];
+        }
 
         switch (strtolower($task->status)) {
             case 'waitting_dep2test': {
@@ -91,9 +95,12 @@ class DeployTask extends \Lif\Core\Abst\Job
                 $this->statusSuccess = 'waitting_regression';
                 $this->statusFail    = 'waitting_fix_stablerc';
                 $this->envStatus     = 'running';
-                $this->commands      = [
-                    "git pull origin {$task->branch} --no-edit",
-                ];
+
+                if ($notMaster) {
+                    $this->commands      = [
+                        "git pull origin {$task->branch} --no-edit",
+                    ];
+                }
             } break;
 
             case 'waitting_dep2prod': {
@@ -102,9 +109,11 @@ class DeployTask extends \Lif\Core\Abst\Job
                 $this->userFail      = $this->findLastDeveloper($task);
                 $this->statusSuccess = 'online';
                 $this->statusFail    = 'waitting_fix_prod';
-                $this->commands = [
-                    // TODO: specialize production deploy commands
-                ];
+                if ($notMaster) {
+                    $this->commands = [
+                        // TODO: specialize production deploy commands
+                    ];
+                }
             } break;
             
             default: return false; break;
@@ -335,7 +344,7 @@ class DeployTask extends \Lif\Core\Abst\Job
     {
         $commands = [];
 
-        if (!$this->buildAble || !$project || !$project->alive()) {
+        if (!$this->buildable || !$project || !$project->alive()) {
             return$commands;
         }
 
