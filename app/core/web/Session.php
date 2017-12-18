@@ -19,10 +19,10 @@ class Session
                 );
             }
 
-            $this->data = $_SESSION;
-
             session_start();
         }
+
+        $this->data = $_SESSION ?? [];
     }
 
     public function set($key, $val)

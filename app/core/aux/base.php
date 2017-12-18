@@ -717,7 +717,14 @@ if (! fe('array_stringify_main')) {
     }
 }
 if (! fe('array_query_by_coherent_keys')) {
-    function array_query_by_coherent_keys(array $haystack, string $key) {
+    function array_query_by_coherent_keys(
+        array $haystack = null,
+        string $key
+    ) {
+        if (! $haystack) {
+            return null;
+        }
+        
         if (!$key || false === mb_strpos($key, '.')) {
             return $haystack[$key] ?? null;
         }
