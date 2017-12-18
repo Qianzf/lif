@@ -18,7 +18,7 @@ class LDTDF extends Ctl
         //  - project url
         //  - branch name
         //  - token
-        if ($payload = json_decode(file_get_contents('php://input'))
+        if (($payload = json_decode(file_get_contents('php://input')))
             && (
                 ($event = ($payload->event_name ?? false))
                 && ('push' == strtolower($event))
@@ -34,7 +34,7 @@ class LDTDF extends Ctl
             )
             ->on('update_task_branch')
             ->try(3)
-            ->timeout(30);
+            ->timeout(5);
         }
     }
 }

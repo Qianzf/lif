@@ -20,10 +20,10 @@ class UpdateTaskBranch extends \Lif\Core\Abst\Job
         if ($task = db()
             ->table('task', 't')
             ->leftJoin(['project', 'p'], 't.project', 'p.id')
-            ->select('t.id', 't.env', 's.token')
+            ->select('t.id', 't.env', 'p.token')
             ->where('t.env', '>', 0)
             ->where([
-                't.branch' => $this->branch,
+                't.branch' => str_replace('refs/heads/', '', $this->branch),
                 'p.url'    => $this->url,
                 // 'status'   => [
                 // ],
