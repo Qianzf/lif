@@ -7,7 +7,7 @@
 if (! fe('is_ajax')) {
     function is_ajax() {
         return (
-            strtolower($ajax = server('HTTP_X_REQUESTED_WITH')
+            strtolower(server('HTTP_X_REQUESTED_WITH')
             ) === 'xmlhttprequest'
         );
     }

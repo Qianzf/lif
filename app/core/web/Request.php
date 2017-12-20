@@ -107,17 +107,14 @@ class Request extends Container implements Observable
         : ($this->magic[$key] ?? null);
     }
 
-    public function params()
+    public function params($origin = null, bool $collect = true)
     {
         if ($this->params) {
             return $this->params;
         }
 
-        $params = $_REQUEST;
-
-        $cntType = isset($_SERVER['CONTENT_TYPE'])
-        ? $_SERVER['CONTENT_TYPE']
-        : 'application/x-www-form-urlencoded';
+        $params  = $origin ?? $_REQUEST;
+        $cntType = $_SERVER['CONTENT_TYPE'] ?? 'application/x-www-form-urlencoded';
 
         if (false === mb_strpos($cntType, 'multipart/form-data')) {
             $rawInput = file_get_contents('php://input');
@@ -130,7 +127,7 @@ class Request extends Container implements Observable
                 parse_str($rawInput, $_params);
             }
 
-            array_merge($_params, $params);
+            $params = array_merge($_params, $params);
         }
 
         array_walk($params, function (&$val, $key) use (&$params) {
@@ -140,7 +137,7 @@ class Request extends Container implements Observable
             }
         });
 
-        return $this->params = collect($params);
+        return $this->params = $collect ? collect($params) : $params;
     }
 
     public function gets()
@@ -163,16 +160,7 @@ class Request extends Container implements Observable
             return $this->posts;
         }
 
-        $posts = $_POST;
-        
-        array_walk($posts, function (&$val, $key) use (&$posts) {
-            if ('__' === mb_substr($key, 0, 2)) {
-                $this->magic[$key] = $val;
-                unset($posts[$key]);
-            }
-        });
-
-        return $this->posts = $posts;
+        return $this->posts = $this->params($_POST, false);
     }
 
     public function setPost(string $key, $value)

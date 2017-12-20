@@ -18,13 +18,13 @@ class LDTDF extends Ctl
         //  - project url
         //  - branch name
         //  - token
-        if (($payload = json_decode(file_get_contents('php://input')))
+        if (($payload = $this->request->posts())
             && (
-                ($event = ($payload->event_name ?? false))
+                ($event = ($payload['event_name'] ?? false))
                 && ('push' == strtolower($event))
             )
-            && ($url = ($payload->project->url ?? false))
-            && ($branch = ($payload->ref ?? false))
+            && ($url = ($payload['project']['url'] ?? false))
+            && ($branch = ($payload['ref'] ?? false))
         ) {
             enqueue(
                 (new \Lif\Job\UpdateTaskBranch)

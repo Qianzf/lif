@@ -22,7 +22,7 @@ class Web extends \Lif\Core\Abst\Middleware
             && (false !== exists($this->auth, 'role'))
         ) {
             $timestamp = time();
-            // Update new session if 'remember me' is checked
+            // Update new session if `remember me` is checked
             if (($remember = share('remember'))
                 && (($remember + 60) < $timestamp)
             ) {
