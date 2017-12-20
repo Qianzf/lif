@@ -202,11 +202,11 @@ class AddTaskStatusData extends Dit
                     'val' => '已验收：任务创建者已验收该任务，任务生命周期结束',
                     'assignable' => 'no',
                 ],
-                // [
-                //     'key' => 'unacceptable',
-                //     'val' => '已返工：任务创建者验收不通过',
-                //     'assignable' => 'no',
-                // ],
+                [
+                    'key' => 'unacceptable',
+                    'val' => '已返工：任务创建者验收不通过',
+                    'assignable' => 'no',
+                ],
             ]);
         }
     }

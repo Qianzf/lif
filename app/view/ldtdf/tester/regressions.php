@@ -14,11 +14,12 @@
     <?php foreach ($regressions as $regression): ?>
     <tr>
         <td><?= $regression->host ?? L('UNKNOWN') ?></td>
-        <td><?= $regression->project('name') ?? L('UNKNOWN') ?></td>
         <td>
             <a href="/dep/test/regressions/<?= $regression->id ?>">
-                <button><?= L('DETAILS') ?></button>
+                <?= $regression->project('name') ?? L('UNKNOWN') ?>
             </a>
+        </td>
+        <td>
             <a href="/dep/test/regressions/<?= $regression->id ?>/unpass">
                 <button class="btn-delete"><?= L('SET_UNPASS') ?></button>
             </a>

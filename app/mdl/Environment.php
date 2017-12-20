@@ -64,6 +64,9 @@ class Environment extends Mdl
             ->whereId($task->id)
             ->update('status', 'stablerc_back2self');
 
+            // TODO find and assign to last developer
+            // ...
+
             return (
                 ($updateOther >= 0) && ($updateSelf >= 0)
             );

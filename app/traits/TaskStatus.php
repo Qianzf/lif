@@ -88,8 +88,8 @@ trait TaskStatus
     {
         return [
             'WAITTING_DEP2STAGE',
-            'WAITTING_FIX_STABLERC',
             'WAITTING_DEP2STABLERC',
+            'WAITTING_FIX_STABLERC',
         ];
     }
 
@@ -139,8 +139,16 @@ trait TaskStatus
     public function getAssignableStatusesWhenDeployingStage()
     {
         return [
-            'WAITTING_FIX_STAGE',
             'WAITTING_2ND_TEST',
+            'WAITTING_FIX_STAGE',
+        ];
+    }
+
+    public function getAssignableStatusesWhenDeployingStablerc()
+    {
+        return [
+            'WAITTING_REGRESSION',
+            'WAITTING_FIX_STABLERC',
         ];
     }
 
@@ -171,8 +179,8 @@ trait TaskStatus
     {
         return [
             'WAITTING_DEP2STAGE',
-            'WAITTING_FIX_STABLERC',
             'WAITTING_DEP2STABLERC',
+            'WAITTING_FIX_STABLERC',
         ];
     }
     
@@ -242,8 +250,8 @@ trait TaskStatus
     public function getAssignableStatusesWhenDeployingTest()
     {
         return [
-            'WAITTING_FIX_TEST',
             'WAITTING_1ST_TEST',
+            'WAITTING_FIX_TEST',
         ];
     }
 
@@ -272,11 +280,19 @@ trait TaskStatus
         ];
     }
 
+    public function getAssignableStatusesWhenWaittingDep2stablerc()
+    {
+        return [
+            'WAITTING_REGRESSION',
+            'WAITTING_FIX_STABLERC',
+        ];
+    }
+
     public function getAssignableStatusesWhenWaittingDep2stage()
     {
         return [
-            'WAITTING_FIX_STAGE',
             'WAITTING_2ND_TEST',
+            'WAITTING_FIX_STAGE',
         ];
     }
 
@@ -299,8 +315,8 @@ trait TaskStatus
     public function getAssignableStatusesWhenWaittingDep2test()
     {
         return [
-            'WAITTING_FIX_TEST',
             'WAITTING_1ST_TEST',
+            'WAITTING_FIX_TEST',
         ];
     }
 

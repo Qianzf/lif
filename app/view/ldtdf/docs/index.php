@@ -57,11 +57,6 @@
         <td><?= $doc->creator('name') ?></td>
         <td><?= $doc->create_at ?></td>
         <td><?= $doc->update_at ?></td>
-        <td>
-            <a href="/dep/docs/<?= $doc->id ?>/edit">
-                <button><?= L('EDIT') ?></button>
-            </a>
-        </td>
     </tr>
     <?php endforeach ?>
     <?php endif ?>

@@ -7,9 +7,16 @@ use Lif\Mdl\Project;
 
 class Story extends Ctl
 {
+    public function __construct()
+    {
+        share('hide-search-bar', true);
+    }
+
     public function index(StoryModel $story)
     {
-        view('ldtdf/story/index')->withStories($story->list());
+        return view('ldtdf/story/index')
+        ->withStories($story->list())
+        ->share('hide-search-bar', false);
     }
 
     public function list(StoryModel $story)
@@ -45,13 +52,7 @@ class Story extends Ctl
 
     public function edit(StoryModel $story)
     {
-        view('ldtdf/story/edit')
-        ->withStoryEditable($story, true);
-    }
-
-    public function add(StoryModel $story)
-    {
-        view('ldtdf/story/edit')
+        return view('ldtdf/story/edit')
         ->withStoryEditable($story, true);
     }
 

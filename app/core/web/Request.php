@@ -12,9 +12,10 @@ class Request extends Container implements Observable
     protected $name    = 'request';
     protected $route   = null;
     protected $url     = null;
-    protected $type    = null;
+    protected $method  = null;
     protected $headers = null;
     protected $params  = [];
+    protected $gets    = [];
     protected $posts   = [];
     protected $magic   = [];
 
@@ -32,12 +33,12 @@ class Request extends Container implements Observable
 
     public function get(string $key)
     {
-        return $this->params()->$key ?? null;
+        return $this->params($key);
     }
 
     public function updateType()
     {
-        if (('POST' == $this->type) &&
+        if (('POST' == $this->method) &&
             !isset($_GET['__method']) &&
             in_array('__method', array_keys($this->params))
         ) {
@@ -47,7 +48,7 @@ class Request extends Container implements Observable
                 'DELETE',
                 'PATCH'
             ])) {
-                $this->type = $forgeMethod;
+                $this->method = $forgeMethod;
                 unset($this->params['__method']);
             }
         }
@@ -84,13 +85,16 @@ class Request extends Container implements Observable
 
     public function type()
     {
-        if (!$this->type) {
-            $this->type = isset($_SERVER['REQUEST_METHOD'])
-            ? $_SERVER['REQUEST_METHOD']
-            : 'GET';
+        return $this->method();
+    }
+
+    public function method()
+    {
+        if (! $this->method) {
+            $this->method = server('REQUEST_METHOD', 'GET');
         }
 
-        return $this->type;
+        return $this->method;
     }
 
     public function all()
@@ -102,29 +106,33 @@ class Request extends Container implements Observable
     {
         $this->params();
 
-        return is_null($key)
-        ? $this->magic
-        : ($this->magic[$key] ?? null);
+        return is_null($key) ? $this->magic : ($this->magic[$key] ?? null);
     }
 
-    public function params($origin = null, bool $collect = true)
+    public function params(string $key = null)
     {
-        if ($this->params) {
-            return $this->params;
+        if (! $this->params) {
+            $params = $this->parse($_REQUEST);
+
+            $this->params = collect($params);
         }
 
-        $params  = $origin ?? $_REQUEST;
-        $cntType = $_SERVER['CONTENT_TYPE'] ?? 'application/x-www-form-urlencoded';
+        return $key ? $this->params->$key : $this->params;
+    }
 
-        if (false === mb_strpos($cntType, 'multipart/form-data')) {
-            $rawInput = file_get_contents('php://input');
+    public function parse(array $params = []) : array
+    {
+        $type = server('CONTENT_TYPE', 'application/x-www-form-urlencoded');
 
-            if (false !== mb_strpos($cntType, 'application/json')) {
-                $_params = (array) json_decode($rawInput, true);
-            } elseif (false !== mb_strpos($cntType, 'application/xml')) {
-                $_params = (array) xml2arr($rawInput);
+        if (false === mb_strpos($type, 'multipart/form-data')) {
+            $stream = file_get_contents('php://input');
+
+            if (false !== mb_strpos($type, 'application/json')) {
+                $_params = (array) json_decode($stream, true);
+            } elseif (false !== mb_strpos($type, 'application/xml')) {
+                $_params = (array) xml2arr($stream);
             } else {
-                parse_str($rawInput, $_params);
+                parse_str($stream, $_params);
             }
 
             $params = array_merge($_params, $params);
@@ -137,30 +145,25 @@ class Request extends Container implements Observable
             }
         });
 
-        return $this->params = $collect ? collect($params) : $params;
+        return $params;
     }
 
-    public function gets()
+    public function gets() : array
     {
-        $get = $_GET;
-        
-        array_walk($get, function (&$val, $key) use (&$get) {
-            if ('__' === mb_substr($key, 0, 2)) {
-                $this->magic[$key] = $val;
-                unset($get[$key]);
-            }
-        });
-
-        return $get;
-    }
-
-    public function posts()
-    {
-        if ($this->posts) {
-            return $this->posts;
+        if (! $this->gets) {
+            $this->gets = $this->parse($_GET);
         }
 
-        return $this->posts = $this->params($_POST, false);
+        return $this->gets;
+    }
+
+    public function posts() : array
+    {
+        if (! $this->posts) {
+            $this->posts = $this->parse($_POST);
+        }
+
+        return $this->posts;
     }
 
     public function setPost(string $key, $value)

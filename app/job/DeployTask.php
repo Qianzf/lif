@@ -97,7 +97,7 @@ class DeployTask extends \Lif\Core\Abst\Job
                 $this->envStatus     = 'running';
 
                 if ($notMaster) {
-                    $this->commands      = [
+                    $this->commands = [
                         "git pull origin {$task->branch} --no-edit",
                     ];
                 }

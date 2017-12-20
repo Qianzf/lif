@@ -6,9 +6,16 @@ use Lif\Mdl\Bug as BugModel;
 
 class Bug extends Ctl
 {
+    public function __construct()
+    {
+        share('hide-search-bar', true);
+    }
+
     public function index(BugModel $bug)
     {
-        return view('ldtdf/bug/index')->withBugs($bug->all());
+        return view('ldtdf/bug/index')
+        ->withBugs($bug->all())
+        ->share('hide-search-bar', false);
     }
 
     public function info(BugModel $bug)
@@ -56,57 +63,35 @@ class Bug extends Ctl
 
     public function update(BugModel $bug)
     {
-        if ($bug->creator != share('user.id')) {
-            share_error_i18n('UPDATE_PERMISSION_DENIED');
-            redirect($this->route);
-        }
+        $user = share('user.id');
 
-        if (! $bug->alive()) {
-            share_error_i18n('NO_BUG');
-            redirect('/dep/bugs');
-        }
-
-        if (!empty_safe($err = $bug->save($this->request->posts))
-            && is_numeric($err)
-            && ($err >= 0)
-        ) {
-            if ($err > 0) {
-                $status = 'UPDATE_OK';
-                $bug->addTrending('update');
-            } else {
-                $status = 'UPDATED_NOTHING';
+        return $this->responseOnUpdated(
+            $bug,
+            '/dep/bugs',
+            function () use ($bug, $user) {
+                if (!$bug->alive() || $bug->creator != $user) {
+                    return 'UPDATE_PERMISSION_DENIED';
+                }
+            },
+            function () use ($bug, $user) {
+                $bug->addTrending('update', $user);
             }
-        } else {
-            $status = 'UPDATE_FAILED';
-        }
-
-        $err = is_integer($err) ? null : L($err);
-
-        share_error(L($status, $err));
-
-        redirect($this->route);
+        );
     }
 
     public function create(BugModel $bug)
     {
-        $data = $this->request->posts();
+        $user = share('user.id');
 
-        $data['creator'] = share('user.id');
+        $this->request->setPost('creator', $user);
 
-        if (($status = $bug->create($data))
-            && is_integer($status)
-            && ($status > 0)
-        ) {
-            $msg = 'CREATED_SUCCESS';
-            $bug->addTrending('create', $data['creator']);
-        } else {
-            share_error_i18n(L('CREATED_FAILED', L($status)));
-
-            return $this->add($story->setItems($this->request->posts));
-        }
-
-        share_error_i18n($msg);
-
-        return redirect("/dep/bugs/{$status}");
+        return $this->responseOnCreated(
+            $bug,
+            '/dep/bugs/?',
+            null,
+            function () use ($bug, $user) {
+                $bug->addTrending('create', $user);
+            }
+        );
     }
 }

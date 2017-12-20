@@ -320,12 +320,13 @@ input:invalid {
     padding-bottom: 30px;
 }
 .doc-show-content {
-    width: 70%;
+    width: 65%;
     position: absolute;
     right: 0;
     height: auto;
     display: inline-block;
     overflow: hidden;
+    padding-right: 100px;
 }
 .doc-menu-tree dd {
     height: 30px;

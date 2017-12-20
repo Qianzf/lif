@@ -60,7 +60,7 @@ $this->group([
     ], function () {
         $this->get('/', 'index');
         $this->get('list', 'list');
-        $this->get('new', 'add');
+        $this->get('new', 'edit');
         $this->post('new', 'create');
         $this->get('{id}', 'info');
         $this->get('{id}/edit', 'edit');

@@ -29,10 +29,10 @@ if (! fe('csrf_feild')) {
     }
 }
 if (! fe('server')) {
-    function server(string $key = null) {
-        return $key
-        ? ($_SERVER[$key] ?? null)
-        : collect($_SERVER);
+    function server(string $key = null, $val = null) {
+        return (
+            $key ? ($_SERVER[$key] ?? null) : collect($_SERVER)
+        ) ?? $val;
     }
 }
 if (! fe('getallheaders')) {

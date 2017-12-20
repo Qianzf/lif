@@ -20,11 +20,12 @@
     <?php foreach ($tasks as $task): ?>
     <tr>
         <td><?= $task->project('name') ?></td>
-        <td><?= $task->title() ?></td>
         <td>
             <a href="/dep/tasks/<?= $task->id ?>">
-                <button><?= L('DETAILS') ?></button>
+                <?= $task->title() ?>
             </a>
+        </td>
+        <td>
             <a href="/dep/test/regressions/<?= $env->id ?>/<?= $task->id ?>/unpass">
                 <button class="btn-delete"><?= L('SET_UNPASS') ?></button>
             </a>
