@@ -2,22 +2,50 @@
 
 namespace Lif\Ctl\Ldtdf\Tester;
 
-use Lif\Mdl\{Environment, Task};
+use Lif\Mdl\{Environment, Project, Task};
 
 class Regression extends \Lif\Ctl\Ldtdf\Ctl
 {
-    public function setUnpass(Environment $env)
+    public function setEnvPass(Environment $env)
+    {
+        $env->setRegressionPass();
+
+        return redirect("/dep/test/regressions");
+    }
+
+    public function setProjectPass(Project $project)
+    {
+        $project->setRegressionPass();
+
+        return redirect("/dep/test/regressions");
+    }
+
+    public function setEnvUnpass(Environment $env)
     {
         $env->setRegressionUnpass();
 
         return redirect("/dep/test/regressions");
     }
 
-    public function setTaskUnpass(Environment $env, Task $task)
+    public function setProjectUnpass(Project $project)
+    {
+        $project->setRegressionUnpass();
+
+        return redirect("/dep/test/regressions");
+    }
+
+    public function setEnvTaskUnpass(Environment $env, Task $task)
     {
         $env->setRegressionUnpass($task);
 
-        return redirect("/dep/test/regressions/{$env->id}");
+        return redirect("/dep/test/regressions/env/{$env->id}");
+    }
+
+    public function setProjectTaskUnpass(Project $project, Task $task)
+    {
+        $project->setRegressionUnpass($task);
+
+        return redirect("/dep/test/regressions/project/{$project->id}");
     }
 
     public function startTest(Environment $env)
@@ -27,17 +55,28 @@ class Regression extends \Lif\Ctl\Ldtdf\Ctl
         return redirect("/dep/test/regressions");
     }
 
-    public function index(Task $task)
+    public function index(Environment $env, Project $project)
     {
         return view('ldtdf/tester/regressions')
-        ->withRegressions($task->getRegressions());
+        ->withEnvsProjects(
+            $env->getWebRegressions(),
+            $project->getAppRegressions()
+        );
     }
 
-    public function relateTasks(Environment $env)
+    public function relateTasksOfEnv(Environment $env)
     {
-        return view('ldtdf/tester/regression')
+        return view('ldtdf/tester/regression/env')
         ->withEnvTasks($env, $env->tasks([
             'status' => $env->getRegressionableStatus(),
+        ]));
+    }
+
+    public function relateTasksOfProject(Project $project)
+    {
+        return view('ldtdf/tester/regression/project')
+        ->withProjectTasks($project, $project->tasks([
+            'status' => $project->getRegressionableStatus(),
         ]));
     }
 }

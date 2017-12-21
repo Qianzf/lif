@@ -121,6 +121,10 @@ input:focus {
     background-color: forestgreen;
     color: #eeeeee;
 }
+.btn-ok {
+    background-color: green;
+    color: white;
+}
 .btn-trending {
     background-color: darkseagreen;
     color: white;

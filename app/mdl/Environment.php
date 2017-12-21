@@ -40,6 +40,13 @@ class Environment extends Mdl
         return '-';
     }
 
+    // For App only now
+    public function setRegressionPass()
+    {
+        // TODO
+    }
+
+    // For App only now
     public function setRegressionUnpass(Task $task = null)
     {
         if (! $this->alive()) {
@@ -72,7 +79,7 @@ class Environment extends Mdl
             );
         }
 
-        return $query->update('status', 'waitting_newfix_stablerc') >= 0;
+        return ($query->update('status', 'waitting_newfix_stablerc') >= 0);
     }
 
     public function startRegressionTest()
@@ -103,7 +110,7 @@ class Environment extends Mdl
         ];
     }
 
-    public function getRegressions(bool $model = true)
+    public function getWebRegressions(bool $model = true)
     {
         $regressions = db()
         ->table($this->getTable(), 'e')

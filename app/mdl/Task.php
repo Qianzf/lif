@@ -26,23 +26,6 @@ class Task extends Mdl
         'origin_id'   => 'int|min:1',
     ];
 
-    public function getRegressions(bool $model = true)
-    {
-        return $this
-        ->whereStatus($this->getRegressionableStatus())
-        ->all($model);
-    }
-
-    public function getRegressionableStatus()
-    {
-        return [
-            'WAITTING_REGRESSION',
-            'waitting_regression',
-            'REGRESSION_TESTING',
-            'regression_testing',
-        ];
-    }
-
     public function isForWeb()
     {
         return (
@@ -171,15 +154,19 @@ class Task extends Mdl
 
     public function getDefaultBranch(string $branch = null)
     {
-        if ($branch = trim($branch)) {
-            return $branch;
+        if ($this->isForWeb()) {
+            if ($branch = trim($branch)) {
+                return $branch;
+            }
+
+            if ($this->alive()) {
+                $flag = substr($this->origin_type, 0, 1);
+
+                return "{$flag}{$this->origin_id}t{$this->id}";
+            }
         }
 
-        if ($this->alive()) {
-            $flag = substr($this->origin_type, 0, 1);
-
-            return "{$flag}{$this->origin_id}t{$this->id}";
-        }
+        return null;
     }
 
     // What actions can given user role do

@@ -1,32 +1,34 @@
 <?= $this->layout('main') ?>
 <?= $this->title([L('WAITTING_REGRESSION_LIST'), L('LDTDFMS')]) ?>
 <?= $this->section('back2list', [
-    'model' => $env,
-    'key'   => 'REGRESSION_TEST_ENV_TASK',
+    'model' => $project,
+    'key'   => 'REGRESSION_TEST_PROJECT_TASK',
     'action' => 'VIEW',
     'route' => '/dep/test/regressions',
 ]) ?>
 
 <table>
-    <caption><?= $env->host ?></caption>
+    <caption><?= $project->name ?></caption>
 
     <tr>
-        <th><?= L('PROJECT') ?></th>
+        <th><?= L('ID') ?></th>
+        <th><?= L('PROJECT_TYPE') ?></th>
         <th><?= L('TASK') ?></th>
         <th><?= L('OPERATIONS') ?></th>
     </tr>
 
     <?php if (isset($tasks) && iteratable($tasks)): ?>
-    <?php foreach ($tasks as $task): ?>
+    <?php foreach ($tasks as $key => $task): ?>
     <tr>
-        <td><?= $task->project('name') ?></td>
+        <td><?= $key+1 ?></td>
+        <td><?= $project->type ?></td>
         <td>
             <a href="/dep/tasks/<?= $task->id ?>">
                 <?= $task->title() ?>
             </a>
         </td>
         <td>
-            <a href="/dep/test/regressions/<?= $env->id ?>/<?= $task->id ?>/unpass">
+            <a href="/dep/test/regressions/project/<?= $project->id ?>/unpass/<?= $task->id ?>">
                 <button class="btn-delete"><?= L('SET_UNPASS') ?></button>
             </a>
         </td>

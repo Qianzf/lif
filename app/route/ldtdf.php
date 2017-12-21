@@ -156,10 +156,15 @@ $this->group([
             'ctl' => 'Regression',
         ], function () {
             $this->get('/', 'index');
-            $this->get('{id}', 'relateTasks');
+            $this->get('env/{id}', 'relateTasksofEnv');
+            $this->get('project/{id}', 'relateTasksOfProject');
             $this->get('{id}/start', 'startTest');
-            $this->get('{env}/unpass', 'setUnpass');
-            $this->get('{env}/{task}/unpass', 'setTaskUnpass');
+            $this->get('env/{env}/pass', 'setEnvPass');
+            $this->get('env/{env}/unpass', 'setEnvUnpass');
+            $this->get('project/{project}/pass', 'setProjectPass');
+            $this->get('project/{project}/unpass', 'setProjectUnpass');
+            $this->get('env/{env}/unpass/{task}', 'setEnvTaskUnpass');
+            $this->get('project/{project}/unpass/{task}', 'setProjectTaskUnpass');
         });
     });
 

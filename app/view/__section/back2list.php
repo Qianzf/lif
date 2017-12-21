@@ -13,7 +13,7 @@
     <?= $title ?>
     
     <?= $this->section('back_to', [
-        'route' => ($route ?? null),
+        'route' => ($route ?? '/dep'),
     ]) ?>
 
     <?php if (isset($buttons) && iteratable($buttons)): ?>

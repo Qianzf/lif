@@ -170,7 +170,7 @@ class AddTaskStatusData extends Dit
                 [
                     'key' => 'fixing_stablercback',
                     'val' => '解决中：正在解决回归测试失败的问题',
-                    'assignable' => 'yes',
+                    'assignable' => 'no',
                 ],
                 [
                     'key' => 'waitting_dep2prod',
