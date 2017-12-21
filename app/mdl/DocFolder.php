@@ -34,7 +34,16 @@ class DocFolder extends ModelBase
             $this->whereTitle('like', "%{$search}%");
         }
 
-        return $this->where($where)->get();
+        if ($creator = ($querys['creator'] ?? false)) {
+            $this->whereCreator($creator);
+        }
+
+        return $this
+        ->where($where)
+        ->sort([
+            'create_at' => ($querys['sort'] ?? 'desc')
+        ])
+        ->get();
     }
 
     public function parent(string $key = null)

@@ -18,15 +18,28 @@ class Story extends Ctl
         $where  = [];
 
         legal_or($querys, [
-            'search' => ['string', null],
+            'search'  => ['string', null],
+            'creator' => ['int|min:1', null],
+            'sort'    => ['ciin:desc,asc', 'desc'],
         ]);
 
         if ($search = $querys['search']) {
             $where[] = ['title', 'like', "%{$search}%"];
         }
+        if ($creator = $querys['creator']) {
+            $where[] = ['creator', $creator];
+        }
+
+        $users = $story->getAllUsers();
 
         return view('ldtdf/story/index')
-        ->withStories($story->list(null, $where))
+        ->withStoriesUsers(
+            $story->list(null, $where, true, $querys['sort']),
+            array_combine(
+                array_column($users, 'id'),
+                array_column($users, 'name')
+            )
+        )
         ->share('hide-search-bar', false);
     }
 

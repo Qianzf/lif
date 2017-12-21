@@ -10,19 +10,30 @@
     </dd>
 </dl>
 
-<?php if (isset($stories) && iteratable($stories)): ?>
 <table>
     <caption><?= L('STORY_LIST') ?></caption>
 
     <tr>
-        <th><?= L('ID') ?></th>
+        <th
+        class="time-sort"
+        data-sort="<?= $_GET['sort'] ?? 'desc' ?>">
+            <?= L('CREATE_TIME') ?>
+        </th>
         <th><?= L('TITLE') ?></th>
-        <th><?= L('CREATOR') ?></th>
-        <th><?= L('TIME') ?></th>
+        <th>
+            <?= L('CREATOR') ?>
+            <?= $this->section('filter/common', [
+                'name'   => 'creator',
+                'list'   => $users,
+                'isUser' => true,
+            ]) ?>
+        </th>
     </tr>
+
+    <?php if (isset($stories) && iteratable($stories)): ?>
     <?php foreach ($stories as $story): ?>
     <tr>
-        <td><?= $story->id ?></td>
+        <td><?= $story->create_at ?></td>
         <td>
             <a href="/dep/stories/<?= $story->id ?>">
                 <?= $story->title ?>
@@ -33,8 +44,9 @@
                 <?= $story->creator('name') ?>
             </a>
         </td>
-        <td><?= $story->create_at ?></td>
     </tr>
     <?php endforeach ?>
+    <?php endif ?>
 </table>
-<?php endif ?>
+
+<?= $this->section('pagebar') ?>

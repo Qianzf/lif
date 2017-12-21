@@ -8,6 +8,7 @@ class Tool extends CtlBase
 {
     public function index()
     {
-        return view('ldtdf/tool/index');
+        return view('ldtdf/tool/index')
+        ->share('hide-search-bar', true);
     }
 }

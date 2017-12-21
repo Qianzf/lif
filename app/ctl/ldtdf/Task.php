@@ -153,31 +153,107 @@ class Task extends Ctl
         return redirect($this->route);
     }
 
+    public function todo(TaskModel $task, User $user)
+    {
+        if (! ($user = $user->find(share('user.id')))) {
+            share_error_i18n('NO_USER');
+
+            return redirect($this->route);
+        }
+
+        $task->current = $user->id;
+
+        return $this->index($task, $user);
+    }
+
     public function index(TaskModel $task, User $user)
     {
         $querys = $this->request->gets();
 
         legal_or($querys, [
-            'user'   => ['int|min:1', null],
-            'search' => ['string', null],
+            'origin'   => ['ciin:story,bug', null],
+            'project'  => ['int|min:1', null],
+            'creator'  => ['int|min:1', null],
+            'search'   => ['string', null],
+            'position' => ['int|min:1', null],
+            'status'   => ['string|notin:-1', null],
+            'sort'     => ['ciin:asc,desc', 'desc'],
         ]);
 
-        if ($uid = $querys['user']) {
-            $task = $task->whereCreator($uid);
+        $displayPosition = $displayMenu = true;
+        $hasSearchResult = $tasks = false;
+
+        if ($user->alive()) {
+            $task->whereCurrent($user->id);
+            $displayPosition = $displayMenu =false;
+        }
+
+        if ($search = $querys['search']) {
+            // TODO
+            // fulltext search
+            if ($bugs = $task->searchOriginIdsByTitle('bug', $search)) {
+                $hasSearchResult = true;
+                $task->or([
+                    ['origin_type' => 'bug'],
+                    ['origin_id'   => $bugs],
+                ]);
+            }
+            if ($stories = $task->searchOriginIdsByTitle('story', $search)) {
+                $hasSearchResult = true;
+                $task->or([
+                    ['origin_type' => 'story'],
+                    ['origin_id'   => $stories],
+                ]);
+            }
+        } else {
+            $hasSearchResult = true;
+        }
+
+        if ($hasSearchResult) {
+            if ($origin = $querys['origin']) {
+                $task->where('origin_type', strtolower($origin));
+            }
+            if ($project = $querys['project']) {
+                $task->whereProject($project);
+            }
+            if ($creator = $querys['creator']) {
+                $task->whereCreator($creator);
+            }
+            if ($current = $querys['position']) {
+                $task->whereCurrent($current);
+            }
+            if ($status = $querys['status']) {
+                $task->where(
+                    db()->native('LOWER(`status`)'),
+                    strtolower($status)
+                );
+            }
+
+            $tasks = $task
+            ->sort([
+                'create_at' => $querys['sort']
+            ])
+            ->get();
         }
         
-        // if ($search = $querys['search']) {
-        //     // TODO
-        //     // fulltext search
-        //     $task = $task->where('title', 'like', "%{$search}%");
-        // }
+        $users    = $user->list(['id', 'name'], null, false);
+        $projects = $task->getAllProjects();
 
-        $tasks = $task->get();
-
-        view('ldtdf/task/index')->withRecordsTasksUsers(
+        return view('ldtdf/task/index')
+        ->withStatusRecordsTasksProjectsUsersDisplaypositionDisplaymenu(
+            $task->getAllStatus(),
             $task->count(),
             $tasks,
-            $user->list()
+            array_combine(
+                array_column($projects, 'id'),
+                array_column($projects, 'name')
+            ),
+            array_combine(
+                array_column($users, 'id'),
+                array_column($users, 'name')
+            ),
+            $displayPosition,
+            $displayMenu
         );
     }
 

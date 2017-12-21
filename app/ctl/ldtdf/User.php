@@ -2,21 +2,11 @@
 
 namespace Lif\Ctl\Ldtdf;
 
-use Lif\Mdl\{User as UserModel, Trending};
+use Lif\Mdl\{User as UserModel, Trending, Task as TaskMdl};
+use Lif\Ctl\Ldtdf\Task as TaskCtl;
 
 class User extends Ctl
 {
-    public function todo(UserModel $user)
-    {
-        if (! ($user = $user->find(share('user.id')))) {
-            share_error_i18n('NO_USER');
-
-            return redirect($this->route);
-        }
-
-        return view('ldtdf/user/todo')->withTasks($user->getCurrentTasks());
-    }
-
     public function list(UserModel $user)
     {
         $where[] = ['role', '!=', 'admin'];
@@ -77,7 +67,8 @@ class User extends Ctl
             $trendings,
             $pages,
             $records
-        );
+        )
+        ->share('hide-search-bar', true);
     }
 
     public function profile($uid)

@@ -14,7 +14,9 @@
     <caption><?= L('MY_UPLOAD') ?></caption>
 
     <tr>
-        <th><?= L('TIME') ?></th>
+        <th
+        class="time-sort"
+        data-sort="<?= $_GET['sort'] ?? 'desc' ?>"><?= L('UPLOAD_TIME') ?></th>
         <th><?= L('FILENAME') ?></th>
         <th><?= L('TITLE') ?></th>
         <th><?= L('OPERATIONS') ?></th>

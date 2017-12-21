@@ -9,10 +9,19 @@ class Upload extends CtlBase
 {
     private $qiniu = null;
 
-    public function list(UploadModel $upload)
+    public function index(UploadModel $upload)
     {
+        $querys = $this->request->gets();
+
+        legal_or($querys, [
+            'search' => ['string', null],
+            'sort'   => ['ciin:desc,asc', 'desc'],
+        ]);
+
         return view('ldtdf/tool/upload/index')
-        ->withUploads($upload->all());
+        ->withUploads($upload->list(null, [
+            'user' => share('user.id'),
+        ], $querys));
     }
 
     public function edit(UploadModel $upload)

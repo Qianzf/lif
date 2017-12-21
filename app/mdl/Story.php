@@ -28,10 +28,20 @@ class Story extends ModelBase
     protected $unreadable  = [
     ];
 
+    public function getAllUsers()
+    {
+        return db()
+        ->table('user')
+        ->select('id', 'name')
+        ->whereStatus(1)
+        ->get();
+    }
+
     public function list(
         $selects = null,
         array $where = null,
-        bool $model = true
+        bool $model = true,
+        string $sort = 'desc'
     )
     {
         $selects = $selects ?? '*';
@@ -45,7 +55,7 @@ class Story extends ModelBase
 
         return $query
         ->sort([
-            'create_at' => 'desc',
+            'create_at' => $sort,
         ])
         ->limit(0, 20)
         ->all($model);

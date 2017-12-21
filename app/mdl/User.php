@@ -46,7 +46,7 @@ class User extends Mdl
             $query = $query->where($where);
         }
 
-        return $query->limit(0, 20)->all($model);
+        return $query->all($model);
     }
 
     public function login(string $account)

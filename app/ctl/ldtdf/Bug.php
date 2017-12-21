@@ -17,15 +17,33 @@ class Bug extends Ctl
         $where  = [];
 
         legal_or($querys, [
-            'search' => ['string', null],
+            'search'  => ['string', null],
+            'creator' => ['int|min:1', null],
+            'sort'    => ['ciin:desc,asc', 'desc'],
+            'os'      => ['string', null],
         ]);
 
         if ($search = $querys['search']) {
             $where[] = ['title', 'like', "%{$search}%"];
         }
+        if ($creator = $querys['creator']) {
+            $where[] = ['creator', $creator];
+        }
+        if ($os = $querys['os']) {
+            $where[] = [db()->native('LOWER(`os`)'), strtolower($os)];
+        }
+
+        $users = $bug->getAllUsers();
 
         return view('ldtdf/bug/index')
-        ->withBugs($bug->list(null, $where))
+        ->withBugsUsersOses(
+            $bug->list(null, $where, true, $querys['sort']),
+            array_combine(
+                array_column($users, 'id'),
+                array_column($users, 'name')
+            ),
+            $this->getOses()
+        )
         ->share('hide-search-bar', false);
     }
 

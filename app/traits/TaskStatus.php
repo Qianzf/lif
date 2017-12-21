@@ -6,17 +6,19 @@ use Lif\Core\Storage\SQL\Builder;
 
 trait TaskStatus
 {
-    public function getAllStatus()
+    public function getAllStatus(string $assignable = null)
     {
         $status = db()
         ->table('task_status')
         ->select(function () {
             return 'UPPER(`key`) AS `status`';
-        })
-        ->where('assignable', 'yes')
-        ->get();
+        });
 
-        return array_column($status, 'status');
+        if ($assignable) {
+            $status = $status->where('assignable', $assignable);
+        }
+
+        return array_column($status->get(), 'status');
     }
 
     public function getAssignableUsersWhenEnvConfirmed($query)

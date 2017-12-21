@@ -22,6 +22,15 @@ class Bug extends Mdl
         'contact' => 'string',
     ];
 
+    public function getAllUsers()
+    {
+        return db()
+        ->table('user')
+        ->select('id', 'name')
+        ->whereStatus(1)
+        ->get();
+    }
+
     public function creator(string $key = null)
     {
         if ($bug = $this->belongsTo(
@@ -88,7 +97,8 @@ class Bug extends Mdl
     public function list(
         $selects = null,
         array $where = null,
-        bool $model = true
+        bool $model = true,
+        string $sort = 'desc'
     )
     {
         $selects = $selects ?? '*';
@@ -102,7 +112,7 @@ class Bug extends Mdl
 
         return $query
         ->sort([
-            'create_at' => 'desc',
+            'create_at' => $sort,
         ])
         ->limit(0, 20)
         ->all($model);

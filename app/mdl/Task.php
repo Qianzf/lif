@@ -26,6 +26,28 @@ class Task extends Mdl
         'origin_id'   => 'int|min:1',
     ];
 
+    public function searchOriginIdsByTitle(
+        string $origin,
+        string $keyword
+    )
+    {
+        $ids = db()
+        ->table($origin)
+        ->select('id')
+        ->whereTitle('like', "%{$keyword}%")
+        ->get();
+
+        return $ids ? array_column($ids, 'id') : [];
+    }
+
+    public function getAllProjects()
+    {
+        return db()
+        ->table('project')
+        ->select('name', 'id')
+        ->get();
+    }
+
     public function isForWeb()
     {
         return (

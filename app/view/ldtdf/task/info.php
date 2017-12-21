@@ -102,6 +102,7 @@
     <small><?= L('TASK_STATUS') ?></small>
     <span class="text-info">]</span>
     <button class="btn-info"><?= L("STATUS_{$task->status}") ?></button>
+    <i><small>(<?= $task->current('name') ?>)</small></i>
 </p>
 
 <p>

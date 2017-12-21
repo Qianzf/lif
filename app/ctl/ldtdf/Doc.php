@@ -41,23 +41,32 @@ class Doc extends Ctl
         dd($doc->ofUser(share('user.id')));
     }
 
-    public function index(DocFolder $folder, DocModel $doc)
+    public function index(DocFolder $folder, DocModel $doc, User $user)
     {
         $querys = $this->request->gets();
 
         legal_or($querys, [
-            'search' => ['string', null],
+            'search'  => ['string', null],
+            'creator' => ['int|min:1', null],
+            'sort'    => ['ciin:desc,asc', 'desc'],
         ]);
 
+        $users = $user->list(['id', 'name'], null, false);
+
         view('ldtdf/docs/index')
-        ->withFoldersDocs(
+        ->withFoldersDocsUsers(
             $folder->list([
                 'parent' => 0,
             ], $querys),
 
             $doc->list([
                 'folder' => 0,
-            ], $querys)
+            ], $querys),
+
+            array_combine(
+                array_column($users, 'id'),
+                array_column($users, 'name')
+            )
         )
         ->share('hide-search-bar', false);
     }

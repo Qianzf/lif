@@ -349,3 +349,7 @@ input:invalid {
     background-color: #f4f3f4;
     color: black;   
 }
+.pointer {
+    cursor: hand;
+    cursor: pointer;
+}

@@ -70,7 +70,7 @@ $(window).ready(function () {
     })
     $('.query-filters').change(function () {
         if (this.value) {
-            reloadUseQuery(this.name, this.value)
+            reloadWithQuerys(this.name, this.value)
         }
     })
 
@@ -92,6 +92,18 @@ $(window).ready(function () {
         show.show()
 
         removeRequired()
+    })
+
+    $('.time-sort').on({
+        mouseover: function () {
+            $(this).addClass('pointer')
+        },
+        click: function () {
+            let sort = ('desc' == this.dataset.sort)
+            ? 'asc' : 'desc'
+
+            reloadWithQuerys('sort', sort)
+        }
     })
 
     hasErrorOrNot()
@@ -155,7 +167,7 @@ function tryReloadWithNewPage(page)
             case '_prior' : {
                 let currentPage = getCurrentQueryPage()
 
-                page = ((1 < currentPage) && (currentPage < pageCount))
+                page = ((1 < currentPage) && (currentPage <= pageCount))
                 ? (currentPage - 1) : 1
             } break
             case '_end' : {

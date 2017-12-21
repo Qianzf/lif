@@ -23,4 +23,31 @@ class Upload extends ModelBase
     // protected items that cann't read
     protected $unreadable  = [
     ];
+
+    public function list(
+        $selects = null,
+        array $where = null,
+        array $querys = null
+    )
+    {
+        if (! $selects) {
+            $selects = '*';
+        }
+
+        if ($where) {
+            $this->where($where);
+        }
+        if ($search = ($querys['search'] ?? false)) {
+            $this->whereFilename('like', "%{$search}%");
+        }
+
+        $sort = $querys['sort'] ?? 'desc';
+
+        return $this
+        ->select($selects)
+        ->sort([
+            'create_at' => $sort,
+        ])
+        ->get();
+    }
 }

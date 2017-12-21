@@ -329,4 +329,6 @@ return [
     'LOCATION' => '位置',
     'ACCESSIBLE' => '可访问',
     'CONFIG' => '配置',
+    'FLOW' => '流',
+    'POSITION' => '位置',
 ];

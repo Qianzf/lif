@@ -20,7 +20,7 @@ $this->group([
 ], function () {
     $this->get('/', 'LDTDF@index');
     $this->get('trending', 'User@trending');
-    $this->get('todo', 'User@todo');
+    $this->get('todo', 'Task@todo');
 
     $this->group([
         'prefix' => 'tool',
@@ -31,7 +31,7 @@ $this->group([
             'prefix' => 'uploads',
             'ctl' => 'Upload',
         ], function () {
-            $this->get('/', 'list');
+            $this->get('/', 'index');
             $this->get('new', 'upload');
             $this->post('new', 'add');
             $this->get('{id}', 'edit');

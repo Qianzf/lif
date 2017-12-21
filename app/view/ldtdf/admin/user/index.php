@@ -30,8 +30,8 @@
             <?= $this->section('filter/common', [
                 'name' => 'status',
                 'list' => [
-                    'NORMAL'  => '1',
-                    'DISABLE' => '0',
+                    0 => 'DISABLE',
+                    1 => 'NORMAL',
                 ],
             ]) ?>
         </th>

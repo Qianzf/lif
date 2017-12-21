@@ -3,7 +3,7 @@
 <span class="search-bar <?= $display ?>">
     <label>
         <input type="text" name="search"
-        value="<?= ($keyword ?? '') ?>" required
+        value="<?= ($keyword ?? ($_GET['search'] ?? null)) ?>" required
         placeholder="<?= L('PROVIDE_KEYWORDS') ?>">
     </label>
     <button name="clear-search-btn">
