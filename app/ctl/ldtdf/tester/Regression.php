@@ -27,10 +27,10 @@ class Regression extends \Lif\Ctl\Ldtdf\Ctl
         return redirect("/dep/test/regressions");
     }
 
-    public function index(Environment $env)
+    public function index(Task $task)
     {
         return view('ldtdf/tester/regressions')
-        ->withRegressions($env->getRegressions());
+        ->withRegressions($task->getRegressions());
     }
 
     public function relateTasks(Environment $env)

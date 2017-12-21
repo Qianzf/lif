@@ -26,6 +26,23 @@ class Task extends Mdl
         'origin_id'   => 'int|min:1',
     ];
 
+    public function getRegressions(bool $model = true)
+    {
+        return $this
+        ->whereStatus($this->getRegressionableStatus())
+        ->all($model);
+    }
+
+    public function getRegressionableStatus()
+    {
+        return [
+            'WAITTING_REGRESSION',
+            'waitting_regression',
+            'REGRESSION_TESTING',
+            'regression_testing',
+        ];
+    }
+
     public function isForWeb()
     {
         return (
@@ -108,12 +125,18 @@ class Task extends Mdl
         $this->status  = strtolower($params['action']);
         $notes         = ($params['assign_notes'] ?? null);
 
-        if ($deploy = in_array($this->status, [
-            'waitting_dep2test',
-            'waitting_dep2stage',
-            'waitting_dep2stablerc',
-            'waitting_dep2prod',
-        ])) {
+        if ($deploy = (
+            in_array($this->status, [
+                'waitting_dep2test',
+                'waitting_dep2stage',
+                'waitting_dep2stablerc',
+                'waitting_dep2prod',
+            ]) && (
+                ($next = model(User::class, $params['assign_to']))
+                && $next->alive()
+                && ('ops' == strtolower($next->role))
+            )
+        )) {
             if (('yes' == ($this->manually = ($params['manually'] ?? 'no')))) {
                 $this->deploy = $notes;
             }
@@ -160,9 +183,9 @@ class Task extends Mdl
     }
 
     // What actions can given user role do
-    public function getActionsOfRole(int $user)
+    public function getActionsOfRole($user = null)
     {
-        if (is_null($user)) {
+        if (is_null($user) || (!ispint($user) && !is_object($user))) {
             return array_column(
                 db()
                 ->table('task_status')
@@ -173,7 +196,8 @@ class Task extends Mdl
             );
         }
 
-        $role    = ucfirst(model(User::class, $user)->role);
+        $user    = ispint($user) ? model(User::class, $user) : $user;
+        $role    = ucfirst($user->role);
         $handler = "getActionsOfRole{$role}";
         
         return $this->$handler();
@@ -252,11 +276,11 @@ class Task extends Mdl
 
     public function getAssignableStatuses()
     {
-        $status = underline2camelcase(strtolower($this->status));
-        $taskStatusHandler = "getAssignableStatusesWhen{$status}";
+        $status  = underline2camelcase(strtolower($this->status));
+        $handler = "getAssignableStatusesWhen{$status}";
 
-        $taskStatusHandler = method_exists($this, $taskStatusHandler)
-        ? $taskStatusHandler : 'getAllStatus';
+        $taskStatusHandler = method_exists($this, $handler)
+        ? $handler : 'getAllStatus';
 
         return $this->$taskStatusHandler();
     }
@@ -375,6 +399,22 @@ class Task extends Mdl
         }
 
         excp('Missing user id.');
+    }
+
+    public function canAssignTo(string $status, int $user)
+    {
+        if (($user = model(User::class, $user)) && $user->alive()) {
+            if (('dev' == strtolower($user->role)) && (! $this->isForWeb())) {
+                return true;
+            }
+
+            return in_array(
+                strtoupper($status),
+                $this->getActionsOfRole($user)
+            );
+        }
+
+        return false;
     }
 
     public function canBeAssignedBy(int $user)

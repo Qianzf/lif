@@ -236,13 +236,9 @@ trait TaskStatus
 
     public function getAssignableStatusesWhenTesting1st()
     {
-        return $this->isForWeb()
-        ? [
+        return [
             'WAITTING_DEP2STAGE',
             'WAITTING_1ST_TEST',
-            'TEST_BACK2DEV',
-        ] : [
-            'WAITTING_DEP2STAGE',
             'TEST_BACK2DEV',
         ];
     }
@@ -307,8 +303,9 @@ trait TaskStatus
     public function getAssignableStatusesWhenWaitting1stTest()
     {
         return [
-            'TEST_BACK2DEV',
             'WAITTING_DEP2STAGE',
+            'TEST_BACK2DEV',
+            'WAITTING_1ST_TEST',
         ];
     }
 
@@ -322,8 +319,13 @@ trait TaskStatus
 
     public function getAssignableStatusesWhenDeving()
     {
-        return [
+        return $this->isForWeb()
+        ? [
             'WAITTING_DEP2TEST',
+            'WAITTING_DEV',
+        ]
+        : [
+            'WAITTING_1ST_TEST',
             'WAITTING_DEV',
         ];
     }
@@ -336,6 +338,7 @@ trait TaskStatus
             'WAITTING_DEV',
         ] : [
             'WAITTING_1ST_TEST',
+            'WAITTING_DEV',
         ];
     }
 

@@ -136,10 +136,7 @@ class Task extends Ctl
             'branch'       => 'when:dependency=yes|string|notin:0',
             'manually'     => 'when:dependency=yes|need|ciin:yes,no',
             'assign_notes' => 'when:manually=yes|string',
-        ])) || !in_array(
-            $data['action'],
-            $task->getActionsOfRole($data['assign_to'])
-        )) {
+        ])) || !$task->canAssignTo($data['action'], $data['assign_to'])) {
             share_error_i18n(
                 (true === $err) ? 'CANNT_ASSIGN_ACTION2ROLE' : $err
             );
