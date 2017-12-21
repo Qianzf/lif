@@ -22,17 +22,17 @@ class UpdateTaskBranch extends \Lif\Core\Abst\Job
         if ($task = db()
             ->table('task', 't')
             ->leftJoin(['project', 'p'], 't.project', 'p.id')
-            ->select('t.id', 't.env', 'p.token')
+            ->select('t.id', 't.env', 't.status', 'p.token')
             ->where('t.env', '>', 0)
             ->where([
                 't.branch' => $branch,
                 'p.url'    => $this->url,
-                // 'status'   => [
-                // ],
+                'p.type'   => 'web',
             ])
             ->first()
         ) {
             if ((($task['token'] ?? null) == $this->token)
+                && $this->updatableTaskStatus($task['status'] ?? null)
                 && ($env = ($task['env'] ?? null))
                 && ($env = model(\Lif\Mdl\Environment::class, $env))
                 && $env->alive()
@@ -56,15 +56,13 @@ class UpdateTaskBranch extends \Lif\Core\Abst\Job
                     "git pull origin {$branch} --no-edit"
                 ]);
 
-                $status = (0 == $res['num'])
-                ? 'UPDATE_TASK_BRANCH_SUCCESS'
-                : 'UPDATE_TASK_BRANCH_FAILED';
+                $status = (0 == $res['num']) ? 'SUCCESS' : 'FAILED';
 
                 db()->table('trending')->insert([
                     'at'        => date('Y-m-d H:i:s'),
                     'user'      => $user,
                     'action'    => 'update_branch',
-                    'ref_state' => $status,
+                    'ref_state' => "UPDATE_TASK_BRANCH_{$status}",
                     'ref_type'  => 'task',
                     'ref_id'    => $task['id'],
                     'notes'     => $err,
@@ -73,6 +71,30 @@ class UpdateTaskBranch extends \Lif\Core\Abst\Job
         }
 
         return true;
+    }
+
+    public function updatableTaskStatus(string $status = null)
+    {
+        if (! $status) {
+            return false;
+        }
+
+        // TODO
+        // Define updatable task status
+        return true;
+
+        return in_array(strtolower($status), [
+            'env_confirmed',
+            'fixing_prod',
+            'fixing_stablerc',
+            'fixing_stablercback',
+            'fixing_stage',
+            'fixing_stageback',
+            'fixing_test',
+            'fixing_testback',
+            'waitting_1st_test',
+            'waitting_2nd_test',
+        ]);
     }
 
     public function findOneOperator()
