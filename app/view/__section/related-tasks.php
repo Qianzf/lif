@@ -10,7 +10,7 @@
         <li>
             <a href="/dep/tasks/<?= $task->id ?>">
                 T<?= $task->id ?>:
-                <?= $task->project()->name ?>
+                <?= $task->project('name') ?>
             </a>
         </li>
         <?php endforeach ?>

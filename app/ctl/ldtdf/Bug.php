@@ -13,8 +13,19 @@ class Bug extends Ctl
 
     public function index(BugModel $bug)
     {
+        $querys = $this->request->gets();
+        $where  = [];
+
+        legal_or($querys, [
+            'search' => ['string', null],
+        ]);
+
+        if ($search = $querys['search']) {
+            $where[] = ['title', 'like', "%{$search}%"];
+        }
+
         return view('ldtdf/bug/index')
-        ->withBugs($bug->all())
+        ->withBugs($bug->list(null, $where))
         ->share('hide-search-bar', false);
     }
 

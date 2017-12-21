@@ -14,8 +14,19 @@ class Story extends Ctl
 
     public function index(StoryModel $story)
     {
+        $querys = $this->request->gets();
+        $where  = [];
+
+        legal_or($querys, [
+            'search' => ['string', null],
+        ]);
+
+        if ($search = $querys['search']) {
+            $where[] = ['title', 'like', "%{$search}%"];
+        }
+
         return view('ldtdf/story/index')
-        ->withStories($story->list())
+        ->withStories($story->list(null, $where))
         ->share('hide-search-bar', false);
     }
 

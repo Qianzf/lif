@@ -155,14 +155,22 @@ class Task extends Ctl
 
     public function index(TaskModel $task, User $user)
     {
-        $querys = $this->request->all();
+        $querys = $this->request->gets();
+
         legal_or($querys, [
-            'user' => ['int|min:1', null],
+            'user'   => ['int|min:1', null],
+            'search' => ['string', null],
         ]);
 
         if ($uid = $querys['user']) {
             $task = $task->whereCreator($uid);
         }
+        
+        // if ($search = $querys['search']) {
+        //     // TODO
+        //     // fulltext search
+        //     $task = $task->where('title', 'like', "%{$search}%");
+        // }
 
         $tasks = $task->get();
 
@@ -264,10 +272,10 @@ class Task extends Ctl
             return redirect(share('url_previous'));
         }
 
-        $querys = $this->request->gets;
+        $querys = $this->request->gets();
 
         legal_or($querys, [
-            'trending' => ['ciin:asc,desc', 'desc']
+            'trending' => ['ciin:asc,desc', 'desc'],
         ]);
 
         $user        = share('user.id');

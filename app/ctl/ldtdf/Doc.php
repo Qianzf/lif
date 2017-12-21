@@ -43,10 +43,21 @@ class Doc extends Ctl
 
     public function index(DocFolder $folder, DocModel $doc)
     {
+        $querys = $this->request->gets();
+
+        legal_or($querys, [
+            'search' => ['string', null],
+        ]);
+
         view('ldtdf/docs/index')
         ->withFoldersDocs(
-            $folder->whereParent(0)->get(),
-            $doc->whereFolder(0)->get()
+            $folder->list([
+                'parent' => 0,
+            ], $querys),
+
+            $doc->list([
+                'folder' => 0,
+            ], $querys)
         )
         ->share('hide-search-bar', false);
     }
@@ -88,6 +99,8 @@ class Doc extends Ctl
             $doc,
             null,
             function () use ($doc) {
+                $this->request->setPost('update_at', fndate());
+
                 if ($doc->creator('id') != share('user.id')) {
                     return 'UPDATE_PERMISSION_DENIED';
                 }

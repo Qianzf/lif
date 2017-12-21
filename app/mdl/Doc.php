@@ -27,6 +27,15 @@ class Doc extends ModelBase
     protected $unreadable  = [
     ];
 
+    public function list(array $where = null, array $querys = null)
+    {
+        if ($search = ($querys['search'] ?? false)) {
+            $this->whereTitle('like', "%{$search}%");
+        }
+
+        return $this->where($where)->get();
+    }
+
     public function folder(string $key = null)
     {
         if ($folder = $this->belongsTo(

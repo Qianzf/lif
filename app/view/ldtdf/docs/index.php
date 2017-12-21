@@ -19,7 +19,6 @@
     <caption><?= L('FOLDER'), '/', L('DOC_LIST') ?></caption>
 
     <tr>
-        <th><?= L('ID') ?></th>
         <th><?= L('TITLE') ?></th>
         <th><?= L('TYPE') ?></th>
         <th><?= L('CREATOR') ?></th>
@@ -30,7 +29,6 @@
     <?php if (isset($folders) && iteratable($folders)): ?>
     <?php foreach ($folders as $folder): ?>
     <tr>
-        <td><?= $folder->id ?></td>
         <td>
             <a href="/dep/docs/folders/<?= $folder->id ?>">
                 <?= $folder->title ?>
@@ -47,7 +45,6 @@
     <?php if (isset($docs) && iteratable($docs)): ?>
     <?php foreach ($docs as $doc): ?>
     <tr>
-        <td><?= $doc->id ?></td>
         <td>
             <a href="/dep/docs/<?= $doc->id ?>">
                 <?= $doc->title ?>

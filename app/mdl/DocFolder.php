@@ -28,6 +28,15 @@ class DocFolder extends ModelBase
     protected $unreadable  = [
     ];
 
+    public function list(array $where = null, array $querys = null)
+    {
+        if ($search = ($querys['search'] ?? false)) {
+            $this->whereTitle('like', "%{$search}%");
+        }
+
+        return $this->where($where)->get();
+    }
+
     public function parent(string $key = null)
     {
         if ($parent = $this->find($this->parent)) {
