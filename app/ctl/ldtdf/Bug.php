@@ -20,7 +20,7 @@ class Bug extends Ctl
             'search'  => ['string', null],
             'creator' => ['int|min:1', null],
             'sort'    => ['ciin:desc,asc', 'desc'],
-            'os'      => ['string', null],
+            'os'      => ['string|notin:-1', null],
         ]);
 
         if ($search = $querys['search']) {

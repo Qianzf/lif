@@ -60,7 +60,7 @@ class Passport extends Ctl
 
         $trend->add('login_sys', $user->id);
 
-        redirect('/dep');
+        redirect(share_flush('redirect_url') ?? '/dep');
     }
 
     public function logout()

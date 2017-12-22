@@ -74,14 +74,16 @@ class Task extends Mdl
         return false;
     }
 
-    public function environment(array $fwhere = [])
+    public function environment(array $fwhere = [], string $key = null)
     {
-        return $this->belongsTo([
+        if ($env = $this->belongsTo([
             'model' => Environment::class,
             'lk' => 'env',
             'fk' => 'id',
             'fwhere' => $fwhere,
-        ]);
+        ])) {
+            return $key ? $env->$key : $env; 
+        }
     }
 
     public function current(string $key = null)

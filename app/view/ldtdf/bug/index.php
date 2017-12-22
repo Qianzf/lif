@@ -32,15 +32,18 @@
                 'name'   => 'os',
                 'list'   => $oses,
                 'kval'   => true,
+                'isUser' => false,
             ]) ?>
         </th>
         <th><?= L('PLATFORM') ?></th>
     </tr>
+
     <?php if (isset($bugs) && iteratable($bugs)) : ?>
     <?php foreach ($bugs as $bug) : ?>
     <tr>
         <td><?= $bug->create_at ?></td>
         <td>
+            <sub><small><code>B<?= $bug->id ?></code></small></sub>
             <a href="/dep/bugs/<?= $bug->id ?>">
                 <?= $bug->title ?>
             </a>

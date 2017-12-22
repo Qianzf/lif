@@ -33,6 +33,8 @@ class Web extends \Lif\Core\Abst\Middleware
             return $this->auth;
         }
 
+        share('redirect_url', $app->url());
+
         redirect('/dep/users/login');
     }
 }

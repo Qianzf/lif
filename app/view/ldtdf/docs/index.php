@@ -39,6 +39,7 @@
     <tr>
         <td><?= $folder->create_at ?></td>
         <td>
+            <sub><small><code>F<?= $folder->id ?></code></small></sub>
             <a href="/dep/docs/folders/<?= $folder->id ?>">
                 <?= $folder->title ?>
             </a>
@@ -54,6 +55,7 @@
     <tr>
         <td><?= $doc->create_at ?></td>
         <td>
+            <sub><small><code>D<?= $doc->id ?></code></small></sub>
             <a href="/dep/docs/<?= $doc->id ?>">
                 <?= $doc->title ?>
             </a>

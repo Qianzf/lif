@@ -35,6 +35,7 @@
     <tr>
         <td><?= $story->create_at ?></td>
         <td>
+            <sub><small><code>S<?= $story->id ?></code></small></sub>
             <a href="/dep/stories/<?= $story->id ?>">
                 <?= $story->title ?>
             </a>

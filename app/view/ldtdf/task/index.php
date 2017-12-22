@@ -69,7 +69,7 @@
             ]) ?>
         </th>
     </tr>
-
+    
     <?php if (isset($tasks) && iteratable($tasks)) : ?>
     <?php foreach ($tasks as $task) : ?>
     <tr>
@@ -78,6 +78,7 @@
             <?= L($task->origin_type) ?>
         </em></small></td>
         <td>
+            <sub><small><code>T<?= $task->id ?></code></small></sub>
             <a href="tasks/<?= $task->id ?>">
                 <?= $task->origin('title') ?>
             </a>

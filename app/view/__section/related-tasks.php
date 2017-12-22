@@ -5,16 +5,32 @@
     <span class="text-info">]</span>
 
     <?php if (isset($tasks) && iteratable($tasks)): ?>
-    <ul>
-        <?php foreach ($tasks as $task): ?>
-        <li>
-            <a href="/dep/tasks/<?= $task->id ?>">
-                T<?= $task->id ?>:
-                <?= $task->project('name') ?>
-            </a>
-        </li>
-        <?php endforeach ?>
-    </ul>
+    <table>
+    <tr>
+        <th><?= L('ID') ?></th>
+        <th><?= L('PROJECT') ?></th>
+        <th><?= L('PROJECT_TYPE') ?></th>
+        <th><?= L('ENV') ?></th>
+        <th><?= L('BRANCH') ?></th>
+        <th><?= L('STATUS') ?></th>
+    </tr>
+    <?php foreach ($tasks as $task): ?>
+    <tr>
+        <td>
+            <a href="/dep/tasks/<?= $task->id ?>">T<?= $task->id ?></a>
+        </td>
+        <td><?= $task->project('name') ?></td>
+        <td><?= $task->project('type') ?></td>
+        <td><?= $task->environment([], 'host') ?? '-' ?></td>
+        <td><?= empty_safe($task->branch) ? '-' : $task->branch ?></td>
+        <td>
+            <button class="btn-info">
+                <?= L("STATUS_{$task->status}") ?>
+            </button>
+        </td>
+    </tr>
+    <?php endforeach ?>
+    </table>
     <?php endif ?>
 
     <span class="vertical"></span>
