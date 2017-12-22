@@ -2293,3 +2293,38 @@ if (! fe('fndate')) {
         return date('Y-m-d H:i:s', time());
     }
 }
+if (! fe('day_diff')) {
+    function day_diff(string $start, string $end, int $diff) {
+        if (!$start || !$end) {
+            return false;
+        }
+
+        $start = to_date($start);
+        $end   = to_date($end);
+
+        return ($diff == (
+            (new \Datetime($end))->diff(new \DateTime($start))->format('%a')
+        ));
+    }
+}
+if (! fe('is_same_day')) {
+    function is_same_day(string $day1, string $day2) {
+        if (!$day1 || !$day2) {
+            return false;
+        }
+
+        $day1 = to_date($day1);
+        $day2 = to_date($day2);
+
+        return (
+            (new \Datetime($day1))->format('Y-m-d')
+            ===
+            (new \Datetime($day2))->format('Y-m-d')
+        );
+    }
+}
+if (! fe('to_date')) {
+    function to_date($day) {
+        return is_numeric($day) ? date('Y-m-d H:i:s', $day) : $day;
+    }
+}
