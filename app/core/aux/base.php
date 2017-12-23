@@ -2328,3 +2328,12 @@ if (! fe('to_date')) {
         return is_numeric($day) ? date('Y-m-d H:i:s', $day) : $day;
     }
 }
+if (! fe('ci_equal')) {
+    function ci_equal(string $foo = null, string $bar = null) {
+        if (!$foo || !$bar) {
+            return false;
+        }
+
+        return (strtolower($foo) === strtolower($bar));
+    }
+}

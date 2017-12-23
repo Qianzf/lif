@@ -8,9 +8,9 @@ class UpdateTaskBranch extends \Lif\Core\Abst\Job
     private $branch = null;
     private $token  = null;
 
-    // 2. Find out task env by related branch
-    // 3. Check secure token in headers if configed
-    // 4. Update tasks env when status is correct
+    // 1. Find out task env by related branch and url
+    // 2. Check secure token in headers if configed
+    // 3. Update tasks env when status is correct
     public function run() : bool
     {
         if (!$this->branch || !$this->url) {
@@ -56,10 +56,16 @@ class UpdateTaskBranch extends \Lif\Core\Abst\Job
                     "git pull origin {$branch} --no-edit"
                 ]);
 
-                $status = (0 == $res['num']) ? 'SUCCESS' : 'FAILED';
+                $err = null;
+                $status = 'SUCCESS';
+
+                if (0 != $res['num']) {
+                    $status = 'FAILED';
+                    $err    = $res['err'] ?? L('UNKNOWN_ERROR');
+                }
 
                 db()->table('trending')->insert([
-                    'at'        => date('Y-m-d H:i:s'),
+                    'at'        => fndate(),
                     'user'      => $user,
                     'action'    => 'update_branch',
                     'ref_state' => "UPDATE_TASK_BRANCH_{$status}",

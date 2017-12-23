@@ -37,13 +37,18 @@ class CreateProjectTable extends Dit
             ->comment('Integration with vcs APIs used token');
 
             $table
+            ->string('build_script')
+            ->nullable()
+            ->comment('Build script, absolute path of project (executable)');
+
+            $table
             ->string('config_api')
             ->comment('Project config read/write interface (executable)');
 
             $table
-            ->string('deploy_script')
-            ->nullable()
-            ->comment('Deploy script, absolute path of project (executable)');
+            ->char('config_order', 8)
+            ->default('after')
+            ->comment('Config API execute order compare to build script: `before` or `after`');
         });
     }
 

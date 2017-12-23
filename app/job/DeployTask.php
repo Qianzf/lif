@@ -337,7 +337,30 @@ class DeployTask extends \Lif\Core\Abst\Job
         ];
     }
 
-    public function getProjectBuildCommands(
+    private function appendBuildCommands(array &$commands, $project)
+    {
+        if ($buildScript = trim($project->build_script)) {
+            if (! preg_match('/(\ )+/u', $buildScript)) {
+                $commands[] = "chmod +x {$buildScript}";
+            }
+
+            $commands[] = $buildScript;
+        }
+    }
+
+    private function appendConfigCommands(array &$commands, $project, $config)
+    {
+        if ($configApi = trim($project->config_api)
+            && ($config = trim($config))
+        ) {
+            if (! preg_match('/(\ )+/u', $configApi)) {
+                $commands[] = "chmod +x {$configApi}";
+            }
+            $commands[] = "{$configApi} '{$config}'";
+        }
+    }
+
+    public function getProjectDeployCommands(
         $project = null,
         string $config = null
     ) : array
@@ -348,21 +371,12 @@ class DeployTask extends \Lif\Core\Abst\Job
             return$commands;
         }
 
-        if ($deployScript = trim($project->deploy_script)) {
-            if (! preg_match('/(\ )+/u', $deployScript)) {
-                $commands[] = "chmod +x {$deployScript}";
-            }
-
-            $commands[] = "{$deployScript}";
-        }
-
-        if ($configApi = trim($project->config_api)
-            && ($config = trim($config))
-        ) {
-            if (! preg_match('/(\ )+/u', $configApi)) {
-                $commands[] = "chmod +x {$configApi}";
-            }
-            $commands[] = "{$configApi} '{$config}'";
+        if (ci_equal($project->config_order, 'before')) {
+            $this->appendConfigCommands($commands, $project, $config);
+            $this->appendBuildCommands($commands, $project);
+        } else {
+            $this->appendBuildCommands($commands, $project);
+            $this->appendConfigCommands($commands, $project, $config);
         }
 
         return $commands;
@@ -377,7 +391,7 @@ class DeployTask extends \Lif\Core\Abst\Job
         $commands = array_filter(array_merge(
             $this->getEnvRecycleCommands($path),
             $this->commands,
-            $this->getProjectBuildCommands($project, $config)
+            $this->getProjectDeployCommands($project, $config)
         ));
 
         $commands[] = 'chown -R www:www `pwd`';

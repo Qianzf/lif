@@ -12,8 +12,9 @@ class Project extends Mdl
         'vcs'   => ['need|ciin:git', 'git'],
         'desc'  => 'string',
         'token' => ['string', null],
-        'config_api'    => 'string',
-        'deploy_script' => ['string', null],
+        'build_script' => ['string', null],
+        'config_api'   => 'string',
+        'config_order' => ['ciin:before,after', 'after'],
     ];
 
     public function tasks(array $fwhere = [], $lwhere = [])

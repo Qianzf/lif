@@ -55,21 +55,45 @@
     </label>
 
     <label>
-        <span class="label-title"><?= L('CONFIGRWAPI') ?></span>
-        <input
-        placeholder="<?= L('PROJECT_ABSOLUTE_PATH_AND_EXECUTABLE') ?>"
-        type="text"
-        name="config_api"
-        value="<?= $project->config_api ?>">
-    </label>
-
-    <label>
         <span class="label-title"><?= L('DEPLOY_SCRIPT') ?></span>
         <input
         placeholder="<?= L('PROJECT_ABSOLUTE_PATH_AND_EXECUTABLE') ?>"
         type="text"
-        name="deploy_script"
-        value="<?= $project->deploy_script ?>">
+        name="build_script"
+        value="<?= $project->build_script ?>">
+    </label>
+
+    <label>
+        <span class="label-title"><?= L('CONFIGRWAPI') ?></span>
+        <ul>
+            <li>
+                <span><?= L('EXECUTE_ORDER') ?></span>
+                <select name="config_order">
+                    <option
+                    <?php if (ci_equal($project->config_order, 'after')): ?>
+                    selected
+                    <?php endif ?>
+                    value="after">
+                        <?= L('AFTER_BUILD_SCRIPT') ?>
+                    </option>
+                    <option
+                    <?php if (ci_equal($project->config_order, 'before')): ?>
+                    selected
+                    <?php endif ?>
+                    value="before">
+                        <?= L('BEFORE_BUILD_SCRIPT') ?>
+                    </option>
+                </select>
+            </li>
+            <li>
+                <span><?= L('PATH'), '/', L('COMMAND') ?></span>
+                <input
+                placeholder="<?= L('PROJECT_ABSOLUTE_PATH_AND_EXECUTABLE') ?>"
+                type="text"
+                name="config_api"
+                value="<?= $project->config_api ?>">
+            </li>
+        </ul>
     </label>
 
     <?= $this->section('submit', [

@@ -331,4 +331,9 @@ return [
     'CONFIG' => '配置',
     'FLOW' => '流',
     'POSITION' => '位置',
+    'COMMAND' => '命令',
+    'EXECUTE' => '执行',
+    'ORDER' => '顺序',
+    'AFTER_BUILD_SCRIPT' => '构建脚本之后',
+    'BEFORE_BUILD_SCRIPT' => '构建脚本之前',
 ];
