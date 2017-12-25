@@ -6,8 +6,8 @@
 </sup>
 
 <sup>
-    <a href="<?= share('url_previous') ?>">
-        <button class="btn-shadow"><?= L('BACK_TO_LAST') ?></button>
-    </a>
+    <button
+    onclick="back2last()"
+    class="btn-shadow"><?= L('BACK_TO_LAST') ?></button>
 </sup>
 <?php endif ?>

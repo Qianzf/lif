@@ -148,22 +148,22 @@ class Request extends Container implements Observable
         return $params;
     }
 
-    public function gets() : array
+    public function gets(string $key = null)
     {
         if (! $this->gets) {
             $this->gets = $this->parse($_GET);
         }
 
-        return $this->gets;
+        return $key ? ($this->gets[$key] ?? null) : $this->gets;
     }
 
-    public function posts() : array
+    public function posts(string $key = null)
     {
         if (! $this->posts) {
             $this->posts = $this->parse($_POST);
         }
 
-        return $this->posts;
+        return $key ? ($this->posts[$key] ?? null) : $this->posts;
     }
 
     public function setPost(string $key, $value)

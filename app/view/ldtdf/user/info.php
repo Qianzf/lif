@@ -32,5 +32,3 @@
         </a>
     </label>    
 </div>
-
-<div class="vertical"></div>

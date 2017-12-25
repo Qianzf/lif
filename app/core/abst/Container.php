@@ -76,7 +76,7 @@ abstract class Container
             $msg = L(($status > 0) ? 'UPDATE_OK' : 'UPDATED_NOTHING');
 
             if ($after) {
-                $after();
+                $after($status);
             }
         }
 
@@ -104,7 +104,7 @@ abstract class Container
             $msg = L('CREATED_SUCCESS');
 
             if ($after) {
-                $after();
+                $after($status);
             }
         }
 

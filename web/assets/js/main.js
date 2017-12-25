@@ -223,6 +223,12 @@ function needBack2Last() {
         window.location.href = last
     }    
 }
+function back2last() {
+    // window.history.back
+    window.history.go(-1)
+
+    return false
+}
 function getHost() {
     let aTag = getATag(window.location.href)
     return (aTag.scheme + aTag.hostname + aTag.pathname)

@@ -7,16 +7,7 @@ class Web extends \Lif\Core\Abst\Middleware
     protected $auth = false;
 
     public function passing($app)
-    {
-        if (!is_ajax() && ($app->request->type == 'GET')) {
-            $previous = (share('url_previous') != (
-                share('url_current') ?? $app->url())
-            ) ? share('url_current') : '/dep';
-
-            share('url_current', $app->url());
-            share('url_previous', $previous);
-        }
-        
+    {   
         if (($this->auth = share('user'))
             && (false !== exists($this->auth, 'id'))
             && (false !== exists($this->auth, 'role'))

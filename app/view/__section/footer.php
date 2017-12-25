@@ -14,7 +14,7 @@
     <sub><small class="text-info"><i>
         <span>LiF Core</span>
         <?= 'v ', get_lif_ver() ?>
-    </small></i></sub>
+    </i></small></sub>
 </footer>
 
 <input

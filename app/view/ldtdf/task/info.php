@@ -108,23 +108,15 @@
 <p>
     <span class="stub-2"></span>
     <span class="text-info">[</span>
-    <small><?= L('TASK_ORIGIN') ?></small>
-    <span class="text-info">]</span>
-    <small class="text-task"><em>
-        <?= L($task->origin_type) ?>
-    </em></small>
-</p>
-
-<p>
-    <span class="stub-2"></span>
-    <span class="text-info">[</span>
     <small><?= L('RELATED_PROJECT') ?></small>
     <span class="text-info">]</span>
-    <i>
+    <small class="text-task"><i>
+        <?= L($project->type) ?>
+        <code>P<?= $project->id ?></code>
         <a href="/dep/projects/<?= $project->id ?>">
-            <?= $project->name, " ({$project->type})"?>
+            <?=  $project->name ?>
         </a>
-    </i>
+    </i></small>
 </p>
 
 <?= $this->section("ldtdf/task/{$task->origin_type}", [], true) ?>

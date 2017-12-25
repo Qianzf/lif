@@ -108,14 +108,24 @@ class Doc extends Ctl
             $doc,
             null,
             function () use ($doc) {
-                $this->request->setPost('update_at', fndate());
+                if ($doc->alive()) {
+                    if ($doc->creator('id') != share('user.id')) {
+                        return 'UPDATE_PERMISSION_DENIED';
+                    }
 
-                if ($doc->creator('id') != share('user.id')) {
-                    return 'UPDATE_PERMISSION_DENIED';
+                    if (($doc->title != $this->request->posts('title'))
+                        || ($doc->content != $this->request->posts('content'))
+                        || ($doc->folder != $this->request->posts('folder'))
+                        || ($doc->order != $this->request->posts('order'))
+                    ) {
+                        $this->request->setPost('update_at', fndate());
+                    }
                 }
             },
-            function () use ($doc) {
-                $doc->addTrending('update', share('user.id'));
+            function ($status) use ($doc) {
+                if (ispint($status, false)) {
+                    $doc->addTrending('update', share('user.id'));
+                }
             }
         );
     }
@@ -157,12 +167,22 @@ class Doc extends Ctl
                     return 'UPDATE_PERMISSION_DENIED';
                 }
 
+                if (($folder->title != $this->request->posts('title'))
+                    || ($folder->desc != $this->request->posts('desc'))
+                    || ($folder->parent != $this->request->posts('parent'))
+                    || ($folder->order != $this->request->posts('order'))
+                ) {
+                    $this->request->setPost('update_at', fndate());
+                }
+
                 if ($folder->id == $this->request->get('parent')) {
                     $this->request->setPost('parent', $folder->parent);
                 }
             },
-            function () use ($folder) {
-                $folder->addTrending('update', share('user.id'));
+            function ($status) use ($folder) {
+                if (ispint($status, false)) {
+                    $folder->addTrending('update', share('user.id'));
+                }
             }
         );
     }
