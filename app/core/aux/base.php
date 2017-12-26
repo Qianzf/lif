@@ -2289,8 +2289,10 @@ if (! fe('arr_unzip')) {
     }
 }
 if (! fe('fndate')) {
-    function fndate() {
-        return date('Y-m-d H:i:s', time());
+    function fndate($ts = null) {
+        $ts = $ts ?? time();
+
+        return date('Y-m-d H:i:s', $ts);
     }
 }
 if (! fe('day_diff')) {
@@ -2299,8 +2301,8 @@ if (! fe('day_diff')) {
             return false;
         }
 
-        $start = to_date($start);
-        $end   = to_date($end);
+        $start = strtodate($start);
+        $end   = strtodate($end);
 
         return ($diff == (
             (new \Datetime($end))->diff(new \DateTime($start))->format('%a')
@@ -2313,19 +2315,17 @@ if (! fe('is_same_day')) {
             return false;
         }
 
-        $day1 = to_date($day1);
-        $day2 = to_date($day2);
-
-        return (
-            (new \Datetime($day1))->format('Y-m-d')
-            ===
-            (new \Datetime($day2))->format('Y-m-d')
-        );
+        return (strtodate($day1) === strtodate($day2));
     }
 }
-if (! fe('to_date')) {
-    function to_date($day) {
-        return is_numeric($day) ? date('Y-m-d H:i:s', $day) : $day;
+if (! fe('strtodate')) {
+    function strtodate($day) {
+        if (! is_numeric($day)) {
+            // Here we only need the `date` part only
+            $day = strtotime(date('Y-m-d', strtotime($day)));
+        }
+
+        return date('Y-m-d H:i:s', strtotime(date('Y-m-d', $day)));
     }
 }
 if (! fe('ci_equal')) {
