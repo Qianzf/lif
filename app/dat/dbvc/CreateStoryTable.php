@@ -33,10 +33,6 @@ class CreateStoryTable extends Dit
             ->comment('User story 3rd element: Value');
 
             $table
-            ->text('acceptances')
-            ->comment('Acceptances of this story');
-
-            $table
             ->text('extra')
             ->nullable()
             ->comment('Extra data of this story');

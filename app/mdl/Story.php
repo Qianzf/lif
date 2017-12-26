@@ -18,8 +18,7 @@ class Story extends ModelBase
         'role'     => 'need|string',
         'activity' => 'need|string',
         'value'    => 'need|string',
-        'acceptances' => 'need|string',
-        'extra'       => 'string',
+        'extra'    => 'string',
     ];
     // protected items that cann't update
     protected $unwriteable = [
@@ -27,6 +26,24 @@ class Story extends ModelBase
     // protected items that cann't read
     protected $unreadable  = [
     ];
+
+    public function getAcceptances()
+    {
+        if (! $this->alive()) {
+            return [];
+        }
+
+        $relationship = [
+            'model' => Acceptance::class,
+            'lk' => 'id',
+            'fk' => 'origin',
+            'fwhere' => [
+                'whose' => 'story',
+            ],
+        ];
+
+        return $this->hasMany($relationship);
+    }
 
     public function getAllUsers()
     {

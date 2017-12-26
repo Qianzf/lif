@@ -49,9 +49,34 @@
 
     <label>
         <span class="label-title">* <?= L('STORY_AC') ?></span>
-        <textarea
-        placeholder="<?= L('STORY_AC_STUB') ?>"
-        name="acceptances"><?= $story->acceptances ?></textarea>
+        
+        <div>
+            <span class="label-title"></span>
+            
+            <div class="inblock" id="story-ac-list">
+                <?php if (isset($acceptances) && iteratable($acceptances)): ?>
+                <?php foreach ($acceptances as $acceptance): ?>
+                <div>
+                    <textarea
+                    name="acceptance[<?= $acceptance->id ?>]"><?= $acceptance->detail ?></textarea>
+                    <button
+                    type="button"
+                    onclick="deleteAC(this)"
+                    class="btn-delete"><?= L('DELETE') ?></button>
+                </div>
+                <?php endforeach ?>
+                <?php else: ?>
+                <div>
+                    <textarea
+                    required
+                    placeholder="<?= L('AT_LEAST_ONE') ?>"
+                    name="acceptance[]"></textarea>
+                </div>
+                <?php endif ?>
+            </div>
+
+            <button type="button" onclick="addAC()"><?= L('ADD') ?></button>
+        </div>
     </label>
 
     <label>
@@ -83,5 +108,21 @@
     $(function() {
         tryDisplayEditormd()
     })
+    function addAC() {
+        let html = `
+        <div>
+            <textarea name="acceptance[]"></textarea>
+            <button
+            type="button"
+            onclick="deleteAC(this)"
+            class="btn-delete"><?= L('DELETE') ?></button>
+        </div>
+        `
+
+        $('#story-ac-list').append(html)
+    }
+    function deleteAC(obj) {
+        $(obj).parent().remove()
+    }
 </script>
 <?php } ?>

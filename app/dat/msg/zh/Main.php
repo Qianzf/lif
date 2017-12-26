@@ -336,4 +336,6 @@ return [
     'ORDER' => '顺序',
     'AFTER_BUILD_SCRIPT' => '构建脚本之后',
     'BEFORE_BUILD_SCRIPT' => '构建脚本之前',
+    'AT_LEAST_ONE' => '最少一个',
+    'AC' => '验收条件',
 ];

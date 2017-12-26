@@ -3,7 +3,7 @@
 namespace Lif\Ctl\Ldtdf;
 
 use Lif\Mdl\Story as StoryModel;
-use Lif\Mdl\Project;
+use Lif\Mdl\{Project, Acceptance};
 
 class Story extends Ctl
 {
@@ -65,8 +65,9 @@ class Story extends Ctl
         $assignable = $story->canBeDispatchedBy($user);
 
         view('ldtdf/story/info')
-        ->withStoryEditableAssignableTasksTrendings(
+        ->withStoryAcceptancesEditableAssignableTasksTrendings(
             $story,
+            $story->getAcceptances(),
             $editable,
             $assignable,
             $story->tasks(),
@@ -77,46 +78,98 @@ class Story extends Ctl
     public function edit(StoryModel $story)
     {
         return view('ldtdf/story/edit')
-        ->withStoryEditable($story, true);
+        ->withStoryAcceptancesEditable(
+            $story,
+            $story->getAcceptances(),
+            true
+        );
     }
 
-    public function create(StoryModel $story)
+    public function create(StoryModel $story, Acceptance $acceptance)
     {
+        db()->start();
+
+        if (! ($acceptances = $this->request->getCleanPost('acceptance'))) {
+            share_error_i18n('MISSING_AC');
+            
+            return redirect($this->route);
+        }
+
         $this->request->setPost('creator', share('user.id'));
 
-        return $this->responseOnCreated($story, '/dep/stories/?');
+        return $this->responseOnCreated(
+            $story,
+            '/dep/stories/?',
+            null,
+            function ($status) use ($story, $acceptance, $acceptances) {
+                if (ispint($status, false)
+                    && ($acceptance->createFromOrigin(
+                        'story',
+                        $status,
+                        $acceptances
+                    ))
+                ) {
+                    $story->addTrending('create', $story->creator);
+
+                    db()->commit();
+                } else {
+                    db()->rollback();
+                }
+            }
+        );
     }
 
-    public function update(StoryModel $story)
+    public function updateAC(StoryModel $story, Acceptance $acceptance)
     {
-        if ($story->creator != share('user.id')) {
-            share_error_i18n('UPDATE_PERMISSION_DENIED');
-            redirect($this->route);
-        }
+        $status = 0;
 
-        if (! $story->alive()) {
-            share_error_i18n('TASK_NOT_FOUND');
-            redirect('/dep/tasks');
-        }
-
-        if (!empty_safe($err = $story->save($this->request->posts()))
-            && is_numeric($err)
-            && ($err >= 0)
+        if ($story->alive()
+            && $acceptance->alive()
+            && ($acceptance->whose  == 'story')
+            && ($acceptance->origin == $story->id)
         ) {
-            if ($err > 0) {
-                $status = 'UPDATE_OK';
-                $story->addTrending('update', $story->creator);
-            } else {
-                $status = 'UPDATED_NOTHING';
-            }
-        } else {
-            $status = 'UPDATE_FAILED';
+            $acceptance->status = (
+                'true' == $this->request->posts('checked')
+            ) ? 'checked' : null;
+
+            $status = $acceptance->save();
         }
 
-        $err = is_integer($err) ? null : L($err);
+        return response([
+            'res' => $status,
+        ]);
+    }
 
-        share_error(L($status, $err));
+    public function update(StoryModel $story, Acceptance $acceptance)
+    {
+        if (! ($acceptances = $this->request->getCleanPost('acceptance'))) {
+            share_error_i18n('MISSING_AC');
+            
+            return redirect("{$this->route}/edit");
+        }
 
-        redirect($this->route);
+        return $this->responseOnUpdated(
+            $story,
+            null,
+            function () use ($story) {
+                if ($story->alive() && ($story->creator != share('user.id'))) {
+                    share_error_i18n('UPDATE_PERMISSION_DENIED');
+                    redirect($this->route);
+                }
+            },
+            function ($status) use ($story, $acceptance, $acceptances) {
+                if (($status > 0) || (
+                    $acceptance->updateFromOrigin(
+                        'story',
+                        $story->id,
+                        $acceptances
+                    )
+                )) {
+                    share_error_i18n('UPDATE_OK');
+
+                    $story->addTrending('update', $story->creator);
+                }
+            }
+        );
     }
 }

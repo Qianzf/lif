@@ -387,6 +387,18 @@ class Task extends Mdl
         return false;
     }
 
+    public function canBeTestedBy(int $user)
+    {
+        if ($current = $this->current()) {
+            return (
+                ($current->id == $user)
+                && (strtolower($current->role) == 'test')
+            );
+        }
+
+        return false;
+    }
+    
     public function canBeConfirmedBY(int $user)
     {
         if ($user) {

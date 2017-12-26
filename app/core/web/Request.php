@@ -166,6 +166,26 @@ class Request extends Container implements Observable
         return $key ? ($this->posts[$key] ?? null) : $this->posts;
     }
 
+    public function getCleanPost(string $key)
+    {
+        $val = $this->posts($key);
+
+        $this->unsetPost($key);
+
+        return $val;
+    }
+
+    public function unsetPost(string $key)
+    {
+        $this->posts();
+
+        if ($this->posts[$key] ?? false) {
+            unset($this->posts[$key]);
+        }
+
+        return $this;
+    }
+
     public function setPost(string $key, $value)
     {
         $this->posts();

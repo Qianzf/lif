@@ -20,31 +20,51 @@
     </em></blockquote>
 </div>
 
-<div id="story-acceptances">
+<div>
+    <span class="stub-2"></span>
     <span class="text-info">[</span>
-    <?= L('STORY_AC') ?>
+    <small><?= L('STORY_AC') ?></small>
     <span class="text-info">]</span>
-
-    <textarea
-    id="story-acceptances-md"
-    style="display:none"><?= $story->acceptances ?></textarea>
+    <dl>
+        <?php if (isset($acceptances) && iteratable($acceptances)): ?>
+        <?php foreach ($acceptances as $acceptance): ?>
+        <dd>
+            <input
+            <?php if (ci_equal($acceptance->status, 'checked')): ?>
+            checked
+            <?php endif ?>
+            <?php if ($untestable ?? true): ?>
+            disabled
+            <?php else: ?>
+            class="ac-check-status"
+            data-id="<?= $acceptance->id ?>"
+            <?php endif ?>
+            type="checkbox"
+            name="ac_status">
+            <?= $this->escape($acceptance->detail) ?>
+        </dd>
+        <?php endforeach ?>
+        <?php endif ?>
+    </dl>
 </div>
 
+<?php if ($story->extra): ?>
 <div id="story-others">
     <span class="text-info">[</span>
     <?= L('STORY_REMARKS') ?>
     <span class="text-info">]</span>
-
     <textarea
     id="story-others-md"
     style="display:none"><?= $story->extra ?></textarea>
 </div>
-
 <?= $this->section('lib/editormd') ?>
 <script type="text/javascript">
+    function setACCheckStatus(id) {
+        console.log(id)
+    }
     $(function() {
-        editormd.markdownToHTML("story-acceptances", {
-            markdown        : $('#story-acceptances-md').val(),
+        editormd.markdownToHTML("story-others", {
+            markdown        : $('#story-others-md').val(),
             
             // 开启 HTML 标签解析，为了安全性，默认不开启
             // htmlDecode      : true,
@@ -71,11 +91,15 @@
             // sequenceDiagram : true,  // 默认不解析
         })
 
-        editormd.markdownToHTML("story-others", {
-            markdown : $('#story-others-md').val(),
-            htmlDecode : "style,script,iframe",
-            tocm : true,
-            markdownSourceCode : true
+        $('.ac-check-status').change(function () {
+            let api = '/dep/stories/<?= $story->id ?>/ac/' + $(this).data().id
+            $.post(api, {
+                '__rftkn__' : '<?= csrf_token() ?>',
+                'checked'   : this.checked
+            }, function (ret) {
+                console.log(ret)
+            })
         })
     })
 </script>
+<?php endif ?>

@@ -44,12 +44,12 @@
     </ul>
 </p>
 
+<?php if ($bug->extra): ?>
 <div id="bug-extra">
     <span class="text-info">[</span>
     <span><?= L('BUG_REMARKS') ?></span>
     <span class="text-info">]</span>
     <span class="vertical-2"></span>
-    
     <textarea
     id="bug-extra-md"
     style="display:none"><?= $this->escape($bug->extra) ?></textarea>
@@ -66,3 +66,4 @@
         })
     })
 </script>
+<?php endif ?>

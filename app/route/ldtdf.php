@@ -65,6 +65,7 @@ $this->group([
         $this->get('{id}', 'info');
         $this->get('{id}/edit', 'edit');
         $this->post('{id}', 'update');
+        $this->post('{id}/ac/{id}', 'updateAC');
     });
 
     $this->group([

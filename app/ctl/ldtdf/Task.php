@@ -354,14 +354,6 @@ class Task extends Ctl
             'trending' => ['ciin:asc,desc', 'desc'],
         ]);
 
-        $user        = share('user.id');
-        $activeable  = $task->canBeActivatedBy($user);
-        $cancelable  = $task->canBeCanceledBy($user);
-        $confirmable = $task->canBeConfirmedBY($user);
-        $editable    = $task->canBeEditedBY($user);
-        $assignable  = $task->canBeAssignedBy($user);
-        $deployable  = $task->deployable();
-
         $story = $bug = null;
         if ('story' == strtolower($task->origin_type)) {
             if (! ($story = $task->story())) {
@@ -375,14 +367,25 @@ class Task extends Ctl
             }
         }
 
-        share('hide-search-bar', true);
+        $user        = share('user.id');
+        $activeable  = $task->canBeActivatedBy($user);
+        $cancelable  = $task->canBeCanceledBy($user);
+        $confirmable = $task->canBeConfirmedBY($user);
+        $editable    = $task->canBeEditedBY($user);
+        $assignable  = $task->canBeAssignedBy($user);
+        $untestable  = !$task->canBeTestedBy($user);
+        $deployable  = $task->deployable();
+        $acceptances = ($story && $story->alive())
+        ? $story->getAcceptances()
+        : null;
 
         view('ldtdf/task/info')
-        ->withOriginTaskBugStoryTasksProjectTrendingsActiveableCancelableConfirmableEditableAssignableDeployableAssigns(
+        ->withOriginTaskBugStoryAcceptancesTasksProjectTrendingsActiveableCancelableConfirmableEditableUntestableAssignableDeployableAssigns(
             $task->origin(),
             $task,
             $bug,
             $story,
+            $acceptances,
             $task->relateTasks(),
             $task->project(),
             $task->trendings($querys),
@@ -390,10 +393,12 @@ class Task extends Ctl
             $cancelable,
             $confirmable,
             $editable,
+            $untestable,
             $assignable,
             $deployable,
             $task->getAssignableStatuses()
-        );
+        )
+        ->share('hide-search-bar', true);
     }
 
     public function create(TaskModel $task)

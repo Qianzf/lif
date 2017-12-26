@@ -71,16 +71,14 @@ abstract class Container
         if (($before && ($status = $before()) && is_string($status))
             || !ispint($status = $model->save($this->request->posts()))
         ) {
-            $msg = L('UPDATE_FAILED', L($status));
+            share_error(L('UPDATE_FAILED', L($status)));
         } else {
-            $msg = L(($status > 0) ? 'UPDATE_OK' : 'UPDATED_NOTHING');
+            share_error(L(($status > 0) ? 'UPDATE_OK' : 'UPDATED_NOTHING'));
 
             if ($after) {
                 $after($status);
             }
         }
-
-        share_error($msg);
 
         redirect($uri);
     }
@@ -98,17 +96,16 @@ abstract class Container
                 false
             ))
         ) {
-            $msg = L('CREATED_FAILED', L($status));
+            share_error(L('CREATED_FAILED', L($status)));
+
             $status = 'new';
         } else {
-            $msg = L('CREATED_SUCCESS');
+            share_error_i18n('CREATED_SUCCESS');
 
             if ($after) {
                 $after($status);
             }
         }
-
-        share_error($msg);
 
         // PRG: POST - Redirect - GET
         return redirect(uri($uri, [$status]));
