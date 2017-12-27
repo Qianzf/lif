@@ -403,10 +403,8 @@ class Task extends Mdl
     {
         if ($user) {
             $status = strtolower($this->status);
-            if ($status == 'activated') {
-                return (strtolower($this->current()->role) == 'dev');
-            }
             if (in_array($status, [
+                'activated',
                 'waitting_regression',
                 'finished',
             ])) {

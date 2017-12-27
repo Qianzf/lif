@@ -13,6 +13,8 @@
         <th><?= L('ENV') ?></th>
         <th><?= L('BRANCH') ?></th>
         <th><?= L('STATUS') ?></th>
+        <th><?= L('CREATOR') ?></th>
+        <th><?= L('FLOW_POSITION') ?></th>
     </tr>
     <?php foreach ($tasks as $task): ?>
     <tr>
@@ -28,6 +30,8 @@
                 <?= L("STATUS_{$task->status}") ?>
             </button>
         </td>
+        <td><small><?= $task->creator('name') ?></small></td>
+        <td><small><?= $task->current('name') ?></small></td>
     </tr>
     <?php endforeach ?>
     </table>

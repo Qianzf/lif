@@ -121,15 +121,28 @@
 
 <?= $this->section("ldtdf/task/{$task->origin_type}", [], true) ?>
 
+<?php if ($task->notes): ?>
 <div id="task-notes">
-    <span class="stub-2"></span>
     <span class="text-info">[</span>
-    <small><?= L('TASK_REMARKS') ?></small>
+    <span><?= L('TASK_REMARKS') ?></span>
     <span class="text-info">]</span>
 </div>
 <textarea
 id="task-notes-md"
 style="display:none"><?= $this->escape($task->notes) ?></textarea>
+<?= $this->section('lib/editormd') ?>
+<script type="text/javascript">
+    $(function() {
+        editormd.markdownToHTML("task-notes", {
+            markdown : $('#task-notes-md').val(),
+            tocm : true,
+            markdownSourceCode : true,
+            emoji : true,
+        })
+    })
+</script>
+<?php endif ?>
+
 
 <?php if ($task->branch = trim($task->branch)): ?>
 <p>

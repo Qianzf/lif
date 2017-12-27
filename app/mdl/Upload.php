@@ -15,6 +15,7 @@ class Upload extends ModelBase
     protected $rules  = [
         'filekey'  => 'need|string',
         'filename' => 'string',
+        'user'     => 'int|min:1',
     ];
     
     // protected items that cann't update

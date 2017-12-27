@@ -212,9 +212,6 @@ class DeployTask extends \Lif\Core\Abst\Job
             );
 
             return true;
-        } else {
-            $env->status = $this->getEnvStatus();
-            $env->save();
         }
 
         if (!($server = $env->server()) || !$server->alive()) {
@@ -228,6 +225,9 @@ class DeployTask extends \Lif\Core\Abst\Job
 
             return true;
         }
+
+        $env->status = $this->getEnvStatus();
+        $env->save();
 
         $res = $this->deploy(
             $server, $this->getDeployCommands(
