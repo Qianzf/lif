@@ -134,7 +134,7 @@ class Story extends ModelBase
 
         if ($order = ($querys['trending'] ?? null)) {
             $relationship['sort'] = [
-                'trending.id' => $order,
+                'id' => $order,
             ];
         }
 

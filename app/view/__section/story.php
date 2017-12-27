@@ -48,7 +48,6 @@
     </dl>
 </div>
 
-<?php if ($story->extra): ?>
 <div id="story-others">
     <span class="text-info">[</span>
     <?= L('STORY_REMARKS') ?>
@@ -57,6 +56,7 @@
     id="story-others-md"
     style="display:none"><?= $story->extra ?></textarea>
 </div>
+
 <?= $this->section('lib/editormd') ?>
 <script type="text/javascript">
     function setACCheckStatus(id) {
@@ -102,4 +102,3 @@
         })
     })
 </script>
-<?php endif ?>

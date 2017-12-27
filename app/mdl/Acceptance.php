@@ -50,12 +50,18 @@ class Acceptance extends ModelBase
     )
     {
         if ($data) {
-            array_walk($data, function (&$item) use ($whose, $origin) {
-                $item = [
-                    'whose'  => $whose,
-                    'origin' => $origin,
-                    'detail' => $item,
-                ];
+            array_walk(
+                $data,
+                function ($item, $key) use (&$data, $whose, $origin) {
+                if ($item = trim($item)) {
+                    $data[$key] = [
+                        'whose'  => $whose,
+                        'origin' => $origin,
+                        'detail' => $item,
+                    ];
+                } else {
+                    unset($data[$key]);
+                }
             });
 
             return ispint($this->insert($data), false);

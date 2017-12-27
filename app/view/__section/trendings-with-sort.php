@@ -5,13 +5,13 @@
             <span class="stub-2"></span>
             <span class="text-info">[</span>
             <?= L("{$object}_TRENDING") ?>
-            <?php $sort = (isset($_GET['trending']) && in_array($_GET['trending'], [
-                'asc', 'desc',
-                ])) ? $_GET['trending'] : 'desc';
+            <?php $symbol = (
+                ($sort = ($_GET['trending'] ?? 'desc'))
+                && (ci_equal($sort, 'desc'))
+                ) ? '&#x25BC;' : '&#x25B2;';
             ?>
             <button
-            onclick="resortTrending('<?= $sort ?>')"
-            class="fa fa-sort-<?= $sort ?>"></button>
+            onclick="resortTrending('<?= $sort ?>')"><?= $symbol ?></button>
             <span class="text-info">]</span>
         </small>
 

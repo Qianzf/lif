@@ -60,6 +60,12 @@ class Story extends Ctl
             return redirect('/dep/stories');
         }
 
+        $querys = $this->request->gets();
+        
+        legal_or($querys, [
+            'trending' => ['ciin:desc,asc', 'desc'],
+        ]);
+
         $user       = share('user.id');
         $editable   = $story->canBeEditedBy($user);
         $assignable = $story->canBeDispatchedBy($user);
@@ -71,7 +77,7 @@ class Story extends Ctl
             $editable,
             $assignable,
             $story->tasks(),
-            $story->trendings()
+            $story->trendings($querys)
         );
     }
 

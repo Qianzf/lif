@@ -61,6 +61,7 @@
                     name="acceptance[<?= $acceptance->id ?>]"><?= $acceptance->detail ?></textarea>
                     <button
                     type="button"
+                    required
                     onclick="deleteAC(this)"
                     class="btn-delete"><?= L('DELETE') ?></button>
                 </div>
@@ -111,7 +112,7 @@
     function addAC() {
         let html = `
         <div>
-            <textarea name="acceptance[]"></textarea>
+            <textarea required name="acceptance[]"></textarea>
             <button
             type="button"
             onclick="deleteAC(this)"

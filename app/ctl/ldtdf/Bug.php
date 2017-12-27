@@ -53,6 +53,10 @@ class Bug extends Ctl
             return redirect('/dep/bugs');
         }
 
+        $querys     = $this->request->gets();
+        legal_or($querys, [
+            'trending' => ['ciin:desc,asc', 'desc'],
+        ]);
         $user       = share('user.id');
         $editable   = ($bug->canEdit($user));
         $assignable = ($bug->canBeDispatchedBy($user));
@@ -63,7 +67,7 @@ class Bug extends Ctl
             $editable,
             $assignable,
             $bug->tasks(),
-            $bug->trendings()
+            $bug->trendings($querys)
         );
     }
 
@@ -96,14 +100,16 @@ class Bug extends Ctl
 
         return $this->responseOnUpdated(
             $bug,
-            '/dep/bugs',
+            null,
             function () use ($bug, $user) {
-                if (!$bug->alive() || $bug->creator != $user) {
+                if (!$bug->alive() || ($bug->creator != $user)) {
                     return 'UPDATE_PERMISSION_DENIED';
                 }
             },
-            function () use ($bug, $user) {
-                $bug->addTrending('update', $user);
+            function ($status) use ($bug, $user) {
+                if (ispint($status, false)) {
+                    $bug->addTrending('update', $user);
+                }
             }
         );
     }

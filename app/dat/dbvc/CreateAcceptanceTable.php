@@ -22,6 +22,12 @@ class CreateAcceptanceTable extends Dit
             ->comment('Acceptances owner id');
 
             $table
+            ->bigint('version')
+            ->unsigned()
+            ->default(0)
+            ->comment('Related origin version ID');
+
+            $table
             ->text('detail')
             ->comment('Acceptance detail');
 

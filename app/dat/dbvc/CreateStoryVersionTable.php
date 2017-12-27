@@ -4,17 +4,17 @@ namespace Lif\Dat\Dbvc;
 
 use Lif\Core\Storage\Dit;
 
-class CreateStoryTable extends Dit
+class CreateStoryVersionTable extends Dit
 {
     public function commit()
     {
-        schema()->createIfNotExists('story', function ($table) {
-            $table->pk('id');
+        schema()->createIfNotExists('story_version', function ($table) {
+            $table->pk('id', 'bigint');
 
             $table
-            ->int('creator')
+            ->int('story')
             ->unsigned()
-            ->comment('User who created this story => `user`.`id`');
+            ->comment('Related story ID: `story`.`id`');
 
             $table
             ->string('title')
@@ -41,13 +41,12 @@ class CreateStoryTable extends Dit
             ->datetime('create_at')
             ->default('CURRENT_TIMESTAMP()', true);
 
-            $table
-            ->comment('Last version of story');
+            $table->comment('Story version log');
         });
     }
 
     public function revert()
     {
-        schema()->dropIfExists('story');
+        schema()->dropIfExists('story_version');
     }
 }

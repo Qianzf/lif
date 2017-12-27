@@ -222,7 +222,7 @@ class Task extends Mdl
         $query = db()
         ->table('user')
         ->select('id', 'name', 'role')
-        ->whereId('!=', $self)
+        // ->whereId('!=', $self)
         ->whereRole('!=', 'admin');
 
         if ($where) {
