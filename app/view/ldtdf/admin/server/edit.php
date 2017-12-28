@@ -15,8 +15,16 @@
     <label>
         <span class="label-title"><?= L('LOCATION') ?></span>
         <select name="location">
-            <option value="remote"><?= L('REMOTE') ?></option>
-            <option value="local"><?= L('LOCAL') ?></option>
+            <option
+            <?php if (ci_equal($server->location, 'remote')): ?>
+            selected
+            <?php endif ?>
+            value="remote"><?= L('REMOTE') ?></option>
+            <option
+            <?php if (ci_equal($server->location, 'local')): ?>
+            selected
+            <?php endif ?>
+            value="local"><?= L('LOCAL') ?></option>
         </select>
     </label>
 

@@ -246,7 +246,6 @@ class DeployTask extends \Lif\Core\Abst\Job
         } else {
             $user   = $this->userFail;
             $status = $this->statusFail;
-            $task->env   = null;
             $env->status = 'running';
             $env->save();
             $notes  = $res['err'] ?? L('INNER_ERROR');
@@ -262,9 +261,14 @@ class DeployTask extends \Lif\Core\Abst\Job
         $location = strtolower($server->location);
 
         if ('remote' == $location) {
-            return $this->getSSH2($server)->exec($commands);
+            $ssh2 = $this->getSSH2($server);
+            $res  = $ssh2->exec($commands);
+            $ssh2->exec('exit');
+            unset($ssh2);
+
+            return $res;
         } elseif ('local' == $location) {
-            return proc_exec($commands);
+            return proc_exec(build_cmds_with_env($commands));
         }
 
         return [
@@ -337,15 +341,22 @@ class DeployTask extends \Lif\Core\Abst\Job
         ];
     }
 
-    private function appendBuildCommands(array &$commands, $project)
+    public function appendBuildScript(array &$commands, string $script = null)
     {
-        if ($buildScript = trim($project->build_script)) {
+        if ($buildScript = trim($script)) {
             if (! preg_match('/(\ )+/u', $buildScript)) {
                 $commands[] = "chmod +x {$buildScript}";
             }
 
-            $commands[] = $buildScript;
+            $commands[] = "./{$buildScript}";
         }
+
+        return $this;
+    }
+
+    private function appendBuildCommands(array &$commands, $project)
+    {
+        $this->appendBuildScript($commands, $project->build_script);
     }
 
     private function appendConfigCommands(array &$commands, $project, $config)
@@ -356,7 +367,7 @@ class DeployTask extends \Lif\Core\Abst\Job
             if (! preg_match('/(\ )+/u', $configApi)) {
                 $commands[] = "chmod +x {$configApi}";
             }
-            $commands[] = "{$configApi} '{$config}'";
+            $commands[] = "./{$configApi} '{$config}'";
         }
     }
 

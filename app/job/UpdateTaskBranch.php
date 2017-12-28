@@ -22,7 +22,7 @@ class UpdateTaskBranch extends \Lif\Core\Abst\Job
         if ($task = db()
             ->table('task', 't')
             ->leftJoin(['project', 'p'], 't.project', 'p.id')
-            ->select('t.id', 't.env', 't.status', 'p.token')
+            ->select('t.id', 't.env', 't.status', 'p.token', 'p.build_script')
             ->where('t.env', '>', 0)
             ->where([
                 't.branch' => $branch,
@@ -43,18 +43,21 @@ class UpdateTaskBranch extends \Lif\Core\Abst\Job
                     excp('Missing system operator');
                 }
 
-                $res = $this
-                ->makeDeployer()
-                ->setRecyclable(false)
-                ->setBuildable(false)
-                // ->setCommands([
-                // ])
-                ->deploy($server, [
+                $commands = [
                     "cd {$env->path}",
                     'git add -A',
                     'git reset --hard HEAD',
                     "git pull origin {$branch} --no-edit"
-                ]);
+                ];
+
+                $res = $this
+                ->makeDeployer()
+                ->setRecyclable(false)
+                // ->setBuildable(false)
+                // ->setCommands([
+                // ])
+                ->appendBuildScript($commands, ($task['build_script'] ?? null))
+                ->deploy($server, $commands);
 
                 $err = null;
                 $status = 'SUCCESS';

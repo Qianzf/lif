@@ -125,7 +125,7 @@ class="invisible-default">
     })
     function removeAllSelectedResult() {
         $('input[name="assign_to"]').val('')
-        $('textarea[name="branch"]').val('')
+        $('input[name="branch"]').val('')
         $('textarea[name="assign_notes"]').val('')
     }
 </script>

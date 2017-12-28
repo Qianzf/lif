@@ -31,7 +31,13 @@
             </button>
         </td>
         <td><small><?= $task->creator('name') ?></small></td>
-        <td><small><?= $task->current('name') ?></small></td>
+        <td><small>
+            <?php if ($name = $task->current('name')): ?>
+            <?= $name ?>
+            <?php else: ?>
+            <button class="btn-info"><em><?= L('END') ?></em></button>
+            <?php endif ?>
+        </small></td>
     </tr>
     <?php endforeach ?>
     </table>

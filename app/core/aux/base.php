@@ -2144,23 +2144,34 @@ if (! fe('proc_exec')) {
             2 => ['pipe', 'w'],  // std-err
         ];
 
+        $cmds = is_array($cmds) ? build_cmds_with_env($cmds) : $cmds;
         $process = proc_open(
-            build_cmds($cmds),
+            $cmds,
             $descriptorspec,
             $pipes,
             $workdir,
             null
         );
 
-        $stdout = stream_get_contents($pipes[1]);
-        fclose($pipes[1]);
-        $stderr = stream_get_contents($pipes[2]);
-        fclose($pipes[2]);
+        $output = '';
+        $err    = L('INNER_ERROR');
+        $num    = -1;
+
+        if (is_resource($process)) {
+            fclose($pipes[0]);
+            stream_set_blocking($pipes[1], true);
+            stream_set_blocking($pipes[2], true);
+            $output = trim(stream_get_contents($pipes[1]));
+            fclose($pipes[1]);
+            $err    = trim(stream_get_contents($pipes[2]));
+            fclose($pipes[2]);
+            $num    = proc_close($process);
+        }
 
         return [
-            'num' => proc_close($process),
-            'out' => trim($stdout),
-            'err' => trim($stderr),
+            'num' => $num,
+            'out' => $output,
+            'err' => $err,
         ];
     }
 }

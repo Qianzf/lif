@@ -144,16 +144,21 @@ class Task extends Mdl
                 && ('ops' == strtolower($next->role))
             )
         )) {
-            if (('yes' == ($this->manually = ($params['manually'] ?? 'no')))) {
-                $this->deploy = $notes;
-            }
+            if (ci_equal('yes', ($params['dependency'] ?? null))) {
+                if ('yes' == ($params['manually'] ?? 'no')) {
+                    $this->manually = 'yes';
+                    $this->deploy   = $notes;
+                }
 
-            if ($config = ($params['config'] ?? null)) {
-                $this->config = $config;
-            }
+                if (! $this->branch) {
+                    $this->branch = $this->getDefaultBranch(
+                        $params['branch'] ?? null
+                    );
+                }
 
-            if ($branch = ($this->getDefaultBranch($params['branch'] ?? null))) {
-                $this->branch = $branch;
+                if ($config = ($params['config'] ?? null)) {
+                    $this->config = $config;
+                }
             }
         }
 

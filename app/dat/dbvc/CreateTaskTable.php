@@ -55,7 +55,6 @@ class CreateTaskTable extends Dit
             $table
             ->string('branch', 64)
             ->nullable()
-            ->unique()
             ->comment('Task related project branch in vcs');
 
             $table

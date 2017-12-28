@@ -102,7 +102,9 @@
     <small><?= L('TASK_STATUS') ?></small>
     <span class="text-info">]</span>
     <button class="btn-info"><?= L("STATUS_{$task->status}") ?></button>
-    <i><small>(<?= $task->current('name') ?>)</small></i>
+    <?php if ($name = $task->current('name')): ?>
+    <i><small>(<?= $name ?>)</small></i>
+    <?php endif ?>
 </p>
 
 <p>

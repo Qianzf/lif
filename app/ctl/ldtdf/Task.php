@@ -132,7 +132,7 @@ class Task extends Ctl
             'assign_to'    => 'need|int|min:1',
             'action'       => 'need|string|notin:0',
             'dependency'   => ['ciin:yes,no', 'no'],
-            'config'       => 'json', 
+            'config'       => 'string', 
             'branch'       => 'when:dependency=yes|string|notin:0',
             'manually'     => 'when:dependency=yes|need|ciin:yes,no',
             'assign_notes' => 'when:manually=yes|string',

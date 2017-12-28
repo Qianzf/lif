@@ -92,25 +92,25 @@ class User extends Ctl
             return redirect('/dep/users/login');
         }
 
-        $request    = $this->request->params();
+        $request    = $this->request->posts();
         $oldData    = $user->items();
         $needUpdate = false;
         $conflict   = [];
 
         foreach ($request as $key => $value) {
-            if ('pswdnew' == $key) {
-                if (! $request->pswdold) {
+            if (('pswdnew' == $key) && (! empty_safe($value))) {
+                if (! ($pswdold = ($request['pswdold'] ?? false))) {
                     share_error_i18n('PROVIDE_OLD_PASSWD');
                     return redirect($this->route);
                 }
-                if (! password_verify($request->pswdold, $user->passwd)) {
+                if (! password_verify($pswdold, $user->passwd)) {
                     share_error_i18n('ILLEGAL_OLD_PASSWD');
                     return redirect($this->route);
                 }
 
                 $needUpdate   = true;
                 $user->passwd = password_hash(
-                    $request->pswdnew,
+                    $value,
                     PASSWORD_DEFAULT
                 );
             } elseif (isset($oldData[$key]) && ($user->$key != $value)) {
@@ -135,10 +135,9 @@ class User extends Ctl
             if ($user->save() >= 0) {
                 unset($user->passwd);
                 share('user', $user->items());
-
                 $err = 'UPDATE_OK';
 
-                if ($request->passwordNew) {
+                if ($request['pswdnew'] ?? false) {
                     session()->delete('user');
 
                     redirect('/dep/users/login');
