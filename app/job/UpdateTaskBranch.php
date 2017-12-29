@@ -57,6 +57,9 @@ class UpdateTaskBranch extends \Lif\Core\Abst\Job
                 // ->setCommands([
                 // ])
                 ->appendBuildScript($commands, ($task['build_script'] ?? null))
+                ->appendCommands($commands, [
+                    'chown -R www:www `pwd`',
+                ])
                 ->deploy($server, $commands);
 
                 $err = null;

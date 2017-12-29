@@ -15,11 +15,6 @@ class App
     {
         init();
 
-        $this->setStrategy();
-    }
-
-    private function setStrategy()
-    {
         $this->strategy = \Lif\Core\Abst\Factory::make(
             context(),
             nsOf('strategy')

@@ -268,7 +268,7 @@ class DeployTask extends \Lif\Core\Abst\Job
 
             return $res;
         } elseif ('local' == $location) {
-            return proc_exec(build_cmds_with_env($commands));
+            return shexec($commands);
         }
 
         return [
@@ -341,14 +341,30 @@ class DeployTask extends \Lif\Core\Abst\Job
         ];
     }
 
+    public function appendCommands(array &$cmds, array $appends = null)
+    {
+        if ($appends) {
+            $cmds = array_filter(array_merge($cmds, $appends));
+        }
+
+        return $this;
+    }
+
     public function appendBuildScript(array &$commands, string $script = null)
     {
         if ($buildScript = trim($script)) {
-            if (! preg_match('/(\ )+/u', $buildScript)) {
-                $commands[] = "chmod +x {$buildScript}";
+            if (preg_match('/(\ )+/u', $buildScript)) {
+                $cmds = [$buildScript];
+            } else {
+                $cmds = @explode(
+                    PHP_EOL,
+                    file_get_contents(pathOf('root', $buildScript))
+                );
             }
 
-            $commands[] = "./{$buildScript}";
+            if ($cmds) {
+                $this->appendCommands($commands, $cmds);
+            }
         }
 
         return $this;
@@ -405,7 +421,9 @@ class DeployTask extends \Lif\Core\Abst\Job
             $this->getProjectDeployCommands($project, $config)
         ));
 
-        $commands[] = 'chown -R www:www `pwd`';
+        $this->appendCommands($commands, [
+            'chown -R www:www `pwd`',
+        ]);
 
         return $commands;
     }

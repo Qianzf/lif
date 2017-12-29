@@ -2095,7 +2095,7 @@ if (! fe('stringify')) {
 if (! fe('build_cmds_with_env')) {
     function build_cmds_with_env($cmds) : string {
         $_cmds = build_cmds($cmds);
-        return 'export PATH='
+        return '(export PATH='
         .implode(':', [
             '/bin',
             '/sbin',
@@ -2106,8 +2106,7 @@ if (! fe('build_cmds_with_env')) {
             '/usr/local/php/bin',
             '~/bin',
         ])
-        .' && '
-        .$_cmds;
+        .") && {$_cmds}";
     }
 }
 if (! fe('build_cmds')) {
@@ -2116,7 +2115,7 @@ if (! fe('build_cmds')) {
             excp('No commands to execute.');            
         }
         if (is_string($cmds)) {
-            return '('.$cmds.')';
+            return "({$cmds})";
         }
 
         if (is_array($cmds)) {
@@ -2124,6 +2123,26 @@ if (! fe('build_cmds')) {
         }
 
         excp('Illegal commands type, require string or array');
+    }
+}
+if (! fe('shexec')) {
+    function shexec($cmds) {
+        if (! fe('exec')) {
+            excp(
+                'PHP function `exec()` was disabled'
+            );
+        }
+
+        $cmds   = is_array($cmds) ? build_cmds_with_env($cmds) : $cmds;
+        $cmds   = "{$cmds} 2>&1";
+        $output = $code = null;
+        $last   = exec($cmds, $output, $code);
+
+        return [
+            'num' => $code,
+            'err' => ((0 == $code) ? null : $last),
+            'out' => $output,
+        ];
     }
 }
 if (! fe('proc_exec')) {
