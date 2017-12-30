@@ -1,5 +1,5 @@
 <?= $this->layout('main') ?>
-<?= $this->title([L('MY_UPLOAD'), L('LDTDFMS')]) ?>
+<?= $this->title(ldtdf('MY_UPLOAD')) ?>
 <?= $this->section('common') ?>
 
 <dd>

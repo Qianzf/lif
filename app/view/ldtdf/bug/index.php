@@ -1,5 +1,5 @@
 <?= $this->layout('main') ?>
-<?= $this->title([L('BUG_LIST'), L('LDTDFMS')]) ?>
+<?= $this->title(ldtdf('BUG_LIST')) ?>
 <?= $this->section('common') ?>
 
 <dl class="list">

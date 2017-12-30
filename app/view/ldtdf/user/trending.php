@@ -1,5 +1,5 @@
 <?= $this->layout('main') ?>
-<?= $this->title([L('TRENDING'), L('LDTDFMS')]) ?>
+<?= $this->title(ldtdf('TRENDING')) ?>
 <?= $this->section('common') ?>
 <?= $this->section('filter/user') ?>
 <?= $this->section('trendings') ?>

@@ -1,5 +1,5 @@
 <?= $this->layout('main') ?>
-<?= $this->title([L('TASK_LIST'), L('LDTDFMS')]) ?>
+<?= $this->title(ldtdf('TASK_LIST')) ?>
 <?= $this->section('common') ?>
 
 <?php if ($displaymenu ?? true): ?>

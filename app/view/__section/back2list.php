@@ -1,13 +1,8 @@
 <?php $mid    = $model->id ?? null; ?>
 <?php $action = $action ?? ($mid ? 'EDIT' : 'ADD'); ?>
 <?php $key    = $key ?? 'UNKNOWN'; ?>
-<?php $title  = L("{$action}_{$key}"); ?>
 
-<?= $this->title([
-        $title,
-        L('LDTDFMS')
-    ])
-?>
+<?= $this->title($title  = ldtdf("{$action}_{$key}")) ?>
 <?= $this->section('common') ?>
 <h4>
     <?= $title ?>

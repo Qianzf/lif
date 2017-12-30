@@ -1,5 +1,5 @@
 <?= $this->layout('main') ?>
-<?= $this->title([L('USER_MANAGE'), L('LDTDFMS')]) ?>
+<?= $this->title(ldtdf('USER_MANAGE')) ?>
 <?= $this->section('common') ?>
 
 <dl>

@@ -1,5 +1,5 @@
 <?= $this->layout('main') ?>
-<?= $this->title([L('GROUP_MANAGE'), L('LDTDFMS')]) ?>
+<?= $this->title(ldtdf('GROUP_MANAGE')) ?>
 <?= $this->section('common') ?>
 
 <dl>

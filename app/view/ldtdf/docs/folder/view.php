@@ -1,5 +1,5 @@
 <?= $this->layout('main') ?>
-<?= $this->title([L('VIEW_DOC_FOLDER'), L('LDTDFMS')]) ?>
+<?= $this->title(ldtdf('VIEW_DOC_FOLDER')) ?>
 <?= $this->section('common') ?>
 
 <h2>

@@ -2,6 +2,7 @@
 
 return [
     'HOMEPAGE' => '首页',
+    'TFMS' => '任务流管理系统',
     'LDTDFMS'  => 'LDTDF 任务流管理系统',
     'USER' => '用户',
     'PROFILE' => '信息',

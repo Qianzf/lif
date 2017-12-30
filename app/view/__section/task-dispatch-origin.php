@@ -1,7 +1,5 @@
-<?php $title = L("VIEW_{$taskOrigin->type}"); ?>
-
 <?= $this->layout('main') ?>
-<?= $this->title([$title, L('LDTDFMS')]) ?>
+<?= $this->title($title = ldtdf("VIEW_{$taskOrigin->type}")) ?>
 <?= $this->section('common') ?>
 
 <h4>

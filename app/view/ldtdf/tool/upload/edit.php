@@ -1,5 +1,5 @@
 <?= $this->layout('main') ?>
-<?= $this->title([L('EDIT_UPLOAD_FILE'), L('LDTDFMS')]) ?>
+<?= $this->title(ldtdf('EDIT_UPLOAD_FILE')) ?>
 <?= $this->section('back2list', [
     'model' => $upload,
     'key' => 'UPLOAD_FILE',

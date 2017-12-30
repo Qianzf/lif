@@ -1,5 +1,5 @@
 <?= $this->layout('main') ?>
-<?= $this->title([L('FILE_UPLOAD'), L('LDTDFMS')]) ?>
+<?= $this->title(ldtdf('FILE_UPLOAD')) ?>
 <?= $this->section('common') ?>
 <h4>
     <?= L('UPLOAD_FILE') ?>

@@ -1,5 +1,5 @@
 <?= $this->layout('main') ?>
-<?= $this->title([L('WAITTING_REGRESSION_LIST'), L('LDTDFMS')]) ?>
+<?= $this->title(ldtdf('WAITTING_REGRESSION_LIST')) ?>
 <?= $this->section('back2list', [
     'model' => $env,
     'key'   => 'REGRESSION_TEST_ENV_TASK',

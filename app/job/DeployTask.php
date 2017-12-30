@@ -5,6 +5,7 @@ namespace Lif\Job;
 class DeployTask extends \Lif\Core\Abst\Job
 {
     protected $task          = null;
+    protected $envType       = null;
     protected $statusSuccess = null;
     protected $statusFail    = null;
     protected $userSuccess   = null;
@@ -60,8 +61,12 @@ class DeployTask extends \Lif\Core\Abst\Job
         ]);
     }
 
-    public function getEnv($task, $project)
+    public function parseTaskStatus($task)
     {
+        if (! $task->alive()) {
+            return false;
+        }
+
         $notMaster = ('master' != strtolower($task->branch));
 
         if ($notMaster) {
@@ -74,14 +79,14 @@ class DeployTask extends \Lif\Core\Abst\Job
         switch (strtolower($task->status)) {
             case 'waitting_dep2test': {
                 // Check if task aleay deploy to a env already
-                $type = ['test', 'emrg'];
+                $this->envType       = ['test', 'emrg'];
                 $this->userSuccess   = $this->userFail = $task->last;
                 $this->statusSuccess = 'waitting_confirm_env';
                 $this->statusFail    = 'waitting_fix_test';
             } break;
 
             case 'waitting_dep2stage': {
-                $type = 'stage';
+                $this->envType       = 'stage';
                 $this->userSuccess   = $this->findLastTester($task);
                 $this->userFail      = $this->findLastDeveloper($task);
                 $this->statusSuccess = 'waitting_2nd_test';
@@ -89,7 +94,7 @@ class DeployTask extends \Lif\Core\Abst\Job
             } break;
 
             case 'waitting_dep2stablerc': {
-                $type = 'rc';
+                $this->envType       = 'rc';
                 $this->userSuccess   = $task->creator;
                 $this->userFail      = $this->findLastDeveloper($task);
                 $this->statusSuccess = 'waitting_regression';
@@ -104,7 +109,7 @@ class DeployTask extends \Lif\Core\Abst\Job
             } break;
 
             case 'waitting_dep2prod': {
-                $type = 'prod';
+                $this->envType       = 'prod';
                 $this->userSuccess   = $task->creator;
                 $this->userFail      = $this->findLastDeveloper($task);
                 $this->statusSuccess = 'online';
@@ -119,8 +124,13 @@ class DeployTask extends \Lif\Core\Abst\Job
             default: return false; break;
         }
 
+        return true;
+    }
+
+    public function getEnv($task, $project)
+    {
         if ($task->env) {
-            if ($env = $task->environment(['type' => $type])) {
+            if ($env = $task->environment(['type' => $this->envType])) {
                 return $env;
             } else {
                 $this->recycleEnv = $task->env;
@@ -128,7 +138,7 @@ class DeployTask extends \Lif\Core\Abst\Job
         }
 
         return $project->environments([], [
-            'type'   => $type,
+            'type'   => $this->envType,
             'status' => 'running',
         ], 1);
     }
@@ -171,27 +181,11 @@ class DeployTask extends \Lif\Core\Abst\Job
     // 5. Switch deploy status and assign to proper person with remarks
     public function run() : bool
     {
-        if (! ($task = $this->getTask())) {
-            return true;
-        }
-
-        if ('ops' != (strtolower($task->current('role')))) {
-            return true;
-        }
-
-        if ($task->alive()) {
-            if (! ($branch = trim($task->branch))) {
-                $this->assign(
-                    $task,
-                    $task->current,
-                    $this->findLastDeveloper($task),
-                    $this->statusFail,
-                    L('TASK_BRANCH_NOT_FOUND')
-                );
-
-                return true;
-            }
-        } else {
+        if ((! ($task = $this->getTask()))
+            || (! $task->alive())
+            || ('ops' != (strtolower($task->current('role'))))
+            || (true !== $this->parseTaskStatus($task))
+        ) {
             return true;
         }
 
@@ -199,6 +193,14 @@ class DeployTask extends \Lif\Core\Abst\Job
             || !$project->alive()
             || ('web' != strtolower($project->type))
         ) {
+            $this->assign(
+                $task,
+                $task->current,
+                $task->last,
+                $this->statusFail,
+                L('NO_PROJECT')
+            );
+
             return true;
         }
 
@@ -207,8 +209,20 @@ class DeployTask extends \Lif\Core\Abst\Job
                 $task,
                 $task->current,
                 $task->last,
-                ($this->statusFail ?? 'waitting_fix_test'),
+                $this->statusFail,
                 L('NO_ENV_FOUND')
+            );
+
+            return true;
+        }
+
+        if (! ($branch = trim($task->branch))) {
+            $this->assign(
+                $task,
+                $task->current,
+                $this->findLastDeveloper($task),
+                $this->statusFail,
+                L('TASK_BRANCH_NOT_FOUND')
             );
 
             return true;
@@ -286,13 +300,13 @@ class DeployTask extends \Lif\Core\Abst\Job
         $task, 
         int $from,
         int $to,
-        string $status,
+        string $status = null,
         string $notes = null
     )
     {
         $task->last    = $from;
         $task->current = $to;
-        $task->status  = $status;
+        $task->status  = ($status ?? 'UNKNOWN_STATUS');
 
         if ($task->save()
             && $task->addTrending('assign', $from, $to, $notes)

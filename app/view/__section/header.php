@@ -1,6 +1,6 @@
 <header>
     <a href="/dep">
-        <button class="btn-logo"><em><?= L('LDTDFMS') ?></em></button>
+        <button class="btn-logo"><em><?= ldtdf() ?></em></button>
     </a>
 
     <span class="stub"></span>

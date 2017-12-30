@@ -162,7 +162,7 @@ class Task extends Mdl
             }
         }
 
-        if (($this->save() >= 0)
+        if (ispint($this->save())
             && $this->enqueueTaskJobs($deploy)
             && ($this->addTrending(
                 'assign',

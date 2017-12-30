@@ -1,6 +1,5 @@
-<?php $title = L('USER_LOGIN').' - '.L('LDTDFMS'); ?>
 <?= $this->layout('login') ?>
-<?= $this->title($title) ?>
+<?= $this->title($title = ldtdf('USER_LOGIN')) ?>
 
 <h4><?= $title ?></h4>
 

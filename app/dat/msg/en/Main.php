@@ -2,6 +2,7 @@
 
 return [
     'HOMEPAGE' => 'Home',
+    'TFMS' => 'Taskflow Management System',
     'LDTDFMS'  => 'LDTDF Taskflow Management System',
     'USER' => 'User',
     'PROFILE' => 'Profile',

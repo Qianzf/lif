@@ -1,5 +1,5 @@
 <?= $this->layout('main') ?>
-<?= $this->title([L('VIEW_TASK'), L('LDTDFMS')]) ?>
+<?= $this->title(ldtdf('VIEW_TASK')) ?>
 <?= $this->section('common')  ?>
 
 <h4>

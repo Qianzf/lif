@@ -144,8 +144,6 @@ class Task extends Ctl
             return redirect($this->route);
         }
 
-        unset($data['dependency']);
-
         share_error_i18n(
             $task->assign($data) ? 'ASSIGN_OK' : 'ASSIGN_FAILED'
         );

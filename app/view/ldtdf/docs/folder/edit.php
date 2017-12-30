@@ -1,5 +1,5 @@
 <?= $this->layout('main') ?>
-<?= $this->title([L('FOLDER_LIST'), L('LDTDFMS')]) ?>
+<?= $this->title(ldtdf('FOLDER_LIST')) ?>
 <?= $this->section('back2list', [
     'model'   => $folder,
     'key'     => 'FOLDER',
