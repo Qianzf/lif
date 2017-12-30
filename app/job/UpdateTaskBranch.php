@@ -22,7 +22,16 @@ class UpdateTaskBranch extends \Lif\Core\Abst\Job
         if ($task = db()
             ->table('task', 't')
             ->leftJoin(['project', 'p'], 't.project', 'p.id')
-            ->select('t.id', 't.env', 't.status', 'p.token', 'p.build_script')
+            ->select(
+                't.id',
+                't.env',
+                't.status',
+                't.config',
+                'p.token',
+                'p.build_script',
+                'p.config_api',
+                'p.config_order'
+            )
             ->where('t.env', '>', 0)
             ->where([
                 't.branch' => $branch,
@@ -50,13 +59,31 @@ class UpdateTaskBranch extends \Lif\Core\Abst\Job
                     "git pull origin {$branch} --no-edit"
                 ];
 
-                $res = $this
+                $deployer = $this
                 ->makeDeployer()
                 ->setRecyclable(false)
                 // ->setBuildable(false)
                 // ->setCommands([
                 // ])
-                ->appendBuildScript($commands, ($task['build_script'] ?? null))
+                ;
+
+                $config      = ($task['config'] ?? null);
+                $configApi   = ($task['config_api'] ?? null);
+                $buildScript = ($task['build_script'] ?? null);
+
+                if (ci_equal(($task['config_order'] ?? null), 'before')) {
+                    $deployer
+                    ->appendConfigScript($commands, $configApi)
+                    ->appendBuildScript($commands, $buildScript)
+                    ;
+                } else {
+                    $deployer
+                    ->appendBuildScript($commands, $buildScript)
+                    ->appendConfigScript($commands, $configApi)
+                    ;
+                }
+
+                $res = $deployer
                 ->appendCommands($commands, [
                     'chown -R www:www `pwd`',
                 ])
@@ -76,7 +103,7 @@ class UpdateTaskBranch extends \Lif\Core\Abst\Job
                     'action'    => 'update_branch',
                     'ref_state' => "UPDATE_TASK_BRANCH_{$status}",
                     'ref_type'  => 'task',
-                    'ref_id'    => $task['id'],
+                    'ref_id'    => ($task['id'] ?? null),
                     'notes'     => $err,
                 ]);
             }

@@ -384,6 +384,24 @@ class DeployTask extends \Lif\Core\Abst\Job
         return $this;
     }
 
+    public function appendConfigScript(
+        array &$commands,
+        string $script = null,
+        string $config = null
+    )
+    {
+        if ($api = trim($script) && ($config = trim($config))) {
+            if (preg_match('/(\ )+/u', $api)) {
+                $commands[] = "{$api} '{$config}'";
+            } else {
+                $commands[] = "chmod +x {$api}";
+                $commands[] = "./{$api} '{$config}'";
+            }
+        }
+
+        return $this;
+    }
+
     private function appendBuildCommands(array &$commands, $project)
     {
         $this->appendBuildScript($commands, $project->build_script);
@@ -391,14 +409,7 @@ class DeployTask extends \Lif\Core\Abst\Job
 
     private function appendConfigCommands(array &$commands, $project, $config)
     {
-        if ($configApi = trim($project->config_api)
-            && ($config = trim($config))
-        ) {
-            if (! preg_match('/(\ )+/u', $configApi)) {
-                $commands[] = "chmod +x {$configApi}";
-            }
-            $commands[] = "./{$configApi} '{$config}'";
-        }
+        $this->appendConfigScript($commands, $project->config_api, $config);
     }
 
     public function getProjectDeployCommands(
