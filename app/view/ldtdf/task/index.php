@@ -48,6 +48,7 @@
         </th>
 
         <?php if ($displayposition ?? true): ?>
+        <?php $users[0] = '>> '.L('END').' <<'; ksort($users); ?>
         <th>
             <?= L('FLOW_POSITION') ?>
             <?= $this->section('filter/common', [
@@ -87,7 +88,13 @@
         <td><?= $task->creator('name') ?></td>
 
         <?php if ($displayposition ?? true): ?>
-        <td><?= $task->current('name') ?></td>
+        <td>
+            <?php if ($name = $task->current('name')): ?>
+            <?= $name ?>
+            <?php else: ?>
+            <button class="btn-info"><em><?= L('END') ?></em></button>
+            <?php endif ?>
+        </td>
         <?php endif ?>
 
         <td>

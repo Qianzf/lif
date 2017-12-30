@@ -106,7 +106,7 @@ class Task extends Mdl
                 )
                 ->on('task_deploy')
                 ->try(3)
-                ->timeout(10);
+                ->timeout(600);    // 10 minutes
             }
 
             if (($current = $this->current()) && $current->alive()) {
@@ -115,7 +115,7 @@ class Task extends Mdl
                 )
                 ->on('mail_send')
                 ->try(3)
-                ->timeout(3);
+                ->timeout(300);    // 5 minutes
             }
         }
 
@@ -301,7 +301,19 @@ class Task extends Mdl
         return $this->$taskStatusHandler();
     }
 
-    public function canBeEditedBY(int $user)
+    public function canBeUpdatedBy(int $user)
+    {
+        return (true
+            && ($env = $this->environment())
+            && ($env->alive())
+            && ci_equal($env->status, 'locked')
+            && ($user = model(User::class, $user))
+            && ($user->alive())
+            && ci_equal($user->role, 'dev')
+        );
+    }
+
+    public function canBeEditedBy(int $user)
     {
         if ($user) {
             return (
@@ -337,7 +349,7 @@ class Task extends Mdl
 
     public function confirm(int $user)
     {
-        if ($this->canBeConfirmedBY($user)) {
+        if ($this->canBeConfirmedBy($user)) {
             $role = ucfirst(strtolower($this->current()->role));
             if ($status = $this->getStatusConfirmed()) {
                 $this->status = $status;
@@ -404,7 +416,7 @@ class Task extends Mdl
         return false;
     }
     
-    public function canBeConfirmedBY(int $user)
+    public function canBeConfirmedBy(int $user)
     {
         if ($user) {
             $status = strtolower($this->status);

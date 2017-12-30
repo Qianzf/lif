@@ -103,6 +103,7 @@ class Run extends Command
                 $success = false;
                 $pid     = pcntl_fork();
                 $expire  = time()+$timeout;
+                $childStatus = null;
 
                 if (-1 === $pid) {
                     excp('Fork failed.');
@@ -119,8 +120,11 @@ class Run extends Command
                     exit(posix_kill(posix_getpid(), SIGKILL));
                 } else {
                     $GLOBALS['LIF_CHILD_PROCESSES'][] = $pid;
+                    
+                    // Ignore SIGCHLD signal to avoid zombie process
+                    // pcntl_signal(SIGCHLD, SIG_IGN);
+
                     // Timeout check in master process
-                    pcntl_signal(SIGCHLD, SIG_IGN);
                     do {
                         // check if child process exists now
                         if (shm_has_var($shm, JOB_STATUS)
@@ -141,6 +145,11 @@ class Run extends Command
                         $this->releaseCurrentJob();
                     }
                 }
+
+                // Ignore SIGCHLD signal to avoid zombie process
+                // And fix POSIX system call `waitpid()` error return:
+                // 'error: waitpid for fetch failed: No child processes'
+                pcntl_waitpid(-1, $childStatus, WNOHANG);
 
                 @shm_remove($shm);
 

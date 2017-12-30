@@ -97,7 +97,7 @@ class="invisible-default">
 <script type="text/javascript">
     $('#assign-to').click(function (e) {
         e.preventDefault()
-        dialog = $("#task-assign-form" ).dialog({
+        dialog = $("#task-assign-form").dialog({
           autoOpen: true,
           height: 550,
           width: '45%',

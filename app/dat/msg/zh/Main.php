@@ -340,4 +340,6 @@ return [
     'AT_LEAST_ONE' => '最少一个',
     'AC' => '验收条件',
     'END' => '终点',
+    'ENVUPDATE_ENQUEUED' => '环境更新任务已加入队列',
+    'ENVUPDATE_ENQUEUE_FAILED' => '添加环境更新任务失败',
 ];

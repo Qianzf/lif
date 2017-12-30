@@ -11,13 +11,13 @@
 
     <em><?= $origin->title ?></em>
 
-    <?php if (isset($editable) && $editable): ?>
+    <?php if ($editable ?? false): ?>
     <a href="/dep/tasks/<?= $task->id ?>/edit">
         <button><?= L('EDIT') ?></button>
     </a>
     <?php endif ?>
 
-    <?php if (isset($confirmable) && $confirmable): ?>
+    <?php if ($confirmable ?? false): ?>
     <form
     method="POST"
     action="/dep/tasks/<?= $task->id?>/confirm"
@@ -26,6 +26,15 @@
         <input type="submit" value="<?= L('CONFIRM') ?>">
     </form>
     <?php endif ?>
+    
+    <?php if ($updatable ?? false): ?>
+    <?= $this->section('update-task-env-form', [
+        'action' => "/dep/tasks/{$task->id}/env",
+        'branch' => $task->branch,
+        'config' => $task->config,
+    ]) ?>
+    <?php endif ?>
+
     <?php if (isset($assignable) && $assignable): ?>
         <?php $dependency = ($deployable ?? false) ? '-with-dependencies' : '';
         ?>

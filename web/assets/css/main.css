@@ -281,7 +281,7 @@ input:invalid {
 }
 .comments {
     background-color: #F8FAFE;
-    display: inline-block;
+    display: block;
     width: 80%;
     height: 24px;
     overflow: auto;

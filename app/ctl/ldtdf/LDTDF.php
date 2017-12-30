@@ -27,14 +27,15 @@ class LDTDF extends Ctl
             && ($branch = ($payload['ref'] ?? false))
         ) {
             enqueue(
-                (new \Lif\Job\UpdateTaskBranch)
+                (new \Lif\Job\UpdateTaskEnv)
+                ->setOrigin('gitlab')
                 ->setUrl($url)
                 ->setBranch($branch)
                 ->setToken(server('HTTP_X_GITLAB_TOKEN'))
             )
             ->on('update_task_branch')
             ->try(3)
-            ->timeout(5);
+            ->timeout(600);    // 10 minutes
         }
     }
 }

@@ -173,7 +173,7 @@ class Task extends Ctl
             'project'  => ['int|min:1', null],
             'creator'  => ['int|min:1', null],
             'search'   => ['string', null],
-            'position' => ['int|min:1', null],
+            'position' => ['int|min:0', null],
             'status'   => ['string|notin:-1', null],
             'sort'     => ['ciin:asc,desc', 'desc'],
         ]);
@@ -217,7 +217,7 @@ class Task extends Ctl
             if ($creator = $querys['creator']) {
                 $task->whereCreator($creator);
             }
-            if ($current = $querys['position']) {
+            if (! empty_safe($current = $querys['position'])) {
                 $task->whereCurrent($current);
             }
             if ($status = $querys['status']) {
@@ -368,17 +368,18 @@ class Task extends Ctl
         $user        = share('user.id');
         $activeable  = $task->canBeActivatedBy($user);
         $cancelable  = $task->canBeCanceledBy($user);
-        $confirmable = $task->canBeConfirmedBY($user);
-        $editable    = $task->canBeEditedBY($user);
+        $confirmable = $task->canBeConfirmedBy($user);
+        $editable    = $task->canBeEditedBy($user);
         $assignable  = $task->canBeAssignedBy($user);
         $untestable  = !$task->canBeTestedBy($user);
         $deployable  = $task->deployable();
+        $updatable   = $task->canBeUpdatedBy($user);
         $acceptances = ($story && $story->alive())
         ? $story->getAcceptances()
         : null;
 
         view('ldtdf/task/info')
-        ->withOriginTaskBugStoryAcceptancesTasksProjectTrendingsActiveableCancelableConfirmableEditableUntestableAssignableDeployableAssigns(
+        ->withOriginTaskBugStoryAcceptancesTasksProjectTrendingsActiveableCancelableConfirmableEditableUntestableAssignableDeployableUpdatableAssigns(
             $task->origin(),
             $task,
             $bug,
@@ -394,6 +395,7 @@ class Task extends Ctl
             $untestable,
             $assignable,
             $deployable,
+            $updatable,
             $task->getAssignableStatuses()
         )
         ->share('hide-search-bar', true);
@@ -424,6 +426,50 @@ class Task extends Ctl
                 $task->addTrending('create', $user);
             }
         );
+    }
+
+    public function updateEnv(TaskModel $task)
+    {
+        if (! $task->alive()) {
+            share_error_i18n('NO_TASK');
+
+            return redirect('/dep/tasks');
+        }
+
+        $data    = $this->request->posts();
+        $branch  = $config = null;
+        $updated = true;
+        legal_and($data, [
+            'branch' => ['string', &$branch],
+            'config' => ['string', &$config],
+        ]);
+
+        // update task branch and config if different
+        if (($task->branch != $branch) || ($task->config != $config)) {
+            $task->branch = $branch;
+            $task->config = $config;
+            $updated = ispint($task->save());
+        }
+
+        // enqueue `update_task_branch` queue job
+        if ($updated) {
+            enqueue(
+                (new \Lif\Job\UpdateTaskEnv)
+                ->setOrigin('ldtdf')
+                ->setTask($task->id)
+            )
+            ->on('update_task_branch')
+            ->try(3)
+            ->timeout(600);    // 10 minutes
+
+            $msg = 'ENVUPDATE_ENQUEUED';
+        } else {
+            $msg = 'ENVUPDATE_ENQUEUE_FAILED';
+        }
+
+        share_error_i18n($msg);
+
+        return redirect("/dep/tasks/{$task->id}");
     }
 
     public function update(TaskModel $task)

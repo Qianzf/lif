@@ -110,6 +110,7 @@ $this->group([
         $this->post('new', 'create');
         $this->get('{id}', 'info');
         $this->post('{id}', 'update');
+        $this->post('{id}/env', 'updateEnv');
         $this->get('{id}/edit', 'edit');
         $this->get('{id}/assign', 'assign');
         $this->post('{id}/assign', 'assignTo');
