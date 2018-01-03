@@ -366,7 +366,7 @@ class Task extends Ctl
     {
         if (! $task->alive()) {
             share_error_i18n('NO_TASK');
-            return redirect(share('url_previous'));
+            return redirect('/dep/tasks');
         }
 
         $querys = $this->request->gets();

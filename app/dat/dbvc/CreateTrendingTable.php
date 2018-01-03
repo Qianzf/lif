@@ -42,7 +42,7 @@ class CreateTrendingTable extends Dit
             ->comment('User action target user: `user`.`id`');
 
             $table
-            ->tinytext('notes')
+            ->text('notes')
             ->nullable()
             ->comment('User action related notes');
             

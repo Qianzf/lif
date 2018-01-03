@@ -139,7 +139,8 @@ final class SSH2
             ];
         }
 
-        $_cmds = build_cmds($cmds).';echo -ne "#SSH2_EXEC_EXIT_STATUS#$?"';
+        $_cmds = build_cmds_with_env($cmds)
+        .';echo -ne "#SSH2_EXEC_EXIT_STATUS#$?"';
 
         $streamOut = ssh2_exec($this->conn, $_cmds);
         $streamErr = ssh2_fetch_stream($streamOut, SSH2_STREAM_STDERR);
