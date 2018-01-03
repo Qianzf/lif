@@ -14,4 +14,7 @@
     'editor.md/lib/codemirror/addons.min',
     'editor.md/lib/marked.min',
     'editor.md/lib/prettify.min',
+    'editor.md/lib/prettify.min',
+    // 'editor.md/plugins/qiniu-dialog/qiniu-dialog.min',
+    'editor.md/plugins/qiniu-dialog/qiniu-dialog',
 ]) ?>

@@ -125,13 +125,85 @@ function tryDisplayEditormd()
         for (let i in EditorMDObjects) {
             let editor = editormd(EditorMDObjects[i].id, {
                 width   : '80%',
-                height  : 300,
+                height  : 400,
                 syncScrolling : 'single',
                 path    : '/assets/editor.md/lib/',
-                placeholder : EditorMDObjects[i].placeholder
-                // emoji : true
+                placeholder : EditorMDObjects[i].placeholder,
+                emoji : true,
                 // saveHTMLToTextarea : true,
-                // previewTheme: 'github'
+                // previewTheme: 'github',
+                // imageUpload : true,
+                // imageFormats : ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'webp'],
+                // imageUploadURL : '/uploadfile',
+                toolbarIcons: function () {
+                    return [
+                        'undo',
+                        'redo',
+                        'clear',
+                        '|',
+                        'bold',
+                        'del',
+                        'italic',
+                        'quote',
+                        'ucwords',
+                        'uppercase',
+                        'lowercase',
+                        '|',
+                        'h1',
+                        'h2',
+                        'h3',
+                        'h4',
+                        'h5',
+                        'h6',
+                        '|',
+                        'list-ul',
+                        'list-ol',
+                        'hr',
+                        '|',
+                        'qiniu',
+                        'link',
+                        'reference-link',
+                        'image',
+                        '|',
+                        'code',
+                        'preformatted-text',
+                        'preformatted-text',
+                        'code-block',
+                        'table',
+                        'datetime',
+                        'emoji',
+                        'html-entities',
+                        'pagebreak',
+                        'goto-line',
+                        '|',
+                        'watch',
+                        'preview',
+                        'fullscreen',
+                        '|',
+                        'search',
+                        'help',
+                        'info',
+                    ];
+                },
+                toolbarIconsClass : {
+                    qiniu : 'fa-cloud-upload'
+                },
+                lang : {
+                    toolbar : {
+                        qiniu : "自定义七牛上传",
+                    }
+                },
+                toolbarHandlers : {
+                  qiniu : function(cm, icon, cursor, selection) {
+                      this.qiniuDialog()
+                  }
+                },
+                qiniu : {
+                    enable: true,
+                    token_api : '/dep/tool/uploads/uptoken?raw=true',
+                    public_domain : 'http://assets.hcmchi.com/',
+                    upload_url : 'http://upload-z2.qiniu.com/',
+                },
             })
         }
     }

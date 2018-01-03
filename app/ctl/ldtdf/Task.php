@@ -437,9 +437,17 @@ class Task extends Ctl
             $task,
             '/dep/tasks/?',
             function () use ($task) {
+                $origin  = $this->request->get('origin_id');
+                $project = $this->request->get('project');
+                if (! ispint($origin, false)) {
+                    return 'MISSING_TASK_ORIGIN';
+                }
+                if (! ispint($project, false)) {
+                    return 'MISSING_PROJECT';
+                }
                 if($task->hasConflictTask(
-                    intval($this->request->get('project')),
-                    intval($this->request->get('origin_id')),
+                    $project,
+                    $origin,
                     ($type = trim($this->request->get('origin_type')))
                 )) {
                     return "PROJECT_EXIST_IN_{$type}";
