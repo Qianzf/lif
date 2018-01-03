@@ -61,7 +61,7 @@
         type="text"
         name="platform_ver"
         required
-        placeholder="<?= L('CLIENT_TYPE_VERSION_EG', 'v1.1.2') ?>"
+        placeholder="<?= L('EG', L('CLIENT')) ?>A v1.1.2"
         value="<?= $bug->platform_ver ?>">
     </label>
 

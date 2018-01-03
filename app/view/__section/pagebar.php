@@ -4,23 +4,27 @@
 <?php $offset  = $offset ?? 16; ?>
 
 <p class="pagination-bar">
-    <input <?= ($page == 1) ? 'disabled' : '' ?>
-    type="button" data-page="_start" value="<?= L('FIRST_PAGE') ?>">
+    <button <?= ($page == 1) ? 'disabled' : '' ?>
+    data-page="_start"><?= L('FIRST_PAGE') ?></button>
 
-    <input <?= ($page >= $pages) ? 'disabled' : '' ?>
-    type="button" data-page="_next" value="<?= L('NEXT_PAGE') ?>">
+    <button <?= ($page >= $pages) ? 'disabled' : '' ?>
+    data-page="_next"><?= L('NEXT_PAGE') ?></button>
 
-    <input <?= ($page <= 1) ? 'disabled' : '' ?>
-    type="button" data-page="_prior" value="<?= L('PRIOR_PAGE') ?>">
+    <button <?= ($page <= 1) ? 'disabled' : '' ?>
+    data-page="_prior"><?= L('PRIOR_PAGE') ?></button>
 
-    <input <?= ($page >= $pages) ? 'disabled' : '' ?>
-    type="button" data-page="_end" value="<?= L('LAST_PAGE') ?>">
+    <button <?= ($page >= $pages) ? 'disabled' : '' ?>
+    data-page="_end"><?= L('LAST_PAGE') ?></button>
 
-    <input type="number" name="pagination-number"
+    <input
+    type="number"
+    name="pagination-number"
+    style="width:50px"
     placeholder="<?= L('INPUT_LEGAL_PAGE_NUMBER') ?>">
 
-    <input <?= ($pages <= 1) ? 'disabled' : '' ?>
-    type="button" name="goto-page" value="<?= L('GOTO') ?>">
+    <button <?= ($pages <= 1) ? 'disabled' : '' ?>
+    name="goto-page"><?= L('GOTO') ?></button>
+
     <input type="hidden" name="records-count" value="<?= $records ?>">
     <input type="hidden" name="pagination-count" value="<?= $pages ?>">
 

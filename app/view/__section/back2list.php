@@ -1,11 +1,12 @@
 <?php $mid    = $model->id ?? null; ?>
 <?php $action = $action ?? ($mid ? 'EDIT' : 'ADD'); ?>
 <?php $key    = $key ?? 'UNKNOWN'; ?>
+<?php $stitle = "{$action}_{$key}"; ?>
 
-<?= $this->title($title  = ldtdf("{$action}_{$key}")) ?>
+<?= $this->title($title = ldtdf($stitle)) ?>
 <?= $this->section('common') ?>
 <h4>
-    <?= $title ?>
+    <?= L($stitle) ?>
     
     <?= $this->section('back_to', [
         'route' => ($route ?? '/dep'),

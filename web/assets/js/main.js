@@ -33,7 +33,7 @@ $(window).ready(function () {
             window.location = url
         }
     })
-    $('.pagination-bar input[type="button"]').click(function () {
+    $('.pagination-bar button').click(function () {
         let page   = 1
         let _page  = this.dataset.page
         let __page = $('input[name="pagination-number"]').val()
@@ -166,7 +166,6 @@ function tryDisplayEditormd()
                         'image',
                         '|',
                         'code',
-                        'preformatted-text',
                         'preformatted-text',
                         'code-block',
                         'table',
