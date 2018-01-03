@@ -54,7 +54,8 @@
     var EditorMDObjects = [
     {
         id : 'doc-contents',
-        placeholder : "<?= L('DOC_DETAILS') ?>"
+        placeholder : "<?= L('DOC_DETAILS') ?>",
+        height : 400,
     }
     ]
     $(function() {

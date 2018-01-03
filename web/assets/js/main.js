@@ -123,9 +123,15 @@ function tryDisplayEditormd()
 {
     if (typeof EditorMDObjects != 'undefined') {
         for (let i in EditorMDObjects) {
+            let height = EditorMDObjects[i].height
+            ? EditorMDObjects[i].height
+            : 300
+            let width = EditorMDObjects[i].width
+            ? EditorMDObjects[i].width
+            : '80%'
             let editor = editormd(EditorMDObjects[i].id, {
-                width   : '80%',
-                height  : 400,
+                width   : width,
+                height  : height,
                 syncScrolling : 'single',
                 path    : '/assets/editor.md/lib/',
                 placeholder : EditorMDObjects[i].placeholder,

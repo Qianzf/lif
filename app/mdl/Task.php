@@ -212,7 +212,7 @@ class Task extends Mdl
             );
         }
 
-        $user    = ispint($user) ? model(User::class, $user) : $user;
+        $user    = ispint($user, false) ? model(User::class, $user) : $user;
         $role    = ucfirst($user->role);
         $handler = "getActionsOfRole{$role}";
         
@@ -227,7 +227,7 @@ class Task extends Mdl
         $query = db()
         ->table('user')
         ->select('id', 'name', 'role')
-        // ->whereId('!=', $self)
+        ->whereId('!=', $self)
         ->whereRole('!=', 'admin');
 
         if ($where) {
@@ -350,7 +350,6 @@ class Task extends Mdl
     public function confirm(int $user)
     {
         if ($this->canBeConfirmedBy($user)) {
-            $role = ucfirst(strtolower($this->current()->role));
             if ($status = $this->getStatusConfirmed()) {
                 $this->status = $status;
 
@@ -420,13 +419,22 @@ class Task extends Mdl
     {
         if ($user) {
             $status = strtolower($this->status);
+            if ('activated' == $status) {
+                return (true
+                    && ($user == $this->creator)
+                    && ($user = model(User::class, $user))
+                    && $user->alive()
+                    && ci_equal('dev', $user->role)
+                );
+            }
+
             if (in_array($status, [
-                'activated',
                 'waitting_regression',
                 'finished',
             ])) {
                 return false;
             }
+
             if (('online' == $status)
                 || !in_array($status, $this->getStatusList('no'))
             ) {

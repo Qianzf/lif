@@ -181,17 +181,24 @@ class DeployTask extends \Lif\Core\Abst\Job
     // 5. Switch deploy status and assign to proper person with remarks
     public function run() : bool
     {
-        if ((! ($task = $this->getTask()))
+        if (false
+            || (! ($task = $this->getTask()))
             || (! $task->alive())
-            || ('ops' != (strtolower($task->current('role'))))
+            || (! ($current = $task->current()))
+            || (! $current->alive())
+            || (! ci_equal($current->role, 'ops'))
             || (true !== $this->parseTaskStatus($task))
         ) {
+            $tid = $this->task ?? '?';
+
+            logging("Deploying task {$tid}: illegal job.");
+
             return true;
         }
 
         if (!($project = $task->project())
-            || !$project->alive()
-            || ('web' != strtolower($project->type))
+            || (! $project->alive())
+            || (! ci_equal($project->type, 'web'))
         ) {
             $this->assign(
                 $task,
@@ -251,10 +258,10 @@ class DeployTask extends \Lif\Core\Abst\Job
             )
         );
 
+        $notes = null;
         if (0 === ($res['num'] ?? false)) {
             $user   = $this->userSuccess;
             $status = $this->statusSuccess;
-            $notes  = null;
             $task->env = $env->id;
             $this->recycleOtherEnvs();
         } else {
@@ -277,7 +284,6 @@ class DeployTask extends \Lif\Core\Abst\Job
         if ('remote' == $location) {
             $ssh2 = $this->getSSH2($server);
             $res  = $ssh2->exec($commands);
-            $ssh2->exec('exit');
             unset($ssh2);
 
             return $res;
@@ -348,7 +354,7 @@ class DeployTask extends \Lif\Core\Abst\Job
             'git add -A',
             'git reset --hard HEAD',
             'git checkout master',
-            'git branch | grep -v "master" | xargs git branch -D &>/dev/null || echo skip &>/dev/null',
+            '(git branch | grep -v "master" | xargs git branch -D &>/dev/null || echo skip &>/dev/null)',
             
             // need newer version of git for `--no-edit` option
             'git pull origin master --no-edit',

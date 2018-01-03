@@ -158,7 +158,7 @@ if (! fe('init_job_table')) {
             ->default('CURRENT_TIMESTAMP()', true);
 
             $table
-            ->tinyint('timeout')
+            ->medint('timeout')
             ->unsigned()
             ->comment('The max execution time for this job');
 
@@ -200,6 +200,13 @@ if (! fe('dd')) {
         }
 
         exit;
+    }
+}
+if (! fe('vd')) {
+    function vd(...$args) {
+        $GLOBALS['LIF_DEBUGGING'] = true;
+
+        var_dump(...$args);
     }
 }
 if (! fe('pt')) {
@@ -2119,6 +2126,15 @@ if (! fe('build_cmds')) {
         }
 
         if (is_array($cmds)) {
+            // !!! Be careful to use parentheses for each command in ssh2_exec
+            // array_walk($cmds, function ($item, $key) use (&$cmds) {
+            //     if (is_string($item)) {
+            //         $cmds[$key] = "({$item})";
+            //     } else {
+            //         unset($cmds[$key]);
+            //     }
+            // });
+
             return '('.implode(' && ', $cmds).')';
         }
 

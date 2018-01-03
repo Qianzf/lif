@@ -48,7 +48,9 @@ class Add extends Command
         if (!($tpl = pathOf('core', "tpl/Dit.{$this->ditType}"))
             || !file_exists($tpl)
         ) {
-            excp('Framework error: template `Dit.dit` not exists.');
+            excp("
+                Framework error: template `Dit.{$this->ditType}` not exists.
+            ");
         }
 
         $table = $this->tableName ?? $dit;

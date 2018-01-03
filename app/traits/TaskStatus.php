@@ -355,6 +355,7 @@ trait TaskStatus
     {
         $before = strtolower($this->status);
         $map = [
+            'activated'             => 'DEVING',
             'waitting_dev'          => 'DEVING',
             'waitting_dep2test'     => 'DEPLOYING_TEST',
             'waitting_confirm_env'  => 'ENV_CONFIRMED',

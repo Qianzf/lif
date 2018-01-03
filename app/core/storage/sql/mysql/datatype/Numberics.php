@@ -40,9 +40,17 @@ trait Numberics
         return $this->number($col, $length, 'tinyint');
     }
 
-    public function medint(
+    public function smallint(
         string $col = null,
         int $length = 6
+    ) : ConcreteColumn
+    {
+        return $this->number($col, $length, 'smallint');
+    }
+
+    public function medint(
+        string $col = null,
+        int $length = 8
     ) : ConcreteColumn
     {
         return $this->number($col, $length, 'mediumint');
