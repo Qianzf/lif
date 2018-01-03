@@ -70,6 +70,8 @@
                 + '" data-value="'
                 + res.dat[i].<?= $sresVal ?>
                 + '">'
+                + res.dat[i].<?= $sresKey ?>
+                + '. '
                 + res.dat[i].<?= $sresVal ?>
                 + '</li>'
                 height += 50

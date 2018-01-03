@@ -176,8 +176,11 @@ class Task extends Ctl
             'position' => ['int|min:0', null],
             'status'   => ['string|notin:-1', null],
             'sort'     => ['ciin:asc,desc', 'desc'],
+            'page'     => ['int|min:1', 1],
         ]);
 
+        $pageScale = 16;
+        $page      = $querys['page'];
         $displayPosition = $displayMenu = true;
         $hasSearchResult = $tasks = false;
 
@@ -231,16 +234,20 @@ class Task extends Ctl
             ->sort([
                 'create_at' => $querys['sort']
             ])
+            ->limit(($page-1)*$pageScale, $pageScale)
             ->get();
         }
         
         $users    = $user->list(['id', 'name'], null, false);
         $projects = $task->getAllProjects();
+        $records  = $task->count();
+        $pages    = ceil($records / $pageScale);
 
         return view('ldtdf/task/index')
-        ->withStatusRecordsTasksProjectsUsersDisplaypositionDisplaymenu(
+        ->withStatusPagesRecordsTasksProjectsUsersDisplaypositionDisplaymenu(
             $task->getAllStatus(),
-            $task->count(),
+            $pages,
+            $records,
             $tasks,
             array_combine(
                 array_column($projects, 'id'),
@@ -261,11 +268,12 @@ class Task extends Ctl
         Story $story,
         Bug $bug
     ) {
-        $data = $this->request->all();
+        $querys = $this->request->gets();
 
-        legal_or($data, [
+        legal_or($querys, [
             'story' => ['int|min:1', null],
             'bug'   => ['int|min:1', null],
+            'task'  => ['int|min:1', null],
         ]);
 
         $trendings = null;
@@ -276,15 +284,30 @@ class Task extends Ctl
             $bug     = $task->bug();
             $trendings = $task->trendings();
         } else {
-            $error = false;
-            if (($sid = $data['story']) && (! $story->find($sid))) {
+            $error = null;
+            if ($tid = $querys['task']) {
+                if (! $task->find($tid)) {
+                    $error = L('NO_TASK', $tid);
+                } else {
+                    $task->setAlive(false);
+                    if (ci_equal($task->origin_type, 'story')) {
+                        $story = $task->story();
+                    } elseif (ci_equal($task->origin_type, 'bug')) {
+                        $bug   = $task->bug();
+                    } else {
+                        $error = L('ILLEGAL_TASK_ORIGIN_TYPE');
+                    }
+                }
+            }
+
+            if (($sid = $querys['story']) && (! $story->find($sid))) {
                 $error = L('STORY_NOT_FOUND', $sid);
             }
-            if (($bid = $data['bug']) && (! $bug->find($bid))) {
+            if (($bid = $querys['bug']) && (! $bug->find($bid))) {
                 $error = L('BUG_NOT_FOUND', $bid);
             }
 
-            if (false !== $error) {
+            if (! is_null($error)) {
                 shares([
                     '__error'   => $error,
                     'back2last' => share('url_previous'),

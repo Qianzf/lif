@@ -58,7 +58,7 @@ class Story extends ModelBase
         $selects = null,
         array $where = null,
         bool $model = true,
-        string $sort = 'desc'
+        array $querys = []
     )
     {
         $selects = $selects ?? '*';
@@ -72,9 +72,12 @@ class Story extends ModelBase
 
         return $query
         ->sort([
-            'create_at' => $sort,
+            'create_at' => ($querys['sort'] ?? 'desc'),
         ])
-        ->limit(0, 20)
+        ->limit(
+            ($querys['from'] ?? 0),
+            ($querys['take'] ?? 16)
+        )
         ->all($model);
     }
 

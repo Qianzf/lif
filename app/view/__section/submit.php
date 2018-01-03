@@ -1,4 +1,4 @@
-<?php $__submit = L($model->id ? 'UPDATE' : 'CREATE'); ?>
+<?php $__submit = L($model->alive() ? 'UPDATE' : 'CREATE'); ?>
 
 <label>
     <span class="label-title">

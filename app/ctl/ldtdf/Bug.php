@@ -15,12 +15,14 @@ class Bug extends Ctl
     {
         $querys = $this->request->gets();
         $where  = [];
+        $pageScale = 16;
 
         legal_or($querys, [
             'search'  => ['string', null],
             'creator' => ['int|min:1', null],
             'sort'    => ['ciin:desc,asc', 'desc'],
             'os'      => ['string|notin:-1', null],
+            'page'    => ['int|min:1', 1],
         ]);
 
         if ($search = $querys['search']) {
@@ -33,16 +35,22 @@ class Bug extends Ctl
             $where[] = [db()->native('LOWER(`os`)'), strtolower($os)];
         }
 
-        $users = $bug->getAllUsers();
+        $users   = $bug->getAllUsers();
+        $records = $bug->count();
+        $pages   = ceil($records / $pageScale);
+        $querys['from'] = (($querys['page'] - 1) * $pageScale);
+        $querys['take'] = $pageScale;
 
         return view('ldtdf/bug/index')
-        ->withBugsUsersOses(
-            $bug->list(null, $where, true, $querys['sort']),
+        ->withBugsUsersOsesPagesRecords(
+            $bug->list(null, $where, true, $querys),
             array_combine(
                 array_column($users, 'id'),
                 array_column($users, 'name')
             ),
-            $this->getOses()
+            $this->getOses(),
+            $pages,
+            $records
         )
         ->share('hide-search-bar', false);
     }

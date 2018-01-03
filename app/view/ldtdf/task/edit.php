@@ -58,7 +58,7 @@
             <?php foreach ($projects as $proj): ?>
                 <option
                 <?php if ($project->id == $proj->id): ?>
-                    selected
+                selected
                 <?php endif ?>
                 value="<?= $proj->id ?>">
                     <?= $proj->name, " ($proj->type)" ?>
@@ -79,7 +79,7 @@
         </div>
     </label>
 
-    <?php if ($editable) : ?>
+    <?php if ($editable ?? false) : ?>
     <?= $this->section('submit', [
         'model' => $task
     ]) ?>

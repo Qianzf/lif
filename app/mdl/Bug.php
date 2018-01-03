@@ -98,7 +98,7 @@ class Bug extends Mdl
         $selects = null,
         array $where = null,
         bool $model = true,
-        string $sort = 'desc'
+        array $querys = []
     )
     {
         $selects = $selects ?? '*';
@@ -112,9 +112,12 @@ class Bug extends Mdl
 
         return $query
         ->sort([
-            'create_at' => $sort,
+            'create_at' => ($querys['sort'] ?? 'desc'),
         ])
-        ->limit(0, 20)
+        ->limit(
+            ($querys['from'] ?? 0),
+            ($querys['take'] ?? 16)
+        )
         ->all($model);
     }
 

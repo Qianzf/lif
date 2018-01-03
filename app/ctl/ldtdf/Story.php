@@ -16,11 +16,13 @@ class Story extends Ctl
     {
         $querys = $this->request->gets();
         $where  = [];
+        $pageScale = 16;
 
         legal_or($querys, [
             'search'  => ['string', null],
             'creator' => ['int|min:1', null],
             'sort'    => ['ciin:desc,asc', 'desc'],
+            'page'    => ['int|min:1', 1],
         ]);
 
         if ($search = $querys['search']) {
@@ -30,15 +32,21 @@ class Story extends Ctl
             $where[] = ['creator', $creator];
         }
 
-        $users = $story->getAllUsers();
+        $users   = $story->getAllUsers();
+        $records = $story->count();
+        $pages   = ceil($records / $pageScale);
+        $querys['from'] = (($querys['page'] - 1) * $pageScale);
+        $querys['take'] = $pageScale;
 
         return view('ldtdf/story/index')
-        ->withStoriesUsers(
-            $story->list(null, $where, true, $querys['sort']),
+        ->withStoriesUsersPagesRecords(
+            $story->list(null, $where, true, $querys),
             array_combine(
                 array_column($users, 'id'),
                 array_column($users, 'name')
-            )
+            ),
+            $pages,
+            $records
         )
         ->share('hide-search-bar', false);
     }

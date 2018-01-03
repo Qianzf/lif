@@ -11,6 +11,10 @@
 
     <em><?= $origin->title ?></em>
 
+    <a href="/dep/tasks/new/?task=<?= $task->id ?>">
+        <button><?= L('COPY') ?></button>
+    </a>
+
     <?php if ($editable ?? false): ?>
     <a href="/dep/tasks/<?= $task->id ?>/edit">
         <button><?= L('EDIT') ?></button>
@@ -18,12 +22,16 @@
     <?php endif ?>
 
     <?php if ($confirmable ?? false): ?>
+    <button onclick="$('#task-confirm-form').submit()">
+        <?= L('CONFIRM') ?>
+    </button>
     <form
+    id="task-confirm-form"
+    class="invisible-default"
     method="POST"
     action="/dep/tasks/<?= $task->id?>/confirm"
     class="inline">
         <?= csrf_feild() ?>
-        <input type="submit" value="<?= L('CONFIRM') ?>">
     </form>
     <?php endif ?>
     
@@ -51,16 +59,14 @@
     <?php endif ?>
 
     <?php if (isset($activeable) && $activeable): ?>
+    <button
+    onclick="activateTaskConfirm()"
+    class="text-todo"><?= L('ACTIVATE_TASK') ?></button>
     <form
     method="POST"
     action="/dep/tasks/<?= $task->id ?>/activate"
-    class="inline" id="activate-task-form">
+    class="inline invisible-default" id="activate-task-form">
         <?= csrf_feild() ?>
-        <input
-        onclick="activateTaskConfirm()"
-        type="button"
-        class="text-todo"
-        value="<?= L('ACTIVATE_TASK') ?>">
         <input type="hidden" name="activate_reason">
     </form>
     <script type="text/javascript">
@@ -78,16 +84,14 @@
     <?php endif ?>
 
     <?php if (isset($cancelable) && $cancelable): ?>
+    <button
+    onclick="cancelTaskConfirm()"
+    class="text-danger"><?= L('CANCEL_TASK') ?></button>
     <form
     method="POST"
     action="/dep/tasks/<?= $task->id ?>/cancel"
-    class="inline" id="cancel-task-form">
+    class="inline invisible-default" id="cancel-task-form">
         <?= csrf_feild() ?>
-        <input
-        onclick="cancelTaskConfirm()"
-        type="button"
-        class="text-danger"
-        value="<?= L('CANCEL_TASK') ?>">
         <input type="hidden" name="cancel_reason">
     </form>
     <script type="text/javascript">

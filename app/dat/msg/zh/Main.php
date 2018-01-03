@@ -342,4 +342,5 @@ return [
     'END' => '终点',
     'ENVUPDATE_ENQUEUED' => '环境更新任务已加入队列',
     'ENVUPDATE_ENQUEUE_FAILED' => '添加环境更新任务失败',
+    'COPY' => '复制',
 ];

@@ -38,7 +38,7 @@ class User extends Ctl
     public function trending(UserModel $user, Trending $trending)
     {
         $pageScale = 16;
-        $querys    = $this->request->all();
+        $querys    = $this->request->gets();
         $errs = legal_or($querys, [
             'page' => ['int|min:1', 1],
             'user' => ['int|min:0', 0],

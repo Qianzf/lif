@@ -318,7 +318,7 @@ class Task extends Mdl
         if ($user) {
             return (
                 ($this->creator == $user)
-                && (strtolower($this->status) == 'activated')
+                // && (strtolower($this->status) == 'activated')
             );
         }
 
