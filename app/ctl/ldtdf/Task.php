@@ -489,7 +489,7 @@ class Task extends Ctl
                 ->setOrigin('ldtdf')
                 ->setTask($task->id)
             )
-            ->on('update_task_branch')
+            ->on('update_task_env')
             ->try(3)
             ->timeout(600);    // 10 minutes
 

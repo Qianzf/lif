@@ -354,7 +354,7 @@ class DeployTask extends \Lif\Core\Abst\Job
             'git add -A',
             'git reset --hard HEAD',
             'git checkout master',
-            'git branch | grep -v "master" | xargs git branch -D &>/dev/null || echo skip &>/dev/null',
+            '(git branch | grep -v "master" | xargs git branch -D &>/dev/null || echo skip &>/dev/null)',
             
             // need newer version of git for `--no-edit` option
             'git pull origin master --no-edit',

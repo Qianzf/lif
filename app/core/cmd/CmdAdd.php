@@ -21,9 +21,9 @@ class CmdAdd extends CMD
             $this->fails('No name specified for command.');
         }
 
-        $class = format_ns($command);
+        $class = underline2camelcase($command);
 
-        if (class_exists($_class = nsOf('cmd', $class, false))) {
+        if (($_class = nsOf('cmd', $class)) && class_exists($_class)) {
             $this->fails('Command already exists: '.$_class);
         }
 
@@ -34,12 +34,6 @@ class CmdAdd extends CMD
         }
 
         $cmd = preg_replace_callback_array([
-                '/__NS__/u' => function ($match) use ($_class) {
-                    $arr = explode('\\', $_class);
-                    $unset = count($arr) - 1;
-                    unset($arr[$unset]);
-                    return implode('\\', $arr);
-                },
                 '/__CMD_CLASS_NAME__/u' => function ($match) use ($class) {
                     $arr = explode('\\', $class);
                     $set = count($arr) - 1;
@@ -49,9 +43,7 @@ class CmdAdd extends CMD
             file_get_contents($tpl)
         );
 
-        $__class = str_replace('\\', '/', $class);
-
-        file_put_contents(pathOf('cmd', "{$__class}.php"), $cmd)
+        file_put_contents(pathOf('cmd', "{$class}.php"), $cmd)
         ? $this->success('New command: '.$_class)
         : $this->fails('Adding command failed.');
     }

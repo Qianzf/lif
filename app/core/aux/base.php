@@ -202,6 +202,13 @@ if (! fe('dd')) {
         exit;
     }
 }
+if (! fe('vd')) {
+    function vd(...$args) {
+        $GLOBALS['LIF_DEBUGGING'] = true;
+
+        var_dump(...$args);
+    }
+}
 if (! fe('pt')) {
     function pt(...$args) {
         $GLOBALS['LIF_DEBUGGING'] = true;

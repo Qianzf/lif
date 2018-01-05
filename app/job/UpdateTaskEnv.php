@@ -125,7 +125,7 @@ class UpdateTaskEnv extends \Lif\Core\Abst\Job
             'git add -A',
             'git reset --hard HEAD',
             'git checkout master',
-            'git branch | grep -v "master" | xargs git branch -D &>/dev/null || echo skip &>/dev/null',
+            '(git branch | grep -v "master" | xargs git branch -D &>/dev/null || echo skip &>/dev/null)',
             'git pull origin master --no-edit',
         ];
 
@@ -176,7 +176,7 @@ class UpdateTaskEnv extends \Lif\Core\Abst\Job
             'at'        => fndate(),
             'user'      => $user,
             'action'    => 'update_branch',
-            'ref_state' => "UPDATE_TASK_BRANCH_{$status}",
+            'ref_state' => "UPDATE_TASK_ENV_{$status}",
             'ref_type'  => 'task',
             'ref_id'    => ($task['id'] ?? null),
             'notes'     => $err,
