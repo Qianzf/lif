@@ -13,7 +13,10 @@
 <?php endif ?>
 
 <table>
-    <caption><?= L('TASK_LIST') ?></caption>
+    <caption>
+        <?= $this->section('search-by-id') ?>
+        <?= L('TASK_LIST') ?>
+    </caption>
 
     <tr>
         <th
@@ -84,13 +87,13 @@
                 <?= $task->origin('title') ?>
             </a>
         </td>
-        <td><?= $task->project('name') ?></td>
-        <td><?= $task->creator('name') ?></td>
+        <td><small><?= $task->project('name') ?></small></td>
+        <td><small><?= $task->creator('name') ?></small></td>
 
         <?php if ($displayposition ?? true): ?>
         <td>
             <?php if ($name = $task->current('name')): ?>
-            <?= $name ?>
+            <small><?= $name ?></small>
             <?php else: ?>
             <button class="btn-info"><em><?= L('END') ?></em></button>
             <?php endif ?>

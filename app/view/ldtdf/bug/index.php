@@ -11,7 +11,10 @@
 </dl>
 
 <table>
-    <caption><?= L('BUG_LIST') ?></caption>
+    <caption>
+        <?= $this->section('search-by-id') ?>
+        <?= L('BUG_LIST') ?>
+    </caption>
 
     <tr>
         <th

@@ -148,13 +148,13 @@ class UpdateTaskEnv extends \Lif\Core\Abst\Job
 
         if (ci_equal(($task['config_order'] ?? null), 'before')) {
             $deployer
-            ->appendConfigScript($commands, $configApi)
+            ->appendConfigScript($commands, $configApi, $config)
             ->appendBuildScript($commands, $buildScript)
             ;
         } else {
             $deployer
             ->appendBuildScript($commands, $buildScript)
-            ->appendConfigScript($commands, $configApi)
+            ->appendConfigScript($commands, $configApi, $config)
             ;
         }
 
@@ -176,7 +176,7 @@ class UpdateTaskEnv extends \Lif\Core\Abst\Job
             'at'        => fndate(),
             'user'      => $user,
             'action'    => 'update_branch',
-            'ref_state' => "UPDATE_TASK_BRANCH_{$status}",
+            'ref_state' => "UPDATE_TASK_ENV_{$status}",
             'ref_type'  => 'task',
             'ref_id'    => ($task['id'] ?? null),
             'notes'     => $err,

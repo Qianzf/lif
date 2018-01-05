@@ -5,8 +5,12 @@
 // --------------------------------------
 
 if (! function_exists('fe')) {
-    function fe($name) {
-        return function_exists($name);
+    function fe(string $name) {
+        if (is_string($name) && $name) {
+            return function_exists($name);
+        }
+
+        return false;
     }
 }
 if (! fe('lif')) {
@@ -2102,7 +2106,7 @@ if (! fe('stringify')) {
 if (! fe('build_cmds_with_env')) {
     function build_cmds_with_env($cmds) : string {
         $_cmds = build_cmds($cmds);
-        return '(export PATH='
+        return 'export PATH='
         .implode(':', [
             '/bin',
             '/sbin',
@@ -2113,7 +2117,7 @@ if (! fe('build_cmds_with_env')) {
             '/usr/local/php/bin',
             '~/bin',
         ])
-        .") && {$_cmds}";
+        ." && {$_cmds}";
     }
 }
 if (! fe('build_cmds')) {

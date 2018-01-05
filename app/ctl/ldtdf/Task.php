@@ -170,6 +170,7 @@ class Task extends Ctl
 
         legal_or($querys, [
             'origin'   => ['ciin:story,bug', null],
+            'id'       => ['int|min:1', null],
             'project'  => ['int|min:1', null],
             'creator'  => ['int|min:1', null],
             'search'   => ['string', null],
@@ -189,53 +190,57 @@ class Task extends Ctl
             $displayPosition = $displayMenu =false;
         }
 
-        if ($search = $querys['search']) {
-            // TODO
-            // fulltext search
-            if ($bugs = $task->searchOriginIdsByTitle('bug', $search)) {
-                $hasSearchResult = true;
-                $task->or([
-                    ['origin_type' => 'bug'],
-                    ['origin_id'   => $bugs],
-                ]);
-            }
-            if ($stories = $task->searchOriginIdsByTitle('story', $search)) {
-                $hasSearchResult = true;
-                $task->or([
-                    ['origin_type' => 'story'],
-                    ['origin_id'   => $stories],
-                ]);
-            }
+        if ($id = ($querys['id'] ?? false)) {
+            $tasks = $task->whereId($id)->get();
         } else {
-            $hasSearchResult = true;
-        }
-
-        if ($hasSearchResult) {
-            if ($origin = $querys['origin']) {
-                $task->where('origin_type', strtolower($origin));
-            }
-            if ($project = $querys['project']) {
-                $task->whereProject($project);
-            }
-            if ($creator = $querys['creator']) {
-                $task->whereCreator($creator);
-            }
-            if (! empty_safe($current = $querys['position'])) {
-                $task->whereCurrent($current);
-            }
-            if ($status = $querys['status']) {
-                $task->where(
-                    db()->native('LOWER(`status`)'),
-                    strtolower($status)
-                );
+            if ($search = $querys['search']) {
+                // TODO
+                // fulltext search
+                if ($bugs = $task->searchOriginIdsByTitle('bug', $search)) {
+                    $hasSearchResult = true;
+                    $task->or([
+                        ['origin_type' => 'bug'],
+                        ['origin_id'   => $bugs],
+                    ]);
+                }
+                if ($stories = $task->searchOriginIdsByTitle('story', $search)) {
+                    $hasSearchResult = true;
+                    $task->or([
+                        ['origin_type' => 'story'],
+                        ['origin_id'   => $stories],
+                    ]);
+                }
+            } else {
+                $hasSearchResult = true;
             }
 
-            $tasks = $task
-            ->sort([
-                'create_at' => $querys['sort']
-            ])
-            ->limit(($page-1)*$pageScale, $pageScale)
-            ->get();
+            if ($hasSearchResult) {
+                if ($origin = $querys['origin']) {
+                    $task->where('origin_type', strtolower($origin));
+                }
+                if ($project = $querys['project']) {
+                    $task->whereProject($project);
+                }
+                if ($creator = $querys['creator']) {
+                    $task->whereCreator($creator);
+                }
+                if (! empty_safe($current = $querys['position'])) {
+                    $task->whereCurrent($current);
+                }
+                if ($status = $querys['status']) {
+                    $task->where(
+                        db()->native('LOWER(`status`)'),
+                        strtolower($status)
+                    );
+                }
+
+                $tasks = $task
+                ->sort([
+                    'create_at' => $querys['sort']
+                ])
+                ->limit(($page-1)*$pageScale, $pageScale)
+                ->get();
+            }
         }
         
         $users    = $user->list(['id', 'name'], null, false);
@@ -489,7 +494,7 @@ class Task extends Ctl
                 ->setOrigin('ldtdf')
                 ->setTask($task->id)
             )
-            ->on('update_task_branch')
+            ->on('update_task_env')
             ->try(3)
             ->timeout(600);    // 10 minutes
 

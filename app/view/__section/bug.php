@@ -53,6 +53,7 @@
     <textarea
     id="bug-extra-md"
     style="display:none"><?= $this->escape($bug->extra) ?></textarea>
+    <span class="vertical-2"></span>
 </div>
 
 <?= $this->section('lib/editormd') ?>

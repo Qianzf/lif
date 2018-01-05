@@ -55,6 +55,7 @@
     <textarea
     id="story-others-md"
     style="display:none"><?= $story->extra ?></textarea>
+    <span class="vertical-2"></span>
 </div>
 
 <?= $this->section('lib/editormd') ?>
