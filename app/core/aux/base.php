@@ -2312,9 +2312,18 @@ if (! fe('url')) {
             excp('Missing URL host.');
         }
 
-        $uri = format_uri("{$host}/{$uri}");
+        $prefix = config('app.route.prefix', '/');
+        $uri    = format_uri("{$host}/{$prefix}/{$uri}");
 
         return "{$schema}://{$uri}";
+    }
+}
+if (! fe('lrn')) {
+    function lrn(string $lrn) {
+        $prefix = config('app.route.prefix', '/');
+        $lrn    = format_uri("{$prefix}/{$lrn}");
+
+        return "/{$lrn}";
     }
 }
 if (! fe('ispint')) {

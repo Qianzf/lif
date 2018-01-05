@@ -9,7 +9,7 @@ $this
 ->unset('safty.csrf');
 
 $this->group([
-    'prefix'    => 'dep',
+    'prefix'    => config('app.route.prefix', '/'),
     'namespace' => 'Ldtdf',
     'filter' => [
         'id' => 'int|min:1',

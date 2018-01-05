@@ -95,7 +95,7 @@ class Environment extends Ctl
     {
         return $this->responseOnCreated(
             $env,
-            '/dep/admin/envs/?',
+            lrn('/admin/envs/?'),
             function () use ($env) {
                 // check if exists in code level
                 if ($env->hasHostBefore($this->request->get('host'))) {

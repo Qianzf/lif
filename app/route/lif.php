@@ -6,7 +6,8 @@
 //     (Route groups needn't `use ($app)` any more)
 // -----------------------------------------------------
 
-$this->get('/', 'lif');
+// $this->get('/', 'lif');
 
-$this->get('test', function () {
+$this->get('__test__', function () {
+    dd(lrn('admin/userssss'));
 });

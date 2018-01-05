@@ -482,6 +482,17 @@ class Task extends Mdl
         );
     }
 
+    public function getTrendingCount()
+    {
+        return db()
+        ->table('trending')
+        ->where([
+            'ref_type' => 'task',
+            'ref_id'   => $this->id,
+        ])
+        ->count();
+    }
+
     public function trendings(array $querys = [])
     {
         $relationship = [
@@ -491,6 +502,8 @@ class Task extends Mdl
             'fwhere' => [
                 'ref_type' => 'task',
             ],
+            'from' => ($querys['from'] ?? 0),
+            'take' => ($querys['take'] ?? 0),
         ];
 
         if ($order = ($querys['trending'] ?? 'desc')) {

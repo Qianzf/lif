@@ -68,7 +68,7 @@ class User extends Ctl
     {
         return $this->responseOnCreated(
             $user,
-            '/dep/admin/users/?',
+            lrn('admin/users/?'),
             function () {
                 if ($this->request->has('passwd')) {
                     $this->request->setPost(
@@ -127,7 +127,7 @@ class User extends Ctl
                         share('user', $user->items());
                     } else {
                         session()->destory();
-                        return redirect('/dep/users/login');
+                        return redirect(lrn('users/login'));
                     }
                 }
             } else {

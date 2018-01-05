@@ -59,7 +59,9 @@ class Trending extends Mdl
         $html = L($this->action);
 
         if ($displayRefType) {
-            $html .= L($this->ref_type);
+            if ($this->ref_type) {
+                $html = L("{$this->action}_{$this->ref_type}");
+            }
             $event = $this->makeEvent();
             $data  = false;
             

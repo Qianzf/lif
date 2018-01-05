@@ -28,4 +28,6 @@
             reloadWithQuerys('trending', _sort)
         }
     </script>
+
+    <?= $this->section('pagebar') ?>
 <?php endif ?>

@@ -421,7 +421,7 @@ class DeployTask extends \Lif\Core\Abst\Job
         $commands = [];
 
         if (!$this->buildable || !$project || !$project->alive()) {
-            return$commands;
+            return $commands;
         }
 
         if (ci_equal($project->config_order, 'before')) {

@@ -16,7 +16,7 @@ class Project extends Ctl
 
     public function create(ProjectModel $project)
     {
-        return $this->responseOnCreated($project, '/dep/admin/projects/?');
+        return $this->responseOnCreated($project, lrn('admin/projects/?'));
     }
 
     public function update(ProjectModel $project)

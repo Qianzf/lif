@@ -378,6 +378,7 @@ class Task extends Ctl
 
         legal_or($querys, [
             'trending' => ['ciin:asc,desc', 'desc'],
+            'page'     => ['int|min:1', 1],
         ]);
 
         $story = $bug = null;
@@ -406,8 +407,15 @@ class Task extends Ctl
         ? $story->getAcceptances()
         : null;
 
+        $pageScale = 16;
+        $page  = $querys['page'] ?? 1;
+        $querys['from'] = (($page - 1)*$pageScale);
+        $querys['take'] = $pageScale;
+        $records        = $task->getTrendingCount();
+        $pages          = ceil($records / $pageScale);
+
         view('ldtdf/task/info')
-        ->withOriginTaskBugStoryAcceptancesTasksProjectTrendingsActiveableCancelableConfirmableEditableUntestableAssignableDeployableUpdatableAssigns(
+        ->withOriginTaskBugStoryAcceptancesTasksProjectTrendingsPagesRecordsActiveableCancelableConfirmableEditableUntestableAssignableDeployableUpdatableAssigns(
             $task->origin(),
             $task,
             $bug,
@@ -416,6 +424,8 @@ class Task extends Ctl
             $task->relateTasks(),
             $task->project(),
             $task->trendings($querys),
+            $pages,
+            $records,
             $activeable,
             $cancelable,
             $confirmable,

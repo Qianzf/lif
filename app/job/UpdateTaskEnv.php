@@ -175,7 +175,7 @@ class UpdateTaskEnv extends \Lif\Core\Abst\Job
         db()->table('trending')->insert([
             'at'        => fndate(),
             'user'      => $user,
-            'action'    => 'update_branch',
+            'action'    => 'update_env_of',
             'ref_state' => "UPDATE_TASK_ENV_{$status}",
             'ref_type'  => 'task',
             'ref_id'    => ($task['id'] ?? null),

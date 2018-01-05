@@ -33,6 +33,7 @@
     </li>
 </ul>
 <?php endforeach ?>
+
 <script type="text/javascript">
     function hideOrShow(obj, key) {
         obj = $(obj)

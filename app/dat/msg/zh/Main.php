@@ -343,4 +343,6 @@ return [
     'ENVUPDATE_ENQUEUED' => '环境更新任务已加入队列',
     'ENVUPDATE_ENQUEUE_FAILED' => '添加环境更新任务失败',
     'COPY' => '复制',
+    'UPDATE_ENV_OF' => '更新环境',
+    'UPDATE_ENV_OF_TASK' => '更新任务环境',
 ];
