@@ -1,6 +1,6 @@
 <?php
 
-namespace __NS__;
+namespace Lif\Cmd;
 
 use Lif\Core\Abst\Command as CommandBase;
 
