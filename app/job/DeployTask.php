@@ -373,14 +373,9 @@ class DeployTask extends \Lif\Core\Abst\Job
     public function appendBuildScript(array &$commands, string $script = null)
     {
         if ($buildScript = trim($script)) {
-            if (preg_match('/(\ )+/u', $buildScript)) {
-                $cmds = [$buildScript];
-            } else {
-                $cmds = @explode(
-                    PHP_EOL,
-                    file_get_contents(pathOf('root', $buildScript))
-                );
-            }
+            $cmds = preg_match('/(\ )+/u', $buildScript)
+            ? [$buildScript]
+            : ["./{$buildScript}"];
 
             if ($cmds) {
                 $this->appendCommands($commands, $cmds);
@@ -396,7 +391,7 @@ class DeployTask extends \Lif\Core\Abst\Job
         string $config = null
     )
     {
-        if ($api = trim($script) && ($config = trim($config))) {
+        if (($api = trim($script)) && ($config = trim($config))) {
             if (preg_match('/(\ )+/u', $api)) {
                 $commands[] = "{$api} '{$config}'";
             } else {

@@ -23,16 +23,21 @@ class Bug extends Ctl
             'sort'    => ['ciin:desc,asc', 'desc'],
             'os'      => ['string|notin:-1', null],
             'page'    => ['int|min:1', 1],
+            'id'      => ['int|min:1', null],
         ]);
 
-        if ($search = $querys['search']) {
-            $where[] = ['title', 'like', "%{$search}%"];
-        }
-        if ($creator = $querys['creator']) {
-            $where[] = ['creator', $creator];
-        }
-        if ($os = $querys['os']) {
-            $where[] = [db()->native('LOWER(`os`)'), strtolower($os)];
+        if ($id = ($querys['id'] ?? false)) {
+            $where[] = ['id', $id];
+        } else {
+            if ($search = $querys['search']) {
+                $where[] = ['title', 'like', "%{$search}%"];
+            }
+            if ($creator = $querys['creator']) {
+                $where[] = ['creator', $creator];
+            }
+            if ($os = $querys['os']) {
+                $where[] = [db()->native('LOWER(`os`)'), strtolower($os)];
+            }
         }
 
         $users   = $bug->getAllUsers();

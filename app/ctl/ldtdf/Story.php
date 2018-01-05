@@ -20,16 +20,21 @@ class Story extends Ctl
 
         legal_or($querys, [
             'search'  => ['string', null],
+            'id'      => ['int|min:1', null],
             'creator' => ['int|min:1', null],
             'sort'    => ['ciin:desc,asc', 'desc'],
             'page'    => ['int|min:1', 1],
         ]);
 
-        if ($search = $querys['search']) {
-            $where[] = ['title', 'like', "%{$search}%"];
-        }
-        if ($creator = $querys['creator']) {
-            $where[] = ['creator', $creator];
+        if ($id = ($querys['id'] ?? false)) {
+            $where[] = ['id', $id];
+        } else {
+            if ($search = $querys['search']) {
+                $where[] = ['title', 'like', "%{$search}%"];
+            }
+            if ($creator = $querys['creator']) {
+                $where[] = ['creator', $creator];
+            }
         }
 
         $users   = $story->getAllUsers();

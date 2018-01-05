@@ -23,6 +23,11 @@ code {
     color: maroon;
     background-color: #eeeeee;
 }
+pre {
+    /*margin-left: -50px;*/
+    width: 80%;
+    overflow: auto;
+}
 header, footer {
     margin-top: 20px;
 }
@@ -352,4 +357,8 @@ input:invalid {
 .pointer {
     cursor: hand;
     cursor: pointer;
+}
+#search-by-id {
+    display: inline-block;
+    float: left;
 }

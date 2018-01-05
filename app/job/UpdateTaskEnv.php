@@ -148,13 +148,13 @@ class UpdateTaskEnv extends \Lif\Core\Abst\Job
 
         if (ci_equal(($task['config_order'] ?? null), 'before')) {
             $deployer
-            ->appendConfigScript($commands, $configApi)
+            ->appendConfigScript($commands, $configApi, $config)
             ->appendBuildScript($commands, $buildScript)
             ;
         } else {
             $deployer
             ->appendBuildScript($commands, $buildScript)
-            ->appendConfigScript($commands, $configApi)
+            ->appendConfigScript($commands, $configApi, $config)
             ;
         }
 

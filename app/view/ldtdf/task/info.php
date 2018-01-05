@@ -141,6 +141,7 @@
     <span class="text-info">[</span>
     <span><?= L('TASK_REMARKS') ?></span>
     <span class="text-info">]</span>
+    <span class="vertical-2"></span>
 </div>
 <textarea
 id="task-notes-md"
@@ -167,6 +168,19 @@ style="display:none"><?= $this->escape($task->notes) ?></textarea>
     <span class="text-info">]</span>
 
     <code><?= $this->escape($task->branch) ?></code>
+</p>
+<?php endif ?>
+
+<?php if ($task->config = trim($task->config)): ?>
+<p>
+    <span class="stub-2"></span>
+    <span class="text-info">[</span>
+    <small><?= L('TASK_CONFIG') ?></small>
+    <span class="text-info">]</span>
+
+    <blockquote class="text-status">
+        <?= $this->escape($task->config) ?>
+    </blockquote>
 </p>
 <?php endif ?>
 

@@ -65,6 +65,35 @@ $(window).ready(function () {
             }
         }
     })
+    $('#search-by-id input').on('input', function () {
+        let id = parseInt(this.value)
+        if (id > 0) {
+            this.style.color = 'green'
+            $(this).keydown(function (e) {
+                if (e.which == 13) {
+                    e.preventDefault()
+                    reloadUseQuery('id', id)
+                }
+            })
+        } else {
+            this.style.color = 'red'
+        }
+    })
+    $('#search-by-id button[name="search"]').on('click', function () {
+        let id = parseInt($('#search-by-id input').val())
+        if (id > 0) {
+            reloadUseQuery('id', id)
+        }
+    })
+    $('#search-by-id button[name="cancel"]').click(function () {
+        $('#search-by-id input').val('')
+        if (window.location.search) {
+            let aTag = getATag(window.location.href)
+            let url  = aTag.scheme + aTag.hostname + aTag.pathname
+
+            window.location = url
+        }
+    })
     $('.filter-name-by-value-select').change(function () {
         reloadWithQuerys(this.name, this.value)
     })

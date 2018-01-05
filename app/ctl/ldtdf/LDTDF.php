@@ -33,7 +33,7 @@ class LDTDF extends Ctl
                 ->setBranch($branch)
                 ->setToken(server('HTTP_X_GITLAB_TOKEN'))
             )
-            ->on('update_task_branch')
+            ->on('update_task_env')
             ->try(3)
             ->timeout(600);    // 10 minutes
         }

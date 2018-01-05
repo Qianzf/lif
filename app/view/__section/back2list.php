@@ -1,4 +1,4 @@
-<?php $mid    = $model->id ?? null; ?>
+<?php $mid    = (($model ?? false) && $model->alive()) ?>
 <?php $action = $action ?? ($mid ? 'EDIT' : 'ADD'); ?>
 <?php $key    = $key ?? 'UNKNOWN'; ?>
 <?php $stitle = "{$action}_{$key}"; ?>

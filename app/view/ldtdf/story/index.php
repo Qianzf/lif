@@ -11,7 +11,10 @@
 </dl>
 
 <table>
-    <caption><?= L('STORY_LIST') ?></caption>
+    <caption>
+        <?= $this->section('search-by-id') ?>
+        <?= L('STORY_LIST') ?>
+    </caption>
 
     <tr>
         <th
