@@ -4,7 +4,7 @@
 
 <dl>
     <dd>
-        <a href="/dep/admin/users/groups/new">
+        <a href="<?= lrn('admin/users/groups/new') ?>">
             <button><?= L('ADD_GROUP') ?></button>
         </a>
     </dd>
@@ -25,7 +25,7 @@
         <tr>
             <td><?= $group->name ?></td>
             <td>
-                <a href="/dep/admin/users/groups/<?= $group->id ?>">
+                <a href='<?= lrn("admin/users/groups/{$group->id}") ?>'>
                     <button><?= L('EDIT') ?></button>
                 </a>
             </td>

@@ -1,5 +1,5 @@
 <header>
-    <a href="/dep">
+    <a href="<?= lrn() ?>">
         <button class="btn-logo"><em><?= ldtdf() ?></em></button>
     </a>
 
@@ -16,8 +16,8 @@
                 .')'
             ?>
         </option>
-        <option value="profile"><?= L('USER_PROFILE') ?></option>
-        <option value="logout"><?= L('LOGOUT') ?></option>
+        <option value="<?= lrn('users/profile') ?>"><?= L('USER_PROFILE') ?></option>
+        <option value="<?= lrn('users/logout') ?>"><?= L('LOGOUT') ?></option>
     </select>
 
     <span class="stub-3"></span>

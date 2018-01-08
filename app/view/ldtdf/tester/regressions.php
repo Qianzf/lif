@@ -16,16 +16,16 @@
     <tr>
         <td>Web</td>
         <td>
-            <a href="/dep/test/regressions/env/<?= $env->id ?>">
+            <a href='<?= lrn("test/regressions/env/{$env->id}") ?>'>
                 <?= $env->project('name') ?? L('UNKNOWN') ?>
             </a>
         </td>
         <td><?= $env->host ?? L('UNKNOWN') ?></td>
         <td>
-            <a href="/dep/test/regressions/env/<?= $env->id ?>/pass">
+            <a href='<?= lrn("test/regressions/env/<?= $env->id ?>/pass") ?>'>
                 <button class="btn-ok"><?= L('PASS') ?></button>
             </a>
-            <a href="/dep/test/regressions/env/<?= $env->id ?>/unpass">
+            <a href='<?= lrn("test/regressions/env/{$env->id}/unpass") ?>'>
                 <button class="btn-delete"><?= L('UNPASS') ?></button>
             </a>
         </td>
@@ -38,16 +38,16 @@
     <tr>
         <td>App</td>
         <td>
-            <a href="/dep/test/regressions/project/<?= $project->id ?>">
+            <a href='<?= lrn("test/regressions/project/{$project->id}") ?>'>
                 <?= $project->name ?? L('UNKNOWN') ?>
             </a>
         </td>
         <td>-</td>
         <td>
-            <a href="/dep/test/regressions/project/<?= $project->id ?>/pass">
+            <a href='<?= lrn("test/regressions/project/{$project->id}/pass") ?>'>
                 <button class="btn-ok"><?= L('PASS') ?></button>
             </a>
-            <a href="/dep/test/regressions/project/<?= $project->id ?>/unpass">
+            <a href='<?= lrn("test/regressions/project/{$project->id}/unpass") ?>'>
                 <button class="btn-delete"><?= L('UNPASS') ?></button>
             </a>
         </td>

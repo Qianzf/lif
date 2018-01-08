@@ -2319,11 +2319,11 @@ if (! fe('url')) {
     }
 }
 if (! fe('lrn')) {
-    function lrn(string $lrn) {
+    function lrn(string $lrn = null) {
         $prefix = config('app.route.prefix', '/');
-        $lrn    = format_uri("{$prefix}/{$lrn}");
+        $_lrn   = format_uri("{$prefix}/{$lrn}");
 
-        return "/{$lrn}";
+        return "/{$_lrn}";
     }
 }
 if (! fe('ispint')) {

@@ -6,7 +6,7 @@ class LDTDF extends Ctl
 {
     public function index()
     {
-        $entryRouteOfRole = '/dep/'.strtolower(share('user.role'));
+        $entryRouteOfRole = lrn(strtolower(share('user.role')));
 
         redirect($entryRouteOfRole);
     }

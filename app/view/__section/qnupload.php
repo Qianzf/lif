@@ -68,12 +68,12 @@ var uploader = Qiniu.uploader({
     
     // Ajax请求uptoken的Url，强烈建议设置（服务端提供）
     // 需要返回 JSON 格式：uptoken => xxx
-    uptoken_url: '/dep/tool/uploads/uptoken?raw=true',
+    uptoken_url: "<?= lrn('tool/uploads/uptoken?raw=true') ?>",
 
     // 在需要获取uptoken时，该方法会被调用
     // uptoken_func: function() {
     //     var jqxhr = $.ajax({
-    //        url: '/dep/tool/uploads/uptoken',
+    //        url: "<?= lrn('tool/uploads/uptoken') ?>",
     //        type: 'GET',
     //        dataType: 'json',
     //        async: false,

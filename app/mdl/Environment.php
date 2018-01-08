@@ -27,7 +27,8 @@ class Environment extends Mdl
         if ($tasks = $this->tasks()) {
             $html = '';
             foreach ($tasks as $task) {
-               $html .= "<a href='/dep/tasks/{$task->id}'>{$task->branch} / {$task->id}</a>";
+               $route = lrn("tasks/{$task->id}");
+               $html .= "<a href='{$route}'>{$task->branch} / {$task->id}</a>";
 
                if (false !== next($tasks)) {
                     $html .= '; ';

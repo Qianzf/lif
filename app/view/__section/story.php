@@ -93,7 +93,7 @@
         })
 
         $('.ac-check-status').change(function () {
-            let api = '/dep/stories/<?= $story->id ?>/ac/' + $(this).data().id
+            let api = '<?= lrn("stories/{$story->id}/ac") ?>' + '/' + $(this).data().id
             $.post(api, {
                 '__rftkn__' : '<?= csrf_token() ?>',
                 'checked'   : this.checked

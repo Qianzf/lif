@@ -70,7 +70,7 @@ class Story extends Ctl
     public function info(StoryModel $story)
     {
         if (! $story->alive()) {
-            return redirect('/dep/stories');
+            return redirect(lrn('stories'));
         }
 
         $querys = $this->request->gets();
@@ -118,7 +118,7 @@ class Story extends Ctl
 
         return $this->responseOnCreated(
             $story,
-            '/dep/stories/?',
+            lrn('stories/?'),
             null,
             function ($status) use ($story, $acceptance, $acceptances) {
                 if (ispint($status, false)

@@ -3,7 +3,7 @@
 <?= $this->section('back2list', [
     'model' => $upload,
     'key' => 'UPLOAD_FILE',
-    'route' => '/dep/tool/uploads',
+    'route' => lrn('tool/uploads'),
 ]) ?>
 
 <form method="POST">

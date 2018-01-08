@@ -3,16 +3,16 @@
 <?= $this->section('back2list', [
     'model'   => $folder,
     'key'     => 'FOLDER',
-    'route'   => '/dep/docs',
+    'route'   => lrn('docs'),
     'buttons' => [
         [
             'name'  => 'CREATE_DOC',
-            'route' => "/dep/docs/new?folder={$folder->id}",
+            'route' => lrn("docs/new?folder={$folder->id}"),
             'alive' => 'true',
         ],
         [
             'name'  => 'CREATE_FOLDER',
-            'route' => "/dep/docs/folders/new?parent={$folder->id}",
+            'route' => lrn("docs/folders/new?parent={$folder->id}"),
             'alive' => 'true',
         ],
     ],

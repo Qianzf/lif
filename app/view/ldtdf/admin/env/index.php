@@ -4,7 +4,7 @@
 
 <dl class="list">
     <dd>
-        <a href="/dep/admin/envs/new">
+        <a href="<?= lrn('admin/envs/new') ?>">
             <button><?= L('ADD_ENVIRONMENT') ?></button>
         </a>
     </dd>
@@ -77,7 +77,7 @@
             </span>
         </td>
         <td>
-            <a href="/dep/admin/envs/<?= $env->id ?>">
+            <a href='<?= lrn("admin/envs/{$env->id}") ?>'>
                 <button><?= L('EDIT') ?></button>
             </a>
         </td>

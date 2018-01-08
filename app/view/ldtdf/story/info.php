@@ -3,6 +3,6 @@
 
 <?= $this->section('task-dispatch-origin', [
     'taskOrigin'      => $story,
-    'originEditRoute' => "/dep/stories/{$story->id}/edit",
-    'taskAddRoute'    => "/dep/tasks/new?story={$story->id}",
+    'originEditRoute' => lrn("stories/{$story->id}/edit"),
+    'taskAddRoute'    => lrn("tasks/new?story={$story->id}"),
 ]) ?>

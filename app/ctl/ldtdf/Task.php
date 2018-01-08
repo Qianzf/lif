@@ -102,12 +102,12 @@ class Task extends Ctl
 
         share_error_i18n($msg);
 
-        return redirect("/dep/tasks/{$task->id}");
+        return redirect(lrn("tasks/{$task->id}"));
     }
 
     public function assign(TaskModel $task)
     {
-        return redirect("/dep/tasks/{$task->id}");
+        return redirect(lrn("tasks/{$task->id}"));
     }
 
     public function assignTo(TaskModel $task)
@@ -371,7 +371,7 @@ class Task extends Ctl
     {
         if (! $task->alive()) {
             share_error_i18n('NO_TASK');
-            return redirect('/dep/tasks');
+            return redirect(lrn('tasks'));
         }
 
         $querys = $this->request->gets();
@@ -450,7 +450,7 @@ class Task extends Ctl
 
         return $this->responseOnCreated(
             $task,
-            '/dep/tasks/?',
+            lrn('tasks/?'),
             function () use ($task) {
                 $origin  = $this->request->get('origin_id');
                 $project = $this->request->get('project');
@@ -479,7 +479,7 @@ class Task extends Ctl
         if (! $task->alive()) {
             share_error_i18n('NO_TASK');
 
-            return redirect('/dep/tasks');
+            return redirect(lrn('tasks'));
         }
 
         $data    = $this->request->posts();
@@ -515,14 +515,14 @@ class Task extends Ctl
 
         share_error_i18n($msg);
 
-        return redirect("/dep/tasks/{$task->id}");
+        return redirect(lrn("tasks/{$task->id}"));
     }
 
     public function update(TaskModel $task)
     {
         return $this->responseOnUpdated(
             $task,
-            '/dep/tasks',
+            lrn('tasks'),
             function () use ($task) {
                 if ($task->creator != share('user.id')) {
                     return 'UPDATE_PERMISSION_DENIED';

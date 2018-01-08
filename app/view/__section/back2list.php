@@ -9,7 +9,7 @@
     <?= L($stitle) ?>
     
     <?= $this->section('back_to', [
-        'route' => ($route ?? '/dep'),
+        'route' => ($route ?? lrn()),
     ]) ?>
 
     <?php if (isset($buttons) && iteratable($buttons)): ?>

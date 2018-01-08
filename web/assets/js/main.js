@@ -5,9 +5,7 @@ $(window).ready(function () {
     $('select[name="loggedin"]').change(function () {
         let aTag = getATag(location.href)
         let url  = aTag.scheme + aTag.hostname + aTag.pathname
-        window.location.href = '/dep/users/'
-        + this.value
-        + window.location.search
+        window.location.href =  this.value + window.location.search
     })
     $('select[name="system-roles"]').change(function () {
         reloadWithQuerys('role', this.value)

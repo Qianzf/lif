@@ -4,7 +4,7 @@
     'model' => $project,
     'key'   => 'REGRESSION_TEST_PROJECT_TASK',
     'action' => 'VIEW',
-    'route' => '/dep/test/regressions',
+    'route'  => lrn('test/regressions'),
 ]) ?>
 
 <table>
@@ -23,12 +23,12 @@
         <td><?= $key+1 ?></td>
         <td><?= $project->type ?></td>
         <td>
-            <a href="/dep/tasks/<?= $task->id ?>">
+            <a href='<?= lrn("tasks/{$task->id}") ?>'>
                 <?= $task->title() ?>
             </a>
         </td>
         <td>
-            <a href="/dep/test/regressions/project/<?= $project->id ?>/unpass/<?= $task->id ?>">
+            <a href='<?= lrn("test/regressions/project/{$project->id}/unpass/{$task->id}") ?>'>
                 <button class="btn-delete"><?= L('SET_UNPASS') ?></button>
             </a>
         </td>

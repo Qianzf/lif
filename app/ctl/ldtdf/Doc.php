@@ -95,7 +95,7 @@ class Doc extends Ctl
 
         return $this->responseOnCreated(
             $doc,
-            '/dep/docs/?',
+            lrn('docs/?'),
             null,
             function () use ($doc) {
             $doc->addTrending('create', share('user.id'));
@@ -193,7 +193,7 @@ class Doc extends Ctl
 
         return $this->responseOnCreated(
             $folder,
-            '/dep/docs/folders/?/edit',
+            lrn('docs/folders/?/edit'),
             null,
             function () use ($folder) {
                 $folder->addTrending('create', share('user.id'));

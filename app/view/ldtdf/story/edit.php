@@ -2,13 +2,13 @@
 <?= $this->section('back2list', [
     'model'  => $story,
     'key'    => 'STORY',
-    'route'  => '/dep/stories',
+    'route'  => lrn('stories'),
 ]) ?>
 
 <?php if (isset($story) && is_object($story)) { ?>
 <?php $sid = $story->alive() ? $story->id : 'new'; ?>
 
-<form method="POST" action="/dep/stories/<?= $sid ?>">
+<form method="POST" action='<?= lrn("stories/{$sid}") ?>'>
     <?= csrf_feild() ?>
 
     <label>

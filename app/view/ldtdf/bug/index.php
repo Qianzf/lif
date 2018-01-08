@@ -4,7 +4,7 @@
 
 <dl class="list">
     <dd>
-        <a href="/dep/bugs/new">
+        <a href="<?= lrn('bugs/new') ?>">
             <button><?= L('ADD_BUG') ?></button>
         </a>
     </dd>
@@ -47,7 +47,7 @@
         <td><?= $bug->create_at ?></td>
         <td>
             <sub><small><code>B<?= $bug->id ?></code></small></sub>
-            <a href="/dep/bugs/<?= $bug->id ?>">
+            <a href='<?= lrn("bugs/{$bug->id}") ?>'>
                 <?= $bug->title ?>
             </a>
         </td>

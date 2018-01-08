@@ -11,10 +11,10 @@ class Passport extends Ctl
     public function login()
     {
         if (share('user')) {
-            redirect('/dep');
+            return redirect(lrn());
         }
 
-        view('ldtdf/user/login');
+        return view('ldtdf/user/login');
     }
 
     public function auth(User $user, Trending $trend)
@@ -27,10 +27,10 @@ class Passport extends Ctl
 
         if (!$user || !is_object($user)) {
             share('__error', sysmsg('NO_USER'));
-            redirect('/dep/users/login');
+            return redirect(lrn('users/login'));
         } elseif (! password_verify($passwd, $user->passwd)) {
             share('__error', sysmsg('ILLEGAL_USER_CREDENTIALS'));
-            redirect('/dep/users/login');
+            return redirect(lrn('users/login'));
         }
         
         unset($user->passwd);
@@ -60,13 +60,13 @@ class Passport extends Ctl
 
         $trend->add('login_sys', $user->id);
 
-        redirect(share_flush('redirect_url') ?? '/dep');
+        redirect(share_flush('redirect_url') ?? lrn());
     }
 
     public function logout()
     {
         session()->destory();
 
-        redirect('/dep/users/login');
+        return redirect(lrn('users/login'));
     }
 }

@@ -17,7 +17,7 @@ class SendMailWhenTaskAssign extends \Lif\Core\Abst\Job
             }
 
             if (($current = $task->current())->alive()) {
-                $url    = url("dep/tasks/{$task->id}");
+                $url    = url(lrn("tasks/{$task->id}"));
                 
                 $title  = L('PROJECT')
                 .': '

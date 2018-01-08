@@ -4,7 +4,7 @@
 
 <dl>
     <dd>
-        <a href="/dep/tool/uploads">
+        <a href="<?= lrn('tool/uploads') ?>">
             <button><?= L('FILE_UPLOAD') ?></button>
         </a>
     </dd>

@@ -11,12 +11,12 @@
 
     <em><?= $origin->title ?></em>
 
-    <a href="/dep/tasks/new/?task=<?= $task->id ?>">
+    <a href='<?= lrn("tasks/new/?task={$task->id}") ?>'>
         <button><?= L('COPY') ?></button>
     </a>
 
     <?php if ($editable ?? false): ?>
-    <a href="/dep/tasks/<?= $task->id ?>/edit">
+    <a href='<?= lrn("tasks/{$task->id}/edit") ?>'>
         <button><?= L('EDIT') ?></button>
     </a>
     <?php endif ?>
@@ -29,7 +29,7 @@
     id="task-confirm-form"
     class="invisible-default"
     method="POST"
-    action="/dep/tasks/<?= $task->id?>/confirm"
+    action='<?= lrn("tasks/{$task->id}/confirm") ?>'
     class="inline">
         <?= csrf_feild() ?>
     </form>
@@ -37,7 +37,7 @@
     
     <?php if ($updatable ?? false): ?>
     <?= $this->section('update-task-env-form', [
-        'action' => "/dep/tasks/{$task->id}/env",
+        'action' => lrn("tasks/{$task->id}/env"),
         'branch' => $task->branch,
         'config' => $task->config,
     ]) ?>
@@ -53,8 +53,8 @@
             'remarks'  => $task->deploy,
             'manually' => (strtolower($task->manually) == 'yes'),
             'key'      => 'TASK',
-            'api'      => "/dep/tasks/{$task->id}/users/assignable",
-            'route'    => "/dep/tasks/{$task->id}/assign"
+            'api'      => lrn("tasks/{$task->id}/users/assignable"),
+            'route'    => lrn("tasks/{$task->id}/assign"),
         ]) ?>
     <?php endif ?>
 
@@ -64,7 +64,7 @@
     class="text-todo"><?= L('ACTIVATE_TASK') ?></button>
     <form
     method="POST"
-    action="/dep/tasks/<?= $task->id ?>/activate"
+    action='<?= lrn("tasks/{$task->id}/activate") ?>'
     class="inline invisible-default" id="activate-task-form">
         <?= csrf_feild() ?>
         <input type="hidden" name="activate_reason">
@@ -89,7 +89,7 @@
     class="text-danger"><?= L('CANCEL_TASK') ?></button>
     <form
     method="POST"
-    action="/dep/tasks/<?= $task->id ?>/cancel"
+    action='<?= lrn("tasks/{$task->id}/cancel") ?>'
     class="inline invisible-default" id="cancel-task-form">
         <?= csrf_feild() ?>
         <input type="hidden" name="cancel_reason">
@@ -128,7 +128,7 @@
     <small class="text-task"><i>
         <?= L($project->type) ?>
         <code>P<?= $project->id ?></code>
-        <a href="/dep/projects/<?= $project->id ?>">
+        <a href='<?= lrn("projects/{$project->id}") ?>'>
             <?=  $project->name ?>
         </a>
     </i></small>

@@ -9,5 +9,4 @@
 // $this->get('/', 'lif');
 
 $this->get('__test__', function () {
-    dd(lrn('admin/userssss'));
 });

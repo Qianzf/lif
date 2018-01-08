@@ -4,7 +4,7 @@
 
 <dl class="list">
     <dd>
-        <a href="/dep/admin/projects/new">
+        <a href="<?= lrn('admin/projects/new') ?>">
             <button><?= L('ADD_PROJECT') ?></button>
         </a>
     </dd>
@@ -29,7 +29,7 @@
         <td><?= $project->type ?></td>
         <td><?= $project->url ?></td>
         <td>
-            <a href="/dep/admin/projects/<?= $project->id ?>">
+            <a href='<?= lrn("admin/projects/{$project->id}") ?>'>
                 <button><?= L('EDIT') ?></button>
             </a>
         </td>
