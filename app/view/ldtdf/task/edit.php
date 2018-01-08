@@ -9,10 +9,10 @@
     'model'  => $task,
     'key'    => 'TASK',
     'action' => ($editable ? null : 'VIEW'),
-    'route'  => '/dep/tasks',
+    'route'  => lrn('tasks'),
 ]) ?>
 
-<form method="POST" action="/dep/tasks/<?= $tid ?>">
+<form method="POST" action='<?= lrn("tasks/{$tid}") ?>'>
     <?= csrf_feild() ?>
 
     <label>
@@ -41,7 +41,7 @@
         </span>
         <input type="hidden" name="origin_id" value="<?= $origin->id ?>">
         <?= $this->section('instant-search', [
-            'api' => "/dep/tasks/{$searchAPI}/attachable",
+            'api'    => lrn("tasks/{$searchAPI}/attachable"),
             'oldVal' => $origin->title,
             'sresKeyInput' => 'origin_id',
             // 'sresKey' => 'id',
@@ -90,10 +90,10 @@
 <script type="text/javascript">
     $('input[name="origin_type"]').change(function () {
         let title = "<?= L('RELATED_STORY') ?>"
-        let searchApi = '/dep/tasks/stories/attachable'
+        let searchApi = "<?= lrn('tasks/stories/attachable') ?>"
 
         if ('bug' == this.value) {
-            searchApi = '/dep/tasks/bugs/attachable'
+            searchApi = "<?= lrn('tasks/bugs/attachable') ?>"
             title = "<?= L('RELATED_BUG') ?>"
         }
 

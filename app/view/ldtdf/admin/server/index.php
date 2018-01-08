@@ -4,7 +4,7 @@
 
 <dl class="list">
     <dd>
-        <a href="/dep/admin/servers/new">
+        <a href="<?= lrn('admin/servers/new') ?>">
             <button><?= L('ADD_SERVER') ?></button>
         </a>
     </dd>
@@ -29,7 +29,7 @@
         <td><?= $server->host ?></td>
         <td><?= $server->port ?></td>
         <td>
-            <a href="/dep/admin/servers/<?= $server->id ?>">
+            <a href='<?= lrn("admin/servers/{$server->id}") ?>'>
                 <button><?= L('EDIT') ?></button>
             </a>
         </td>

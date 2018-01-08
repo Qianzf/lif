@@ -9,7 +9,7 @@
         ?>
         <?= $trending->at, ' , ', L("ROLE_{$user->role}") ?>
         <i>
-            <a href="/dep/users/<?= $user->id ?>">
+            <a href='<?= lrn("users/{$user->id}") ?>'>
                 <?= $user->name ?>
             </a>
         </i>

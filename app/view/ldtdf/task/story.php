@@ -6,7 +6,7 @@
     <small class="text-task"><i>
         <?= L($task->origin_type) ?>
         <code>S<?= $story->id ?></code>
-        <a href="/dep/stories/<?= $story->id ?>">
+        <a href='<?= lrn("stories/{$story->id}") ?>'>
             <?= $story->title ?>
         </a>
     </i></small>

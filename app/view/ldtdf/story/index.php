@@ -4,7 +4,7 @@
 
 <dl class="list">
     <dd>
-        <a href="/dep/stories/new">
+        <a href="<?= lrn('stories/new') ?>">
             <button><?= L('ADD_STORY') ?></button>
         </a>
     </dd>
@@ -39,12 +39,12 @@
         <td><?= $story->create_at ?></td>
         <td>
             <sub><small><code>S<?= $story->id ?></code></small></sub>
-            <a href="/dep/stories/<?= $story->id ?>">
+            <a href='<?= lrn("stories/{$story->id}") ?>'>
                 <?= $story->title ?>
             </a>
         </td>
         <td>
-            <a href="/dep/users/<?= $story->creator('id') ?>">
+            <a href='<?= lrn("users/{$story->creator('id')}") ?>'>
                 <?= $story->creator('name') ?>
             </a>
         </td>

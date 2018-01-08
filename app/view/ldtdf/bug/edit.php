@@ -2,13 +2,13 @@
 <?= $this->section('back2list', [
     'model' => $bug,
     'key'   => 'BUG',
-    'route' => '/dep/bugs',
+    'route' => lrn('bugs'),
 ]) ?>
 
 <?php if (isset($bug) && is_object($bug)): ?>
 <?php $bid = $bug->alive() ? $bug->id : 'new'; ?>
 
-<form method="POST" action="/dep/bugs/<?= $bid ?>">
+<form method="POST" action='<?= lrn("bugs/{$bid}") ?>'>
     <?= csrf_feild() ?>
 
     <label>

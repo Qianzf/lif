@@ -25,7 +25,7 @@
         <div class="hitarea collapsable-hitarea lastCollapsable-hitarea"></div><span class="folder">
             <?= $child->title ?>
             <sup>
-            <a href="/dep/docs/folders/<?= $child->id ?>/edit">
+            <a href='<?= lrn("docs/folders/{$child->id}/edit") ?>'>
                 <button><i><?= L('EDIT') ?></i></button>
             </a>
             </sup>
@@ -48,10 +48,11 @@ $(document).ready(function(){
 })
 function unfoldChild(id) {
     var folder  = $('#treeview-folder-' + id)
+    var prefix  = "<?= config('app.route.prefix') ?>"
     if ('fold' == folder.data('status')) {
         return true
     }
-    asyncr('/dep/docs/folders/' + id + '/unfold').then(function (res) {
+    asyncr(prefix + '/docs/folders/' + id + '/unfold').then(function (res) {
         res.json().then(function (ret) {
             var html = ''
             if (ret.dat.docs) {
@@ -71,7 +72,7 @@ function unfoldChild(id) {
                         <span class="folder">
                             ${val.title}
                             <sup>
-                            <a href="/dep/docs/folders/${val.id}/edit">
+                            <a href="${prefix}/docs/folders/${val.id}/edit">
                                 <button><?= L('EDIT') ?></button>
                             </a>
                             </sup>

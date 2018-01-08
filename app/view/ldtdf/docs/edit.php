@@ -4,7 +4,7 @@
 <?= $this->section('back2list', [
     'model'  => $doc,
     'key'    => 'DOC',
-    'route'  => '/dep/docs',
+    'route'  => lrn('docs'),
 ]) ?>
 
 <form method="POST">

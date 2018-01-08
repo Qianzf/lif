@@ -4,12 +4,12 @@
 
 <dl class="list">
     <dd>
-        <a href="/dep/docs/new">
+        <a href="<?= lrn('docs/new') ?>">
             <button><?= L('ADD_DOC') ?></button>
         </a>
     </dd>
     <dd>
-        <a href="/dep/docs/folders/new">
+        <a href="<?= lrn('docs/folders/new') ?>">
             <button><?= L('ADD_FOLDER') ?></button>
         </a>
     </dd>
@@ -40,7 +40,7 @@
         <td><?= $folder->create_at ?></td>
         <td>
             <sub><small><code>F<?= $folder->id ?></code></small></sub>
-            <a href="/dep/docs/folders/<?= $folder->id ?>">
+            <a href='<?= lrn("docs/folders/{$folder->id}") ?>'>
                 <?= $folder->title ?>
             </a>
         </td>
@@ -56,7 +56,7 @@
         <td><?= $doc->create_at ?></td>
         <td>
             <sub><small><code>D<?= $doc->id ?></code></small></sub>
-            <a href="/dep/docs/<?= $doc->id ?>">
+            <a href='<?= lrn("docs/{$doc->id}") ?>'>
                 <?= $doc->title ?>
             </a>
         </td>

@@ -4,10 +4,6 @@ $this->any('/sys_msg', function () {
     response(sysmsgs());
 });
 
-$this
-->post('dep/gitlab/webhook', 'Ldtdf\LDTDF@gitlabWebhook')
-->unset('safty.csrf');
-
 $this->group([
     'prefix'    => config('app.route.prefix', '/'),
     'namespace' => 'Ldtdf',
@@ -18,6 +14,11 @@ $this->group([
         'auth.web',
     ],
 ], function () {
+    $this
+    ->post('gitlab/webhook', 'LDTDF@gitlabWebhook')
+    ->unset('safty.csrf')
+    ->cancel('auth.web');
+
     $this->get('/', 'LDTDF@index');
     $this->get('trending', 'User@trending');
     $this->get('todo', 'Task@todo');

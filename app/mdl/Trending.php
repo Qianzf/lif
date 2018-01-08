@@ -82,7 +82,8 @@ class Trending extends Mdl
 
         if ($this->target && ($target = model(User::class, $this->target))) {
             $html .= L('TO').L("ROLE_{$target->role}");
-            $html .= " <i><a href='/dep/users/{$target->id}'>{$target->name}</a></i>";
+            $route = lrn("users/{$target->id}");
+            $html .= " <i><a href='{$route}'>{$target->name}</a></i>";
         }
 
         if ($displayRefState && ($status = trim($this->ref_state))) {

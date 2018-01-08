@@ -66,7 +66,7 @@ class UserGroup extends Ctl
             share_error_i18n('CREATE_FAILED');
         }
 
-        return redirect('/dep/admin/users/groups/'.$status);
+        return redirect("admin/users/groups/{$status}");
     }
 
     public function update(Group $group)

@@ -19,7 +19,7 @@
     <?php foreach ($tasks as $task): ?>
     <tr>
         <td>
-            <a href="/dep/tasks/<?= $task->id ?>">T<?= $task->id ?></a>
+            <a href='<?= lrn("tasks/{$task->id}") ?>'>T<?= $task->id ?></a>
         </td>
         <td><?= $task->project('name') ?></td>
         <td><?= $task->project('type') ?></td>

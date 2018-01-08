@@ -2,7 +2,7 @@
 <?= $this->section('back2list', [
     'model' => $env,
     'key'   => 'ENV',
-    'route' => '/dep/admin/envs',
+    'route' => lrn('admin/envs'),
 ]) ?>
 
 <form method="POST">

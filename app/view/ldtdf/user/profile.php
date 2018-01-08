@@ -4,7 +4,7 @@
         'id' => true,
     ]),
     'key'   => 'USER_PROFILE',
-    'route' => '/dep',
+    'route' => lrn(),
 ]) ?>
 
 <form method="POST">

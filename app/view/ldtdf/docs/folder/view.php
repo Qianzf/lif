@@ -7,18 +7,18 @@
     <big><?= $folder->title ?></big>
 
     <?= $this->section('back_to', [
-        'route' => '/dep/docs',
+        'route' => lrn('docs'),
     ]) ?>
 
-    <a href="/dep/docs/folders/<?= $folder->id ?>/edit">
+    <a href='<?= lrn("docs/folders/{$folder->id}/edit") ?>'>
         <button><?= L('EDIT') ?></button>
     </a>
 
-    <a href="/dep/docs/new?folder=<?= $folder->id ?>">
+    <a href='<?= lrn("docs/new?folder={$folder->id}") ?>'>
         <button><?= L('ADD_DOC') ?></button>
     </a>
 
-    <a href="/dep/docs/folders/new?parent=<?= $folder->id ?>">
+    <a href='<?= lrn("docs/folders/new?parent={$folder->id}") ?>'>
         <button><?= L('ADD_CATE') ?></button>
     </a>
 </h2>

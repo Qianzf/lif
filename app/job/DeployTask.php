@@ -288,7 +288,7 @@ class DeployTask extends \Lif\Core\Abst\Job
 
             return $res;
         } elseif ('local' == $location) {
-            return shexec($commands);
+            return proc_exec($commands);
         }
 
         return [

@@ -26,6 +26,6 @@ class Web extends \Lif\Core\Abst\Middleware
 
         share('redirect_url', $app->url());
 
-        redirect('/dep/users/login');
+        redirect(lrn('users/login'));
     }
 }

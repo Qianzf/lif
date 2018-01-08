@@ -63,7 +63,7 @@ class Upload extends CtlBase
 
         share_error_i18n($msg);
 
-        return redirect("/dep/tool/uploads/{$status}");
+        return redirect(lrn("tool/uploads/{$status}"));
     }
 
     public function uptoken()

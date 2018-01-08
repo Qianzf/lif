@@ -24,7 +24,7 @@ class Event extends ModelBase
     public function genDetailsOfDoc($id)
     {
         return [
-            'route' => "/dep/docs/{$id}",
+            'route' => lrn("docs/{$id}"),
             'title' => $this->getDocTitle($id),
         ];
     }
@@ -32,7 +32,7 @@ class Event extends ModelBase
     public function genDetailsOfDocFolder($id)
     {
         return [
-            'route' => "/dep/docs/folders/{$id}",
+            'route' => lrn("docs/folders/{$id}"),
             'title' => $this->getDocFolderTitle($id),
         ];
     }
@@ -66,7 +66,7 @@ class Event extends ModelBase
     public function genDetailsOfBug($id)
     {
         return [
-            'route' => "/dep/bugs/{$id}",
+            'route' => lrn("bugs/{$id}"),
             'title' => $this->getBugTitle($id),
         ];
     }
@@ -74,7 +74,7 @@ class Event extends ModelBase
     public function genDetailsOfTask($id)
     {
         return [
-            'route' => "/dep/tasks/{$id}",
+            'route' => lrn("tasks/{$id}"),
             'title' => $this->getTaskTitle($id),
         ];
     }
@@ -82,7 +82,7 @@ class Event extends ModelBase
     public function genDetailsOfStory($id)
     {
         return [
-            'route' => "/dep/stories/{$id}",
+            'route' => lrn("stories/{$id}"),
             'title' => $this->getStoryTitle($id),
         ];
     }

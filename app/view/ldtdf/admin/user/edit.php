@@ -2,7 +2,7 @@
 <?= $this->section('back2list', [
     'model' => $user,
     'key'   => 'USER',
-    'route' => '/dep/admin/users',
+    'route' => lrn('admin/users'),
 ]) ?>
 
 <form method="POST" autocomplete="off">

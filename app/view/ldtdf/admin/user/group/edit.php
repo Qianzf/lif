@@ -2,7 +2,7 @@
 <?= $this->section('back2list', [
     'model' => $group,
     'key'   => 'GROUP',
-    'route' => '/dep/admin/users/groups',
+    'route' => lrn('admin/users/groups'),
 ]) ?>
 
 <form method="POST" autocomplete="off">

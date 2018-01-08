@@ -2,7 +2,7 @@
 <?= $this->section('back2list', [
     'model' => $server,
     'key'   => 'SERVER',
-    'route' => '/dep/admin/servers',
+    'route' => lrn('admin/servers'),
 ]) ?>
 
 <form method="POST">

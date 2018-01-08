@@ -17,7 +17,7 @@ class Role extends \Lif\Core\Abst\Middleware
             
             session()->delete('user');
 
-            return redirect('/dep/users/login');
+            return redirect(lrn('users/login'));
         }
     }
 

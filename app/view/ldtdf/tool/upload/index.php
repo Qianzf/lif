@@ -4,7 +4,7 @@
 
 <dd>
     <dl>
-        <a href="/dep/tool/uploads/new" target="_blank">
+        <a href="<?= lrn('tool/uploads/new') ?>" target="_blank">
             <button><?= L('ADD_UPLOAD') ?></button>
         </a>
     </dl>
@@ -29,7 +29,7 @@
         <td><?= $upload->filekey ?></td>
         <td><?= $upload->filename ?></td>
         <td>
-            <a href="/dep/tool/uploads/<?= $upload->id ?>">
+            <a href='<?= lrn("tool/uploads/{$upload->id}") ?>'>
                 <button><?= L('DETAILS') ?></button>
             </a>
         </td>

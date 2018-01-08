@@ -10,49 +10,49 @@ class Regression extends \Lif\Ctl\Ldtdf\Ctl
     {
         $env->setRegressionPass();
 
-        return redirect("/dep/test/regressions");
+        return redirect(lrn('test/regressions'));
     }
 
     public function setProjectPass(Project $project)
     {
         $project->setRegressionPass();
 
-        return redirect("/dep/test/regressions");
+        return redirect(lrn('test/regressions'));
     }
 
     public function setEnvUnpass(Environment $env)
     {
         $env->setRegressionUnpass();
 
-        return redirect("/dep/test/regressions");
+        return redirect(lrn('test/regressions'));
     }
 
     public function setProjectUnpass(Project $project)
     {
         $project->setRegressionUnpass();
 
-        return redirect("/dep/test/regressions");
+        return redirect(lrn('test/regressions'));
     }
 
     public function setEnvTaskUnpass(Environment $env, Task $task)
     {
         $env->setRegressionUnpass($task);
 
-        return redirect("/dep/test/regressions/env/{$env->id}");
+        return redirect(lrn("test/regressions/env/{$env->id}"));
     }
 
     public function setProjectTaskUnpass(Project $project, Task $task)
     {
         $project->setRegressionUnpass($task);
 
-        return redirect("/dep/test/regressions/project/{$project->id}");
+        return redirect(lrn("test/regressions/project/{$project->id}"));
     }
 
     public function startTest(Environment $env)
     {
         $env->startRegressionTest();
 
-        return redirect("/dep/test/regressions");
+        return redirect(lrn('test/regressions'));
     }
 
     public function index(Environment $env, Project $project)

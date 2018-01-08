@@ -34,7 +34,7 @@ new TreeSelect({
         dataType: 'json',
         autoParam: ['id'],
         otherParam: {'dat-only': true},
-        url: '/dep/docs/folders/children'
+        url: "<?= lrn('docs/folders/children') ?>",
     }
 })
 </script>

@@ -135,6 +135,6 @@ class User extends Ctl
             }
         }
 
-        return redirect('/dep/admin/users');
+        return redirect(lrn('admin/users'));
     }
 }

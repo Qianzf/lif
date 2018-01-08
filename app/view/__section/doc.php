@@ -3,10 +3,10 @@
     <big><?= $doc->title ?></big>
 
     <?= $this->section('back_to', [
-        'route' => '/dep/docs',
+        'route' => lrn('docs'),
     ]) ?>
 
-    <a href="/dep/docs/<?= $doc->id ?>/edit">
+    <a href='<?= lrn("docs/{$doc->id}/edit") ?>'>
         <button><?= L('EDIT') ?></button>
     </a>
 </h2>

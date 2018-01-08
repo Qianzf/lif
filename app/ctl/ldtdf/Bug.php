@@ -63,7 +63,7 @@ class Bug extends Ctl
     public function info(BugModel $bug)
     {
         if (! $bug->alive()) {
-            return redirect('/dep/bugs');
+            return redirect(lrn('bugs'));
         }
 
         $querys     = $this->request->gets();
@@ -135,7 +135,7 @@ class Bug extends Ctl
 
         return $this->responseOnCreated(
             $bug,
-            '/dep/bugs/?',
+            lrn('bugs/?'),
             null,
             function () use ($bug, $user) {
                 $bug->addTrending('create', $user);

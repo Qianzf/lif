@@ -5,7 +5,7 @@
 <?php if ($displaymenu ?? true): ?>
 <dl class="list">
     <dd>
-        <a href="/dep/tasks/new">
+        <a href="<?= lrn('tasks/new') ?>">
             <button><?= L('ADD_TASK') ?></button>
         </a>
     </dd>

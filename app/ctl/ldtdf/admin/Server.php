@@ -26,7 +26,7 @@ class Server extends Ctl
 
     public function create(ServerModel $server)
     {
-        return $this->responseOnCreated($server, '/dep/admin/servers/?');
+        return $this->responseOnCreated($server, lrn('admin/servers/?'));
     }
 
     public function update(ServerModel $server)
