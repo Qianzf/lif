@@ -141,6 +141,16 @@ $this->group([
     });
 
     $this->group([
+        'prefix' => 'pm',
+        'ctl' => 'ProductManager',
+        'middleware' => [
+            'auth.pm',
+        ],
+    ], function () {
+        $this->get('/', 'index');
+    });
+
+    $this->group([
         'prefix' => 'test',
         'namespace' => 'Tester',
         'ctl' => 'Tester',
