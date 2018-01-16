@@ -10,6 +10,7 @@
             <?= $story->title ?>
         </a>
     </i></small>
+    <small><sub>（<?= $story->creator('name') ?>）</sub></small>
 </p>
 
 <?= $this->section('story') ?>

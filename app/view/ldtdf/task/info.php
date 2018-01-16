@@ -116,7 +116,7 @@
     <span class="text-info">]</span>
     <button class="btn-info"><?= L("STATUS_{$task->status}") ?></button>
     <?php if ($name = $task->current('name')): ?>
-    <i><small>(<?= $name ?>)</small></i>
+    <small><sub>（<?= $name ?>）</sub></small>
     <?php endif ?>
 </p>
 
@@ -129,9 +129,12 @@
         <?= L($project->type) ?>
         <code>P<?= $project->id ?></code>
         <a href='<?= lrn("projects/{$project->id}") ?>'>
-            <?=  $project->name ?>
+            <?= $project->name ?>
         </a>
     </i></small>
+    <?php if ($repo = (explode(':', $project->url)[1] ?? false)): ?>
+    <small>（<code><?= $repo ?></code>）</small>
+    <?php endif ?>
 </p>
 
 <?= $this->section("ldtdf/task/{$task->origin_type}", [], true) ?>

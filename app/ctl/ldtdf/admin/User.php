@@ -61,7 +61,9 @@ class User extends Ctl
 
     public function edit(UserModel $user)
     {
-        return view('ldtdf/admin/user/edit')->withUser($user);
+        return view('ldtdf/admin/user/edit')
+        ->withUser($user)
+        ->share('hide-search-bar', true);
     }
 
     public function create(UserModel $user)

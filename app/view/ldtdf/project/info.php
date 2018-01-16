@@ -28,7 +28,17 @@
         </button>
         <span class="stub"></span>
         <small><?= $project->desc ?></small>
-    </label>    
+    </label>
+
+    <?php if (ci_equal(share('user.role'), 'dev')): ?>
+    <label>
+        <button class="btn-info">
+            <?= L('REPO') ?>
+        </button>
+        <span class="stub"></span>
+        <code><?= $project->url ?></code>
+    </label>
+    <?php endif ?>
 </div>
 
 <div class="vertical"></div>

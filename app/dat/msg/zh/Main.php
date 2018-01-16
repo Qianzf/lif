@@ -290,7 +290,7 @@ return [
     'ORIGIN' => '来源',
     'NO_BUG' => '找不到BUG记录',
     'BUG_HOW' => '如何发生',
-    'BUG_HOW_STUB' => 'BUG 发生时你在做什么',
+    'BUG_HOW_STUB' => '发现 BUG 时你具体在做什么',
     'BUG_WHAT' => '期望行为',
     'BUG_WHAT_STUB' => '请提供需求范围内的期望表现',
     'RECURABLE' => '是否可复现',
@@ -345,4 +345,6 @@ return [
     'COPY' => '复制',
     'UPDATE_ENV_OF' => '更新环境',
     'UPDATE_ENV_OF_TASK' => '更新任务环境',
+    'ABILITY' => '能力',
+    'SUMMARY' => '总结',
 ];

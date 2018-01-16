@@ -10,7 +10,8 @@ class CreateUserTable extends Dit
     {
         schema()->createIfNotExists('user', function ($table) {
             $table->pk('id');
-            $table->string('name');
+            $table->string('name', 32);
+            $table->string('ability', 64);
             $table->string('account')->unique();
             $table->string('email')->unique();
             $table->string('passwd');

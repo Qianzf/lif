@@ -16,7 +16,7 @@
     <?= csrf_feild() ?>
 
     <label>
-        <span class="label-title"><?= L('TASK_ORIGIN') ?></span>
+        <span class="label-title">* <?= L('TASK_ORIGIN') ?></span>
         <input
         <?php if ($searchAPI == 'stories'): ?>
         checked
@@ -37,7 +37,7 @@
 
     <label>
         <span class="label-title" id="task-origin-title">
-            <?= L("RELATED_{$searchAPI}") ?>
+            * <?= L("RELATED_{$searchAPI}") ?>
         </span>
         <input type="hidden" name="origin_id" value="<?= $origin->id ?>">
         <?= $this->section('instant-search', [
@@ -51,21 +51,44 @@
 
     <label>
         <span class="label-title">
-            <?= L('RELATED_PROJECT') ?>
+            * <?= L('RELATED_PROJECT') ?>
         </span>
         <select name="project" required>
-            <option>-- <?= L('SELECT_PROJECT') ?> --</option>
+            <option>-- <?= L('SELECT_PROJECT') ?> ：
+                <?= L('TYPE'), ' | ', L('TITLE'), ' | ', L('REPO')  ?>
+             --</option>
             <?php foreach ($projects as $proj): ?>
                 <option
                 <?php if ($project->id == $proj->id): ?>
                 selected
                 <?php endif ?>
                 value="<?= $proj->id ?>">
-                    <?= $proj->name, " ($proj->type)" ?>
+                    <?= $proj->type, ' | ', $proj->name, ' | ', (
+                        explode(':', $proj->url)[1] ?? L('UNKNOWN')
+                    ) ?>
                 </option>
             <?php endforeach ?>
         </select>
     </label>
+
+    <?php if (! $task->alive()): ?>
+    <label>
+        <span class="label-title">
+            <?= L('DEVELOPER') ?>
+            <sub><small>(<?= L('OPTIONAL') ?>)</small></sub>
+        </span>
+        <select name="developer" required>
+            <option>-- <?= L('SELECT_DEVELOPER') ?> --</option>
+            <?php foreach ($developers as $dev): ?>
+                <option value="<?= $dev['id'] ?? null ?>">
+                    <?= ($dev['name'] ?? L('UNKNOWN')), ' | ', (
+                        $dev['ability'] ?: L("ROLE_{$dev['role']}")
+                    ) ?>
+                </option>
+            <?php endforeach ?>
+        </select>
+    </label>
+    <?php endif ?>
 
     <label>
         <span class="label-title"><?= L('REMARKS') ?></span>
@@ -89,12 +112,12 @@
 <?= $this->section('lib/editormd') ?>
 <script type="text/javascript">
     $('input[name="origin_type"]').change(function () {
-        let title = "<?= L('RELATED_STORY') ?>"
+        let title = "* <?= L('RELATED_STORY') ?>"
         let searchApi = "<?= lrn('tasks/stories/attachable') ?>"
 
         if ('bug' == this.value) {
             searchApi = "<?= lrn('tasks/bugs/attachable') ?>"
-            title = "<?= L('RELATED_BUG') ?>"
+            title = "* <?= L('RELATED_BUG') ?>"
         }
 
         $('#selected-search-res span').html('')

@@ -279,6 +279,7 @@ class Task extends Ctl
             'story' => ['int|min:1', null],
             'bug'   => ['int|min:1', null],
             'task'  => ['int|min:1', null],
+            'dev'   => ['int|min:1', null],
         ]);
 
         $trendings = null;
@@ -322,13 +323,14 @@ class Task extends Ctl
             }
         }
 
-        view('ldtdf/task/edit')
-        ->withTaskStoryBugProjectProjectsEditableTrendings(
+        return view('ldtdf/task/edit')
+        ->withTaskStoryBugProjectProjectsDevelopersEditableTrendings(
             $task,
             ($story ?? model(Story::class)),
             ($bug   ?? model(Bug::class)),
             $project,
             $project->all(true, false),
+            $task->getDevelopers(),
             true,
             $trendings
         )
@@ -441,12 +443,19 @@ class Task extends Ctl
 
     public function create(TaskModel $task)
     {
-        $user = share('user.id');
+        $user   = $current = share('user.id');
+        $status = 'activated';
+        $developer = intval($this->request->get('developer'));
+
+        if (ispint($developer, false)) {
+            $status  = 'waitting_dev';
+            $current = $developer;
+        }
 
         $this->request
-        ->setPost('status', 'activated')
+        ->setPost('status', $status)
         ->setPost('creator', $user)
-        ->setPost('current', $user);
+        ->setPost('current', $current);
 
         return $this->responseOnCreated(
             $task,
@@ -468,8 +477,15 @@ class Task extends Ctl
                     return "PROJECT_EXIST_IN_{$type}";
                 }
             },
-            function () use ($task, $user) {
-                $task->addTrending('create', $user);
+            function () use ($task, $user, $developer) {
+                $status = $task->status;
+                $task->setStatus('activated')->addTrending('create', $user);
+
+                if ($developer) {
+                    $task
+                    ->setStatus($status)
+                    ->addTrending('assign', $user, $developer);
+                }
             }
         );
     }

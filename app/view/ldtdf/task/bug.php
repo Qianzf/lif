@@ -10,6 +10,7 @@
             <?= $bug->title ?>
         </a>
     </i></small>
+    <small><sub>（<?= $bug->creator('name') ?>）</sub></small>
 </p>
 
 <?= $this->section('bug') ?>

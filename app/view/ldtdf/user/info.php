@@ -30,5 +30,17 @@
         <a href="mailto:<?= $user->email ?>">
             <code><?= $user->email ?></code>
         </a>
-    </label>    
+    </label>
+
+    <label>
+        <button class="btn-info">
+            <?= L('ABILITY') ?>
+        </button>
+        <span class="stub"></span>
+        <small>
+            <?= $this->escape(
+                $user->ability ?: L("ROLE_{$user->role}")
+            )?>
+        </small>
+    </label>
 </div>

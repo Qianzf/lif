@@ -9,6 +9,8 @@ class Project extends CtlBase
 {
     public function info(ProjectModel $project)
     {
-        return view('ldtdf/project/info')->withProject($project);
+        return view('ldtdf/project/info')
+        ->withProject($project)
+        ->share('hide-search-bar', true);
     }
 }

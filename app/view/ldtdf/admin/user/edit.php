@@ -38,6 +38,11 @@
     </label>
 
     <label>
+        <span class="label-title"><?= L('ABILITY_SUMMARY') ?></span>
+        <input type="text" name="ability" value="<?= $user->ability ?>">
+    </label>
+
+    <label>
         <span class="label-title"><?= L('STATUS') ?></span>
         <?= L('NORMAL') ?>
         <input type="radio" name="status" value="1" checked>

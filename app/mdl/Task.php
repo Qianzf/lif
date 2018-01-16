@@ -26,6 +26,15 @@ class Task extends Mdl
         'origin_id'   => 'int|min:1',
     ];
 
+    public function getDevelopers()
+    {
+        return db()
+        ->table('user')
+        ->select('id', 'name', 'ability', 'role')
+        ->whereStatusRole(1, 'dev')
+        ->get(true);
+    }
+
     public function searchOriginIdsByTitle(
         string $origin,
         string $keyword
@@ -598,5 +607,12 @@ class Task extends Mdl
             'target'    => $target,
             'notes'     => $notes,
         ]);
+    }
+
+    public function setStatus(string $status)
+    {
+        $this->status = $status;
+
+        return $this;
     }
 }

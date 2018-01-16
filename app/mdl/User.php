@@ -9,12 +9,13 @@ class User extends Mdl
         'passwd',
     ];
     protected $rules = [
-        'name' => 'string',
+        'name'    => 'string',
         'account' => 'string',
-        'email' => 'email',
-        'passwd' => 'string',
-        'role' => 'string|ciin:admin,test,dev,ops,ui,pm',
-        'status' => ['in:0,1', 1],
+        'email'   => 'email',
+        'passwd'  => 'string',
+        'role'    => 'string|ciin:admin,test,dev,ops,ui,pm',
+        'status'  => ['in:0,1', 1],
+        'ability' => 'string',
     ];
 
     public function getCurrentTasks()
