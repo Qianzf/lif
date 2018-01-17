@@ -172,6 +172,7 @@ class Task extends Ctl
             'origin'   => ['ciin:story,bug', null],
             'id'       => ['int|min:1', null],
             'project'  => ['int|min:0', null],
+            'product'  => ['int|min:0', null],
             'creator'  => ['int|min:1', null],
             'search'   => ['string', null],
             'position' => ['int|min:0', null],
@@ -187,7 +188,7 @@ class Task extends Ctl
 
         if ($user->alive()) {
             $task->whereCurrent($user->id);
-            $displayPosition = $displayMenu =false;
+            $displayPosition = $displayMenu = false;
         }
 
         if ($id = ($querys['id'] ?? false)) {
@@ -218,8 +219,31 @@ class Task extends Ctl
                 if ($origin = $querys['origin']) {
                     $task->where('origin_type', strtolower($origin));
                 }
-                if ($project = $querys['project']) {
+                if (! empty_safe($project = $querys['project'])) {
                     $task->whereProject($project);
+                }
+                if (! empty_safe($product = $querys['product'])) {
+                    if (true
+                        && ci_equal($origin, 'story')
+                        && ($stories = $task->getStoryIdsByProduct($product))
+                    ) {
+                        $task->where([
+                            'origin_id'   => $stories,
+                            'origin_type' => 'story',
+                        ]);
+                    } elseif (true
+                        && ci_equal($origin, 'bug')
+                        && ($bugs = $task->getBugIdsByProduct($product))
+                    ) {
+                        $task->where([
+                            'origin_id'   => $bugs,
+                            'origin_type' => 'bug',
+                        ]);
+                    } else {
+                        if ($native = $task->getOriginsByProduct($product)) {
+                            $task->appendWhere($native);
+                        }
+                    }
                 }
                 if ($creator = $querys['creator']) {
                     $task->whereCreator($creator);
@@ -247,9 +271,10 @@ class Task extends Ctl
         $projects = $task->getAllProjects();
         $records  = $task->count();
         $pages    = ceil($records / $pageScale);
+        $products = get_ldtdf_products();
 
         return view('ldtdf/task/index')
-        ->withStatusPagesRecordsTasksProjectsUsersDisplaypositionDisplaymenu(
+        ->withStatusPagesRecordsTasksProjectsProductsUsersDisplaypositionDisplaymenu(
             $task->getAllStatus(),
             $pages,
             $records,
@@ -257,6 +282,10 @@ class Task extends Ctl
             array_combine(
                 array_column($projects, 'id'),
                 array_column($projects, 'name')
+            ),
+            array_combine(
+                array_column($products, 'id'),
+                array_column($products, 'name')
             ),
             array_combine(
                 array_column($users, 'id'),
@@ -296,6 +325,8 @@ class Task extends Ctl
                     $error = L('NO_TASK', $tid);
                 } else {
                     $task->setAlive(false);
+                    $task->id = null;
+
                     if (ci_equal($task->origin_type, 'story')) {
                         $story = $task->story();
                     } elseif (ci_equal($task->origin_type, 'bug')) {
@@ -535,15 +566,17 @@ class Task extends Ctl
 
     public function update(TaskModel $task)
     {
+        $user = share('user.id');
+
         return $this->responseOnUpdated(
             $task,
             lrn("tasks/{$task->id}/edit"),
-            function () use ($task) {
+            function () use ($task, $user) {
                 if (! $task->alive()) {
                     return 'NO_TASK';
                 }
 
-                if ($task->creator != share('user.id')) {
+                if (! $task->canBeEditedBy($user)) {
                     return 'UPDATE_PERMISSION_DENIED';
                 }
 
@@ -570,8 +603,8 @@ class Task extends Ctl
                     $this->request->setPost('status', 'waitting_dev');
                 }
             },
-            function () use ($task) {
-                $task->addTrending('update', share('user.id'));
+            function () use ($task, $user) {
+                $task->addTrending('update', $user);
             }
         );
     }

@@ -160,7 +160,7 @@ $this->group([
             $this->get('/', 'index');
             $this->get('new', 'edit');
             $this->post('new', 'create');
-            $this->get('{product}', 'edit');
+            $this->get('{product}/edit', 'edit');
             $this->post('{product}', 'update');
         });
     });

@@ -146,7 +146,7 @@ function removeRequired() {
         reference.children('.required').attr('required', true)
     }
 }
-function tryDisplayEditormd()
+function tryDisplayEditormd(qiniu_token_api)
 {
     if (typeof EditorMDObjects != 'undefined') {
         for (let i in EditorMDObjects) {
@@ -232,9 +232,12 @@ function tryDisplayEditormd()
                 },
                 qiniu : {
                     enable: true,
-                    token_api : '/dep/tool/uploads/uptoken?raw=true',
+                    token_api : qiniu_token_api,
                     public_domain : 'http://assets.hcmchi.com/',
-                    upload_url : 'http://upload-z2.qiniu.com/',
+                    // upload_url : 'https://up-na0.qbox.me',    // 北美
+                    // upload_url : 'https://up-z1.qbox.me',    // 华北
+                    upload_url : 'https://up-z2.qbox.me',    // 华南
+                    // upload_url : 'https://up.qbox.me/',    // 华东
                 },
             })
         }

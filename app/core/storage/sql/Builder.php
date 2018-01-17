@@ -120,6 +120,18 @@ class Builder implements \Lif\Core\Intf\DBConn
         ];
     }
 
+    public function appendWhere(
+        string $where,
+        string $typeBefore = 'AND',
+        string $typeAfter = 'AND'
+    )
+    {
+        $this->where .= $this->where ? " {$typeBefore} " : '';
+        $this->where .= " 1 {$typeAfter} {$where}";
+
+        return $this;
+    }
+
     public function setIfExecuteStatement(bool $execute)
     {
         $this->ifExecuteStatement = $execute;

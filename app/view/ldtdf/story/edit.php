@@ -132,7 +132,7 @@
     }
     ]
     $(function() {
-        tryDisplayEditormd()
+        tryDisplayEditormd("<?= lrn('tool/uploads/uptoken?raw=true') ?>")
     })
     function addAC() {
         let html = `

@@ -27,6 +27,60 @@ class Task extends Mdl
         'first_dev'   => 'int|min:1',
     ];
 
+    public function getOriginsByProduct(int $product)
+    {
+        $native = '';
+
+        if ($stories = $this->getStoryIdsByProduct($product)) {
+            $stories = implode(',', $stories);
+            $native .= <<< SQL
+(`origin_type` = 'story' and `origin_id` in ({$stories}))
+SQL;
+        }
+
+        if ($bugs = $this->getBugIdsByProduct($product)) {
+            $bugs = implode(',', $bugs);
+            $native .= $stories ? ' or ' : ' and ';
+            $native .= <<< SQL
+(`origin_type` = 'bug' and `origin_id` in ({$bugs}))
+SQL;
+        }
+
+        if ($native) {
+            return " ({$native}) ";
+        }
+    }
+
+    public function getBugIdsByProduct(int $product)
+    {
+        $bugs = db()
+        ->table('bug')
+        ->select('id')
+        ->where('product', $product)
+        ->get();
+
+        if ($bugs && is_array($bugs)) {
+            $bugs = array_column($bugs, 'id');
+        }
+
+        return $bugs;
+    }
+
+    public function getStoryIdsByProduct(int $product)
+    {
+        $stories = db()
+        ->table('story')
+        ->select('id')
+        ->where('product', $product)
+        ->get();
+
+        if ($stories && is_array($stories)) {
+            $stories = array_column($stories, 'id');
+        }
+
+        return $stories;
+    }
+
     public function getProjects()
     {
         return db()
@@ -337,9 +391,12 @@ class Task extends Mdl
     public function canBeEditedBy(int $user)
     {
         if ($user) {
-            return (
-                ($this->creator == $user)
-                // && (strtolower($this->status) == 'activated')
+            return in_array($user, [
+                $this->creator,
+                $this->first_dev,
+            ]) || (true
+                && ci_equal($this->status, 'waiting_edit')
+                && ($user == $this->current)
             );
         }
 
@@ -543,6 +600,16 @@ class Task extends Mdl
         $type   = ('story' == $this->origin_type) ? 'S' : 'B';
 
         return "{$origin->title} ({$type}{$origin->id}/T{$this->id})";
+    }
+
+    public function product(string $key = null)
+    {
+        if (true
+            && ($origin = $this->origin())
+            && ($product = $origin->product($key))
+        ) {
+            return $product;
+        }
     }
 
     public function origin(string $key = null, string $type = null)
