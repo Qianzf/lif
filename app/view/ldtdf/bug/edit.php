@@ -120,6 +120,10 @@
         </div>
     </label>
 
+    <?= $this->section('developers', [
+        'principals' => ($principals ?? []),
+    ]) ?>
+
     <?php if ($editable ?? false) : ?>
     <?= $this->section('submit', [
         'model' => $bug

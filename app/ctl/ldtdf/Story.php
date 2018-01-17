@@ -96,31 +96,46 @@ class Story extends Ctl
 
     public function edit(StoryModel $story)
     {
+        $principals = $story->getPrincipals([
+            [db()->native('LOWER(`task`.`status`)'), '!=', 'canceled'],
+        ]);
+
         return view('ldtdf/story/edit')
-        ->withStoryAcceptancesEditable(
+        ->withStoryAcceptancesDevelopersPrincipalsEditable(
             $story,
             $story->getAcceptances(),
+            get_ldtdf_devs(),
+            ($principals ? array_column($principals, 'id') : []),
             true
         );
     }
 
     public function create(StoryModel $story, Acceptance $acceptance)
     {
-        db()->start();
-
         if (! ($acceptances = $this->request->getCleanPost('acceptance'))) {
             share_error_i18n('MISSING_AC');
             
             return redirect($this->route);
         }
 
-        $this->request->setPost('creator', share('user.id'));
+        $user = share('user.id');
+        $developers = $this->request->getCleanPost('developers');
+
+        $this->request->setPost('creator', $user);
+
+        db()->start();
 
         return $this->responseOnCreated(
             $story,
             lrn('stories/?'),
             null,
-            function ($status) use ($story, $acceptance, $acceptances) {
+            function ($status) use (
+                $user,
+                $story,
+                $acceptance,
+                $acceptances,
+                $developers
+            ) {
                 if (ispint($status, false)
                     && ($acceptance->createFromOrigin(
                         'story',
@@ -128,6 +143,32 @@ class Story extends Ctl
                         $acceptances
                     ))
                 ) {
+                    if ($developers && is_array($developers)) {
+                        // Create task with out project here
+                        $tasks = [];
+                        foreach ($developers as $developer) {
+                            if (! ispint($developer, false)) {
+                                share_error_i18n('ILLEGAL_DEVELOPER');
+
+                                return db()->rollback();
+                            }
+
+                            $tasks[] = [
+                                'origin_type' => 'story',
+                                'origin_id'   => $status,
+                                'creator'     => $user,
+                                'first_dev'   => $developer,
+                                'last'        => $user,
+                                'current'     => $developer,
+                                'status'      => 'waiting_edit',
+                                'create_at'   => fndate(),
+                            ];
+                        }
+                        if (! $story->createTasks($tasks)) {
+                            return db()->rollback();
+                        }
+                    }
+
                     $story->addTrending('create', $story->creator);
 
                     db()->commit();
@@ -167,27 +208,41 @@ class Story extends Ctl
             return redirect("{$this->route}/edit");
         }
 
+        $user       = share('user.id');
+        $developers = (array) $this->request->getCleanPost('developers');
+
+        db()->start();
+
         return $this->responseOnUpdated(
             $story,
             null,
-            function () use ($story) {
-                if ($story->alive() && ($story->creator != share('user.id'))) {
-                    share_error_i18n('UPDATE_PERMISSION_DENIED');
-                    redirect($this->route);
+            function () use ($story, $user) {
+                if ($story->alive() && ($story->creator != $user)) {
+                    return 'UPDATE_PERMISSION_DENIED';
                 }
             },
-            function ($status) use ($story, $acceptance, $acceptances) {
-                if (($status > 0) || (
+            function ($status) use (
+                $story,
+                $acceptance,
+                $acceptances,
+                $developers,
+                $user
+            ) {
+                if (ispint($status) && (
                     $acceptance->updateFromOrigin(
                         'story',
                         $story->id,
                         $acceptances
                     )
                 )) {
-                    share_error_i18n('UPDATE_OK');
+                    update_tasks_when_update_origin(
+                        $user, $story, $developers
+                    );
 
-                    $story->addTrending('update', $story->creator);
+                    return db()->commit();
                 }
+
+                return db()->rollback();
             }
         );
     }

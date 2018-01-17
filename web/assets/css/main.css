@@ -362,3 +362,14 @@ input:invalid {
     display: inline-block;
     float: left;
 }
+.checkbox-list {
+    display: -webkit-flex; /* Safari */
+    display: flex;
+    padding-left: 120px;
+    flex-wrap: wrap;
+    /*flex-direction: row-reverse;*/
+    justify-content: space-between;
+    width: 80%;
+    max-height: 200px;
+    overflow: auto;
+}

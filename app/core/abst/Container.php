@@ -80,7 +80,7 @@ abstract class Container
             }
         }
 
-        redirect($uri);
+        return redirect($uri);
     }
 
     public function responseOnCreated(

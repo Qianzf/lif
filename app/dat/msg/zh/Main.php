@@ -203,6 +203,7 @@ return [
     'DISPATCH' => '派发',
     'STATUS_ACTIVATED' => '待安排',
     'STATUS_WAITTING_DEV' => '待开发／修复',
+    'STATUS_WAITING_EDIT' => '待编辑：等待关联项目等必要属性',
     'STATUS_WAITTING_DEP2TEST' => '待部署：测试环境',
     'STATUS_WAITTING_CONFIRM_ENV' => '待提测：成功部署到测试环境，等待开发者确认环境可测试',
     'STATUS_ENV_CONFIRMED' => '已确认：开发者已确认环境可测试',
@@ -244,6 +245,7 @@ return [
     'STATUS_UPDATE_TASK_ENV_FAILED' => '待解决：任务环境更新失败',
     'ASSIGN_ACTIVATED' => '请重新开发／修复',
     'ASSIGN_WAITTING_DEV' => '请开发／修复',
+    'ASSIGN_WAITING_EDIT' => '请完善任务关联项目等必要属性',
     'ASSIGN_WAITTING_CONFIRM_ENV' => '请确认测试环境可用性',
     'ASSIGN_WAITTING_DEP2TEST' => '部署到测试环境',
     'ASSIGN_WAITTING_1ST_TEST' => '到测试环境测试',
@@ -347,4 +349,6 @@ return [
     'UPDATE_ENV_OF_TASK' => '更新任务环境',
     'ABILITY' => '能力',
     'SUMMARY' => '总结',
+    'PRINCIPALS' => '负责人',
+    'STORY_CREATOR_CANCEL_WITHOUT_REASON' => '故事创建人无理由取消',
 ];

@@ -17,6 +17,11 @@ class CreateStoryTable extends Dit
             ->comment('User who created this story => `user`.`id`');
 
             $table
+            ->int('product')
+            ->unsigned()
+            ->comment('Product which this story belongs to => `product`.`id`');
+
+            $table
             ->string('title')
             ->comment('User story Title');
 

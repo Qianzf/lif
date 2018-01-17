@@ -17,7 +17,7 @@
         <td>Web</td>
         <td>
             <a href='<?= lrn("test/regressions/env/{$env->id}") ?>'>
-                <?= $env->project('name') ?? L('UNKNOWN') ?>
+                <?= $env->project('name', false) ?? L('UNKNOWN') ?>
             </a>
         </td>
         <td><?= $env->host ?? L('UNKNOWN') ?></td>

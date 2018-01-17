@@ -341,11 +341,12 @@ if (! fe('exists')) {
         if (is_object($var) && $idx) {
             $attrs = is_array($idx) ? $idx : [$idx];
             foreach ($attrs as $attr) {
-                if (! isset($var->$attr)) {
+                if (! ($var->{$attr} ?? false)) {
                     return false;
                 }
             }
-            return (1===count($attrs)) ? $var->$attr : true;
+            
+            return (1 === count($attrs)) ? $var->{$attr} : true;
         }
 
         return $var;

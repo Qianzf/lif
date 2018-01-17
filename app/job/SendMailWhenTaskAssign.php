@@ -21,7 +21,7 @@ class SendMailWhenTaskAssign extends \Lif\Core\Abst\Job
                 
                 $title  = L('PROJECT')
                 .': '
-                .$task->project('name')
+                .($task->project('name', false) ?: '-')
                 .'; '
                 .L($task->origin_type)
                 .': '.$task->origin('title');

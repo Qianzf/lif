@@ -4,23 +4,30 @@ namespace Lif\Mdl;
 
 class Bug extends Mdl
 {
+    use \Lif\Traits\CreateTasksFromOrigin;
+    
     protected $table = 'bug';
 
     protected $rules = [
         'creator' => 'int|min:1',
-        'title' => 'need|string',
-        'how' => 'need|string',
-        'what' => 'need|string',
-        'errmsg' => 'string',
+        'title'   => 'need|string',
+        'how'     => 'need|string',
+        'what'    => 'need|string',
+        'errmsg'  => 'string',
         'errcode' => 'string',
-        'os' => 'need|string',
-        'os_ver' => 'need|string',
-        'platform' => 'need|string',
+        'os'      => 'need|string',
+        'os_ver'  => 'need|string',
+        'platform'     => 'need|string',
         'platform_ver' => 'need|string',
-        'recurable' => 'need|ciin:yes,no',
-        'extra' => 'string',
-        'contact' => 'string',
+        'recurable'    => 'need|ciin:yes,no',
+        'extra'        => 'string',
+        'contact'      => 'string',
     ];
+
+    public function getTaskOriginName() : string
+    {
+        return 'bug';
+    }
 
     public function getAllUsers()
     {

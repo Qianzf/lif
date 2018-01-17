@@ -19,7 +19,7 @@
     <?php if (isset($tasks) && iteratable($tasks)): ?>
     <?php foreach ($tasks as $task): ?>
     <tr>
-        <td><?= $task->project('name') ?></td>
+        <td><?= $task->project('name', false) ?: '-' ?></td>
         <td>
             <a href='<?= lrn("tasks/{$task->id}") ?>'>
                 <?= $task->title() ?>

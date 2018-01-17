@@ -6,6 +6,8 @@ use Lif\Core\Mdl as ModelBase;
 
 class Story extends ModelBase
 {
+    use \Lif\Traits\CreateTasksFromOrigin;
+
     protected $table = 'story';
     protected $_tbx   = null;
     protected $_fdx   = null;
@@ -26,6 +28,11 @@ class Story extends ModelBase
     // protected items that cann't read
     protected $unreadable  = [
     ];
+
+    public function getTaskOriginName() : string
+    {
+        return 'story';
+    }
 
     public function getAcceptances()
     {

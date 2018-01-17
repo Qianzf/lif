@@ -1,9 +1,9 @@
 <?= $this->layout('main') ?>
-<?= $this->title($title = ldtdf("VIEW_{$taskOrigin->type}")) ?>
+<?= $this->title(ldtdf("VIEW_{$taskOrigin->type}")) ?>
 <?= $this->section('common') ?>
 
 <h4>
-    <?= $title ?>
+    <?= L("VIEW_{$taskOrigin->type}") ?>
 
     <span class="stub"></span>
     <small><code>

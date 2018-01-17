@@ -87,7 +87,7 @@
                 <?= $task->origin('title') ?>
             </a>
         </td>
-        <td><small><?= $task->project('name') ?></small></td>
+        <td><small><?= $task->project('name', false) ?: '-' ?></small></td>
         <td><small><?= $task->creator('name') ?></small></td>
 
         <?php if ($displayposition ?? true): ?>

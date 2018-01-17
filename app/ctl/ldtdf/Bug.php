@@ -74,7 +74,7 @@ class Bug extends Ctl
         $editable   = ($bug->canEdit($user));
         $assignable = ($bug->canBeDispatchedBy($user));
 
-        view('ldtdf/bug/info')
+        return view('ldtdf/bug/info')
         ->withBugEditableAssignableTasksTrendings(
             $bug,
             $editable,
@@ -86,13 +86,19 @@ class Bug extends Ctl
 
     public function edit(BugModel $bug)
     {
-        share('hide-search-bar', true);
+        $principals = $bug->getPrincipals([
+            [db()->native('LOWER(`task`.`status`)'), '!=', 'canceled'],
+        ]);
 
-        view('ldtdf/bug/edit')->withBugEditableOses(
+        return view('ldtdf/bug/edit')
+        ->withBugEditableOsesPrincipalsDevelopers(
             $bug,
             true,
-            $this->getOses()
-        );
+            $this->getOses(),
+            ($principals ? array_column($principals, 'id') : []),
+            get_ldtdf_devs()
+        )
+        ->share('hide-search-bar', true);
     }
 
     private function getOses()
@@ -110,6 +116,9 @@ class Bug extends Ctl
     public function update(BugModel $bug)
     {
         $user = share('user.id');
+        $developers = (array) $this->request->getCleanPost('developers');
+
+        db()->start();
 
         return $this->responseOnUpdated(
             $bug,
@@ -119,26 +128,67 @@ class Bug extends Ctl
                     return 'UPDATE_PERMISSION_DENIED';
                 }
             },
-            function ($status) use ($bug, $user) {
-                if (ispint($status, false)) {
-                    $bug->addTrending('update', $user);
+            function ($status) use ($bug, $user, $developers) {
+                if (ispint($status)) {
+                    update_tasks_when_update_origin(
+                        $user, $bug, $developers
+                    );
+
+                    return db()->commit();
                 }
+
+                return db()->rollback();
             }
         );
     }
 
     public function create(BugModel $bug)
     {
-        $user = share('user.id');
+        $user       = share('user.id');
+        $developers = $this->request->getCleanPost('developers');
 
         $this->request->setPost('creator', $user);
+
+        db()->start();
 
         return $this->responseOnCreated(
             $bug,
             lrn('bugs/?'),
             null,
-            function () use ($bug, $user) {
-                $bug->addTrending('create', $user);
+            function ($status) use ($bug, $user, $developers) {
+                if (ispint($status, false)) {
+                    if ($developers && is_array($developers)) {
+                        // Create task with out project here
+                        $tasks = [];
+                        foreach ($developers as $developer) {
+                            if (! ispint($developer, false)) {
+                                share_error_i18n('ILLEGAL_DEVELOPER');
+
+                                return db()->rollback();
+                            }
+
+                            $tasks[] = [
+                                'origin_type' => 'bug',
+                                'origin_id'   => $status,
+                                'creator'     => $user,
+                                'first_dev'   => $developer,
+                                'last'        => $user,
+                                'current'     => $developer,
+                                'status'      => 'waiting_edit',
+                                'create_at'   => fndate(),
+                            ];
+                        }
+                        if (! $bug->createTasks($tasks)) {
+                            return db()->rollback();
+                        }
+                    }
+
+                    $bug->addTrending('create', $user);
+
+                    db()->commit();
+                } else {
+                    db()->rollback();
+                }
             }
         );
     }

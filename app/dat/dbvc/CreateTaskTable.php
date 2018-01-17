@@ -41,6 +41,14 @@ class CreateTaskTable extends Dit
             ->comment('Task status => `task_status`.`key`');
 
             $table
+            ->int('first_dev')
+            ->unsigned()
+            ->default(0)
+            ->comment(
+                'First developer who responsible for this task, assigned from task origin'
+            );
+
+            $table
             ->int('last')
             ->unsigned()
             ->default(0)

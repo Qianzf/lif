@@ -21,6 +21,11 @@ trait TaskStatus
         return array_column($status->get(), 'status');
     }
 
+    public function getAssignableUsersWhenWaitingEdit($query)
+    {
+        return $query->whereRole('dev');
+    }
+
     public function getAssignableUsersWhenEnvConfirmed($query)
     {
         return $query->whereRole('test');
@@ -329,6 +334,13 @@ trait TaskStatus
         : [
             'WAITTING_1ST_TEST',
             'WAITTING_DEV',
+        ];
+    }
+
+    public function getAssignableStatusesWhenWaitingEdit()
+    {
+        return [
+            'WAITING_EDIT'
         ];
     }
 

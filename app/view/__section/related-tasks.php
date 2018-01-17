@@ -21,8 +21,8 @@
         <td>
             <a href='<?= lrn("tasks/{$task->id}") ?>'>T<?= $task->id ?></a>
         </td>
-        <td><?= $task->project('name') ?></td>
-        <td><?= $task->project('type') ?></td>
+        <td><?= $task->project('name', false) ?: '-' ?></td>
+        <td><?= $task->project('type', false) ?: '-' ?></td>
         <td><?= $task->environment([], 'host') ?? '-' ?></td>
         <td><?= empty_safe($task->branch) ? '-' : $task->branch ?></td>
         <td>

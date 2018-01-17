@@ -269,9 +269,9 @@ class Task extends Ctl
 
     public function add(
         TaskModel $task,
-        Project $project,
         Story $story,
-        Bug $bug
+        Bug $bug,
+        Project $project = null
     ) {
         $querys = $this->request->gets();
 
@@ -285,7 +285,7 @@ class Task extends Ctl
         $trendings = null;
 
         if ($task->alive()) {
-            $project = $task->project();
+            $project = $task->project(null ,false);
             $story   = $task->story();
             $bug     = $task->bug();
             $trendings = $task->trendings();
@@ -323,13 +323,17 @@ class Task extends Ctl
             }
         }
 
+        $projects = $project
+        ? $project->all(true, false)
+        : $task->getProjects();
+
         return view('ldtdf/task/edit')
         ->withTaskStoryBugProjectProjectsDevelopersEditableTrendings(
             $task,
             ($story ?? model(Story::class)),
             ($bug   ?? model(Bug::class)),
             $project,
-            $project->all(true, false),
+            $projects,
             $task->getDevelopers(),
             true,
             $trendings
@@ -356,16 +360,11 @@ class Task extends Ctl
             return redirect(share('url_previous'));
         }
 
-        if (! ($project = $task->project())) {
-            share_error_i18n('NO_PROJECT');
-            return redirect(share('url_previous'));
-        }
-
         return $this->add(
             $task,
-            $project,
             ($story ?? model(Story::class)),
-            ($bug   ?? model(Bug::class))
+            ($bug   ?? model(Bug::class)),
+            $task->project(null, false)
         );
     }
 
@@ -424,7 +423,7 @@ class Task extends Ctl
             $story,
             $acceptances,
             $task->relateTasks(),
-            $task->project(),
+            $task->project(null, false),
             $task->trendings($querys),
             $pages,
             $records,
@@ -538,8 +537,12 @@ class Task extends Ctl
     {
         return $this->responseOnUpdated(
             $task,
-            lrn('tasks'),
+            lrn("tasks/{$task->id}/edit"),
             function () use ($task) {
+                if (! $task->alive()) {
+                    return 'NO_TASK';
+                }
+
                 if ($task->creator != share('user.id')) {
                     return 'UPDATE_PERMISSION_DENIED';
                 }
@@ -554,6 +557,17 @@ class Task extends Ctl
 
                 if (('story' == $type) && (! $task->story())) {
                     return 'NO_STORY';
+                }
+
+                if (! ispint($this->request->get('project'), false)) {
+                    return 'MISSING_PROJECT';   
+                }
+
+                if (true
+                    && ci_equal($task->status, 'waiting_edit')
+                    && ispint($task->first_dev, false)
+                ) {
+                    $this->request->setPost('status', 'waitting_dev');
                 }
             },
             function () use ($task) {

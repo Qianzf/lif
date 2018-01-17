@@ -54,19 +54,23 @@
             * <?= L('RELATED_PROJECT') ?>
         </span>
         <select name="project" required>
-            <option>-- <?= L('SELECT_PROJECT') ?> ：
-                <?= L('TYPE'), ' | ', L('TITLE'), ' | ', L('REPO')  ?>
-             --</option>
+            <option>
+                -- <?= L('SELECT_PROJECT') ?> ：
+                <?= L('TYPE'), ' | ', L('TITLE'), ' | ', L('REPO')  ?> --
+            </option>
             <?php foreach ($projects as $proj): ?>
-                <option
-                <?php if ($project->id == $proj->id): ?>
-                selected
-                <?php endif ?>
-                value="<?= $proj->id ?>">
-                    <?= $proj->type, ' | ', $proj->name, ' | ', (
-                        explode(':', $proj->url)[1] ?? L('UNKNOWN')
-                    ) ?>
-                </option>
+            <option
+            <?php if (($project->id ?? false) == exists($proj, 'id')): ?>
+            selected
+            <?php endif ?>
+            value="<?= exists($proj, 'id') ?>">
+                <?= exists($proj, 'type'),
+                    ' | ',
+                    exists($proj, 'name'),
+                    ' | ',
+                    (explode(':', exists($proj, 'url'))[1] ?? L('UNKNOWN'))
+                ?>
+            </option>
             <?php endforeach ?>
         </select>
     </label>
@@ -79,6 +83,7 @@
         </span>
         <select name="developer" required>
             <option>-- <?= L('SELECT_DEVELOPER') ?> --</option>
+            <?php if (isset($developers) && iteratable($developers)): ?>
             <?php foreach ($developers as $dev): ?>
                 <option value="<?= $dev['id'] ?? null ?>">
                     <?= ($dev['name'] ?? L('UNKNOWN')), ' | ', (
@@ -86,6 +91,7 @@
                     ) ?>
                 </option>
             <?php endforeach ?>
+            <?php endif ?>
         </select>
     </label>
     <?php endif ?>

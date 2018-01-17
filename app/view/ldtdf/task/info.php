@@ -11,7 +11,7 @@
 
     <em><?= $origin->title ?></em>
 
-    <a href='<?= lrn("tasks/new/?task={$task->id}") ?>'>
+    <a href='<?= lrn("tasks/new?task={$task->id}") ?>'>
         <button><?= L('COPY') ?></button>
     </a>
 
@@ -120,6 +120,7 @@
     <?php endif ?>
 </p>
 
+<?php if ($project ?? false): ?>
 <p>
     <span class="stub-2"></span>
     <span class="text-info">[</span>
@@ -136,6 +137,7 @@
     <small>（<code><?= $repo ?></code>）</small>
     <?php endif ?>
 </p>
+<?php endif ?>
 
 <?= $this->section("ldtdf/task/{$task->origin_type}", [], true) ?>
 

@@ -34,6 +34,8 @@ class Builder implements \Lif\Core\Intf\DBConn
 
     // Tmp stack
     private $last = [];
+    private $ifExecuteStatement = true;
+    private $ifOutputStatement  = false;
 
     public function trans(\Closure $trans)
     {
@@ -116,6 +118,20 @@ class Builder implements \Lif\Core\Intf\DBConn
             'where'  => $this->where,
             'binds'  => $this->bindValues,
         ];
+    }
+
+    public function setIfExecuteStatement(bool $execute)
+    {
+        $this->ifExecuteStatement = $execute;
+        
+        return $this;
+    }
+
+    public function setIfOutputStatement(int $type)
+    {
+        $this->ifOutputStatement = $type;
+
+        return $this;
     }
 
     public function reset() : Builder
@@ -240,13 +256,13 @@ class Builder implements \Lif\Core\Intf\DBConn
     // Verify where conditionals and parse out fields and their conditions
     protected function whereConditionals(array $conds)
     {
-        switch (count($conds)) {
+        switch ($condCnt = count($conds)) {
             // Assoc array
             // Field name is array key, field value is array value
             // Use default operator `=`
             case 1: {
-                $keys    = array_keys($conds);
-                $values  = array_values($conds);
+                $keys   = array_keys($conds);
+                $values = array_values($conds);
                 if (!isset($keys[0]) || !($condCol = $keys[0])) {
                     excp('Illgeal where field name.');
                 }
@@ -330,7 +346,8 @@ class Builder implements \Lif\Core\Intf\DBConn
                         $stubs .= ',';
                     }
                 }
-                $condOpWithVal = " in ($stubs)";
+                $condOp = (3 === $condCnt) ? $condOp : 'in';
+                $condOpWithVal = " {$condOp} ($stubs)";
             }
         } elseif (is_null($condVal)) {
             $condOpWithVal = ' is null';
@@ -398,8 +415,9 @@ class Builder implements \Lif\Core\Intf\DBConn
                         $where = $conds[0];
                     } elseif (is_array($conds[0])) {
                         foreach ($conds[0] as $key => $cond) {
-                            $_cond  = is_array($cond)
+                            $_cond = (is_array($cond) && is_integer($key))
                             ? $cond : [$key => $cond];
+                            
                             $where .= $this->whereConditionals($_cond);
                             if (false !== next($conds[0])) {
                                 $where .= ' AND ';
@@ -840,8 +858,9 @@ class Builder implements \Lif\Core\Intf\DBConn
     // --------------
     public function update(...$updates)
     {
-        $exec = true;
-        $sql  = false;
+        $exec = $this->ifExecuteStatement;
+        $sql  = $this->ifOutputStatement;
+
         switch (count($updates)) {
             case 1: {
                 if (!isset($updates[0])

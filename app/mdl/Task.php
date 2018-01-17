@@ -24,7 +24,16 @@ class Task extends Mdl
         'deploy'   => 'string',
         'origin_type' => 'ciin:story,bug',
         'origin_id'   => 'int|min:1',
+        'first_dev'   => 'int|min:1',
     ];
+
+    public function getProjects()
+    {
+        return db()
+        ->table('project')
+        ->select('id', 'name', 'url', 'type')
+        ->get();
+    }
 
     public function getDevelopers()
     {
@@ -32,7 +41,7 @@ class Task extends Mdl
         ->table('user')
         ->select('id', 'name', 'ability', 'role')
         ->whereStatusRole(1, 'dev')
-        ->get(true);
+        ->get();
     }
 
     public function searchOriginIdsByTitle(
@@ -60,7 +69,7 @@ class Task extends Mdl
     public function isForWeb()
     {
         return (
-            ($project = $this->project())
+            ($project = $this->project(null, false))
             && ('web' == strtolower($project->type))
         );
     }
@@ -75,7 +84,10 @@ class Task extends Mdl
             'waitting_dep2test',
             'waitting_fix_test',
         ])) {
-            if (($project = $this->project())->alive()) {
+            if (true
+                && ($project = $this->project(null, false))
+                && $project->alive()
+            ) {
                 return $project->deployable();
             }
         }
@@ -439,6 +451,7 @@ class Task extends Mdl
 
             if (in_array($status, [
                 'waitting_regression',
+                'waiting_edit',
                 'finished',
             ])) {
                 return false;
@@ -560,7 +573,7 @@ class Task extends Mdl
         return $this->origin($key, 'story');
     }
 
-    public function project(string $attr = null)
+    public function project(string $attr = null, bool $excp = true)
     {
         $project = $this->belongsTo(
             Project::class,
@@ -569,7 +582,7 @@ class Task extends Mdl
         );
 
         if (! $project) {
-            excp(L('MISSING_TASK_RELATED_PROJECT'));
+            return $excp ? excp(L('MISSING_TASK_RELATED_PROJECT')) : null;
         }
 
         return $attr ? $project->$attr : $project;

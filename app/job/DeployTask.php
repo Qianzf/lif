@@ -196,7 +196,7 @@ class DeployTask extends \Lif\Core\Abst\Job
             return true;
         }
 
-        if (!($project = $task->project())
+        if (!($project = $task->project(null, false))
             || (! $project->alive())
             || (! ci_equal($project->type, 'web'))
         ) {

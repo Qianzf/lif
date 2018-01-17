@@ -23,8 +23,13 @@ class AddTaskStatusData extends Dit
                     'assignable' => 'no',
                 ],
                 [
+                    'key' => 'waiting_edit',
+                    'val' => '待编辑：等待关联项目等必要属性',
+                    'assignable' => 'yes',
+                ],
+                [
                     'key' => 'waitting_dev',
-                    'val' => '待开发：被任务创建者安排给一位开发者负责人',
+                    'val' => '待开发：被任务创建者或者开发者负责人安排给一位开发者',
                     'assignable' => 'yes',
                 ],
                 [
