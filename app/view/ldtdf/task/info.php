@@ -10,7 +10,7 @@
     </code></small>
 
     <em><?= $origin->title ?></em>
-
+    
     <a href='<?= lrn("tasks/new?task={$task->id}") ?>'>
         <button><?= L('COPY') ?></button>
     </a>
