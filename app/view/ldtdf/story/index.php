@@ -19,10 +19,19 @@
     <tr>
         <th
         class="time-sort"
-        data-sort="<?= $_GET['sort'] ?? 'desc' ?>">
+        data-sort="<?= $sort = $_GET['sort'] ?? 'desc' ?>">
+            <i class="sort-<?= $sort ?>"></i>
             <?= L('CREATE_TIME') ?>
         </th>
         <th><?= L('TITLE') ?></th>
+        <th>
+            <?= L('RELATED_PRODUCT') ?>
+            <?php $products[0] = '>> '.L('NULL').' <<'; ?>
+            <?= $this->section('filter/common', [
+                'name'   => 'product',
+                'list'   => $products,
+            ]) ?>
+        </th>
         <th>
             <?= L('CREATOR') ?>
             <?= $this->section('filter/common', [
@@ -40,12 +49,13 @@
         <td>
             <sub><small><code>S<?= $story->id ?></code></small></sub>
             <a href='<?= lrn("stories/{$story->id}") ?>'>
-                <?= $story->title ?>
+                <?= $this->escape($story->title) ?>
             </a>
         </td>
+        <td><?= $this->escape($story->product('name')) ?: '-' ?></td>
         <td>
             <a href='<?= lrn("users/{$story->creator('id')}") ?>'>
-                <?= $story->creator('name') ?>
+                <?= $this->escape($story->creator('name')) ?>
             </a>
         </td>
     </tr>

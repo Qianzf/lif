@@ -373,3 +373,17 @@ input:invalid {
     max-height: 200px;
     overflow: auto;
 }
+.sort-desc {
+    display: inline-block;
+    line-height: 50%;
+    border: 10px solid #FFF;
+    border-top-color: lightgrey;
+    width: 1px;
+}
+.sort-asc {
+    display: inline-block;
+    line-height: 50%;
+    border: 10px solid #FFF;
+    border-bottom-color: lightgrey;
+    width: 1px;
+}

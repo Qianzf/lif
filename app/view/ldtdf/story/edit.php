@@ -22,6 +22,27 @@
     </label>
 
     <label>
+        <span class="label-title">
+            <?= L('RELATED_PRODUCT') ?>
+            <sub><small>(<?= L('OPTIONAL') ?>)</small></sub>
+        </span>
+        <select name="product">
+            <option value="0">-- <?= L('SELECT_RELATED_PRODUCT') ?> --</option>
+            <?php if (isset($products) && iteratable($products)): ?>
+            <?php foreach ($products as $product): ?>
+            <option
+            <?php if (($pid = ($product['id'] ?? 0)) == $story->product): ?>
+            selected
+            <?php endif ?>
+            value="<?= $pid ?>">
+                <?= $product['name'] ?: L('UNKNOWN') ?>
+            </option>
+            <?php endforeach ?>
+            <?php endif ?>
+        </select>
+    </label>
+
+    <label>
         <span class="label-title">* <?= L('STORY_WHO') ?></span>
         <input
         type="text"

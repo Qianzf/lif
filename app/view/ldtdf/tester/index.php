@@ -4,7 +4,7 @@
 
 <dl class="list">
     <dd>
-        <a href="test/regressions">
+        <a href="<?= lrn('test/regressions') ?>">
             <button><?= L('REGRESSION_TEST') ?></button>
         </a>
     </dd>

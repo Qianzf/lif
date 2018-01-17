@@ -10,6 +10,7 @@ class CreateBugTable extends Dit
     {
         schema()->createIfNotExists('bug', function ($table) {
             $table->pk('id');
+
             $table->string('title');
 
             $table
@@ -17,6 +18,12 @@ class CreateBugTable extends Dit
             ->unsigned()
             ->nullable()
             ->comment('User who created this bug => `user`.`id`');
+
+            $table
+            ->smallint('product')
+            ->unsigned()
+            ->default(0)
+            ->comment('Product this bug belongs to=> `product`.`id`');
 
             $table
             ->text('how')

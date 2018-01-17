@@ -6,7 +6,7 @@ use Lif\Core\Mdl as ModelBase;
 
 class Story extends ModelBase
 {
-    use \Lif\Traits\CreateTasksFromOrigin;
+    use \Lif\Traits\TasksOriginable;
 
     protected $table = 'story';
     protected $_tbx   = null;
@@ -17,6 +17,7 @@ class Story extends ModelBase
     protected $rules  = [
         'title'    => 'need|string',
         'creator'  => 'int|min:1',
+        'product'  => 'int|min:0',
         'role'     => 'need|string',
         'activity' => 'need|string',
         'value'    => 'need|string',

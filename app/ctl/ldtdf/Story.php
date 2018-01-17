@@ -22,6 +22,7 @@ class Story extends Ctl
             'search'  => ['string', null],
             'id'      => ['int|min:1', null],
             'creator' => ['int|min:1', null],
+            'product' => ['int|min:0', null],
             'sort'    => ['ciin:desc,asc', 'desc'],
             'page'    => ['int|min:1', 1],
         ]);
@@ -35,6 +36,9 @@ class Story extends Ctl
             if ($creator = $querys['creator']) {
                 $where[] = ['creator', $creator];
             }
+            if (! empty_safe($product = $querys['product'])) {
+                $where[] = ['product', $product];
+            }
         }
 
         $users   = $story->getAllUsers();
@@ -42,15 +46,21 @@ class Story extends Ctl
         $pages   = ceil($records / $pageScale);
         $querys['from'] = (($querys['page'] - 1) * $pageScale);
         $querys['take'] = $pageScale;
+        $products = get_ldtdf_products();
 
         return view('ldtdf/story/index')
-        ->withStoriesUsersPagesRecords(
+        ->withStoriesUsersPagesProductsRecords(
             $story->list(null, $where, true, $querys),
             array_combine(
                 array_column($users, 'id'),
                 array_column($users, 'name')
             ),
             $pages,
+            ($products ? (array_combine(
+                    array_column($products, 'id'),
+                    array_column($products, 'name')
+                )) : []
+            ),
             $records
         )
         ->share('hide-search-bar', false);
@@ -100,12 +110,15 @@ class Story extends Ctl
             [db()->native('LOWER(`task`.`status`)'), '!=', 'canceled'],
         ]);
 
+        // dd(get_ldtdf_products());
+
         return view('ldtdf/story/edit')
-        ->withStoryAcceptancesDevelopersPrincipalsEditable(
+        ->withStoryAcceptancesDevelopersPrincipalsProductsEditable(
             $story,
             $story->getAcceptances(),
             get_ldtdf_devs(),
             ($principals ? array_column($principals, 'id') : []),
+            get_ldtdf_products(),
             true
         );
     }
@@ -143,38 +156,14 @@ class Story extends Ctl
                         $acceptances
                     ))
                 ) {
-                    if ($developers && is_array($developers)) {
-                        // Create task with out project here
-                        $tasks = [];
-                        foreach ($developers as $developer) {
-                            if (! ispint($developer, false)) {
-                                share_error_i18n('ILLEGAL_DEVELOPER');
-
-                                return db()->rollback();
-                            }
-
-                            $tasks[] = [
-                                'origin_type' => 'story',
-                                'origin_id'   => $status,
-                                'creator'     => $user,
-                                'first_dev'   => $developer,
-                                'last'        => $user,
-                                'current'     => $developer,
-                                'status'      => 'waiting_edit',
-                                'create_at'   => fndate(),
-                            ];
-                        }
-                        if (! $story->createTasks($tasks)) {
-                            return db()->rollback();
-                        }
+                    if (true === create_tasks_when_create_origin(
+                        $story, $developers
+                    )) {
+                        return db()->commit();
                     }
-
-                    $story->addTrending('create', $story->creator);
-
-                    db()->commit();
-                } else {
-                    db()->rollback();
                 }
+
+                return db()->rollback();
             }
         );
     }
@@ -235,11 +224,11 @@ class Story extends Ctl
                         $acceptances
                     )
                 )) {
-                    update_tasks_when_update_origin(
-                        $user, $story, $developers
-                    );
-
-                    return db()->commit();
+                    if (true === update_tasks_when_update_origin(
+                        $story, $developers
+                    )) {
+                        return db()->commit();
+                    }
                 }
 
                 return db()->rollback();

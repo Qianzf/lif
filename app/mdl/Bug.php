@@ -4,12 +4,13 @@ namespace Lif\Mdl;
 
 class Bug extends Mdl
 {
-    use \Lif\Traits\CreateTasksFromOrigin;
+    use \Lif\Traits\TasksOriginable;
     
     protected $table = 'bug';
 
     protected $rules = [
         'creator' => 'int|min:1',
+        'product' => 'int|min:0',
         'title'   => 'need|string',
         'how'     => 'need|string',
         'what'    => 'need|string',

@@ -29,26 +29,26 @@
     id="comment-<?= $key ?>"
     class="comments"><?= $trending->notes ?></textarea>
     <?php endif ?>
+
+    <script type="text/javascript">
+        function hideOrShow(obj, key) {
+            obj = $(obj)
+            let comment = $('#comment-' + key)
+            let remove = 'fa-plus-square-o'
+            let add = 'fa-minus-square-o'
+            if (obj.hasClass(remove)) {
+                comment.show()
+            } else {
+                remove = 'fa-plus-square-o'
+                add = 'fa-plus-square-o'
+                comment.hide()
+            }
+            obj.removeClass(remove)
+            obj.addClass(add)
+        }
+    </script>
     <?php endif ?>
     </li>
 </ul>
 <?php endforeach ?>
-
-<script type="text/javascript">
-    function hideOrShow(obj, key) {
-        obj = $(obj)
-        let comment = $('#comment-' + key)
-        let remove = 'fa-plus-square-o'
-        let add = 'fa-minus-square-o'
-        if (obj.hasClass(remove)) {
-            comment.show()
-        } else {
-            remove = 'fa-plus-square-o'
-            add = 'fa-plus-square-o'
-            comment.hide()
-        }
-        obj.removeClass(remove)
-        obj.addClass(add)
-    }
-</script>
 <?php endif ?>

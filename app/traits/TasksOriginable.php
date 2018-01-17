@@ -2,8 +2,23 @@
 
 namespace Lif\Traits;
 
-trait CreateTasksFromOrigin
+trait TasksOriginable
 {
+    public function product(string $key = null, bool $excp = false)
+    {
+        $product = $this->belongsTo(
+            \Lif\Mdl\Product::class,
+            'product',
+            'id'
+        );
+
+        if ($excp && !$product) {
+            excp(L('MISSING_PRODUCT'));
+        }
+
+        return $key ? ($product ? $product->$key : null) : $product;
+    }
+    
     public function cancelRelateTasks(array $toCancel)
     {
         if ($this->alive() && $toCancel) {

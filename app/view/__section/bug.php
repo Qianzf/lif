@@ -7,35 +7,45 @@
     <ul class="bug-detail-list">
         <li>
             <span><?= L('BUG_HOW') ?> ？</span>
-            <p><?= $bug->how ?></p>
+            <p><?= $this->escape($bug->how) ?></p>
         </li>
         <li>
             <span><?= L('BUG_WHAT') ?> ？</span>
-            <p><?= $bug->what ?></p>
+            <p><?= $this->escape($bug->what) ?></p>
+        </li>
+        <li>
+            <span><?= L('RELATED_PRODUCT') ?></span>
+            <span><i>
+                <a href="<?= lrn('products/'.$bug->product('id')) ?>">
+                    <?= $this->escape($bug->product('name')) ?:
+                        '<i class="text-info">'.L('NULL').'</i>'
+                    ?>
+                </a>
+            </i></span>
         </li>
         <li>
             <span><?= L('ERROR_MSG') ?></span>：
-            <span><?= $bug->errmsg ?></span>
+            <span><?= $this->escape($bug->errmsg) ?></span>
         </li>
         <li>
             <span><?= L('ERROR_CODE') ?></span>：
-            <span><?= $bug->errcode ?></span>
+            <span><?= $this->escape($bug->errcode) ?></span>
         </li>
         <li>
             <span><?= L('OS') ?></span>：
-            <span><?= $bug->os ?></span>
+            <span><?= $this->escape($bug->os) ?></span>
         </li>
         <li>
             <span><?= L('OS_VERSION') ?></span>：
-            <span><?= $bug->os_ver ?></span>
+            <span><?= $this->escape($bug->os_ver) ?></span>
         </li>
         <li>
             <span><?= L('PLATFORM') ?></span>：
-            <span><?= $bug->platform ?></span>
+            <span><?= $this->escape($bug->platform) ?></span>
         </li>
         <li>
             <span><?= L('PLATFORM_VERSION') ?></span>：
-            <span><?= $bug->platform_ver ?></span>
+            <span><?= $this->escape($bug->platform_ver) ?></span>
         </li>
         <li>
             <span><?= L('RECURABLE') ?></span>：

@@ -1,6 +1,25 @@
 <div>
     <span class="stub-2"></span>
     <span class="text-info">[</span>
+    <small><?= L('RELATED_PRODUCT') ?></small>
+    <span class="text-info">]</span>
+
+    <span><small>
+        <i>
+            <a href="<?= lrn('products/'.$story->product('id')) ?>">
+                <?= $this->escape($story->product('name')) ?:
+                    '<i class="text-info">'.L('NULL').'</i>'
+                ?>
+            </a>
+        </i>
+    </small></span>
+</div>
+
+<br>
+
+<div>
+    <span class="stub-2"></span>
+    <span class="text-info">[</span>
     <small><?= L('STORY_DETAILS') ?></small>
     <span class="text-info">]</span>
 

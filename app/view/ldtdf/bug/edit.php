@@ -22,12 +22,33 @@
     </label>
 
     <label>
+        <span class="label-title">
+            <?= L('RELATED_PRODUCT') ?>
+            <sub><small>(<?= L('OPTIONAL') ?>)</small></sub>
+        </span>
+        <select name="product">
+            <option value="0">-- <?= L('SELECT_RELATED_PRODUCT') ?> --</option>
+            <?php if (isset($products) && iteratable($products)): ?>
+            <?php foreach ($products as $product): ?>
+            <option
+            <?php if (($pid = ($product['id'] ?? 0)) == $bug->product): ?>
+            selected
+            <?php endif ?>
+            value="<?= $pid ?>">
+                <?= $product['name'] ?: L('UNKNOWN') ?>
+            </option>
+            <?php endforeach ?>
+            <?php endif ?>
+        </select>
+    </label>
+
+    <label>
         <span class="label-title">* <?= L('OS') ?></span>
         <select name="os">
             <?php if (isset($oses) && iteratable($oses)): ?>
                 <?php foreach ($oses as $os): ?>
                 <option
-                <?php if (strtolower($os) == strtolower($bug->os)): ?>
+                <?php if (ci_equal($bug->os, $os)): ?>
                 selected
                 <?php endif ?>><?= $os ?></option>
                 <?php endforeach ?>

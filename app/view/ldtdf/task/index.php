@@ -21,8 +21,10 @@
     <tr>
         <th
         class="time-sort"
-        data-sort="<?= $_GET['sort'] ?? 'desc' ?>"
-        ><?= L('CREATE_TIME') ?></th>
+        data-sort="<?= $sort = $_GET['sort'] ?? 'desc' ?>">
+            <i class="sort-<?= $sort ?>"></i>
+            <?= L('CREATE_TIME') ?>
+        </th>
 
         <th>
             <?= L('ORIGIN') ?>
@@ -36,6 +38,7 @@
         </th>
         <th><?= L('TITLE') ?></th>
         <th><?= L('PROJECT') ?>
+            <?php $projects[0] = '>> '.L('NULL').' <<'; ksort($projects); ?>
             <?= $this->section('filter/common', [
                 'name'   => 'project',
                 'list'   => $projects,

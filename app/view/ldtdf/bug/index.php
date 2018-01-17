@@ -19,14 +19,17 @@
     <tr>
         <th
         class="time-sort"
-        data-sort="<?= $_GET['sort'] ?? 'desc' ?>"><?= L('CREATE_TIME') ?></th>
+        data-sort="<?= $sort = $_GET['sort'] ?? 'desc' ?>">
+            <i class="sort-<?= $sort ?>"></i>
+            <?= L('CREATE_TIME') ?>
+        </th>
         <th><?= L('TITLE') ?></th>
         <th>
-            <?= L('CREATOR') ?>
+            <?= L('RELATED_PRODUCT') ?>
+            <?php $products[0] = '>> '.L('NULL').' <<'; ?>
             <?= $this->section('filter/common', [
-                'name'   => 'creator',
-                'list'   => $users,
-                'isUser' => true,
+                'name'   => 'product',
+                'list'   => $products,
             ]) ?>
         </th>
         <th>
@@ -39,6 +42,14 @@
             ]) ?>
         </th>
         <th><?= L('PLATFORM') ?></th>
+        <th>
+            <?= L('CREATOR') ?>
+            <?= $this->section('filter/common', [
+                'name'   => 'creator',
+                'list'   => $users,
+                'isUser' => true,
+            ]) ?>
+        </th>
     </tr>
 
     <?php if (isset($bugs) && iteratable($bugs)) : ?>
@@ -48,12 +59,13 @@
         <td>
             <sub><small><code>B<?= $bug->id ?></code></small></sub>
             <a href='<?= lrn("bugs/{$bug->id}") ?>'>
-                <?= $bug->title ?>
+                <?= $this->escape($bug->title) ?>
             </a>
         </td>
-        <td><?= $bug->creator('name') ?></td>
-        <td><?= $bug->os ?></td>
-        <td><?= $bug->platform ?></td>
+        <td><?= $this->escape($bug->product('name')) ?: '-' ?></td>
+        <td><?= $this->escape($bug->os) ?></td>
+        <td><?= $this->escape($bug->platform) ?></td>
+        <td><?= $this->escape($bug->creator('name')) ?></td>
     </tr>
     <?php endforeach ?>
     <?php endif ?>

@@ -142,12 +142,34 @@ $this->group([
 
     $this->group([
         'prefix' => 'pm',
+        'namespace' => 'PM',
         'ctl' => 'ProductManager',
         'middleware' => [
             'auth.pm',
         ],
     ], function () {
         $this->get('/', 'index');
+
+        $this->group([
+            'prefix' => 'products',
+            'filter' => [
+                'product'  => 'int|min:1',
+            ],
+            'ctl' => 'Product',
+        ], function () {
+            $this->get('/', 'index');
+            $this->get('new', 'edit');
+            $this->post('new', 'create');
+            $this->get('{product}', 'edit');
+            $this->post('{product}', 'update');
+        });
+    });
+
+    $this->group([
+        'prefix' => 'products',
+        'ctl' => 'Product',
+    ], function () {
+        $this->get('{id}', 'info');
     });
 
     $this->group([

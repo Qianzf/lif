@@ -171,7 +171,7 @@ class Task extends Ctl
         legal_or($querys, [
             'origin'   => ['ciin:story,bug', null],
             'id'       => ['int|min:1', null],
-            'project'  => ['int|min:1', null],
+            'project'  => ['int|min:0', null],
             'creator'  => ['int|min:1', null],
             'search'   => ['string', null],
             'position' => ['int|min:0', null],

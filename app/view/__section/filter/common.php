@@ -12,7 +12,7 @@
         <?php if (($vlang ?? false) !== false) : ?>
         <?= L("{$vlang}_{$val}") ?>
         <?php else: ?>
-        <?= $val ?>
+        <?= $this->escape($val) ?>
         <?php endif ?>
 
         <?php if (($isUser ?? false) && ($key == share('user.id'))) : ?>

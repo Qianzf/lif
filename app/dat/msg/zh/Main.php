@@ -351,4 +351,5 @@ return [
     'SUMMARY' => '总结',
     'PRINCIPALS' => '负责人',
     'STORY_CREATOR_CANCEL_WITHOUT_REASON' => '故事创建人无理由取消',
+    'PRODUCT' => '产品',
 ];
