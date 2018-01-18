@@ -159,8 +159,6 @@ class Task extends Ctl
             return redirect($this->route);
         }
 
-        $task->current = $user->id;
-
         return $this->index($task, $user);
     }
 
@@ -183,8 +181,8 @@ class Task extends Ctl
 
         $pageScale = 16;
         $page      = $querys['page'];
-        $displayPosition = $displayMenu = true;
-        $hasSearchResult = $tasks = false;
+        $displayPosition = $displayMenu = $hasSearchResult = true;
+        $tasks = false;
 
         if ($user->alive()) {
             $task->whereCurrent($user->id);
@@ -197,22 +195,9 @@ class Task extends Ctl
             if ($search = $querys['search']) {
                 // TODO
                 // fulltext search
-                if ($bugs = $task->searchOriginIdsByTitle('bug', $search)) {
-                    $hasSearchResult = true;
-                    $task->or([
-                        ['origin_type' => 'bug'],
-                        ['origin_id'   => $bugs],
-                    ]);
+                if (false === $task->searchOriginsByTitle($search)) {
+                    $hasSearchResult = false;
                 }
-                if ($stories = $task->searchOriginIdsByTitle('story', $search)) {
-                    $hasSearchResult = true;
-                    $task->or([
-                        ['origin_type' => 'story'],
-                        ['origin_id'   => $stories],
-                    ]);
-                }
-            } else {
-                $hasSearchResult = true;
             }
 
             if ($hasSearchResult) {
@@ -240,9 +225,7 @@ class Task extends Ctl
                             'origin_type' => 'bug',
                         ]);
                     } else {
-                        if ($native = $task->getOriginsByProduct($product)) {
-                            $task->appendWhere($native);
-                        }
+                        $task->getOriginsByProduct($product);
                     }
                 }
                 if ($creator = $querys['creator']) {
@@ -257,14 +240,14 @@ class Task extends Ctl
                         strtolower($status)
                     );
                 }
-
-                $tasks = $task
-                ->sort([
-                    'create_at' => $querys['sort']
-                ])
-                ->limit(($page-1)*$pageScale, $pageScale)
-                ->get();
             }
+
+            $tasks = $task
+            ->sort([
+                'create_at' => $querys['sort']
+            ])
+            ->limit(($page-1)*$pageScale, $pageScale)
+            ->get();
         }
         
         $users    = $user->list(['id', 'name'], null, false);

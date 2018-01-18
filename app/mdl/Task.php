@@ -29,16 +29,23 @@ class Task extends Mdl
 
     public function getOriginsByProduct(int $product)
     {
-        $native = '';
+        $this->getTasksByOrigins(
+            $this->getStoryIdsByProduct($product),
+            $this->getBugIdsByProduct($product)
+        );
+    }
 
-        if ($stories = $this->getStoryIdsByProduct($product)) {
+    private function getTasksByOrigins(array $stories = [], array $bugs = [])
+    {
+        $native = '';
+        
+        if ($stories) {
             $stories = implode(',', $stories);
             $native .= <<< SQL
 (`origin_type` = 'story' and `origin_id` in ({$stories}))
 SQL;
         }
-
-        if ($bugs = $this->getBugIdsByProduct($product)) {
+        if ($bugs) {
             $bugs = implode(',', $bugs);
             $native .= $stories ? ' or ' : ' and ';
             $native .= <<< SQL
@@ -47,7 +54,27 @@ SQL;
         }
 
         if ($native) {
-            return " ({$native}) ";
+            $this->appendWhere(" ({$native}) ");
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public function searchOriginsByTitle($search)
+    {
+        if (! $search) {
+            return null;
+        }
+
+        if (false === $this->getTasksByOrigins(
+            $this->searchOriginIdsByTitle('story', $search),
+            $this->searchOriginIdsByTitle('bug', $search)
+        )) {
+            $this->whereId('<', 0);
+
+            return false;
         }
     }
 
