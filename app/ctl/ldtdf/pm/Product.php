@@ -37,7 +37,41 @@ class Product extends \Lif\Ctl\Ldtdf\Ctl
 
     public function index(ProductModel $product)
     {
+        $querys = $this->request->gets();
+
+        legal_or($querys, [
+            'id'       => ['int|min:1', null],
+            'search'   => ['string', null],
+            'sort'     => ['ciin:asc,desc', 'desc'],
+            'page'     => ['int|min:1', 1],
+        ]);
+
+        $pageScale = 16;
+        $page      = $querys['page'];
+        
+        if ($id = ($querys['id'] ?? false)) {
+            $products = $product->whereId($id)->get();
+        } else {
+            if ($search = ($querys['search'] ?? false)) {
+                $product->whereName('like', "%{$search}%");
+            }
+
+            $products = $product
+            ->sort([
+                'create_at' => $querys['sort']
+            ])
+            ->limit(($page-1)*$pageScale, $pageScale)
+            ->get();
+        }
+
+        $records  = $product->count();
+        $pages    = ceil($records / $pageScale);
+
         return view('ldtdf/pm/products/index')
-        ->withProducts($product->all());
+        ->withProductsPagesRecords(
+            $products,
+            $pages,
+            $records
+        );
     }
 }

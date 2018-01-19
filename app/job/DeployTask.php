@@ -322,7 +322,7 @@ class DeployTask extends \Lif\Core\Abst\Job
             )
             ->on('mail_send')
             ->try(3)
-            ->timeout(30);
+            ->timeout(600);
 
             return true;
         }
