@@ -16,11 +16,13 @@
         <li>
             <span><?= L('RELATED_PRODUCT') ?></span>
             <span><i>
-                <a href="<?= lrn('products/'.$bug->product('id')) ?>">
-                    <?= $this->escape($bug->product('name')) ?:
-                        '<i class="text-info">'.L('NULL').'</i>'
-                    ?>
+                <?php if ($product = $bug->product()): ?>
+                <a href="<?= lrn('products/'.$product->id) ?>">
+                    <?= $this->escape($product->name) ?>
                 </a>
+                <?php else: ?>
+                <i class="text-info"><?= L('NULL') ?></i>
+                <?php endif ?>
             </i></span>
         </li>
         <li>

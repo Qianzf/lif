@@ -59,6 +59,6 @@
     }
     ]
     $(function() {
-        tryDisplayEditormd()
+        tryDisplayEditormd("<?= lrn('tool/uploads/uptoken?raw=true') ?>")
     })
 </script>

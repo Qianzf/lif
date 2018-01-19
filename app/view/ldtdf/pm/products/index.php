@@ -19,12 +19,15 @@
     <tr>
         <th><?= L('ID') ?></th>
         <th><?= L('PRODUCT_TITLE') ?></th>
-        <th><?= L('PRODUCT_DESCRIPTION') ?></th>
         <th><?= L('CREATOR') ?></th>
+        
         <th
         class="time-sort"
-        data-sort="<?= $_GET['sort'] ?? 'desc' ?>"
-        ><?= L('CREATE_TIME') ?></th>
+        data-sort="<?= $sort = $_GET['sort'] ?? 'desc' ?>">
+            <i class="sort-<?= $sort ?>"></i>
+            <?= L('CREATE_TIME') ?>
+        </th>
+
         <th><?= L('OPERATIONS') ?></th>
     </tr>
 
@@ -33,12 +36,11 @@
     <tr>
         <td><?= $product->id ?></td>
         <td><?= $this->escape($product->name) ?></td>
-        <td><?= $this->escape($product->desc) ?: '-' ?></td>
         <td><?= $this->escape($product->creator('name')) ?></td>
         <td><?= $product->create_at ?></td>
         <td>
             <button>
-                <a href="<?= lrn('pm/products/'.$product->id) ?>">
+                <a href="<?= lrn('pm/products/'.$product->id).'/edit' ?>">
                     <?= L('DETAILS') ?>
                 </a>
             </button>
@@ -47,3 +49,5 @@
     <?php endforeach ?>
     <?php endif ?>
 </table>
+
+<?= $this->section('pagebar') ?>

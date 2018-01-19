@@ -10,13 +10,14 @@ class SendMailWhenTaskAssign extends \Lif\Core\Abst\Job
     public function run() : bool
     {
         if (($task = $this->getTask()) && $task->alive()) {
-            if (('ops' == strtolower($task->current('role')))
+            if (true
+                && ('ops' == strtolower($task->current('role')))
                 && !$this->needNotifyOperator($task)
             ) {
                 return true;
             }
 
-            if (($current = $task->current())->alive()) {
+            if (($current = $task->current()) && $current->alive()) {
                 $url    = url(lrn("tasks/{$task->id}"));
                 
                 $title  = L('PROJECT')

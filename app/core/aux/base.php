@@ -162,9 +162,9 @@ if (! fe('init_job_table')) {
             ->default('CURRENT_TIMESTAMP()', true);
 
             $table
-            ->medint('timeout')
+            ->smallint('timeout')
             ->unsigned()
-            ->comment('The max execution time for this job');
+            ->comment('The max execution time (seconds) for this job');
 
             $table
             ->tinyint('restart')
@@ -2390,10 +2390,17 @@ if (! fe('strtodate')) {
 }
 if (! fe('ci_equal')) {
     function ci_equal(string $foo = null, string $bar = null) {
-        if (!$foo || !$bar) {
+        if (empty_safe($foo) || empty_safe($bar)) {
             return false;
         }
 
         return (strtolower($foo) === strtolower($bar));
+    }
+}
+if (! fe('seconds_left_today')) {
+    function seconds_left_today() : int {
+        $tomorrow = strtotime(date('Y-m-d', strtotime('+1 day')));
+
+        return $tomorrow - time();
     }
 }

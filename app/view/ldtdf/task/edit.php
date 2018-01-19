@@ -145,7 +145,7 @@
     }
     ]
     $(function() {
-        tryDisplayEditormd()
+        tryDisplayEditormd("<?= lrn('tool/uploads/uptoken?raw=true') ?>")
     })
     function removeAllSelectedResult() {
         $('input[name="origin_id"]').val('')

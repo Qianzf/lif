@@ -314,7 +314,8 @@ class DeployTask extends \Lif\Core\Abst\Job
         $task->current = $to;
         $task->status  = ($status ?? 'UNKNOWN_STATUS');
 
-        if ($task->save()
+        if (true
+            && ispint($task->save())
             && $task->addTrending('assign', $from, $to, $notes)
         ) {
             enqueue(
@@ -322,9 +323,7 @@ class DeployTask extends \Lif\Core\Abst\Job
             )
             ->on('mail_send')
             ->try(3)
-            ->timeout(30);
-
-            return true;
+            ->timeout(600);
         }
     }
 
