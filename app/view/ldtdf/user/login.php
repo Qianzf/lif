@@ -10,24 +10,22 @@
     type="hidden" name="lang">
 
     <label>
-        <span class="label-title"><?= L('ACCOUNT') ?></span>
+        <span class="label-title-sm"><?= L('ACCOUNT') ?></span>
         <input type="text" name="account" required>
     </label>
     <label>
-        <span class="label-title"><?= L('PASSWORD') ?></span>
+        <span class="label-title-sm"><?= L('PASSWORD') ?></span>
         <input type="password" name="passwd" required>
     </label>
 
     <label>
-        <span class="label-title">
-            <i><small><?= L('REMEMBER_ME') ?></small></i>
-        </span>
+        <span class="label-title-sm"></span>
         <input type="checkbox" name="remember">
+        <sup><small><i><?= L('REMEMBER_ME') ?></i></small></sup>
     </label>
 
     <label>
-        <span class="label-title">
-            <input type="submit" value="<?= L('SIGNIN') ?>">
-        </span>
+        <span class="label-title-sm"></span>
+        <button type="submit"><?= L('SIGNIN') ?></button>
     </label>
 </form>

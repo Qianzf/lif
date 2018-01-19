@@ -19,54 +19,9 @@
     </caption>
 
     <tr>
-        <th
-        class="time-sort"
-        data-sort="<?= $sort = $_GET['sort'] ?? 'desc' ?>">
-            <i class="sort-<?= $sort ?>"></i>
-            <?= L('CREATE_TIME') ?>
-        </th>
+        <td colspan="8">
+            <button class="btn-info"><?= L('QUERY_FILTER') ?></button>
 
-        <th>
-            <?= L('ORIGIN') ?>
-            <?= $this->section('filter/common', [
-                'name'   => 'origin',
-                'list'   => [
-                    'story' => L('STORY'),
-                    'bug'   => L('BUG'),
-                ],
-            ]) ?>
-        </th>
-        <th><?= L('TITLE') ?></th>
-        <th><?= L('PROJECT') ?>
-            <?php $projects[0] = '>> '.L('NULL').' <<'; ksort($projects); ?>
-            <?= $this->section('filter/common', [
-                'name'   => 'project',
-                'list'   => $projects,
-            ]) ?>
-        </th>
-        <th>
-            <?= L('CREATOR') ?>
-            <?= $this->section('filter/common', [
-                'name'   => 'creator',
-                'list'   => $users,
-                'isUser' => true,
-            ]) ?>
-        </th>
-
-        <?php if ($displayposition ?? true): ?>
-        <?php $users[0] = '>> '.L('END').' <<'; ksort($users); ?>
-        <th>
-            <?= L('FLOW_POSITION') ?>
-            <?= $this->section('filter/common', [
-                'name'   => 'position',
-                'list'   => $users,
-                'isUser' => true,
-            ]) ?>
-        </th>
-        <?php endif ?>
-
-        <th>
-            <?= L('STATUS') ?>
             <?= $this->section('filter/common', [
                 'name'   => 'status',
                 'list'   => $status,
@@ -74,7 +29,63 @@
                 'kval'   => true,
                 'vlang'  => 'STATUS',
             ]) ?>
+
+            <?= $this->section('filter/common', [
+                'name'   => 'origin',
+                'list'   => [
+                    'story' => L('STORY'),
+                    'bug'   => L('BUG'),
+                ],
+            ]) ?>
+
+            <?php $projects[0] = '>> '.L('NULL').' <<'; ksort($projects); ?>
+            <?= $this->section('filter/common', [
+                'name'   => 'project',
+                'list'   => $projects,
+            ]) ?>
+
+            <?php $products[0] = '>> '.L('NULL').' <<'; ksort($products); ?>
+            <?= $this->section('filter/common', [
+                'name'   => 'product',
+                'list'   => $products,
+            ]) ?>
+
+            <?= $this->section('filter/common', [
+                'name'   => 'creator',
+                'list'   => $users,
+                'isUser' => true,
+            ]) ?>
+
+            <?php if ($displayposition ?? true): ?>
+            <?= $this->section('filter/common', [
+                'name'   => 'position',
+                'list'   => $users,
+                'isUser' => true,
+            ]) ?>
+            <?php endif ?>
+        </td>
+    </tr>
+
+    <tr>
+        <th
+        class="time-sort"
+        data-sort="<?= $sort = $_GET['sort'] ?? 'desc' ?>">
+            <i class="sort-<?= $sort ?>"></i>
+            <?= L('CREATE_TIME') ?>
         </th>
+
+        <th><?= L('ORIGIN') ?></th>
+        <th><?= L('TITLE') ?></th>
+        <th><?= L('PROJECT') ?></th>
+        <th><?= L('PRODUCT') ?></th>
+        <th><?= L('CREATOR') ?></th>
+
+        <?php if ($displayposition ?? true): ?>
+        <?php $users[0] = '>> '.L('END').' <<'; ksort($users); ?>
+        <th><?= L('FLOW_POSITION') ?></th>
+        <?php endif ?>
+
+        <th><?= L('STATUS') ?></th>
     </tr>
     
     <?php if (isset($tasks) && iteratable($tasks)) : ?>
@@ -91,6 +102,7 @@
             </a>
         </td>
         <td><small><?= $task->project('name', false) ?: '-' ?></small></td>
+        <td><small><?= $task->product('name') ?: '-' ?></small></td>
         <td><small><?= $task->creator('name') ?></small></td>
 
         <?php if ($displayposition ?? true): ?>

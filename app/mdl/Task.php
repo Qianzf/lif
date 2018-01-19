@@ -27,6 +27,87 @@ class Task extends Mdl
         'first_dev'   => 'int|min:1',
     ];
 
+    public function getOriginsByProduct(int $product)
+    {
+        $this->getTasksByOrigins(
+            $this->getStoryIdsByProduct($product),
+            $this->getBugIdsByProduct($product)
+        );
+    }
+
+    private function getTasksByOrigins(array $stories = [], array $bugs = [])
+    {
+        $native = '';
+        
+        if ($stories) {
+            $stories = implode(',', $stories);
+            $native .= <<< SQL
+(`origin_type` = 'story' and `origin_id` in ({$stories}))
+SQL;
+        }
+        if ($bugs) {
+            $bugs = implode(',', $bugs);
+            $native .= $stories ? ' or ' : ' and ';
+            $native .= <<< SQL
+(`origin_type` = 'bug' and `origin_id` in ({$bugs}))
+SQL;
+        }
+
+        if ($native) {
+            $this->appendWhere(" ({$native}) ");
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public function searchOriginsByTitle($search)
+    {
+        if (! $search) {
+            return null;
+        }
+
+        if (false === $this->getTasksByOrigins(
+            $this->searchOriginIdsByTitle('story', $search),
+            $this->searchOriginIdsByTitle('bug', $search)
+        )) {
+            $this->whereId('<', 0);
+
+            return false;
+        }
+    }
+
+    public function getBugIdsByProduct(int $product)
+    {
+        $bugs = db()
+        ->table('bug')
+        ->select('id')
+        ->where('product', $product)
+        ->get();
+
+        if ($bugs && is_array($bugs)) {
+            $bugs = array_column($bugs, 'id');
+        }
+
+        return $bugs;
+    }
+
+    public function getStoryIdsByProduct(int $product)
+    {
+        $stories = db()
+        ->table('story')
+        ->select('id')
+        ->where('product', $product)
+        ->get();
+
+        if ($stories && is_array($stories)) {
+            $stories = array_column($stories, 'id');
+        }
+
+        return $stories;
+    }
+
     public function getProjects()
     {
         return db()
@@ -337,9 +418,12 @@ class Task extends Mdl
     public function canBeEditedBy(int $user)
     {
         if ($user) {
-            return (
-                ($this->creator == $user)
-                // && (strtolower($this->status) == 'activated')
+            return in_array($user, [
+                $this->creator,
+                $this->first_dev,
+            ]) || (true
+                && ci_equal($this->status, 'waiting_edit')
+                && ($user == $this->current)
             );
         }
 
@@ -543,6 +627,16 @@ class Task extends Mdl
         $type   = ('story' == $this->origin_type) ? 'S' : 'B';
 
         return "{$origin->title} ({$type}{$origin->id}/T{$this->id})";
+    }
+
+    public function product(string $key = null)
+    {
+        if (true
+            && ($origin = $this->origin())
+            && ($product = $origin->product($key))
+        ) {
+            return $product;
+        }
     }
 
     public function origin(string $key = null, string $type = null)

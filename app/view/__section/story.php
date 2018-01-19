@@ -6,11 +6,13 @@
 
     <span><small>
         <i>
-            <a href="<?= lrn('products/'.$story->product('id')) ?>">
-                <?= $this->escape($story->product('name')) ?:
-                    '<i class="text-info">'.L('NULL').'</i>'
-                ?>
+            <?php if ($product = $story->product()): ?>
+            <a href="<?= lrn('products/'.$product->id) ?>">
+                <?= $this->escape($product->name) ?>
             </a>
+            <?php else: ?>
+            <i class="text-info"><?= L('NULL') ?></i>
+            <?php endif ?>
         </i>
     </small></span>
 </div>

@@ -85,6 +85,9 @@ class Run extends Command
         }
 
         try {
+
+            logging('queue ---- job: '.stringify($this->getJob()));
+
             $this->restartFailedJobs();
             $this->holdCurrentJob();
 
@@ -101,8 +104,8 @@ class Run extends Command
                 $shm     = shm_attach(ftok(__FILE__, 'm'));
                 $signal  = sem_get(ftok(__FILE__, 's'));
                 $success = false;
+                $expire  = time()+$timeout;                
                 $pid     = pcntl_fork();
-                $expire  = time()+$timeout;
                 $childStatus = null;
 
                 if (-1 === $pid) {
@@ -112,10 +115,13 @@ class Run extends Command
                 if (0 === $pid) {
                     // Do queue job in child process
                     $status = call_user_func([$job, 'run']);
-                    @sem_acquire($signal);
+                    
+                    logging("queue ---- child execute result: {$status}");
+
+                    sem_acquire($signal);
                     shm_put_var($shm, JOB_STATUS, intval($status));
-                    @sem_release($signal);
-                    @sem_remove($signal);
+                    sem_release($signal);
+                    sem_remove($signal);
                     // Exit child process and let master process return result
                     exit(posix_kill(posix_getpid(), SIGKILL));
                 } else {
@@ -127,9 +133,12 @@ class Run extends Command
                     // Timeout check in master process
                     do {
                         // check if child process exists now
-                        if (shm_has_var($shm, JOB_STATUS)
+                        if (true
+                            && shm_has_var($shm, JOB_STATUS)
                             && (shm_get_var($shm, JOB_STATUS) == 1)
                         ) {
+                            logging("queue ---- parent received result");
+
                             $success = true;
                             break;
                         }
@@ -151,7 +160,9 @@ class Run extends Command
                 // 'error: waitpid for fetch failed: No child processes'
                 pcntl_waitpid(-1, $childStatus, WNOHANG);
 
-                @shm_remove($shm);
+                shm_remove($shm);
+
+                logging('queue ---- child status: '.stringify($childStatus));
 
                 return $success;
             } else {
