@@ -135,7 +135,16 @@ trait Queue
             );
         }
 
-        $this->queues = array_filter(explode(',', $queues));
+        $data = [];
+        if ($params = explode(',', $queues)) {
+            array_walk($params, function ($item) use (&$data) {
+                if ($item = trim($item)) {
+                    $data[] = $item;
+                }
+            });
+        }
+
+        $this->queues = $data;
     }
 
     protected function setQueueConn(string $conn = null, string $option)
