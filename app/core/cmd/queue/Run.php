@@ -64,13 +64,9 @@ class Run extends Command
     
     private $timer = null;
 
-    CONST JOB_STATUS = 1;
-
     public function fire()
     {
         $this->prepare();
-        
-        // sleep($this->startSecs);
 
         while (true) {
             sleep(1);
@@ -99,26 +95,29 @@ class Run extends Command
                 }
 
                 // Create share memory and signal
-                $shm     = shm_attach(ftok(__FILE__, 'm'));
-                $signal  = sem_get(ftok(__FILE__, 's'));
-                $success = false;
-                $expire  = time()+$timeout;
-                $pid     = pcntl_fork();
+                $tmpfileM    = pathOf('cache', 'process/'.uniqid('m'), true);
+                $shareMemory = shm_attach(ftok($tmpfileM, 'm'));
+                $success     = false;
+                $expire      = time() + $timeout;
+                $pid         = pcntl_fork();
                 $childStatus = null;
+                $shareKey    = 1;
 
                 if (-1 === $pid) {
                     excp('Fork failed.');
                 }
 
                 if (0 === $pid) {
+                    // Reset child process execute status
+                    shm_put_var($shareMemory, $shareKey, 0);
+
                     // Do queue job in child process
                     $status = call_user_func([$job, 'run']);
                     
                     logging("queue ---- child execute result: {$status}");
 
-                    sem_acquire($signal);
-                    shm_put_var($shm, self::JOB_STATUS, intval($status));
-                    sem_release($signal);
+                    shm_put_var($shareMemory, $shareKey, intval($status));
+
                     // Exit child process and let master process return result
                     exit(posix_kill(posix_getpid(), SIGKILL));
                 } else {
@@ -131,8 +130,8 @@ class Run extends Command
                     do {
                         // check if child process exists now
                         if (true
-                            && shm_has_var($shm, self::JOB_STATUS)
-                            && (shm_get_var($shm, self::JOB_STATUS) === 1)
+                            && shm_has_var($shareMemory, $shareKey)
+                            && (1 === shm_get_var($shareMemory, $shareKey))
                         ) {
                             unset($GLOBALS['LIF_CHILD_PROCESSES'][$pid]);
 
@@ -159,10 +158,10 @@ class Run extends Command
                 // 'error: waitpid for fetch failed: No child processes'
                 pcntl_waitpid(-1, $childStatus, WNOHANG);
 
-                sem_remove($signal);
-                shm_remove($shm);
-
                 logging('queue ---- child status: '.stringify($childStatus));
+
+                shm_remove($shareMemory);
+                unlink($tmpfileM);
 
                 return $success;
             } else {

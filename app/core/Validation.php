@@ -177,10 +177,12 @@ class Validation
                 $_ruleArr = array_filter(explode(':', $_rule),
                     function ($val) {
                         return !empty_safe($val);
-                });
+                    }
+                );
 
-                if (!isset($_ruleArr[0])
-                    || !method_exists($this, $_ruleArr[0])
+                if (false
+                    || (! isset($_ruleArr[0]))
+                    || (! method_exists($this, $_ruleArr[0]))
                 ) {
                     excp('Missing validator: '.($_ruleArr[0] ?? 'unknown'));
                 }
@@ -201,7 +203,7 @@ class Validation
                         $data[$key] = $hasDefault;
                     }
 
-                    if (!$hasKey || !$necessary) {
+                    if (!$hasKey && !$necessary) {
                         break;
                     }
 

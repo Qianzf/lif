@@ -399,7 +399,11 @@ if (! fe('nsOf')) {
     }
 }
 if (! fe('pathOf')) {
-    function pathOf(string $of = null, string $file = '') {
+    function pathOf(
+        string $of = null,
+        string $file = '',
+        bool $touch = false
+    ) {
         $root  = realpath(__DIR__.'/../../../');
         $paths = [
             'root'   => $root.'/',
@@ -441,11 +445,46 @@ if (! fe('pathOf')) {
             $dir = implode('/', $arr);
             if (! file_exists($dir)) {
                 // !!! `true` is necessary for recursive creating
-                @mkdir($dir, 0775, true);
+                mkdir($dir, 0775, true);
             }
         }
 
+        if (!is_file($path) && $touch) {
+            touch($path);
+        }
+
         return $path;
+    }
+}
+if (! fe('gen_rand')) {
+    function gen_rand(int $length = null, string $format = null): string
+    {
+        $length = $length ?? 4;
+        $format = $type   ?? 'int';
+
+        if (!is_integer($length) || (0 > $length)) {
+            excp('Checkcode length must be an integer over 0.');
+        }
+
+        $chars = $pureNum = str_split('0123456789');
+
+        if (ci_equal($format, 'str')) {
+            $charLower = 'abcdefghijklmnopqrstuvwxyz';
+            $charUpper = strtoupper($charLower);
+            $chars     = array_merge(
+                $chars,
+                str_split($charLower.$charUpper)
+            );
+        }
+
+        $charsLen = count($chars) - 1;
+        
+        $code = '';
+        for ($i=0; $i<$length; ++$i) {
+            $code .= $chars[mt_rand(0, $charsLen)];
+        }
+
+        return $code;
     }
 }
 if (! fe('_json_decode')) {

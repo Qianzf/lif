@@ -12,9 +12,8 @@ class Task extends Mdl
 
     protected $rules = [
         'creator'  => 'int|min:1',
-        'story'    => 'int|min:1',
-        'project'  => 'int|min:1',
-        'current'  => 'int|min:1',
+        'project'  => 'int|min:0',
+        'current'  => 'int|min:0',
         'status'   => 'string',
         'notes'    => 'string',
         'branch'   => 'string',
@@ -24,7 +23,7 @@ class Task extends Mdl
         'deploy'   => 'string',
         'origin_type' => 'ciin:story,bug',
         'origin_id'   => 'int|min:1',
-        'first_dev'   => 'int|min:1',
+        'first_dev'   => 'int|min:0',
     ];
 
     public function getOriginsByProduct(int $product)
