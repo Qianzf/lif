@@ -237,39 +237,11 @@ if (! fe('get_raw_route')) {
         return '/'.str_replace('.', '/', $key);
     }
 }
-if (! fe('try_client_ip_key')) {
-    function try_client_ip_key($possible_key) {
-        return getenv($possible_key)
-        ?? (
-            $_SERVER[$possible_key] ?? null
-        );
-    }
-}
 if (! fe('redirect')) {
     function redirect($uri) {
         header('Location: '.$uri);
 
         exit;
-    }
-}
-if (! fe('ip_of_client')) {
-    function ip_of_client() {
-        $clientIPKeys = [
-            'HTTP_CLIENT_IP',
-            'HTTP_X_FORWARDED_FOR',
-            'HTTP_X_FORWARDED',
-            'HTTP_FORWARDED_FOR',
-            'HTTP_FORWARDED',
-            'REMOTE_ADDR',
-        ];
-
-        foreach ($clientIPKeys as $key) {
-            if ($clientIP = try_client_ip_key($key)) {
-                break;
-            }
-        }
-
-        return $clientIP ?? 'UNKNOWN';
     }
 }
 if (! fe('shares')) {

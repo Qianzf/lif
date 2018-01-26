@@ -57,7 +57,10 @@ class Task extends Ctl
             $this->request->get('activate_reason'),
             function () use ($task) {
                 $task->current = share('user.id');
-                return ($task->save() >= 0);
+                $task->status  = $task->project ? 'activated' : 'waiting_edit';
+                
+                return (ispint($err = $task->save()))
+                ? true : $err;
             }
         );
     }
@@ -69,8 +72,11 @@ class Task extends Ctl
             $task,
             $this->request->get('cancel_reason'),
             function () use ($task) {
-                $task->branch = $task->current = null;
-                return ($task->save() >= 0);
+                $task->branch = $task->current = $task->env = null;
+                $task->status = 'canceled';
+
+                return (ispint($err = $task->save()))
+                ? true : $err;
             }
         );
     }
@@ -96,7 +102,9 @@ class Task extends Ctl
             $task->addTrending($action, $user, null, $notes);
 
             if ($callback) {
-                $callback();
+                if (true !== ($err = $callback())) {
+                    $msg = $err;
+                }
             }
         }
 

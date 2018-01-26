@@ -1397,7 +1397,11 @@ if (! fe('lang')) {
     }
 }
 if (! fe('xml2arr')) {
-    function xml2arr($xml, $loaded = false) {
+    function xml2arr($xml, $loaded = false) : array {
+        if (! extension_loaded('libxml')) {
+            excp('PHP extension missing: libxml');
+        }
+        
         libxml_use_internal_errors(true);
         $xml = $loaded
         ? $xml
@@ -1426,29 +1430,30 @@ if (! fe('xml2obj')) {
         return $res['data'];
     }
 }
-if (! fe('arrToXML')) {
-    function arrToXML(array $array, string &$xml): string
-    {
-        foreach ($array as $key => &$val) {
-            if (is_array($val)) {
-                $_xml = '';
-                $val = arrToXML($val, $_xml);
-            }
-            $xml .= "<$key>$val</$key>";
-        }
-
-        unset($val);
-
-        return $xml;
-    }
-}
 if (! fe('arr2xml')) {
-    function arr2xml(array $array, string $xml = '') : string {
-        $_xml  = '<?xml version="1.0" encoding="utf-8"?><xml>'
-        .arrToXML($array, $xml)
-        .'</xml>';
+    function arr2xml(array $array) : string {
+        $xml     = '';
+        $arr2xml = function (
+            array $array, string &$xml, callable $arr2xml
+        ): string {
+            foreach ($array as $key => &$val) {
+                if (is_array($val)) {
+                    $_xml = '';
+                    $val  = $arr2xml($val, $_xml, $arr2xml);
+                }
+                $xml .= "<{$key}>{$val}</{$key}>";
+            }
 
-        return $_xml;
+            unset($val);
+
+            return $xml;
+        };
+
+        $_xml = $arr2xml($array, $xml, $arr2xml);
+
+        unset($xml);
+        
+        return '<?xml version="1.0" encoding="utf-8"?><xml>'.$_xml.'</xml>';
     }
 }
 if (! fe('arr2xml_unsafe')) {
@@ -2394,18 +2399,61 @@ if (! fe('fndate')) {
         return date('Y-m-d H:i:s', $ts);
     }
 }
+if (! fe('try_client_ip_key')) {
+    function try_client_ip_key($residence) {
+        return getenv($residence)
+        ?? (
+            $_SERVER[$residence] ?? null
+        );
+    }
+}
+if (! fe('ip_of_client')) {
+    function ip_of_client() {
+        foreach ([
+            'HTTP_CLIENT_IP',
+            'HTTP_X_FORWARDED_FOR',
+            'HTTP_X_FORWARDED',
+            'HTTP_FORWARDED_FOR',
+            'HTTP_FORWARDED',
+            'REMOTE_ADDR',
+        ] as $residence) {
+            if ($ip = try_client_ip_key($residence)) {
+                return $ip;
+            }
+        }
+
+        return 'UNKNOWN';       
+    }
+}
+if (! fe('is_intstr')) {
+    function is_intstr(string $var) {
+        return (true
+            && is_numeric($var)
+            && ($var == ($_var = intval($var)))
+        ) ? $_var : false;
+    }
+}
+if (! fe('strtodate')) {
+    function strtodate(string $time, bool $zerofill = true) {
+        $time = is_intstr($time) ? $time : strtotime($time);
+        $day  = date('Y-m-d', $time);
+
+        return $zerofill ? "{$day} 00:00:00" : $day;
+    }
+}
 if (! fe('day_diff')) {
-    function day_diff(string $start, string $end, int $diff) {
+    function day_diff(string $start, string $end, int $diff = null) {
         if (!$start || !$end) {
             return false;
         }
 
-        $start = strtodate($start);
-        $end   = strtodate($end);
+        $_diff = intval(
+            (new \Datetime(strtodate($end)))
+            ->diff(new \DateTime(strtodate($start)))
+            ->format('%a')
+        );
 
-        return ($diff == (
-            (new \Datetime($end))->diff(new \DateTime($start))->format('%a')
-        ));
+        return is_null($diff) ? $_diff : ($diff === $_diff);
     }
 }
 if (! fe('is_same_day')) {
@@ -2414,17 +2462,14 @@ if (! fe('is_same_day')) {
             return false;
         }
 
-        return (strtodate($day1) === strtodate($day2));
+        return (strtodate($day1, false) === strtodate($day2, false));
     }
 }
-if (! fe('strtodate')) {
-    function strtodate($day) {
-        if (! is_numeric($day)) {
-            // Here we only need the `date` part only
-            $day = strtotime(date('Y-m-d', strtotime($day)));
-        }
+if (! fe('seconds_left_today')) {
+    function seconds_left_today() : int {
+        $tomorrow = strtotime(date('Y-m-d', strtotime('+1 day')));
 
-        return date('Y-m-d H:i:s', strtotime(date('Y-m-d', $day)));
+        return $tomorrow - time();
     }
 }
 if (! fe('ci_equal')) {
@@ -2434,12 +2479,5 @@ if (! fe('ci_equal')) {
         }
 
         return (strtolower($foo) === strtolower($bar));
-    }
-}
-if (! fe('seconds_left_today')) {
-    function seconds_left_today() : int {
-        $tomorrow = strtotime(date('Y-m-d', strtotime('+1 day')));
-
-        return $tomorrow - time();
     }
 }
