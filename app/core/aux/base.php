@@ -456,14 +456,21 @@ if (! fe('pathOf')) {
         return $path;
     }
 }
+if (! fe('rand_seed')) {
+    function rand_seed() {
+        return hexdec(bin2hex(
+            openssl_random_pseudo_bytes(mt_rand(1, 5))
+        ));
+    }
+}
 if (! fe('gen_rand')) {
     function gen_rand(int $length = null, string $format = null): string
     {
         $length = $length ?? 4;
         $format = $type   ?? 'int';
 
-        if (!is_integer($length) || (0 > $length)) {
-            excp('Checkcode length must be an integer over 0.');
+        if (ispint($length, false)) {
+            excp('Random characters length must be an integer over 0.');
         }
 
         $chars = $pureNum = str_split('0123456789');
@@ -2410,12 +2417,13 @@ if (! fe('try_client_ip_key')) {
 if (! fe('ip_of_client')) {
     function ip_of_client() {
         foreach ([
-            'HTTP_CLIENT_IP',
+            'HTTP_X_REAL_IP',
             'HTTP_X_FORWARDED_FOR',
             'HTTP_X_FORWARDED',
             'HTTP_FORWARDED_FOR',
             'HTTP_FORWARDED',
             'REMOTE_ADDR',
+            'HTTP_CLIENT_IP',
         ] as $residence) {
             if ($ip = try_client_ip_key($residence)) {
                 return $ip;

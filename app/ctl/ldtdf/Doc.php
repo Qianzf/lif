@@ -189,11 +189,13 @@ class Doc extends Ctl
 
     public function createFolder(DocFolder $folder)
     {
+        dd($this->request->posts());
+        
         $this->request->setPost('creator', share('user.id'));
 
         return $this->responseOnCreated(
             $folder,
-            lrn('docs/folders/?/edit'),
+            lrn('docs/folders/?'),
             null,
             function () use ($folder) {
                 $folder->addTrending('create', share('user.id'));

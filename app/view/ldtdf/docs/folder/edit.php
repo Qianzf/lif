@@ -39,14 +39,18 @@
     <?= $this->section('treeselect', [
         'inputTitle' => L('PARENT_CATE'),
         'inputName'  => 'parent',
-        'inputDefaultValue'  => ($folder->alive() ? $folder->parent : $parent->id),
+        'inputDefaultValue'  => intval($folder->alive() ? $folder->parent : $parent->id),
         'inputDefaultOutput' => ($folder->alive() ? $folder->parent('title') : $parent->title),
         'treeData' => ($folders ?? []),
     ]) ?>
 
     <label>
         <span class="label-title"><?= L('SORT') ?></span>
-        <input type="number" name="order" min="0" value="<?= $folder->order ?>">
+        <input
+        type="number"
+        name="order"
+        min="0"
+        value="<?= intval($folder->order) ?>">
     </label>
 
     <?= $this->section('submit', [
