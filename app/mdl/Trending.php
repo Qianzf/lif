@@ -35,6 +35,7 @@ class Trending extends Mdl
             ->sort([
                 'trending.id' => 'desc',
             ])
+            ->where('user.role', '!=', 'admin')
             ->limit(
                 $params['from'],
                 $params['take']

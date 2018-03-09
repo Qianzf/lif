@@ -138,7 +138,7 @@ class Doc extends Ctl
             $doc = $folder->firstDoc() ?? model(DocModel::class);
         }
 
-        view('ldtdf/docs/folder/view')
+        return view('ldtdf/docs/folder/view')
         ->withFolderDocsChildrenDoc(
             $folder,
             $folder->docs(),
@@ -149,7 +149,7 @@ class Doc extends Ctl
 
     public function editFolder(DocFolder $folder)
     {
-        view('ldtdf/docs/folder/edit')
+        return view('ldtdf/docs/folder/edit')
         ->withFolderParentFolders(
             $folder,
             $folder->make($this->request->get('parent')),
