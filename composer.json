@@ -13,6 +13,7 @@
         "psr-4": {
             "Lif\\": "app/"
         },
+	   "classmap": ["app/"],
         "files": [
             "app/core/aux/base.php"
         ]
