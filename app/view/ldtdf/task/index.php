@@ -102,7 +102,7 @@
     <?php foreach ($tasks as $task) : ?>
     <tr>
         <td><?= $task->create_at ?></td>
-        <td><small>
+        <td><small class="priority-<?= $task->origin('priority') ?>">
             <?= L("PRIORITY_{$task->origin('priority')}") ?>
         </small></td>
         <td class="text-task"><small><em>

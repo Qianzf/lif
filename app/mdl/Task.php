@@ -51,14 +51,18 @@ class Task extends Mdl
             $native .= <<< SQL
 (`origin_type` = 'story' and `origin_id` in ({$stories}))
 SQL;
+        } else {
+            $native .= "(`origin_type` != 'story')";
         }
 
         if ($bugs) {
             $bugs = implode(',', $bugs);
-            $native .= $stories ? ' or ' : '';
+            $native .= $stories ? ' or ' : ' and ';
             $native .= <<< SQL
 (`origin_type` = 'bug' and `origin_id` in ({$bugs}))
 SQL;
+        } else {
+            $native .= " and (`origin_type` != 'bug')";
         }
 
         if ($native) {
