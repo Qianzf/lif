@@ -23,6 +23,16 @@
             <i class="sort-<?= $sort ?>"></i>
             <?= L('CREATE_TIME') ?>
         </th>
+        <th>
+            <?= L('PRIORITY') ?>
+            <?= $this->section('filter/common', [
+                'name'   => 'priority',
+                'list'   => $priorities,
+                'vlang'  => 'PRIORITY_STORY',
+                'kval'   => true,
+                'isUser' => false,
+            ]) ?>
+        </th>
         <th><?= L('TITLE') ?></th>
         <th>
             <?= L('RELATED_PRODUCT') ?>
@@ -46,6 +56,11 @@
     <?php foreach ($stories as $story): ?>
     <tr>
         <td><?= $story->create_at ?></td>
+        <td>
+            <small class="priority-<?= $story->priority ?>">
+                <?= L("PRIORITY_STORY_{$story->priority}") ?>
+            </small>
+        </td>
         <td>
             <sub><small><code>S<?= $story->id ?></code></small></sub>
             <a href='<?= lrn("stories/{$story->id}") ?>'>

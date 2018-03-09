@@ -23,6 +23,16 @@
             <i class="sort-<?= $sort ?>"></i>
             <?= L('CREATE_TIME') ?>
         </th>
+        <th>
+            <?= L('PRIORITY') ?>
+            <?= $this->section('filter/common', [
+                'name'   => 'priority',
+                'list'   => $priorities,
+                'vlang'  => 'PRIORITY_BUG',
+                'kval'   => true,
+                'isUser' => false,
+            ]) ?>
+        </th>
         <th><?= L('TITLE') ?></th>
         <th>
             <?= L('RELATED_PRODUCT') ?>
@@ -56,6 +66,11 @@
     <?php foreach ($bugs as $bug) : ?>
     <tr>
         <td><?= $bug->create_at ?></td>
+        <td>
+            <small class="priority-<?= $bug->priority ?>">
+                <?= L("PRIORITY_BUG_{$bug->priority}") ?>
+            </small>
+        </td>
         <td>
             <sub><small><code>B<?= $bug->id ?></code></small></sub>
             <a href='<?= lrn("bugs/{$bug->id}") ?>'>

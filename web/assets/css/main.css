@@ -394,3 +394,15 @@ input:invalid {
     border-bottom-color: lightgrey;
     width: 1px;
 }
+.priority-0 {
+    color: green;
+    font-weight: bold;
+}
+.priority-1 {
+    color: darkred;
+    font-weight: bold;
+}
+.priority-2 {
+    color: red;
+    font-weight: bold;
+}

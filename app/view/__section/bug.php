@@ -1,4 +1,14 @@
 <p>
+    <div>
+        <span class="stub-2"></span>
+        <span class="text-info">[</span>
+        <small><?= L('PRIORITY') ?></small>
+        <span class="text-info">]</span>
+        <small class="priority-<?= $bug->priority ?>">
+            <?= L("PRIORITY_STORY_{$bug->priority}") ?>
+        </small>
+    </div>
+
     <span class="stub-2"></span>
     <span class="text-info">[</span>
     <small><?= L('BUG_DETAILS') ?></small>

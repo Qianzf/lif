@@ -27,6 +27,12 @@ class CreateStoryTable extends Dit
             ->comment('Product this story belongs to => `product`.`id`');
 
             $table
+            ->tinyint('priority')
+            ->unsigned()
+            ->default(0)
+            ->comment('Priority of this story');
+
+            $table
             ->string('role')
             ->comment('User story 1st element: User Role');
 

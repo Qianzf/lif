@@ -141,6 +141,23 @@
         </div>
     </label>
 
+    <label>
+        <span class="label-title"><?= L('PRIORITY') ?></span>
+        <select name="priority">
+            <?php if (isset($priorities) && iteratable($priorities)): ?>
+            <?php foreach ($priorities as $priority): ?>
+            <option
+            <?php if (ci_equal($priority, $bug->priority)): ?>
+            selected
+            <?php endif ?>
+            value="<?= $priority ?>">
+                <?= L("PRIORITY_BUG_{$priority}") ?>
+            </option>
+            <?php endforeach ?>
+            <?php endif ?>
+        </select>
+    </label>
+
     <?= $this->section('developers', [
         'principals' => ($principals ?? []),
     ]) ?>

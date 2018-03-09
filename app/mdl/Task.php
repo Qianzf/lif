@@ -26,6 +26,14 @@ class Task extends Mdl
         'first_dev'   => 'int|min:0',
     ];
 
+    public function getOriginsByPriority(int $priority)
+    {
+        $this->getTasksByOrigins(
+            $this->getStoryIdsByPriority($priority),
+            $this->getBugIdsByPriority($priority)
+        );
+    }
+
     public function getOriginsByProduct(int $product)
     {
         $this->getTasksByOrigins(
@@ -44,9 +52,10 @@ class Task extends Mdl
 (`origin_type` = 'story' and `origin_id` in ({$stories}))
 SQL;
         }
+
         if ($bugs) {
             $bugs = implode(',', $bugs);
-            $native .= $stories ? ' or ' : ' and ';
+            $native .= $stories ? ' or ' : '';
             $native .= <<< SQL
 (`origin_type` = 'bug' and `origin_id` in ({$bugs}))
 SQL;
@@ -77,34 +86,49 @@ SQL;
         }
     }
 
+    public function getBugIdsByFilter(string $key, $val)
+    {
+        return $this->getOriginIdsByFilter('bug', $key, $val);
+    }
+
+    public function getBugIdsByPriority(int $priority)
+    {
+        return $this->getBugIdsByFilter('priority', $priority);
+    }
+
     public function getBugIdsByProduct(int $product)
     {
-        $bugs = db()
-        ->table('bug')
-        ->select('id')
-        ->where('product', $product)
-        ->get();
+        return $this->getBugIdsByFilter('product', $product);
+    }
 
-        if ($bugs && is_array($bugs)) {
-            $bugs = array_column($bugs, 'id');
-        }
-
-        return $bugs;
+    public function getStoryIdsByPriority(int $priority)
+    {
+        return $this->getStoryIdsByFilter('priority', $priority);
     }
 
     public function getStoryIdsByProduct(int $product)
     {
-        $stories = db()
-        ->table('story')
+        return $this->getStoryIdsByFilter('product', $product);
+    }
+
+    public function getStoryIdsByFilter(string $key, $val)
+    {
+        return $this->getOriginIdsByFilter('story', $key, $val);
+    }
+
+    public function getOriginIdsByFilter(string $origin, string $key, $val)
+    {
+        $origins = db()
+        ->table($origin)
         ->select('id')
-        ->where('product', $product)
+        ->where($key, $val)
         ->get();
 
-        if ($stories && is_array($stories)) {
-            $stories = array_column($stories, 'id');
+        if ($origins && is_array($origins)) {
+            $origins = array_column($origins, 'id');
         }
 
-        return $stories;
+        return $origins;
     }
 
     public function getProjects()

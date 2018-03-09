@@ -19,8 +19,17 @@
     </caption>
 
     <tr>
-        <td colspan="8">
+        <td colspan="9">
             <button class="btn-info"><?= L('QUERY_FILTER') ?></button>
+
+            <?= $this->section('filter/common', [
+                'name'   => 'priority',
+                'list'   => $priorities,
+                'vlang'  => 'PRIORITY',
+                'kval'   => true,
+                'isUser' => false,
+            ]) ?>
+                
 
             <?= $this->section('filter/common', [
                 'name'   => 'status',
@@ -74,6 +83,7 @@
             <?= L('CREATE_TIME') ?>
         </th>
 
+        <th><?= L('PRIORITY') ?></th>
         <th><?= L('ORIGIN') ?></th>
         <th><?= L('TITLE') ?></th>
         <th><?= L('PROJECT') ?></th>
@@ -92,6 +102,9 @@
     <?php foreach ($tasks as $task) : ?>
     <tr>
         <td><?= $task->create_at ?></td>
+        <td><small>
+            <?= L("PRIORITY_{$task->origin('priority')}") ?>
+        </small></td>
         <td class="text-task"><small><em>
             <?= L($task->origin_type) ?>
         </em></small></td>

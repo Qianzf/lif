@@ -23,6 +23,7 @@ class Story extends Ctl
             'id'      => ['int|min:1', null],
             'creator' => ['int|min:1', null],
             'product' => ['int|min:0', null],
+            'priority' => ['int|min:0', null],
             'sort'    => ['ciin:desc,asc', 'desc'],
             'page'    => ['int|min:1', 1],
         ]);
@@ -39,6 +40,9 @@ class Story extends Ctl
             if (! empty_safe($product = $querys['product'])) {
                 $where[] = ['product', $product];
             }
+            if (! empty_safe($priority = $querys['priority'])) {
+                $where[] = ['priority', $priority];
+            }
         }
 
         $users   = $story->getAllUsers();
@@ -49,7 +53,7 @@ class Story extends Ctl
         $products = get_ldtdf_products();
 
         return view('ldtdf/story/index')
-        ->withStoriesUsersPagesProductsRecords(
+        ->withStoriesUsersPagesProductsRecordsPriorities(
             $story->list(null, $where, true, $querys),
             array_combine(
                 array_column($users, 'id'),
@@ -61,7 +65,8 @@ class Story extends Ctl
                     array_column($products, 'name')
                 )) : []
             ),
-            $records
+            $records,
+            $this->getPriorities()
         )
         ->share('hide-search-bar', false);
     }
@@ -104,22 +109,26 @@ class Story extends Ctl
         );
     }
 
+    protected function getPriorities() : array
+    {
+        return [0, 1, 2];
+    }
+
     public function edit(StoryModel $story)
     {
         $principals = $story->getPrincipals([
             [db()->native('LOWER(`task`.`status`)'), '!=', 'canceled'],
         ]);
 
-        // dd(get_ldtdf_products());
-
         return view('ldtdf/story/edit')
-        ->withStoryAcceptancesDevelopersPrincipalsProductsEditable(
+        ->withStoryAcceptancesDevelopersPrincipalsProductsEditablePriorities(
             $story,
             $story->getAcceptances(),
             get_ldtdf_devs(),
             ($principals ? array_column($principals, 'id') : []),
             get_ldtdf_products(),
-            true
+            true,
+            $this->getPriorities()
         );
     }
 

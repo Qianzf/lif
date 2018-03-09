@@ -23,6 +23,7 @@ class Bug extends Mdl
         'recurable'    => 'need|ciin:yes,no',
         'extra'        => 'string',
         'contact'      => 'string',
+        'priority'     => 'int|min:0',
     ];
 
     public function getTaskOriginName() : string

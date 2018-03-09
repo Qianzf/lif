@@ -22,6 +22,7 @@ class Story extends ModelBase
         'activity' => 'need|string',
         'value'    => 'need|string',
         'extra'    => 'string',
+        'priority' => 'int|min:0',
     ];
     // protected items that cann't update
     protected $unwriteable = [

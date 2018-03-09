@@ -21,6 +21,7 @@ class Bug extends Ctl
             'search'  => ['string', null],
             'creator' => ['int|min:1', null],
             'product' => ['int|min:0', null],
+            'priority' => ['int|min:0', null],
             'sort'    => ['ciin:desc,asc', 'desc'],
             'os'      => ['string|notin:-1', null],
             'page'    => ['int|min:1', 1],
@@ -35,6 +36,9 @@ class Bug extends Ctl
             }
             if ($creator = $querys['creator']) {
                 $where[] = ['creator', $creator];
+            }
+            if (! empty_safe($priority = $querys['priority'])) {
+                $where[] = ['priority', $priority];
             }
             if (! empty_safe($product = $querys['product'])) {
                 $where[] = ['product', $product];
@@ -52,7 +56,7 @@ class Bug extends Ctl
         $products       = get_ldtdf_products();
 
         return view('ldtdf/bug/index')
-        ->withBugsUsersOsesPagesProductsRecords(
+        ->withBugsUsersOsesPagesProductsRecordsPriorities(
             $bug->list(null, $where, true, $querys),
             array_combine(
                 array_column($users, 'id'),
@@ -65,7 +69,8 @@ class Bug extends Ctl
                     array_column($products, 'name')
                 )) : []
             ),
-            $records
+            $records,
+            $this->getPriorities()
         )
         ->share('hide-search-bar', false);
     }
@@ -94,6 +99,11 @@ class Bug extends Ctl
         );
     }
 
+    protected function getPriorities() : array
+    {
+        return [0, 1, 2];
+    }
+
     public function edit(BugModel $bug)
     {
         $principals = $bug->getPrincipals([
@@ -101,13 +111,14 @@ class Bug extends Ctl
         ]);
 
         return view('ldtdf/bug/edit')
-        ->withBugEditableOsesPrincipalsProductsDevelopers(
+        ->withBugEditableOsesPrincipalsProductsDevelopersPriorities(
             $bug,
             true,
             $this->getOses(),
             ($principals ? array_column($principals, 'id') : []),
             get_ldtdf_products(),
-            get_ldtdf_devs()
+            get_ldtdf_devs(),
+            $this->getPriorities()
         )
         ->share('hide-search-bar', true);
     }

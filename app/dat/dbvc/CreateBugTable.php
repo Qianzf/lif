@@ -26,6 +26,12 @@ class CreateBugTable extends Dit
             ->comment('Product this bug belongs to=> `product`.`id`');
 
             $table
+            ->tinyint('priority')
+            ->unsigned()
+            ->default(0)
+            ->comment('Priority of this bug');
+
+            $table
             ->text('how')
             ->comment('What are u doing when bug occurs');
 

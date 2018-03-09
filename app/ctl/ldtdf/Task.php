@@ -178,6 +178,7 @@ class Task extends Ctl
             'origin'   => ['ciin:story,bug', null],
             'id'       => ['int|min:1', null],
             'project'  => ['int|min:0', null],
+            'priority' => ['int|min:0', null],
             'product'  => ['int|min:0', null],
             'creator'  => ['int|min:1', null],
             'search'   => ['string', null],
@@ -236,6 +237,27 @@ class Task extends Ctl
                         $task->getOriginsByProduct($product);
                     }
                 }
+                if (! empty_safe($priority = $querys['priority'])) {
+                    if (true
+                        && ci_equal($origin, 'story')
+                        && ($stories = $task->getStoryIdsByPriority($priority))
+                    ) {
+                        $task->where([
+                            'origin_id'   => $stories,
+                            'origin_type' => 'story',
+                        ]);
+                    } elseif (true
+                        && ci_equal($origin, 'bug')
+                        && ($bugs = $task->getBugIdsByPriority($priority))
+                    ) {
+                        $task->where([
+                            'origin_id'   => $bugs,
+                            'origin_type' => 'bug',
+                        ]);
+                    } else {
+                        $task->getOriginsByPriority($priority);
+                    }
+                }
                 if ($creator = $querys['creator']) {
                     $task->whereCreator($creator);
                 }
@@ -265,7 +287,7 @@ class Task extends Ctl
         $products = get_ldtdf_products();
 
         return view('ldtdf/task/index')
-        ->withStatusPagesRecordsTasksProjectsProductsUsersDisplaypositionDisplaymenu(
+        ->withStatusPagesRecordsTasksProjectsProductsUsersDisplaypositionDisplaymenuPriorities(
             $task->getAllStatus(),
             $pages,
             $records,
@@ -283,8 +305,14 @@ class Task extends Ctl
                 array_column($users, 'name')
             ),
             $displayPosition,
-            $displayMenu
+            $displayMenu,
+            $this->getPriorities()
         );
+    }
+
+    protected function getPriorities() : array
+    {
+        return [0, 1, 2];
     }
 
     public function add(

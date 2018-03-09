@@ -44,6 +44,16 @@
 <div>
     <span class="stub-2"></span>
     <span class="text-info">[</span>
+    <small><?= L('PRIORITY') ?></small>
+    <span class="text-info">]</span>
+    <small class="priority-<?= $story->priority ?>">
+        <?= L("PRIORITY_STORY_{$story->priority}") ?>
+    </small>
+</div>
+
+<div>
+    <span class="stub-2"></span>
+    <span class="text-info">[</span>
     <small><?= L('STORY_AC') ?></small>
     <span class="text-info">]</span>
     <dl>
