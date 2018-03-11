@@ -363,4 +363,6 @@ return [
     'PRIORITY_BUG_0' => '普通',
     'PRIORITY_BUG_1' => '严重',
     'PRIORITY_BUG_2' => '紧急',
+    'HIDE' => '隐藏',
+    'SHOW' => '显示',
 ];

@@ -6,7 +6,7 @@
         'route' => lrn('docs'),
     ]) ?>
 
-    <a href='<?= lrn("docs/{$doc->id}/edit") ?>'>
+    <a href='<?= lrn("docs/{$doc->id}/edit?parent={$folder->id}") ?>'>
         <button><?= L('EDIT') ?></button>
     </a>
 </h2>

@@ -420,3 +420,10 @@ function asyncr(uri, type, auth, json) {
         })
     )
 }
+function __sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+async function sleep(ms) {
+  await __sleep(ms)
+}

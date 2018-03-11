@@ -1,5 +1,4 @@
 <?= $this->layout('main') ?>
-<?= $this->title(ldtdf('BUG_LIST')) ?>
 
 <?= $this->section('back2list', [
     'model'  => $doc,
@@ -9,6 +8,8 @@
 
 <form method="POST">
     <?= csrf_feild() ?>
+
+    <input type="hidden" name="parent" value="<?= $parent ?>">
 
     <label>
         <span class="label-title"><?= L('TITLE') ?></span>

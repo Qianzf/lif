@@ -25,7 +25,9 @@
         <div class="hitarea collapsable-hitarea lastCollapsable-hitarea"></div><span class="folder">
             <?= $child->title ?>
             <sup>
-            <a href='<?= lrn("docs/folders/{$child->id}/edit") ?>'>
+            <a href='<?=
+            lrn("docs/folders/{$child->id}/edit?parent={$folder->id}")
+            ?>'>
                 <button><i><?= L('EDIT') ?></i></button>
             </a>
             </sup>
@@ -45,9 +47,34 @@ $(document).ready(function(){
         //     console.log("%s was toggled.", $(this).find(">span").text())
         // }
     })
+
+    <?php if ($unfoldables ?? false): ?>
+    unfoldChildren(<?= json_encode($unfoldables) ?>)
+    <?php endif ?>
 })
+function unfoldChildren(ids) {
+    var folder = ids.pop()
+
+    if (folder > 0) {
+        unfoldChild(folder)
+    }
+
+    if (ids.length > 0) {
+        setTimeout(function () {
+            unfoldChildren(ids)
+        }, 1500)
+    }
+}
 function unfoldChild(id) {
     var folder  = $('#treeview-folder-' + id)
+
+    if (folder.length < 1) {
+        return false;
+    }
+
+    var parentLi = $(folder.parent()[0])
+    var siblingDiv = $(folder.siblings()[0])
+
     var prefix  = "<?= config('app.route.prefix') ?>"
     if ('fold' == folder.data('status')) {
         return true
@@ -57,8 +84,11 @@ function unfoldChild(id) {
             var html = ''
             if (ret.dat.docs) {
                 ret.dat.docs.forEach(function (val, key) {
+                    var selected = (val.id == '<?= $doc->id ?? -1 ?>')
+                    ? 'style="color:darkcyan"' : '';
+
                     html += `
-                    <li onclick="reloadUseQuery('doc', ${val.id})">
+                    <li ${selected} onclick="reloadUseQuery('doc', ${val.id})">
                         <span class="file">${val.title}</span>
                     </li>
                     `
@@ -89,6 +119,14 @@ function unfoldChild(id) {
                     add: html
                 })
             }
+
+            folder.show()
+
+            parentLi.removeAttr('class')
+            parentLi.attr('class', 'closed collapsable lastCollapsable')
+
+            siblingDiv.removeAttr('class')
+            siblingDiv.attr('class', 'hitarea closed-hitarea collapsable-hitarea lastCollapsable-hitarea')
 
             folder.data('status', 'fold')
         })

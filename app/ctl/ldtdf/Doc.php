@@ -80,11 +80,12 @@ class Doc extends Ctl
 
     public function edit(DocModel $doc, DocFolder $folder)
     {
-        view('ldtdf/docs/edit')
-        ->withDocFolderFolders(
+        return view('ldtdf/docs/edit')
+        ->withDocFolderFoldersParent(
             $doc,
             $folder->make($this->request->get('folder')),
-            $folder->getTreeSelectFormattedList()
+            $folder->getTreeSelectFormattedList(),
+            $this->request->get('parent')
         )
         ->share('hide-search-bar', true);
     }
@@ -104,9 +105,14 @@ class Doc extends Ctl
 
     public function update(DocModel $doc)
     {
+        $docShow = (true
+            && ($folder = $this->request->get('parent'))
+            && ispint($folder, true)
+        ) ? "docs/folders/{$folder}?doc={$doc->id}" : "docs/{$doc->id}";
+
         return $this->responseOnUpdated(
             $doc,
-            null,
+            lrn($docShow),
             function () use ($doc) {
                 if ($doc->alive()) {
                     if ($doc->creator('id') != share('user.id')) {
@@ -139,12 +145,31 @@ class Doc extends Ctl
         }
 
         return view('ldtdf/docs/folder/view')
-        ->withFolderDocsChildrenDoc(
+        ->withFolderDocsChildrenDocUnfoldables(
             $folder,
             $folder->docs(),
             $folder->children(),
-            $doc
+            $doc,
+            $this->getUnfoldables($folder, $doc)
         );
+    }
+
+    protected function getUnfoldables($folder, $doc)
+    {
+        $arr = [];
+
+        if ($folder->id && $doc->id && ($parent = $doc->folder())) {
+            $arr[] = $parent->id;
+
+            while (true
+                && ($parent = $parent->parent())
+                && ($parent->id != $folder->id)
+            ) {
+                $arr[] = $parent->id;
+            }
+        }
+
+        return $arr;
     }
 
     public function editFolder(DocFolder $folder)
@@ -159,9 +184,14 @@ class Doc extends Ctl
 
     public function updateFolder(DocFolder $folder)
     {
+        $folderId = (true
+            && ($parent = $this->request->get('parent'))
+            && ispint($parent, true)
+        ) ? $parent : $folder->id;
+
         return $this->responseOnUpdated(
             $folder,
-            null,
+            lrn("docs/folders/{$folderId}"),
             function () use ($folder) {
                 if ($folder->creator('id') != share('user.id')) {
                     return 'UPDATE_PERMISSION_DENIED';
