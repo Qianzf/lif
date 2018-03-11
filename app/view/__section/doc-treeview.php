@@ -66,7 +66,8 @@ function unfoldChildren(ids) {
     }
 }
 function unfoldChild(id) {
-    var folder  = $('#treeview-folder-' + id)
+    var folder = $('#treeview-folder-' + id)
+    var query  = '?parent=<?= $folder->id ?>'
 
     if (folder.length < 1) {
         return false;
@@ -102,7 +103,7 @@ function unfoldChild(id) {
                         <span class="folder">
                             ${val.title}
                             <sup>
-                            <a href="${prefix}/docs/folders/${val.id}/edit">
+                            <a href="${prefix}/docs/folders/${val.id}/edit${query}">
                                 <button><?= L('EDIT') ?></button>
                             </a>
                             </sup>

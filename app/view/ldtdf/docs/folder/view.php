@@ -2,23 +2,27 @@
 <?= $this->title(ldtdf('VIEW_DOC_FOLDER')) ?>
 <?= $this->section('common') ?>
 
+<?php $folderId = $folder->id ?? 0; ?>
+
 <h2>
-    <sub><code><?= "F{$folder->id}" ?></code></sub>
+    <sub><code><?= "F{$folderId}" ?></code></sub>
     <big><?= $folder->title ?></big>
 
     <?= $this->section('back_to', [
         'route' => lrn('docs'),
     ]) ?>
 
-    <a href='<?= lrn("docs/folders/{$folder->id}/edit") ?>'>
+    <a href='<?= lrn("docs/folders/{$folderId}/edit") ?>'>
         <button><?= L('EDIT') ?></button>
     </a>
 
-    <a href='<?= lrn("docs/new?folder={$folder->id}") ?>'>
+    <a href='<?= lrn("docs/new?folder={$folderId}&parent={$folderId}") ?>'>
         <button><?= L('ADD_DOC') ?></button>
     </a>
 
-    <a href='<?= lrn("docs/folders/new?parent={$folder->id}") ?>'>
+    <a href='<?=
+        lrn("docs/folders/new?parent={$folderId}&folder={$folderId}")
+    ?>'>
         <button><?= L('ADD_CATE') ?></button>
     </a>
 </h2>

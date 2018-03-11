@@ -94,13 +94,19 @@ class Doc extends Ctl
     {
         $this->request->setPost('creator', share('user.id'));
 
+        $docShow = (true
+            && ($folder = $this->request->get('parent'))
+            && ispint($folder, true)
+        ) ? "docs/folders/{$folder}%3Fdoc=?" : "docs/?";
+
         return $this->responseOnCreated(
             $doc,
-            lrn('docs/?'),
+            lrn($docShow),
             null,
             function () use ($doc) {
-            $doc->addTrending('create', share('user.id'));
-        });
+                $doc->addTrending('create', share('user.id'));
+            }
+        );
     }
 
     public function update(DocModel $doc)
@@ -138,9 +144,16 @@ class Doc extends Ctl
 
     public function viewFolder(DocFolder $folder)
     {
-        if (ispint($doc = $this->request->get('doc'))) {
+        $unfoldables = [];
+
+        if (ispint($doc = $this->request->get('doc'), true)) {
             $doc = model(DocModel::class, $doc);
+            $unfoldables = $this->getUnfoldableDocs($folder, $doc);
         } else {
+            if (ispint($_folder = $this->request->get('folder'), true)) {
+                $unfoldables = $this->getUnfoldableFolders($folder, $_folder);
+            }
+
             $doc = $folder->firstDoc() ?? model(DocModel::class);
         }
 
@@ -150,11 +163,35 @@ class Doc extends Ctl
             $folder->docs(),
             $folder->children(),
             $doc,
-            $this->getUnfoldables($folder, $doc)
+            $unfoldables
         );
     }
 
-    protected function getUnfoldables($folder, $doc)
+    protected function getUnfoldableFolders($folder, $_folder)
+    {
+        $arr = [];
+
+        if (true
+            && $folder->id
+            && $_folder
+            && ($__folder = $folder->make($_folder))
+            && ($parent = $__folder->parent())
+        ) {
+            $arr[] = $__folder->id;
+            $arr[] = $parent->id;
+
+            while (true
+                && ($parent = $parent->parent())
+                && ($parent->id != $folder->id)
+            ) {
+                $arr[] = $parent->id;
+            }
+        }
+
+        return $arr;
+    }
+
+    protected function getUnfoldableDocs($folder, $doc)
     {
         $arr = [];
 
@@ -219,11 +256,16 @@ class Doc extends Ctl
 
     public function createFolder(DocFolder $folder)
     {
+        $showFolder = (true
+            && ($parent = $this->request->get('folder'))
+            && ispint($parent, true)
+        ) ? "docs/folders/{$parent}%3Ffolder=?" : 'docs/folders/?';
+
         $this->request->setPost('creator', share('user.id'));
 
         return $this->responseOnCreated(
             $folder,
-            lrn('docs/folders/?'),
+            lrn($showFolder),
             null,
             function () use ($folder) {
                 $folder->addTrending('create', share('user.id'));

@@ -1,5 +1,11 @@
 <?= $this->layout('main') ?>
 <?= $this->title(ldtdf('FOLDER_LIST')) ?>
+
+<?php
+    $parentQuery = 'folder='.$folder->id.'&parent='.$parent->id;
+    $folderQuery = 'parent='.$folder->id.'&folder='.$parent->id;
+?>
+
 <?= $this->section('back2list', [
     'model'   => $folder,
     'key'     => 'FOLDER',
@@ -7,12 +13,12 @@
     'buttons' => [
         [
             'name'  => 'CREATE_DOC',
-            'route' => lrn("docs/new?folder={$folder->id}"),
+            'route' => lrn("docs/new?{$parentQuery}"),
             'alive' => 'true',
         ],
         [
             'name'  => 'CREATE_FOLDER',
-            'route' => lrn("docs/folders/new?parent={$folder->id}"),
+            'route' => lrn("docs/folders/new?{$folderQuery}"),
             'alive' => 'true',
         ],
     ],
@@ -39,7 +45,9 @@
     <?= $this->section('treeselect', [
         'inputTitle' => L('PARENT_CATE'),
         'inputName'  => 'parent',
-        'inputDefaultValue'  => intval($folder->alive() ? $folder->parent : $parent->id),
+        'inputDefaultValue'  => intval(
+            $folder->alive() ? $folder->parent : $parent->id
+        ),
         'inputDefaultOutput' => ($folder->alive() ? $folder->parent('title') : $parent->title),
         'treeData' => ($folders ?? []),
     ]) ?>

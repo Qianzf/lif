@@ -163,20 +163,25 @@ if (! fe('escape_route_name')) {
     }
 }
 if (! fe('uri')) {
-    function uri(string $route, array $params = []) {
-        if (! $params) {
-            return $route;
+    function uri(string $route, array $params = [], array $queies = []) {
+        $uri = $route;
+
+        if ($params) {
+            $idx = 0;
+            $uri = preg_replace_callback('/\?/u',
+                function ($matches) use ($params, &$idx) {
+                    return $params[$idx++] ?? null;
+                }, $route
+            );
+
+            unset($idx);
         }
 
-        $idx = 0;
-        $uri = preg_replace_callback('/\?/u',
-            function ($matches) use ($params, &$idx) {
-                return $params[$idx++];
-        }, $route);
+        if ($queies && ($string = http_build_query($queies))) {
+            $uri .= $string;
+        }
 
-        unset($idx);
-
-        return $uri;
+        return urldecode($uri);
     }
 }
 if (! fe('route')) {
