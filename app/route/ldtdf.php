@@ -41,6 +41,23 @@ $this->group([
                 'middleware' => 'auth.qiniu',
             ], 'uptoken');
         });
+
+        $this->group([
+            'prefix' => 'httpapi',
+            'ctl' => 'HttpApi'
+        ], function () {
+            $this->get('/', 'index');
+
+            $this->group([
+                'prefix' => 'projects',
+                'ctl' => 'HttpApiProject'
+            ], function () {
+                $this->get('new', 'edit');
+                $this->get('{id}', 'info');
+                $this->get('{id}/edit', 'edit');
+                $this->post('new', 'create');
+            });
+        });
     });
 
     $this->group([

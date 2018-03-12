@@ -365,4 +365,5 @@ return [
     'PRIORITY_BUG_2' => '紧急',
     'HIDE' => '隐藏',
     'SHOW' => '显示',
+    'API' => '接口',
 ];
