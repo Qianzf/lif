@@ -14,6 +14,7 @@ var/log/*
 var/db/*
 var/upload/*
 var/script/*
+var/session/*
 web/*
 !app/conf/.gitkeep
 !var/cache/.gitkeep
@@ -21,6 +22,7 @@ web/*
 !var/db/.gitkeep
 !var/upload/.gitkeep
 !var/script/.gitkeep
+!var/session/.gitkeep
 !web/assets/
 !web/index.php
 

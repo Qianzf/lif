@@ -17,5 +17,11 @@
         "files": [
             "app/core/aux/base.php"
         ]
+    },
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://packagist.phpcomposer.com"
+        }
     }
 }
