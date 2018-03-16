@@ -92,8 +92,8 @@ if (! fe('session_init')) {
     function session_init() : void {
         if (context('web')) {
 	    ini_set('session.save_path', pathOf('root', 'var/session'));
-            ini_set('session.name', 'LIFSESSID');
-            ini_set('session.cookie_lifetime', 3600);
+            ini_set('session.name', config('app.session.name', 'LIFSESSID'));
+            ini_set('session.cookie_lifetime', config('app.session.ttl', 3600));
             ini_set('session.cookie_httponly', true);
         }
     }
