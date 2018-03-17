@@ -47,6 +47,7 @@ $this->group([
             'ctl' => 'HttpApi'
         ], function () {
             $this->get('/', 'index');
+            $this->get('projects', 'index');
 
             $this->group([
                 'prefix' => 'projects',
@@ -55,6 +56,7 @@ $this->group([
                 $this->get('new', 'edit');
                 $this->get('{id}', 'info');
                 $this->get('{id}/edit', 'edit');
+                $this->post('{id}/edit', 'update');
                 $this->post('new', 'create');
             });
         });

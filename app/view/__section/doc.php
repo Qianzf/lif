@@ -11,6 +11,7 @@
     <a href='<?= lrn("docs/{$doc->id}/edit{$parent}") ?>'>
         <button><?= L('EDIT') ?></button>
     </a>
+    
 </h2>
 
 <div id="doc-content">
@@ -18,6 +19,16 @@
     id="doc-content-md"
     style="display:none"><?= $doc->content ?></textarea>
 </div>
+
+<h6 style="text-align:right">
+    <i>
+        <?= $doc->create_at, ' ',  L('CREATED_BY'), ': ' ?>
+        <a href="<?= lrn("/users/{$doc->creator('id')}") ?>">
+            <?= $doc->creator('name') ?>
+        </a>
+        ( <?= L('LAST_UPDATE'), ': ', $doc->update_at ?> )
+    </i>
+</h6>
 
 <?= $this->section('lib/editormd') ?>
 <script type="text/javascript">

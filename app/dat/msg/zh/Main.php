@@ -320,7 +320,7 @@ return [
     'SET' => '设置',
     'PASS' => '通过',
     'UNPASS' => '未通过',
-    'CATE' => '目录',
+    'CATE' => '分类',
     'PARENT' => '父级',
     'WRITE' => '写',
     'FOLDER' => '文件夹',

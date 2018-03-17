@@ -25,6 +25,11 @@ class HttpApiProject extends CtlBase
         ->share('hide-search-bar', true);
     }
 
+    public function update(Project $project)
+    {
+        return $this->responseOnUpdated($project, lrn('tool/httpapi/projects/'.$project->id));
+    }
+
     public function create(Project $project)
     {
         $this->request->setPost('creator', share('user.id'));

@@ -7,61 +7,46 @@
     <big><?= $project->name ?></big>
 
     <?= $this->section('back_to', [
-        'route' => lrn('tool/httpapi'),
+        'route' => lrn('tool/httpapi/projects'),
     ]) ?>
 
-    <a href='<?= lrn("tool/httpapi/projects/{$project->id}/edit") ?>'>
+    <a href="<?= lrn("/tool/httpapi/projects/{$project->id}/edit") ?>">
         <button><?= L('EDIT') ?></button>
     </a>
 
+    <button id="hide-cates" data-last="show"><?= L('HIDE_CATE') ?></button>
+
     <button id="add-httpapi"><?= L('ADD_API') ?></button>
 
-    <a href='<?= lrn("tool/httpapi/cates/new?project={$project->id}") ?>'>
-        <button><?= L('ADD_CATE') ?></button>
-    </a>
+    <button id="add-cate"><?= L('ADD_CATE') ?></button>
 
-    <a href='<?= lrn("tool/httpapi/env/new?project={$project->id}") ?>'>
-        <button><?= L('ADD_ENV') ?></button>
-    </a>
+    <button id="add-env"><?= L('ADD_ENV') ?></button>
 </h2>
 
-<div id="dialog-add-httpapi" title="new http api" style="display: none;">
-  <form>
-    <label for="httpapi_path">
-        路径
-        <input id="httpapi_path">
-    </label>
+<div style="display:flex">
+    <div id="api-cates" style="width:30%;">
+        <h4>cate 1</h4>
+        <div>
+            <a href="#" style="color:blue">api in cate 1</a>
+        </div>
 
-    <label for="httpapi_method">
-        方法
-        <select id="httpapi_method">
-            <option value="get">GET</option>
-            <option value="get">POST</option>
-            <option value="get">PUT</option>
-            <option value="get">PATCH</option>
-            <option value="get">DELETE</option>
-        </select>
-    </label>
+        <h4>cate 2</h4>
+        <div>
+            <a href="#">api in cate 2</a>
+        </div>
+    
+    </div>
 
-    <label for="httpapi_path">
-        路径
-        <input id="httpapi_path">
-    </label>
-  </form>
-</div>
+    <div id="httpapi_tabs" style="width:75%">
+      <ul>
+        <li>
+            <a href="#httpapi_tabs-1">api tab default</a>
+            <span class="ui-icon" role="presentation"></span>
+        </li>
+      </ul>
 
-<div id="httpapi_tabs">
-  <ul>
-    <li>
-        <a href="#httpapi_tabs-1">api tab default</a>
-        <span class="ui-icon ui-icon-close" role="presentation">
-            移除标签页
-        </span>
-    </li>
-  </ul>
-
-  <div id="httpapi_tabs-1">
-  </div>
+      <div id="httpapi_tabs-1"><?php echo ($apiForm = $this->section('/ldtdf/tool/httpapi/__api_form', [], true)); ?></div>
+    </div>
 </div>
 
 <!-- <pre><code id="json" class="language-json"></code></pre> -->
@@ -74,6 +59,11 @@
 <?= $this->section('lib/jqueryui') ?>
 
 <script type="text/javascript">
+    $('#api-cates').accordion({
+//        collapsible: true,
+        heightStyle: "content"
+    })
+
     // https://github.com/lil-js/http
     // lil.http.get('http://api.hcm.docker/api/members/current', {
 
@@ -93,14 +83,10 @@
 
         tabTemplate = `
             <li>
-            <a href='#{href}'>#{label}</a>
-            <span class='ui-icon ui-icon-close' role='presentation'>
-                Remove Tab
-            </span>
+                <a href='#{href}'>#{label}</a>
+                <span class='ui-icon ui-icon-close' role='presentation'></span>
             </li>
         `
-
-        console.log(apiTabs)
     
       // var dialog = $('#dialog-add-httpapi').dialog({
       //   autoOpen: false,
@@ -122,26 +108,43 @@
       $('#add-httpapi').click(function() {
           addHttpApi()
       })
+
+      $('#hide-cates').click(function () {
+          if ($(this).data('last') == 'show') {
+              $('#api-cates').hide()
+              $('#httpapi_tabs').width('100%')
+              $(this).html('<?= L("SHOW_CATE") ?>').data('last', 'hide')
+          } else {
+              $('#api-cates').show()
+              $('#httpai_tabs').width('75%')
+              $(this).html('<?= L("HIDE_CATE") ?>').data('last', 'show')
+          }
+      })
+
+      $('#add-cate').click(function () {
+          
+      })
     
-      function addHttpApi() {
+      $('#add-env').click(function () {
+          
+      })
+
+       function addHttpApi() {
         var
         label = 'new http api',
-        id = 'httpapi_tabs_' + apiTabsCnt,
-        li = $(tabTemplate.replace(/#\{href\}/g, '#' + id).replace(/#\{label\}/g, label)),
+        id    = 'httpapi_tabs_' + apiTabsCnt++,
+        li    = $(tabTemplate.replace(/#\{href\}/g, '#' + id).replace(/#\{label\}/g, label))
 
-        apiPathHtml = "新增 API " + apiTabsCnt
-
-        apiTabs.find(".ui-tabs-nav").append(li );
-
-        apiTabs.append( "<div id='" + id + "'><p>" + apiPathHtml + "</p></div>" );
+        apiTabs.find('.ui-tabs-nav').append(li)
+        apiTabs.append(`<div id="${id}"><?= $apiForm ?></p></div>`)
         apiTabs.tabs('refresh')
       }
     
-      apiTabs.delegate( "span.ui-icon-close", "click", function() {
-        var panelId = $( this ).closest( "li" ).remove().attr( "aria-controls" );
-        $( "#" + panelId ).remove();
-
-        apiTabs.tabs('refresh')
-      });
-    });
+      apiTabs.delegate('span.ui-icon-close', 'click', function() {
+          var panelId = $(this).closest('li').remove().attr('aria-controls')
+          $('#' + panelId).remove()
+          apiTabs.tabs('refresh')
+      })
+    })
 </script>
+
