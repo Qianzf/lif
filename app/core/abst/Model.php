@@ -102,6 +102,13 @@ abstract class Model extends \Lif\Core\Abst\Facade implements \ArrayAccess
         ->persistentFrom($this->filter);
     }
 
+    public function delete()
+    {
+        return $this->query()->where(
+            $this->pk(), $this->items[$this->pk()]
+        )->delete();
+    }
+
     public function pk()
     {
         return $this->pk ?? 'id';

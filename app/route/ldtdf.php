@@ -48,16 +48,35 @@ $this->group([
         ], function () {
             $this->get('/', 'index');
             $this->get('projects', 'index');
+            $this->post('new', 'create')->unset('safty.csrf');
 
             $this->group([
                 'prefix' => 'projects',
                 'ctl' => 'HttpApiProject'
             ], function () {
                 $this->get('new', 'edit');
+                $this->post('new', 'create');
                 $this->get('{id}', 'info');
                 $this->get('{id}/edit', 'edit');
                 $this->post('{id}/edit', 'update');
-                $this->post('new', 'create');
+
+                $this->group([
+                    'prefix' => '{id}/cate',
+                    'filter' => [
+                        'cate' => 'int|min:1',
+                    ],
+                ], function () {
+                    $this->post('new', 'createCate')->unset('safty.csrf');
+                    $this->post('edit', 'updateCate')->unset('safty.csrf');
+                    $this->post('{cate}/delete', 'deleteCate')->unset('safty.csrf');
+                });
+
+                $this->group([
+                    'prefix' => '{id}/envs',
+                ], function () {
+                    $this->get('/', 'HttpApiProject@envs');
+                    $this->get('new', 'HttpApiProject@editEnv');
+                });
             });
         });
     });

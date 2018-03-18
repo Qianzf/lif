@@ -25,6 +25,35 @@ class HttpapiProject extends ModelBase
     protected $unreadable  = [
     ];
 
+    public function envs()
+    {
+        return HttpapiEnv::whereProject($this->id)->all();
+    }
+
+    public function apis(int $cate = null)
+    {
+        if (! $this->alive()) {
+            return [];
+        }
+
+        $query = Httpapi::whereProject($this->id);
+
+        if (ispint($cate)) {
+            $query->whereCate($cate);
+        }
+
+        return $query->all();
+    }
+
+    public function cates()
+    {
+        if (! $this->alive()) {
+            return [];
+        }
+
+        return HttpapiCate::whereProject($this->id)->all(); 
+    }
+
     public function list(array $querys)
     {
         if ($search = ($querys['search'] ?? false)) {

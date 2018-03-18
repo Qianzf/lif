@@ -20,33 +20,56 @@
 
     <button id="add-cate"><?= L('ADD_CATE') ?></button>
 
-    <button id="add-env"><?= L('ADD_ENV') ?></button>
+    <a href="<?= lrn("/tool/httpapi/projects/{$project->id}/envs") ?>">
+        <button id="manage-env"><?= L('MANAGE_ENV') ?></button>
+    </a>
 </h2>
 
 <div style="display:flex">
     <div id="api-cates" style="width:30%;">
-        <h4>cate 1</h4>
+        <h4><?= L('DEFAULT_CATE') ?></h4>
         <div>
-            <a href="#" style="color:blue">api in cate 1</a>
-        </div>
+        <?php if($_apis = $project->apis(0)) : ?>
+        <?php foreach($_apis as $_api) : ?>
+            <a href="#"><?= $_api->name ?></a>
+        <?php endforeach ?>
+        <?php endif ?>
+       </div>
 
-        <h4>cate 2</h4>
+        <?php if(isset($cates) && iteratable($cates)) : ?>
+        <?php foreach($cates as $cate) : ?>
+        <h4><?= $cate->name ?>
+            <small><button onclick="editCate(<?= $cate->id ?>, '<?= $cate->name ?>')" style="float:right"><?= L('EDIT') ?></button></small>
+            <small><button onclick="delCate(<?= $cate->id ?>, '<?= $cate->name ?>')" style="float:right"><?= L('DELETE') ?></button></small>
+        </h4>
         <div>
-            <a href="#">api in cate 2</a>
+        <?php if($apis = $cate->apis()) : ?>
+        <?php foreach($apis as $api) : ?>
+            <a href="#" style="color:blue">api in cate 1</a>
+        <?php endforeach ?>
+        <?php endif ?>
         </div>
-    
+        <?php endforeach ?>
+        <?php endif ?>
     </div>
 
-    <div id="httpapi_tabs" style="width:75%">
+    <div id="httpapi_tabs" style="width:75%;">
       <ul>
         <li>
-            <a href="#httpapi_tabs-1">api tab default</a>
+            <a href="#httpapi_tabs-1"><?= L('ADD_API') ?></a>
             <span class="ui-icon" role="presentation"></span>
         </li>
       </ul>
 
       <div id="httpapi_tabs-1"><?php echo ($apiForm = $this->section('/ldtdf/tool/httpapi/__api_form', [], true)); ?></div>
     </div>
+</div>
+
+<div id="cate-create-form" title="<?= L('CREATE_CATE') ?>" style="display:none">
+    <form method="POST" action="<?= lrn("/tool/httpapi/projects/{$project->id}/cate/new") ?>">
+        <input type="hidden" name="project" value="<?= $project->id ?>">
+        <input name="name" required placeholder="<?= L('INPUT_TITLE') ?>" style="width:300px;">
+    </form>
 </div>
 
 <!-- <pre><code id="json" class="language-json"></code></pre> -->
@@ -61,7 +84,10 @@
 <script type="text/javascript">
     $('#api-cates').accordion({
 //        collapsible: true,
-        heightStyle: "content"
+        heightStyle: "content",
+        beforeActivate: function (event, ui) {
+//            console.log(event, ui)
+        }
     })
 
     // https://github.com/lil-js/http
@@ -87,24 +113,6 @@
                 <span class='ui-icon ui-icon-close' role='presentation'></span>
             </li>
         `
-    
-      // var dialog = $('#dialog-add-httpapi').dialog({
-      //   autoOpen: false,
-      //   modal: true,
-      //   buttons: {
-      //     Add: function() {
-      //       addHttpApi()
-      //       $(this).dialog('close')
-      //     },
-      //     Cancel: function() {
-      //       $(this).dialog('close')
-      //     }
-      //   },
-      //   close: function() {
-      //     // addHttpApiForm.reset()
-      //   }
-      // });
-
       $('#add-httpapi').click(function() {
           addHttpApi()
       })
@@ -121,23 +129,51 @@
           }
       })
 
-      $('#add-cate').click(function () {
-          
+      $('#cate-create-form').dialog({
+          autoOpen: false,
+          height: 200,
+          width: 380,
+          modal: true,
+          buttons: {
+            "<?= L('CREATE') ?>": function () {
+                var name = $('#cate-create-form form input[name="name"]').val()
+                if (name) {
+                    $('#cate-create-form form').submit()
+                }
+            },
+            "<?= L('CANCEL') ?>": function () {
+                $(this).dialog('close')
+                $('#cate-create-form form input[name="name"]').val('')
+            }
+          },
+          close: function () {
+             $(this).dialog('close')
+             $('#cate-create-form form input[name="name"]').val('')
+          }
       })
-    
+
+      $('#add-cate').click(function () {
+        $('#cate-create-form').dialog('open')    
+      })
+      
+      $('.edit-cate').click(function () {
+          console.log(this)
+      })  
+      
       $('#add-env').click(function () {
           
       })
 
-       function addHttpApi() {
-        var
-        label = 'new http api',
-        id    = 'httpapi_tabs_' + apiTabsCnt++,
-        li    = $(tabTemplate.replace(/#\{href\}/g, '#' + id).replace(/#\{label\}/g, label))
+      function addHttpApi() {
+          var
+          label = '<?= L('ADD_API') ?>',
+          id    = 'httpapi_tabs_' + apiTabsCnt,
+          li    = $(tabTemplate.replace(/#\{href\}/g, '#' + id).replace(/#\{label\}/g, label))
 
-        apiTabs.find('.ui-tabs-nav').append(li)
-        apiTabs.append(`<div id="${id}"><?= $apiForm ?></p></div>`)
-        apiTabs.tabs('refresh')
+          apiTabs.find('.ui-tabs-nav').append(li)
+          apiTabs.append(`<div id="${id}"><?= $apiForm ?></p></div>`)
+          apiTabs.tabs('refresh')
+          apiTabs.tabs({active: apiTabsCnt++})
       }
     
       apiTabs.delegate('span.ui-icon-close', 'click', function() {
@@ -146,5 +182,58 @@
           apiTabs.tabs('refresh')
       })
     })
+
+    function syncApiTitle(obj) {
+        var title = obj.value ? obj.value : 'new api'
+
+        $('#httpapi_tabs ul:first li:eq(' + $('#httpapi_tabs').tabs('option', 'active') + ') a').html(title)
+    }
+    function delCate(id, name) {
+        var
+            deleteUrl  = '/tool/httpapi/projects/' + <?= $project->id ?> + '/cate/' + id + '/delete', 
+            deleteForm = `<form method="POST" action="${deleteUrl}"></form>`
+            cateName   = '<?= L('DELETE_CATE') ?> : ' + name
+
+        $('<div title="' + cateName + '">').html(deleteForm).dialog({
+            height: 100,
+            width: 380,
+            buttons: {
+                "<?= L('CONFIRM') ?>": function () {
+                    var deleteForm = $($(this).find('form')[0])
+                    if (deleteForm.length > 0) {
+                       deleteForm.submit() 
+                    }
+                },
+                "<?= L('CANCEL') ?>": function () {
+                    $(this).dialog('close')
+                }
+            }
+        })
+    }
+    function editCate(id, nameOld) { 
+        var
+            updateUrl  = '/tool/httpapi/projects/' + <?= $project->id ?> + '/cate/' + id + '/edit', 
+            updateForm = `
+<form method="POST" action="${updateUrl}">
+<input type="hidden" name="project" value="<?= $project->id ?>">
+<input name="name" value="${nameOld}" required placeholder="<?= L('INPUT_TITLE') ?>" style="width:300px;">
+</form>
+`
+        $('<div title="<?= L('EDIT_CATE') ?>">').html(updateForm).dialog({
+            height: 200,
+            width: 380,
+            buttons: {
+                "<?= L('UPDATE') ?>": function () {
+                    var updateForm = $($(this).find('form')[0])
+                    if ((updateForm.length > 0) && updateForm.find('input[name="name"]').val()) {
+                       updateForm.submit() 
+                    }
+                },
+                "<?= L('CANCEL') ?>": function () {
+                    $(this).dialog('close')
+                }
+            }
+        })
+    }
 </script>
 

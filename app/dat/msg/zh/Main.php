@@ -366,4 +366,6 @@ return [
     'HIDE' => '隐藏',
     'SHOW' => '显示',
     'API' => '接口',
+    'DEFAULT' => '默认',
+    'REQUEST' => '请求',
 ];
