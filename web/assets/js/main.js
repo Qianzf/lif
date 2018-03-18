@@ -338,7 +338,7 @@ function back2last() {
 }
 function getHost() {
     let aTag = getATag(window.location.href)
-    return (aTag.scheme + aTag.port + aTag.hostname + aTag.pathname)
+    return (aTag.scheme + aTag.hostname + ':' + aTag.port + aTag.pathname)
 }
 function reload(queryString) {
     let url = getHost()
