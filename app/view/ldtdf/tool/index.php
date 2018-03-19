@@ -9,9 +9,9 @@
         </a>
     </dd>
 
-    <dd>
+    <!-- <dd>
         <a href="<?= lrn('tool/httpapi') ?>">
             <button>HTTP API</button>
         </a>
-    </dd>
+    </dd> -->
 </dl>

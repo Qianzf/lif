@@ -25,7 +25,7 @@
 ]) ?>
 
 <form method="POST">
-    <?= csrf_feild() ?>
+    <?= csrf_field() ?>
 
     <label>
         <span class="label-title"><?= L('TITLE') ?></span>

@@ -7,7 +7,7 @@
 ]) ?>
 
 <form method="POST">
-    <?= csrf_feild() ?>
+    <?= csrf_field() ?>
 
     <input type="hidden" name="parent" value="<?= $parent ?>">
 

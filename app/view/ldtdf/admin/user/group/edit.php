@@ -6,7 +6,7 @@
 ]) ?>
 
 <form method="POST" autocomplete="off">
-    <?= csrf_feild() ?>
+    <?= csrf_field() ?>
 
     <label>
         <?= L('TITLE') ?>

@@ -31,7 +31,7 @@
     method="POST"
     action='<?= lrn("tasks/{$task->id}/confirm") ?>'
     class="inline">
-        <?= csrf_feild() ?>
+        <?= csrf_field() ?>
     </form>
     <?php endif ?>
     
@@ -66,7 +66,7 @@
     method="POST"
     action='<?= lrn("tasks/{$task->id}/activate") ?>'
     class="inline invisible-default" id="activate-task-form">
-        <?= csrf_feild() ?>
+        <?= csrf_field() ?>
         <input type="hidden" name="activate_reason">
     </form>
     <script type="text/javascript">
@@ -91,7 +91,7 @@
     method="POST"
     action='<?= lrn("tasks/{$task->id}/cancel") ?>'
     class="inline invisible-default" id="cancel-task-form">
-        <?= csrf_feild() ?>
+        <?= csrf_field() ?>
         <input type="hidden" name="cancel_reason">
     </form>
     <script type="text/javascript">

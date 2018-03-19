@@ -7,7 +7,7 @@ id="task-env-update-form"
 class="invisible-default"
 title="<?= $title ?>">
     <form method="POST" action="<?= $action ?>">
-        <?= csrf_feild() ?>
+        <?= csrf_field() ?>
         <label>
           <span class="label-title">
               <?= L('TASK_BRANCH') ?>

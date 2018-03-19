@@ -11,7 +11,7 @@
 <?php $pid = $product->alive() ? $product->id : 'new'; ?>
 
 <form method="POST" action='<?= lrn("pm/products/{$pid}") ?>'>
-    <?= csrf_feild() ?>
+    <?= csrf_field() ?>
 
     <label>
         <span class="label-title">* <?= L('PRODUCT_TITLE') ?></span>

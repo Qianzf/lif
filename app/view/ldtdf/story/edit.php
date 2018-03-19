@@ -9,7 +9,7 @@
 <?php $sid = $story->alive() ? $story->id : 'new'; ?>
 
 <form method="POST" action='<?= lrn("stories/{$sid}") ?>'>
-    <?= csrf_feild() ?>
+    <?= csrf_field() ?>
 
     <label>
         <span class="label-title">* <?= L('TITLE') ?></span>

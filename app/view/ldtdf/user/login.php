@@ -4,7 +4,7 @@
 <h4><?= $title ?></h4>
 
 <form method="POST">
-    <?= csrf_feild() ?>
+    <?= csrf_field() ?>
     
     <input value="<?= ($_REQUEST['lang'] ?? null) ?>"
     type="hidden" name="lang">

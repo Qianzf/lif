@@ -20,7 +20,7 @@
     </div>
 
     <form class="invisible-default" method="POST">
-        <?= csrf_feild() ?>
+        <?= csrf_field() ?>
         <input type="hidden" name="filekey">
         <label>
             <span class="label-title"><?= L('FILENAME') ?></span>

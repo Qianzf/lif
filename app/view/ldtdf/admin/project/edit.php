@@ -6,7 +6,7 @@
 ]) ?>
 
 <form method="POST" autocomplete="off">
-    <?= csrf_feild() ?>
+    <?= csrf_field() ?>
     <label>
         <span class="label-title"><?= L('TITLE') ?></span>
         <input type="text" name="name" required value="<?= $project->name ?>">

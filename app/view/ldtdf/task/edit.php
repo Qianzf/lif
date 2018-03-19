@@ -13,7 +13,7 @@
 ]) ?>
 
 <form method="POST" action='<?= lrn("tasks/{$tid}") ?>'>
-    <?= csrf_feild() ?>
+    <?= csrf_field() ?>
 
     <label>
         <span class="label-title">* <?= L('TASK_ORIGIN') ?></span>

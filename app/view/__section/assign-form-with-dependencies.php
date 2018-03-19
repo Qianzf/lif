@@ -7,7 +7,7 @@
 title="<?= L("ASSIGN_{$key}", $model->title) ?>"
 class="invisible-default">
     <form method="POST" action="<?= $route ?>">
-        <?= csrf_feild() ?>
+        <?= csrf_field() ?>
         <input type="hidden" name="dependency" value="yes">
         <label>
           <span class="label-title">

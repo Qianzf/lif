@@ -20,8 +20,8 @@ if (! fe('csrf_token')) {
         return $data.'.'.sha1($data.'$'.$key);
     }
 }
-if (! fe('csrf_feild')) {
-    function csrf_feild() {
+if (! fe('csrf_field')) {
+    function csrf_field() {
         $token = csrf_token();
         $input = "<input type='hidden' name='__rftkn__' value='{$token}'>";
 
